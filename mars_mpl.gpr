@@ -1,0 +1,11 @@
+project Mars_Mpl is
+
+   for Main use ("simulator.adb");
+   for Source_Dirs use (".", "source");
+
+   package Compiler is
+      for Default_Switches ("ada") use ("-gnatw.e.L.Y", "-O3", "-gnat12", "-gnato", "-g");
+   end Compiler;
+
+end Mars_Mpl;
+
