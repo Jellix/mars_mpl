@@ -1,22 +1,20 @@
-with Ada.Real_Time;
 with Ada.Text_IO;
 with Thrusters;
 
 package body Touchdown_Monitor is
 
-   use type Ada.Real_Time.Time;
-
-   Cycle : constant Ada.Real_Time.Time_Span := Ada.Real_Time.Milliseconds (10);
+   use type Ada.Real_Time.Time, Landing_Legs.Leg_State;
 
    type Leg_Indicator is
       record
-         State  : Boolean;
+         State  : Landing_Legs.Leg_State;
          Health : Health_State;
       end record;
 
    task type Touchdown_Monitor_Execute is
       entry Start (Leg_Index : Landing_Legs.Legs_Index);
       entry Enable;
+      entry Shutdown;
       entry State (Current : out Run_State);
    end Touchdown_Monitor_Execute;
 
@@ -25,31 +23,39 @@ package body Touchdown_Monitor is
       Monitor_State     : Run_State;
       Event_Enabled     : Boolean;
       Leg               : Landing_Legs.Legs_Index;
-      Last_Indicator    : Boolean := False;
-      Current_Indicator : Boolean := False;
+      Last_Indicator    : Landing_Legs.Leg_State := Landing_Legs.In_Flight;
+      Current_Indicator : Landing_Legs.Leg_State := Landing_Legs.In_Flight;
 
-      Next_Cycle : Ada.Real_Time.Time;
+      Is_Finished : Boolean := False;
+      Next_Cycle  : Ada.Real_Time.Time;
    begin
       --  Initialize local state.
       Monitor_State := Not_Started;
-      Indicator     := (State => False, Health => Unknown);
+      Indicator     := (State => Landing_Legs.In_Flight, Health => Unknown);
       Event_Enabled := False;
 
-      loop
+      while not Is_Finished loop
          select
             accept State (Current : out Run_State) do
                Current := Monitor_State;
             end State;
+         or
+            accept Shutdown do
+               Is_Finished := True;
+            end Shutdown;
          or
             when Monitor_State = Not_Started =>
                accept Start (Leg_Index : Landing_Legs.Legs_Index) do
                   Leg := Leg_Index;
                end Start;
 
-               Ada.Text_IO.Put_Line ("Monitoring for leg" & Landing_Legs.Legs_Index'Image (Leg) & " started.");
+               Ada.Text_IO.Put_Line ("Monitoring for leg"
+                                     & Landing_Legs.Legs_Index'Image (Leg)
+                                     & " started.");
 
                Monitor_State := Started;
-               Indicator     := (State => False, Health => Good);
+               Indicator     := (State  => Landing_Legs.In_Flight,
+                                 Health => Good);
                Event_Enabled := False;
 
                Next_Cycle := Ada.Real_Time.Clock;
@@ -57,9 +63,14 @@ package body Touchdown_Monitor is
             when Monitor_State = Started =>
                accept Enable;
 
-               Ada.Text_IO.Put_Line ("Monitoring for leg" & Landing_Legs.Legs_Index'Image (Leg) & " enabled.");
+               Ada.Text_IO.Put_Line ("Monitoring for leg"
+                                     & Landing_Legs.Legs_Index'Image (Leg)
+                                     & " enabled.");
 
-               if Last_Indicator and Current_Indicator then
+               if
+                     Last_Indicator    = Landing_Legs.Touched_Down
+                 and Current_Indicator = Landing_Legs.Touched_Down
+               then
                   Indicator.Health := Bad;
                else
                   Event_Enabled := True;
@@ -72,23 +83,31 @@ package body Touchdown_Monitor is
 
                Last_Indicator := Current_Indicator;
 
-               if Event_Enabled then
-                  begin
-                     Current_Indicator := Landing_Legs.Read_State (Index => Leg);
-                  exception
-                     when Landing_Legs.IO_Error =>
-                        Indicator.Health := Bad;
-                  end;
-               else
-                  Current_Indicator := False;
+               -- Bug lies here. While we certainly want to read the state of
+               -- the leg in each cycle (for a) health monitoring and
+               -- b) constant task workload, we should not enable the setting of
+               -- the actual result.
+               begin
+                  Current_Indicator := Landing_Legs.Read_State (Index => Leg);
+               exception
+                  when Landing_Legs.IO_Error =>
+                     Indicator.Health := Bad;
+               end;
+
+               -- Set indicator state only once.
+               if
+                 Event_Enabled and
+                 Last_Indicator    = Landing_Legs.Touched_Down and
+                 Current_Indicator = Landing_Legs.Touched_Down
+               then
+                  Indicator.State := Landing_Legs.Touched_Down;
                end if;
 
-               -- Set indicator state to True only once.
-               if Last_Indicator and Current_Indicator then
-                  Indicator.State := True;
-               end if;
-
-               if Indicator = (State => True, Health => Good) and Event_Enabled then
+               if
+                     Indicator = (State  => Landing_Legs.Touched_Down,
+                                  Health => Good)
+                 and Event_Enabled
+               then
                   Thrusters.Disable (Source => Leg);
                   Monitor_State := Not_Started;
                   Event_Enabled := False;
@@ -112,6 +131,13 @@ package body Touchdown_Monitor is
          Leg.Enable;
       end loop;
    end Enable;
+
+   procedure Shutdown is
+   begin
+      for Leg of Legs loop
+         Leg.Shutdown;
+      end loop;
+   end Shutdown;
 
    function Current_State (Leg : Landing_Legs.Legs_Index) return Run_State is
      New_State : Run_State;

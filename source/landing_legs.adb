@@ -6,40 +6,64 @@ package body Landing_Legs is
 
    use type Ada.Real_Time.Time;
 
-   Leg : array (Legs_Index) of Boolean with Atomic_Components;
+   Leg : array (Legs_Index) of Leg_State with Atomic_Components;
 
-   package Random_Leg is new Ada.Numerics.Discrete_Random (Result_Subtype => Legs_Index);
-   package Random_Time is new Ada.Numerics.Discrete_Random (Result_Subtype => Sensor_Glitch);
+   package Random_Leg is
+     new Ada.Numerics.Discrete_Random (Result_Subtype => Legs_Index);
+   package Random_Time is
+     new Ada.Numerics.Discrete_Random (Result_Subtype => Sensor_Glitch);
 
-   task Simulate_Landing_Legs;
+   task Simulate_Landing_Legs is
+      entry Shutdown;
+   end Simulate_Landing_Legs;
+
    task body Simulate_Landing_Legs is
-      Next_Cycle : Ada.Real_Time.Time := Ada.Real_Time.Clock + Ada.Real_Time.Seconds (1);
       Legs_G     : Random_Leg.Generator;
       Time_G     : Random_Time.Generator;
+
+      Next_Cycle  : Ada.Real_Time.Time :=
+                      Ada.Real_Time.Clock + Ada.Real_Time.Seconds (1);
+      Is_Finished : Boolean := False;
    begin
       Random_Leg.Reset (Gen => Legs_G);
       Random_Time.Reset (Gen => Time_G);
 
-      loop
-         delay until Next_Cycle;
+      while not Is_Finished loop
+         select
+            accept Shutdown do
+               Is_Finished := True;
+            end Shutdown;
+         or
+            delay until Next_Cycle;
 
-         declare
-            Selected_Leg : constant Legs_Index    := Random_Leg.Random (Gen => Legs_G);
-            MS_Triggered : constant Sensor_Glitch := Random_Time.Random (Time_G);
-         begin
-            Ada.Text_IO.Put_Line ("Landing leg" & Legs_Index'Image (Selected_Leg) & " triggered for" & Sensor_Glitch'Image (MS_Triggered) & "ms.");
-            Leg (Selected_Leg) := True;
-            delay until Next_Cycle + Ada.Real_Time.Milliseconds (MS_Triggered);
-            Leg (Selected_Leg) := False;
-         end;
+            declare
+               Selected_Leg : constant Legs_Index    :=
+                                Random_Leg.Random (Gen => Legs_G);
+               MS_Triggered : constant Sensor_Glitch :=
+                                Random_Time.Random (Time_G);
+            begin
+               Ada.Text_IO.Put_Line ("Landing leg"
+                                     & Legs_Index'Image (Selected_Leg)
+                                     & " triggered for"
+                                     & Sensor_Glitch'Image (MS_Triggered)
+                                     & " ms.");
+               Leg (Selected_Leg) := Touched_Down;
+               delay until
+                 Next_Cycle + Ada.Real_Time.Milliseconds (MS_Triggered);
+               Leg (Selected_Leg) := In_Flight;
+            end;
 
-         Next_Cycle := Next_Cycle + Ada.Real_Time.Seconds (1);
+            Next_Cycle := Next_Cycle + Ada.Real_Time.Seconds (1);
+         end select;
       end loop;
    end Simulate_Landing_Legs;
 
-   function Read_State (Index : in Legs_Index) return Boolean is
+   function Read_State (Index : in Legs_Index) return Leg_State is
+     (Leg (Index));
+
+   procedure Shutdown is
    begin
-      return Leg (Index);
-   end Read_State;
+      Simulate_Landing_Legs.Shutdown;
+   end Shutdown;
 
 end Landing_Legs;
