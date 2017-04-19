@@ -1,7 +1,10 @@
-with Ada.Text_IO;
+--pragma Profile (Ravenscar);
+--pragma Partition_Elaboration_Policy (Sequential);
+
+with Global;
 with Thrusters;
 
-package body Touchdown_Monitor is
+package body Touchdown_Monitor with SPARK_Mode => Off is
 
    use type Ada.Real_Time.Time, Landing_Legs.Leg_State;
 
@@ -49,9 +52,8 @@ package body Touchdown_Monitor is
                   Leg := Leg_Index;
                end Start;
 
-               Ada.Text_IO.Put_Line ("Monitoring for leg"
-                                     & Landing_Legs.Legs_Index'Image (Leg)
-                                     & " started.");
+               Global.Log ("Monitoring for leg " &
+                             Landing_Legs.Legs_Index'Image (Leg) & " started.");
 
                Monitor_State := Started;
                Indicator     := (State  => Landing_Legs.In_Flight,
@@ -63,9 +65,8 @@ package body Touchdown_Monitor is
             when Monitor_State = Started =>
                accept Enable;
 
-               Ada.Text_IO.Put_Line ("Monitoring for leg"
-                                     & Landing_Legs.Legs_Index'Image (Leg)
-                                     & " enabled.");
+               Global.Log ("Monitoring for leg " &
+                             Landing_Legs.Legs_Index'Image (Leg) & " enabled.");
 
                if
                      Last_Indicator    = Landing_Legs.Touched_Down
@@ -96,7 +97,7 @@ package body Touchdown_Monitor is
 
                -- Set indicator state only once.
                if
-                 Event_Enabled and
+                 --Event_Enabled and
                  Last_Indicator    = Landing_Legs.Touched_Down and
                  Current_Indicator = Landing_Legs.Touched_Down
                then

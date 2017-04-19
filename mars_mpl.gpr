@@ -7,5 +7,17 @@ project Mars_Mpl is
       for Default_Switches ("ada") use ("-gnatw.e.L.Y", "-O3", "-gnat12", "-gnato", "-g");
    end Compiler;
 
+   package Prove is
+      for Switches use ("-j2");
+   end Prove;
+
+   package Builder is
+      for Default_Switches ("ada") use ("-j2", "-k", "-s");
+   end Builder;
+
+   package Linker is
+      for Default_Switches ("ada") use ("-g");
+   end Linker;
+
 end Mars_Mpl;
 

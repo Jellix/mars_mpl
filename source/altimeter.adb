@@ -1,55 +1,95 @@
-package body Altimeter is
+with Global;
+
+package body Altimeter with SPARK_Mode => Off is
 
    use type Ada.Real_Time.Time;
 
-   protected Altimeter_Store is
-      procedure Set_Height (New_Height : Height_Above_Ground);
-      function Get_Height return Height_Above_Ground;
+   protected Velocity_Store is
+      procedure Set (New_Value : Velocity);
+      function Get return Velocity;
    private
-      Height : Height_Above_Ground := Height_Above_Ground'Last;
+      Value : Velocity := Velocity'First;
+   end Velocity_Store;
+
+   protected body Velocity_Store is
+      procedure Set (New_Value : Velocity) is
+      begin
+         Value := New_Value;
+      end Set;
+
+      function Get return Velocity is
+      begin
+         return Value;
+      end Get;
+   end Velocity_Store;
+
+   protected Altimeter_Store is
+      procedure Set (New_Value : Height);
+      function Get return Height;
+   private
+      Value : Height := Height'Last;
    end Altimeter_Store;
 
    protected body Altimeter_Store is
-      procedure Set_Height (New_Height : Height_Above_Ground) is
+      procedure Set (New_Value : Height) is
       begin
-         Height := New_Height;
-      end Set_Height;
+         Value := New_Value;
+      end Set;
 
-      function Get_Height return Height_Above_Ground is
+      function Get return Height is
       begin
-         return Height;
-      end Get_Height;
-   end;
+         return Value;
+      end Get;
+   end Altimeter_Store;
 
    task Radar_Simulator;
    task body Radar_Simulator is
-      Base_Height : constant Height_Above_Ground := 1000;
-      Start_Time  : constant Ada.Real_Time.Time  := Ada.Real_Time.Clock;
-
-      Next_Cycle  : Ada.Real_Time.Time := Start_Time;
-      Measurement : Height_Above_Ground;
+      Next_Cycle   : Ada.Real_Time.Time := Global.Start_Time;
+      Measurement  : Height;
    begin
       Measurement := Base_Height;
 
-      while Measurement > 0 loop
-         Measurement := Base_Height - Height_Above_Ground (20 * Ada.Real_Time.To_Duration (Next_Cycle - Start_Time));
-         Altimeter_Store.Set_Height (Measurement);
+      while Measurement > 0.0 loop
+         declare
+            T : constant Duration :=
+                  Ada.Real_Time.To_Duration (Next_Cycle - Global.Start_Time);
+            Distance : constant Height :=
+                         Height
+                           (0.5 * Float (Acceleration) * Float (T) * Float (T));
+            Speed : constant Velocity := Velocity (Acceleration * T);
+         begin
+            Measurement := Base_Height - Height'Min (Base_Height, Distance);
+
+            Altimeter_Store.Set (Measurement);
+            Velocity_Store.Set (Base_Velocity + Speed);
+         end;
 
          delay until Next_Cycle;
          Next_Cycle := Next_Cycle + Cycle;
       end loop;
 
-      Altimeter_Store.Set_Height (0);
+      Altimeter_Store.Set (0.0);
+      Velocity_Store.Set (0.0);
    end Radar_Simulator;
 
-   function Current_Height return Height_Above_Ground is
+   function Current_Height return Height is
    begin
-      return Altimeter_Store.Get_Height;
+      return Altimeter_Store.Get;
    end Current_Height;
 
-   function Image (H : Height_Above_Ground) return String is
+   function Current_Velocity return Velocity is
    begin
-      return Height_Above_Ground'Image (H) & " m";
+      return Velocity_Store.Get;
+   end Current_Velocity;
+
+   function Image (H : Height) return String is
+   begin
+      return Height'Image (H) & " m";
+   end Image;
+
+   function Image (V : Velocity) return String is
+   begin
+      return Velocity'Image (V) & " m/s (" & Velocity'Image (V * 3.6) & " km/h)";
    end Image;
 
 end Altimeter;

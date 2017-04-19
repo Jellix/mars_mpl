@@ -1,7 +1,7 @@
 with Ada.Real_Time;
 with Landing_Legs;
 
-package Touchdown_Monitor is
+package Touchdown_Monitor with SPARK_Mode is
 
    Cycle : constant Ada.Real_Time.Time_Span := Ada.Real_Time.Milliseconds (10);
    -- Monitoring cycle
