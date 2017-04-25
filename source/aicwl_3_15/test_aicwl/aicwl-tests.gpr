@@ -1,0 +1,24 @@
+with "../aicwl.gpr";
+with "../aicwl-editor.gpr";
+
+project AICWL.Tests is
+
+   for Exec_Dir use ".";
+   for Main use ("test_aicwl.adb");
+   for Source_Files use
+       (  "test_aicwl.adb",
+          "test_aicwl-test_io.adb",
+          "test_aicwl-test_ring_buffer.adb",
+          "test_clock.adb",
+          "test_clock.ads",
+          "test_generator.adb",
+          "test_generator.ads"
+       );
+
+   package Compiler renames AICWL.Compiler;
+   package Binder   renames AICWL.Binder;
+   package Builder  renames AICWL.Builder;
+   package Linker   renames AICWL.Linker;
+
+end AICWL.Tests;
+

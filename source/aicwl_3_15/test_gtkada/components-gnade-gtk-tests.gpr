@@ -1,0 +1,30 @@
+with "../components-gnade-gtk.gpr";
+
+project Components.GNADE.GTK.Tests is
+
+   for Source_Files use ("test_gtk_persistent_directory_browser.adb");
+   for Main use ("test_gtk_persistent_directory_browser.adb");
+   for Exec_Dir use ".";
+
+   package Binder is
+      for Default_Switches ("ada") use
+         Components.GNADE.GTK.Binder'Default_Switches ("ada");
+   end Binder;
+
+   package Builder is
+      for Default_Switches ("ada") use
+         Components.GNADE.GTK.Builder'Default_Switches ("ada");
+   end Builder;
+
+   package Compiler is
+      for Default_Switches ("ada") use
+         Components.GNADE.GTK.Compiler'Default_Switches ("ada");
+   end Compiler;
+
+   package Linker is
+      for Default_Switches ("ada") use
+         Components.GNADE.GTK.Linker'Default_Switches ("ada");
+   end Linker;
+
+end Components.GNADE.GTK.Tests;
+

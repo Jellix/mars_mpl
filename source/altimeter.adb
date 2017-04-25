@@ -1,48 +1,56 @@
 with Global;
 
-package body Altimeter with SPARK_Mode => Off is
+package body Altimeter is
 
    use type Ada.Real_Time.Time;
 
-   protected Velocity_Store is
-      procedure Set (New_Value : Velocity);
-      function Get return Velocity;
-   private
-      Value : Velocity := Velocity'First;
-   end Velocity_Store;
+   generic
+      type Stored_Type is private;
+      Initial_Value : Stored_Type;
+   package Store is
+      procedure Set (New_Value : Stored_Type);
+      function Get return Stored_Type;
+   end Store;
 
-   protected body Velocity_Store is
-      procedure Set (New_Value : Velocity) is
-      begin
-         Value := New_Value;
-      end Set;
+   package body Store is
 
-      function Get return Velocity is
+      protected Protected_Store is
+         procedure Set_Value (New_Value : Stored_Type);
+         function Get_Value return Stored_Type;
+      private
+         Value : Stored_Type := Initial_Value;
+      end Protected_Store;
+
+      protected body Protected_Store is
+         function Get_Value return Stored_Type is
+         begin
+            return Value;
+         end Get_Value;
+
+         procedure Set_Value (New_Value : Stored_Type) is
+         begin
+            Value := New_Value;
+         end Set_Value;
+      end Protected_Store;
+
+      function Get return Stored_Type is
       begin
-         return Value;
+         return Protected_Store.Get_Value;
       end Get;
-   end Velocity_Store;
 
-   protected Altimeter_Store is
-      procedure Set (New_Value : Height);
-      function Get return Height;
-   private
-      Value : Height := Height'Last;
-   end Altimeter_Store;
-
-   protected body Altimeter_Store is
-      procedure Set (New_Value : Height) is
+      procedure Set (New_Value : Stored_Type) is
       begin
-         Value := New_Value;
+         Protected_Store.Set_Value (New_Value => New_Value);
       end Set;
+   end Store;
 
-      function Get return Height is
-      begin
-         return Value;
-      end Get;
-   end Altimeter_Store;
+   package Altimeter_Store is new Store (Stored_Type   => Height,
+                                         Initial_Value => Height'Last);
+   package Velocity_Store  is new Store (Stored_Type   => Velocity,
+                                         Initial_Value => Velocity'First);
 
    task Radar_Simulator;
+
    task body Radar_Simulator is
       Next_Cycle   : Ada.Real_Time.Time := Global.Start_Time;
       Measurement  : Height;
@@ -52,34 +60,35 @@ package body Altimeter with SPARK_Mode => Off is
       while Measurement > 0.0 loop
          declare
             T : constant Duration :=
-                  Ada.Real_Time.To_Duration (Next_Cycle - Global.Start_Time);
+                  Ada.Real_Time.To_Duration
+                    (TS => Next_Cycle - Global.Start_Time);
             Distance : constant Height :=
                          Height
                            (0.5 * Float (Acceleration) * Float (T) * Float (T));
-            Speed : constant Velocity := Velocity (Acceleration * T);
+            Speed : constant Velocity := Velocity (Float (Acceleration) * Float (T));
          begin
             Measurement := Base_Height - Height'Min (Base_Height, Distance);
 
-            Altimeter_Store.Set (Measurement);
-            Velocity_Store.Set (Base_Velocity + Speed);
+            Altimeter_Store.Set (New_Value => Measurement);
+            Velocity_Store.Set (New_Value => Base_Velocity + Speed);
          end;
 
          delay until Next_Cycle;
          Next_Cycle := Next_Cycle + Cycle;
       end loop;
 
-      Altimeter_Store.Set (0.0);
-      Velocity_Store.Set (0.0);
+      Altimeter_Store.Set (New_Value => 0.0);
+      Velocity_Store.Set (New_Value => 0.0);
    end Radar_Simulator;
 
-   function Current_Height return Height is
+   procedure Current_Height (H : out Height) is
    begin
-      return Altimeter_Store.Get;
+      H := Altimeter_Store.Get;
    end Current_Height;
 
-   function Current_Velocity return Velocity is
+   procedure Current_Velocity (V : out Velocity) is
    begin
-      return Velocity_Store.Get;
+      V := Velocity_Store.Get;
    end Current_Velocity;
 
    function Image (H : Height) return String is

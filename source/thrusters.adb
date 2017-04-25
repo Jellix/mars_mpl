@@ -1,10 +1,7 @@
---pragma Profile (Ravenscar);
---pragma Partition_Elaboration_Policy (Sequential);
-
 with Altimeter;
 with Global;
 
-package body Thrusters with SPARK_Mode is
+package body Thrusters is
 
    protected Thruster is
       procedure Disable (Old_Disabled : out Boolean);
@@ -32,17 +29,26 @@ package body Thrusters with SPARK_Mode is
       Thruster.Disable (Old_Disabled => Old_Disabled);
 
       if Old_Disabled then
-         Global.Log ("Signal from leg " & Landing_Legs.Legs_Index'Image (Source) & ".");
+         Global.Log (Message =>
+                       "Signal from leg " &
+                       Landing_Legs.Legs_Index'Image (Source) & ".");
       else
-         Global.Log ("Thrusters have been disabled due to signal from leg " &
-                       Landing_Legs.Legs_Index'Image (Source) & ", at height" &
-                       Altimeter.Image (Altimeter.Current_Height) & ".");
+         declare
+            Current_Height : Altimeter.Height;
+         begin
+            Altimeter.Current_Height (H => Current_Height);
+            Global.Log
+              (Message =>
+                 "Thrusters have been disabled due to signal from leg " &
+                 Landing_Legs.Legs_Index'Image (Source) & ", at height" &
+                 Altimeter.Image (Current_Height) & ".");
+         end;
       end if;
    end Disable;
 
-   function Disabled return Boolean with SPARK_Mode => Off is
+   procedure Get_State (Disabled : out Boolean) is
    begin
-      return Thruster.Is_Disabled;
-   end Disabled;
+      Disabled := Thruster.Is_Disabled;
+   end Get_State;
 
 end Thrusters;

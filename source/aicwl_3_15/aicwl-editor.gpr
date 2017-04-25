@@ -1,0 +1,16 @@
+with "aicwl.gpr";
+
+project AICWL.Editor is
+
+   for Source_Dirs use (".");
+   for Source_Files use
+       (  "gtk-layered_editor.adb",
+          "gtk-layered_editor.ads"
+       );
+
+   package Binder   renames AICWL.Binder;
+   package Builder  renames AICWL.Builder;
+   package Compiler renames AICWL.Compiler;
+   package Linker   renames AICWL.Linker;
+
+end AICWL.Editor;

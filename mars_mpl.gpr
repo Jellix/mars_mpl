@@ -1,10 +1,31 @@
+with "GtkAda";
+
 project Mars_Mpl is
 
    for Main use ("simulator.adb");
-   for Source_Dirs use (".", "source");
+   type Build_Kind is
+      ("static", "relocatable");
+   Library_Type : Build_Kind := external ("LIBRARY_TYPE");
+
+   case Library_Type is
+
+      when "static" =>
+         for Source_Dirs use (".", "source", "source/aicwl_3_15");
+
+      when "relocatable" =>
+         for Source_Dirs use (".", "source");
+   end case;
 
    package Compiler is
-      for Default_Switches ("ada") use ("-gnatw.e.L.Y", "-O3", "-gnat12", "-gnato", "-g");
+
+      case Library_Type is
+
+         when "static" =>
+            for Default_Switches ("ada") use ("-gnaty3aAbBCdefhiklnoOprsStux", "-gnatw.e.Y", "-O3", "-gnat12", "-gnato", "-g");
+
+         when "relocatable" =>
+            for Default_Switches ("ada") use ("-gnatw.e.L.Y", "-O3", "-gnat12", "-gnato", "-g");
+      end case;
    end Compiler;
 
    package Prove is

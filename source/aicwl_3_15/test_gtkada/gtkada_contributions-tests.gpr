@@ -1,0 +1,52 @@
+with "../gtkada_contributions.gpr";
+
+project Gtkada_Contributions.Tests is
+
+   for Source_Files use
+   (  "gtk-tree_model-custom_store.adb",
+      "gtk-tree_model-custom_store.ads",
+      "test_gtk_asynchronous_spawn.adb",
+      "test_gtk_button.adb",
+      "test_gtk_color.adb",
+	  "test_gtk_columned_store.adb",
+      "test_gtk_controlled_string_list.adb",
+      "test_gtk_content_type.adb",
+      "test_gtk_enum_combo_box.adb",
+      "test_gtk_custom_button.ads",
+      "test_gtk_custom_store.adb",
+	  "test_gtk_extension_store.adb",
+      "test_gtk_missed.adb",
+      "test_gtk_fixed.adb",
+      "test_gtk_fixed_handlers.ads",
+      "test_gtk_p_enum.ads",
+      "test_gtk_recent_manager.adb", 
+      "test_gtk_spawn.adb",
+      "test_gtk_tasking.adb",
+      "test_gtk_tracing.adb"
+   );
+   for Main use
+   (  "test_gtk_asynchronous_spawn.adb",
+      "test_gtk_button.adb",
+      "test_gtk_color.adb",
+	  "test_gtk_columned_store.adb",
+      "test_gtk_controlled_string_list.adb",
+      "test_gtk_content_type.adb",
+      "test_gtk_custom_store.adb",
+      "test_gtk_enum_combo_box.adb",
+	  "test_gtk_extension_store.adb",
+	  "test_gtk_columned_store.adb",
+      "test_gtk_missed.adb",
+      "test_gtk_fixed.adb",
+      "test_gtk_recent_manager.adb", 
+      "test_gtk_spawn.adb",
+      "test_gtk_tasking.adb",
+      "test_gtk_tracing.adb"
+   );
+
+   package Compiler renames Gtkada_Contributions.Compiler;
+   package Binder   renames Gtkada_Contributions.Binder;
+   package Builder  renames Gtkada_Contributions.Builder;
+   package Linker   renames Gtkada_Contributions.Linker;
+
+end Gtkada_Contributions.Tests;
+

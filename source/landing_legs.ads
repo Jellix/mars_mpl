@@ -1,7 +1,11 @@
-package Landing_Legs with SPARK_Mode is
+-- pragma Profile (Ravenscar);
+-- pragma Partition_Elaboration_Policy (Sequential);
+
+package Landing_Legs is
 
    type Legs_Index is (North, East, South, West);
    type Leg_State  is (In_Flight, Touched_Down);
+   type All_Legs_State is array (Legs_Index) of Leg_State;
 
    IO_Error : exception;
 
@@ -10,7 +14,9 @@ package Landing_Legs with SPARK_Mode is
 
    procedure Deploy;
    procedure Touchdown;
-   function Read_State (Index : in Legs_Index) return Leg_State;
+   procedure Read_State (Index : in     Legs_Index;
+                         State :    out Leg_State);
+   procedure Read_State (State : out All_Legs_State);
    procedure Shutdown;
 
 end Landing_Legs;

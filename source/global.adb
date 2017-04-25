@@ -1,37 +1,27 @@
 with Ada.Text_IO;
 
-package body Global with SPARK_Mode => Off is
+package body Global is
 
    use type Ada.Real_Time.Time;
 
-   protected Semaphore is
-      entry Seize;
-      entry Release;
-   private
-      Seized : Boolean := False;
-   end Semaphore;
+   protected Logger is
+      procedure Write (Msg : in String);
+   end Logger;
 
-   protected body Semaphore is
-      entry Seize when not Seized is
+   protected body Logger is
+      procedure Write (Msg : in String) is
       begin
-         Seized := True;
-      end Seize;
-
-      entry Release when Seized is
-      begin
-         Seized := False;
-      end Release;
-   end Semaphore;
+         Ada.Text_IO.Put_Line (Msg);
+      end Write;
+   end Logger;
 
    procedure Log (Message : String) is
       Elapsed_Time : constant Duration :=
                        Ada.Real_Time.To_Duration
-                         (Ada.Real_Time.Clock - Start_Time);
+                         (TS => Ada.Real_Time.Clock - Start_Time);
    begin
-      Semaphore.Seize;
-      Ada.Text_IO.Put_Line ("[" & Duration'Image (Elapsed_Time) & " ] " &
-                              Message);
-      Semaphore.Release;
+      Logger.Write
+        (Msg => "[" & Duration'Image (Elapsed_Time) & " ] " & Message);
    end Log;
 
 end Global;

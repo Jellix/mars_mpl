@@ -1,0 +1,14 @@
+with "../../aicwl.gpr";
+
+project Oscilloscope_Plotter is
+
+   for Exec_Dir use ".";
+   for Main use ("oscilloscope_plotter.adb");
+   for Source_Files use ("oscilloscope_plotter.adb");
+   package Compiler renames AICWL.Compiler;
+   package Binder   renames AICWL.Binder;
+   package Builder  renames AICWL.Builder;
+   package Linker   renames AICWL.Linker;
+
+end Oscilloscope_Plotter;
+

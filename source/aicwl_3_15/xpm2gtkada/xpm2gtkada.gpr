@@ -1,0 +1,10 @@
+with "../../components/xpm/xpm_parser.gpr";
+
+project XPM2GTKAda is
+
+   for Main use ("xpm2gtkada.adb");
+   for Source_Files use ("xpm2gtkada.adb");
+   for Exec_Dir use ".";
+
+end XPM2GTKAda;
+

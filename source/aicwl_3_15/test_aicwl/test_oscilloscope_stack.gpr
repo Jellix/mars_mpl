@@ -1,0 +1,18 @@
+with "../aicwl.gpr";
+
+project Test_Oscilloscope_Stack is
+
+   for Exec_Dir use ".";
+   for Main use ("test_oscilloscope_stack.adb");
+   for Source_Files use
+       (  "test_oscilloscope_stack.adb",
+          "test_generator.adb",
+          "test_generator.ads"
+       );
+   package Compiler renames AICWL.Compiler;
+   package Binder   renames AICWL.Binder;
+   package Builder  renames AICWL.Builder;
+   package Linker   renames AICWL.Linker;
+
+end Test_Oscilloscope_Stack;
+

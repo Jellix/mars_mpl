@@ -1,0 +1,37 @@
+with "gtkada_contributions.gpr";
+
+project Gtkada_Contributions.Source_View is
+
+   for Source_Dirs use (".");
+   for Source_Files use
+       (  "gtk-source_buffer.adb",
+          "gtk-source_buffer.ads",
+          "gtk-source_language.adb",
+          "gtk-source_language.ads",
+          "gtk-source_language_manager.adb",
+          "gtk-source_language_manager.ads",
+          "gtk-source_mark.adb",
+          "gtk-source_mark.ads",
+		  "gtk-source_mark_attributes.adb",
+		  "gtk-source_mark_attributes.ads",
+          "gtk-source_style.adb",
+          "gtk-source_style.ads",
+          "gtk-source_style_scheme.adb",
+          "gtk-source_style_scheme.ads",
+          "gtk-source_style_scheme_manager.adb",
+          "gtk-source_style_scheme_manager.ads",
+          "gtk-source_view.adb",
+          "gtk-source_view.ads"
+       );
+    
+   package Binder   renames Gtkada_Contributions.Binder;
+   package Builder  renames Gtkada_Contributions.Builder;
+   package Compiler renames Gtkada_Contributions.Compiler;
+   
+   package Linker is
+      for Default_Switches ("ada")
+         use Gtkada_Contributions.Linker'Default_Switches ("ada") & ("-lgtksourceview-3.0");
+   end Linker;
+
+end Gtkada_Contributions.Source_View;
+

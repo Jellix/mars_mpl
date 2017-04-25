@@ -1,0 +1,30 @@
+with "../gtkada_contributions-source_view.gpr";
+
+project Gtkada_Contributions.Source_View.Tests is
+
+   for Source_Files use ("test_gtk_source_view.adb");
+   for Main use ("test_gtk_source_view.adb");
+   for Exec_Dir use ".";
+
+   package Binder is
+      for Default_Switches ("ada") use
+         Gtkada_Contributions.Source_View.Binder'Default_Switches ("ada");
+   end Binder;
+
+   package Builder is
+      for Default_Switches ("ada") use
+         Gtkada_Contributions.Source_View.Builder'Default_Switches ("ada");
+   end Builder;
+
+   package Compiler is
+      for Default_Switches ("ada") use
+         Gtkada_Contributions.Source_View.Compiler'Default_Switches ("ada");
+   end Compiler;
+
+   package Linker is
+      for Default_Switches ("ada") use
+         Gtkada_Contributions.Source_View.Linker'Default_Switches ("ada");
+   end Linker;
+
+end Gtkada_Contributions.Source_View.Tests;
+

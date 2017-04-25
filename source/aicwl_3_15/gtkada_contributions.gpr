@@ -1,0 +1,156 @@
+with "gtkada.gpr";
+
+project Gtkada_Contributions is
+
+   type Development_Type is ("Debug", "Release");
+   Development : Development_Type := external ("Development", "Debug");
+
+   type Legacy_Type is ("Ada2005", "Ada2012");
+   Legacy : Legacy_Type := external ("Legacy", "Ada2012");
+
+   for Source_Dirs use (".");
+   for Source_Files use
+       (  "gdk-color-ihls.adb",
+          "gdk-color-ihls.ads",
+          "gdk-pixbuf-conversions.ads",
+          "gdk-pixbuf-image.adb",
+          "gdk-pixbuf-image.ads",
+          "gio.ads",
+          "gio-content_type.adb",
+          "gio-content_type.ads",
+          "gio-drive.adb",
+          "gio-drive.ads",
+          "gio-mount.adb",
+          "gio-mount.ads",
+          "gio-volume.adb",
+          "gio-volume.ads",
+          "gio-volume_monitor.adb",
+          "gio-volume_monitor.ads",
+          "glib-chars_ptr_vectors.adb",
+          "glib-chars_ptr_vectors.ads",
+          "glib-object-checked_destroy.adb",
+          "glib-object-checked_destroy.ads",
+          "glib-object-ref_count.adb",
+          "glib-object-ref_count.ads",
+          "glib-object-strong_references.adb",
+          "glib-object-strong_references.ads",
+          "glib-object-weak_references.adb",
+          "glib-object-weak_references.ads",
+          "glib-properties-icon_size.ads",
+          "glib-properties-relief_style.ads",
+          "glib-spawn.adb",
+          "glib-spawn.ads",
+          "glib-spawn-asynchronous.adb",
+          "glib-spawn-asynchronous.ads",
+          "glib-spawn-text_bufferred.adb",
+          "glib-spawn-text_bufferred.ads",
+          "glib-values-handling.adb",
+          "glib-values-handling.ads",
+          "glib-wrappers.adb",
+          "glib-wrappers.ads",
+          "gtk-abstract_browser.adb",
+          "gtk-abstract_browser.ads",
+          "gtk-cell_renderer-abstract_renderer.adb",
+          "gtk-cell_renderer-abstract_renderer.ads",
+          "gtk-cell_renderer_fixed.adb",
+          "gtk-cell_renderer_fixed.ads",
+          "gtk-enums-string_lists.adb",
+          "gtk-enums-string_lists.ads",
+          "gtk-generic_enum_combo_box.adb",
+          "gtk-generic_enum_combo_box.ads",
+          "gtk-generic_style_button.adb",
+          "gtk-generic_style_button.ads",
+          "gtk-handlers-references.adb",
+          "gtk-handlers-references.ads",
+          "gtk-handlers-generic_callback.adb",
+          "gtk-handlers-generic_callback.ads",
+          "gtk-image_button.adb",
+          "gtk-image_button.ads",
+          "gtk-main-router-gnat_stack.adb",
+          "gtk-main-router-gnat_stack.ads",
+          "gtk-main-router.adb",
+          "gtk-main-router.ads",
+          "gtk-missed.adb",
+          "gtk-missed.ads",
+          "gtk-recent_manager_alt.adb",
+          "gtk-recent_manager_alt.ads",
+          "gtk-recent_manager_keys.adb",
+          "gtk-recent_manager_keys.ads",
+          "gtk-tree_model-abstract_store.adb",
+          "gtk-tree_model-abstract_store.ads",
+          "gtk-tree_model-columned_store.adb",
+          "gtk-tree_model-columned_store.ads",
+          "gtk-tree_model-extension_store.adb",
+          "gtk-tree_model-extension_store.ads",
+          "gtk-tree_model-generic_sort.adb",
+          "gtk-tree_model-generic_sort.ads",
+          "gtk-widget-styles-css_store.adb",
+          "gtk-widget-styles-css_store.ads",
+          "gtk-widget-styles-generic_enumeration.adb",
+          "gtk-widget-styles-generic_enumeration.ads",
+          "gtk-widget-styles-icon_size.ads",
+          "gtk-widget-styles-relief_style.ads",
+          "gtk-widget-styles-store.adb",
+          "gtk-widget-styles-store.ads",
+          "gtk-widget-styles.adb",
+          "gtk-widget-styles.ads"
+       );
+
+   package Binder is
+      case Development is
+         when "Debug" =>
+            for Default_Switches ("ada") use ("-E");
+         when "Release" =>
+            for Default_Switches ("ada") use ();
+      end case;
+   end Binder;
+
+   package Builder is
+      case Development is
+         when "Debug" =>
+            for Default_Switches ("ada") use ("-g");
+         when "Release" =>
+            for Default_Switches ("ada") use ("-s");
+      end case;
+   end Builder;
+
+   package Compiler is
+      case Development is
+         when "Debug" =>
+            case Legacy is
+               when "Ada2012" =>
+                  for Default_Switches ("ada") use
+                     ("-gnatwcikmoprvz.c.p.t.w.x", "-gnato", "-gnatVa", "-gnatf", "-g", "-fstack-check", "-gnat12");
+               when "Ada2005" =>
+                  for Default_Switches ("ada") use
+                     ("-gnatwcikmoprvz.c.p.t.w.x", "-gnato", "-gnatVa", "-gnatf", "-g", "-fstack-check", "-gnat05");
+            end case;
+         when "Release" =>
+            case Legacy is
+               when "Ada2012" =>
+                  for Default_Switches ("ada") use
+                     ("-gnatwcikmoprvz.c.p.t.w.x", "-gnatp", "-gnatVa", "-gnatf", "-O2", "-gnatn", "-gnat12");
+               when "Ada2005" =>
+                  for Default_Switches ("ada") use
+                     ("-gnatwcikmoprvz.c.p.t.w.x", "-gnatp", "-gnatVa", "-gnatf", "-O2", "-gnatn", "-gnat05");
+            end case;
+      end case;
+   end Compiler;
+
+   package Linker is
+      case Development is
+         when "Debug" =>
+            for Default_Switches ("ada") use Gtkada.Linker'Default_Switches ("ada") &
+                                             "-g" &
+                                             "-lgio-2.0" &
+                                             "-mwindows";
+         when "Release" =>
+            for Default_Switches ("ada") use Gtkada.Linker'Default_Switches ("ada") &
+                                             "-O2" &
+                                             "-lgio-2.0" &
+                                             "-mwindows";
+      end case;
+   end Linker;
+
+end Gtkada_Contributions;
+

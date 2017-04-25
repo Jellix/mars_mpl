@@ -1,0 +1,29 @@
+with "../components-gtk.gpr";
+
+project Components.GTK.Tests is
+
+   for Source_Files use ("test_gtk_directory_browser.adb");
+   for Main use ("test_gtk_directory_browser.adb");
+
+   package Binder is
+      for Default_Switches ("ada") use
+         Components.GTK.Binder'Default_Switches ("ada");
+   end Binder;
+
+   package Builder is
+      for Default_Switches ("ada") use
+         Components.GTK.Builder'Default_Switches ("ada");
+   end Builder;
+
+   package Compiler is
+      for Default_Switches ("ada") use
+         Components.GTK.Compiler'Default_Switches ("ada");
+   end Compiler;
+
+   package Linker is
+      for Default_Switches ("ada") use
+         Components.GTK.Linker'Default_Switches ("ada");
+   end Linker;
+
+end Components.GTK.Tests;
+
