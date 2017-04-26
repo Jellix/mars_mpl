@@ -23,19 +23,17 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Ada.Exceptions;         use Ada.Exceptions;
-with Glib.Messages;          use Glib.Messages;
-with Glib.Object;            use Glib.Object;
-with Gtk.Layered;            use Gtk.Layered;
-with Gtk.Layered.Stream_IO;  use Gtk.Layered.Stream_IO;
-with Gtk.Missed;             use Gtk.Missed;
-with Gtkada.Types;           use Gtkada.Types;
-with Interfaces.C;           use Interfaces.C;
-with Interfaces.C.Strings;   use Interfaces.C.Strings;
-with Pango.Layout;           use Pango.Layout;
-with System;                 use System;
+with Ada.Exceptions;
+with Cairo.Font_Face;
+with Glib.Messages;
+with Glib.Object;
+with Gtk.Layered.Stream_IO;
+with Gtk.Missed;
+with Gtkada.Types;
+with Pango.Layout;
+with System;
 
 with Ada.IO_Exceptions;
 with Ada.Unchecked_Deallocation;
@@ -43,22 +41,19 @@ with Glib.Error;
 
 package body Pango.Cairo.Fonts is
 
-   function Where (Name : String) return String is
-   begin
-      return " in Pango.Cairo.Fonts." & Name;
-   end Where;
+   function Where (Name : String) return String;
 
-   procedure Adjust (Handle : in out Pango_Font_Description_Handle) is
+   overriding procedure Adjust (Handle : in out Pango_Font_Description_Handle) is
    begin
       if Handle.Ptr /= null then
-         Handle.Ptr.Count := Handle.Ptr.Count + 1;
+         Handle.Ptr.all.Count := Handle.Ptr.all.Count + 1;
       end if;
    end Adjust;
 
-   procedure Adjust (Handle : in out Cairo_Font_Face_Handle) is
+   overriding procedure Adjust (Handle : in out Cairo_Font_Face_Handle) is
    begin
       if Handle.Face /= Null_Font_Face then
-         Handle.Face := Reference (Handle.Face);
+         Handle.Face := Standard.Cairo.Font_Face.Reference (Handle.Face);
       end if;
    end Adjust;
 
@@ -69,142 +64,137 @@ package body Pango.Cairo.Fonts is
       if Font.Face = Null_Font_Face then
          raise Status_Error with "Null font";
       else
-         Error := Status (Font.Face);
+         Error := Standard.Cairo.Font_Face.Status (Font.Face);
          if Error /= Cairo_Status_Success then
-            raise Status_Error with To_String (Error);
+            raise Status_Error with Gtk.Missed.To_String (Error);
          end if;
       end if;
    end Check;
 
+   procedure Check (Context : Cairo_Context);
    procedure Check (Context : Cairo_Context) is
       use Ada.IO_Exceptions;
       Error : Cairo_Status;
    begin
       Error := Status (Context);
       if Error /= Cairo_Status_Success then
-         raise Status_Error with To_String (Error);
+         raise Status_Error with Gtk.Missed.To_String (Error);
       end if;
    end Check;
 
-   function Create_Layout (Context : Cairo_Context)
-      return Pango_Layout is
-      function Internal (Context : Cairo_Context) return Address;
+   function Create_Layout (Context : Cairo_Context) return Pango_Layout;
+   function Create_Layout (Context : Cairo_Context) return Pango_Layout
+   is
+      function Internal (Context : Cairo_Context) return System.Address;
       pragma Import (C, Internal, "pango_cairo_create_layout");
       Stub : Pango_Layout_Record;
    begin
-     return Pango_Layout (Get_User_Data (Internal (Context), Stub));
+      return Pango_Layout (Glib.Object.Get_User_Data (Internal (Context), Stub));
    end Create_Layout;
 
-   function Create_Markup_Layout
-            (  Handle  : Pango_Font_Description_Handle;
-               Context : Cairo_Context;
-               Text    : UTF8_String
-            )  return Pango_Layout is
-      Description : constant Pango_Font_Description :=
-                    Handle.Ptr.Description;
+   function Create_Markup_Layout (Handle  : Pango_Font_Description_Handle;
+                                  Context : Cairo_Context;
+                                  Text    : UTF8_String) return Pango_Layout
+   is
+      Description : constant Pango.Font.Pango_Font_Description :=
+                    Handle.Ptr.all.Description;
       Layout : constant Pango_Layout := Create_Layout (Context);
    begin
-      Layout.Set_Font_Description (Description);
-      Layout.Set_Markup (Text);
+      Layout.all.Set_Font_Description (Description);
+      Layout.all.Set_Markup (Text);
       return Layout;
    end Create_Markup_Layout;
 
    function Create_Pango
-            (  Family  : String;
-               Style   : Pango.Enums.Style   := Pango_Style_Normal;
-               Variant : Pango.Enums.Variant := Pango_Variant_Normal;
-               Weight  : Pango.Enums.Weight  := Pango_Weight_Normal;
-               Stretch : Pango.Enums.Stretch := Pango_Stretch_Normal;
-               Size    : Gint                := 12
-            )  return Pango_Cairo_Font is
+     (Family  : String;
+      Style   : Pango.Enums.Style   := Pango.Enums.Pango_Style_Normal;
+      Variant : Pango.Enums.Variant := Pango.Enums.Pango_Variant_Normal;
+      Weight  : Pango.Enums.Weight  := Pango.Enums.Pango_Weight_Normal;
+      Stretch : Pango.Enums.Stretch := Pango.Enums.Pango_Stretch_Normal;
+      Size    : Gint                := 12) return Pango_Cairo_Font is
    begin
       return
-      (  Mode =>
-            Pango_Font,
+        (Mode => Pango_Font,
          Pango_Handle =>
-            Ref
-            (  To_Font_Description
-               (  Family_Name => Family,
-                  Style       => Style,
-                  Variant     => Variant,
-                  Weight      => Weight,
-                  Stretch     => Stretch,
-                  Size        => Size
-      )     )  );
+           Ref
+             (Pango.Font.To_Font_Description
+                  (Family_Name => Family,
+                   Style       => Style,
+                   Variant     => Variant,
+                   Weight      => Weight,
+                   Stretch     => Stretch,
+                   Size        => Size)));
    end Create_Pango;
 
    function Create_Pango_From_Description (Description : UTF8_String)
       return Pango_Cairo_Font is
    begin
       return
-      (  Mode         => Pango_Font,
-         Pango_Handle => Ref (From_String (Description))
-      );
+        (Mode         => Pango_Font,
+         Pango_Handle => Ref (Pango.Font.From_String (Description)));
    end Create_Pango_From_Description;
 
    function Create_Text_Layout
-            (  Handle  : Pango_Font_Description_Handle;
-               Context : Cairo_Context;
-               Text    : UTF8_String
-            )  return Pango_Layout is
-      Description : constant Pango_Font_Description :=
-                    Handle.Ptr.Description;
+     (Handle  : Pango_Font_Description_Handle;
+      Context : Cairo_Context;
+      Text    : UTF8_String) return Pango_Layout
+   is
+      Description : constant Pango.Font.Pango_Font_Description :=
+                    Handle.Ptr.all.Description;
       Layout : constant Pango_Layout := Create_Layout (Context);
    begin
-      Layout.Set_Font_Description (Description);
-      Layout.Set_Text (Text);
+      Layout.all.Set_Font_Description (Description);
+      Layout.all.Set_Text (Text);
       return Layout;
    end Create_Text_Layout;
 
    function Create_Toy
-            (  Family : UTF8_String;
-               Slant  : Cairo_Font_Slant  := Cairo_Font_Slant_Normal;
-               Weight : Cairo_Font_Weight := Cairo_Font_Weight_Normal
-            )  return Pango_Cairo_Font is
-      Text : aliased char_array := To_C (Family);
+     (Family : UTF8_String;
+      Slant  : Cairo_Font_Slant  := Cairo_Font_Slant_Normal;
+      Weight : Cairo_Font_Weight := Cairo_Font_Weight_Normal)
+      return Pango_Cairo_Font
+   is
+      Text : aliased Interfaces.C.char_array := Interfaces.C.To_C (Family);
    begin
       return Font : Pango_Cairo_Font (Toy_Font) do
          Font.Toy_Face.Face :=
-            Toy_Font_Face_Create -- Reference count is 1+
-            (  Family => To_Chars_Ptr (Text'Unchecked_Access),
-               Slant  => Slant,
-               Weight => Weight
-            );
+           Standard.Cairo.Font_Face.Toy_Font_Face_Create -- Reference count is 1+
+             (Family => Interfaces.C.Strings.To_Chars_Ptr (Text'Unchecked_Access),
+              Slant  => Slant,
+              Weight => Weight);
          Font.Toy_Face.Check;
       end return;
    end Create_Toy;
 
-   procedure Finalize
-             (  Handle : in out Pango_Font_Description_Handle
-             )  is
+   overriding procedure Finalize (Handle : in out Pango_Font_Description_Handle)
+   is
       procedure Free is
-         new Ada.Unchecked_Deallocation
-             (  Pango_Font_Description_Object,
-                Pango_Font_Description_Object_Ptr
-             );
+         new Ada.Unchecked_Deallocation (Pango_Font_Description_Object,
+                                         Pango_Font_Description_Object_Ptr);
    begin
       if Handle.Ptr /= null then
-         Handle.Ptr.Count := Handle.Ptr.Count - 1;
-         if Handle.Ptr.Count = 0 then
+         Handle.Ptr.all.Count := Handle.Ptr.all.Count - 1;
+         if Handle.Ptr.all.Count = 0 then
             Free (Handle.Ptr);
          end if;
       end if;
    end Finalize;
 
-   procedure Finalize
-             (  Object : in out Pango_Font_Description_Object
-             )  is
+   overriding procedure Finalize
+     (Object : in out Pango_Font_Description_Object)
+   is
+      use type Pango.Font.Pango_Font_Description;
    begin
       if Object.Description /= null then
-         Free (Object.Description);
+         Pango.Font.Free (Object.Description);
          Object.Description := null;
       end if;
    end Finalize;
 
-   procedure Finalize (Handle : in out Cairo_Font_Face_Handle) is
+   overriding procedure Finalize (Handle : in out Cairo_Font_Face_Handle) is
    begin
       if Handle.Face /= Null_Font_Face then
-         Destroy (Handle.Face);
+         Standard.Cairo.Font_Face.Destroy (Handle.Face);
          Handle.Face := Null_Font_Face;
       end if;
    end Finalize;
@@ -215,79 +205,75 @@ package body Pango.Cairo.Fonts is
          when Null_Font =>
             return "";
          when Toy_Font =>
-            return Value (Font.Toy_Face.Get_Family);
+            return Interfaces.C.Strings.Value (Font.Toy_Face.Get_Family);
          when Pango_Font =>
-            return Get_Family (Font.Pango_Handle.Ptr.Description);
+            return Pango.Font.Get_Family (Font.Pango_Handle.Ptr.all.Description);
       end case;
    end Get_Family;
 
    function Get_Family (Handle : Cairo_Font_Face_Handle)
       return UTF8_String is
    begin
-      return Value (Toy_Font_Face_Get_Family (Handle.Face));
+      return
+        Interfaces.C.Strings.Value
+          (Standard.Cairo.Font_Face.Toy_Font_Face_Get_Family (Handle.Face));
    end Get_Family;
 
    function Get_Family (Handle : Cairo_Font_Face_Handle)
-      return Interfaces.C.Strings.Chars_Ptr is
+      return Interfaces.C.Strings.chars_ptr is
    begin
       if Handle.Face = Null_Font_Face then
          raise Constraint_Error with "Null toy font";
       else
-         return Toy_Font_Face_Get_Family (Handle.Face);
+         return Standard.Cairo.Font_Face.Toy_Font_Face_Get_Family (Handle.Face);
       end if;
    end Get_Family;
 
-   procedure Get_Markup_Extents
-             (  Font    : Pango_Cairo_Font;
-                Context : Cairo_Context;
-                Text    : UTF8_String;
-                Extents : out Cairo_Text_Extents
-             )  is
+   procedure Get_Markup_Extents (Font    : Pango_Cairo_Font;
+                                 Context : Cairo_Context;
+                                 Text    : UTF8_String;
+                                 Extents : out Cairo_Text_Extents) is
    begin
       case Font.Mode is
          when Null_Font =>
             Extents := (others => 0.0);
          when Toy_Font =>
             declare
-               Data   : aliased Char_Array := To_C (Strip_Tags (Text));
+               Data   : aliased Interfaces.C.char_array := Interfaces.C.To_C (Strip_Tags (Text));
                Result : aliased Cairo_Text_Extents;
             begin
                Set_Font (Context, Font.Toy_Face);
                Text_Extents
-               (  Context,
-                  To_Chars_Ptr (Data'Unchecked_Access),
-                  Result'Access
-               );
+                 (Context,
+                  Interfaces.C.Strings.To_Chars_Ptr (Data'Unchecked_Access),
+                  Result'Access);
                Extents := Result;
             exception
-               when Error : Data_Error =>
-                  Log
-                  (  GtkAda_Contributions_Domain,
-                     Log_Level_Warning,
-                     (  "Pango markup: "
-                     &  Exception_Message (Error)
-                     &  Where ("Get_Markup_Extents")
-                  )  );
+               when Error : Gtkada.Types.Data_Error =>
+                  Glib.Messages.Log
+                    (Gtk.Missed.GtkAda_Contributions_Domain,
+                     Glib.Messages.Log_Level_Warning,
+                     "Pango markup: " &
+                       Ada.Exceptions.Exception_Message (Error) &
+                       Where ("Get_Markup_Extents"));
                   Extents := (others => 0.0);
             end;
          when Pango_Font =>
             declare
                Layout  : constant Pango_Layout :=
-                         Create_Markup_Layout
-                         (  Font.Pango_Handle,
-                            Context,
-                            Text
-                         );
+                           Create_Markup_Layout
+                             (Font.Pango_Handle,
+                              Context,
+                              Text);
                Ink     : Pango_Rectangle;
                Logical : Pango_Rectangle;
             begin
-               Layout.Get_Pixel_Extents (Ink, Logical);
-               Extents := (  Width     => GDouble (Ink.Width),
-                             Height    => GDouble (Ink.Height),
-                             X_Bearing => GDouble (Ink.X),
-                             Y_Bearing => GDouble (Ink.Y),
-                             others => 0.0
-                          );
+               Layout.all.Get_Pixel_Extents (Ink, Logical);
+               Extents := (Width     => Gdouble (Ink.Width),
+                           Height    => Gdouble (Ink.Height),
+                           X_Bearing => Gdouble (Ink.X),
+                           Y_Bearing => Gdouble (Ink.Y),
+                           others    => 0.0);
 --                 Width  : GInt;
 --                 Height : GInt;
 --              begin
@@ -296,14 +282,44 @@ package body Pango.Cairo.Fonts is
 --                               Height => GDouble (Height),
 --                               others => 0.0
 --                            );
-               Layout.Unref;
+               Layout.all.Unref;
             exception
                when others =>
-                  Layout.Unref;
+                  Layout.all.Unref;
                   raise;
             end;
       end case;
    end Get_Markup_Extents;
+
+   function Get_Size (Font : Pango_Cairo_Font) return Gint is
+   begin
+      case Font.Mode is
+         when Null_Font | Toy_Font =>
+            return 12; -- There is no size for these types of font
+         when Pango_Font =>
+            return Pango.Font.Get_Size (Font.Pango_Handle.Ptr.all.Description);
+      end case;
+   end Get_Size;
+
+   function Get_Slant (Font : Pango_Cairo_Font)
+      return Cairo_Font_Slant is
+   begin
+      case Font.Mode is
+         when Null_Font =>
+            return Cairo_Font_Slant_Normal;
+         when Toy_Font =>
+            return Font.Toy_Face.Get_Slant;
+         when Pango_Font =>
+            case Pango.Font.Get_Style (Font.Pango_Handle.Ptr.all.Description) is
+               when Pango.Enums.Pango_Style_Normal =>
+                  return Cairo_Font_Slant_Normal;
+               when Pango.Enums.Pango_Style_Oblique =>
+                  return Cairo_Font_Slant_Italic;
+               when Pango.Enums.Pango_Style_Italic =>
+                  return Cairo_Font_Slant_Oblique;
+            end case;
+      end case;
+   end Get_Slant;
 
    function Get_Slant (Handle : Cairo_Font_Face_Handle)
       return Cairo_Font_Slant is
@@ -311,91 +327,46 @@ package body Pango.Cairo.Fonts is
       if Handle.Face = Null_Font_Face then
          raise Constraint_Error with "Null toy font";
       else
-         return Toy_Font_Face_Get_Slant (Handle.Face);
+         return Standard.Cairo.Font_Face.Toy_Font_Face_Get_Slant (Handle.Face);
       end if;
    end Get_Slant;
 
-   function Get_Size (Font : Pango_Cairo_Font) return GInt is
-   begin
-      case Font.Mode is
-         when Null_Font | Toy_Font =>
-            return 12; -- There is no size for these types of font
-         when Pango_Font =>
-            return Get_Size (Font.Pango_Handle.Ptr.Description);
-      end case;
-   end Get_Size;
-
-   function Get_Weight (Handle : Cairo_Font_Face_Handle)
-      return Cairo_Font_Weight is
-   begin
-      if Handle.Face = Null_Font_Face then
-         raise Constraint_Error with "Null toy font";
-      else
-         return Toy_Font_Face_Get_Weight (Handle.Face);
-      end if;
-   end Get_Weight;
-
-   function Get_Slant (Font : Pango_Cairo_Font)
-      return Cairo_Font_Slant is
-   begin
-      case Font.Mode is
-         when Null_Font =>
-            return CAIRO_FONT_SLANT_NORMAL;
-         when Toy_Font =>
-            return Font.Toy_Face.Get_Slant;
-         when Pango_Font =>
-            case Get_Style (Font.Pango_Handle.Ptr.Description) is
-               when Pango_Style_Normal =>
-                  return CAIRO_FONT_SLANT_NORMAL;
-               when Pango_Style_Oblique =>
-                  return CAIRO_FONT_SLANT_ITALIC;
-               when Pango_Style_Italic =>
-                  return CAIRO_FONT_SLANT_OBLIQUE;
-            end case;
-      end case;
-   end Get_Slant;
-
-   procedure Get_Text_Extents
-             (  Font    : Pango_Cairo_Font;
-                Context : Cairo_Context;
-                Text    : UTF8_String;
-                Extents : out Cairo_Text_Extents
-             )  is
+   procedure Get_Text_Extents (Font    : Pango_Cairo_Font;
+                               Context : Cairo_Context;
+                               Text    : UTF8_String;
+                               Extents : out Cairo_Text_Extents) is
    begin
       case Font.Mode is
          when Null_Font =>
             Extents := (others => 0.0);
          when Toy_Font =>
             declare
-               Data   : aliased Char_Array := To_C (Text);
+               Data   : aliased Interfaces.C.char_array := Interfaces.C.To_C (Text);
                Result : aliased Cairo_Text_Extents;
             begin
                Set_Font (Context, Font.Toy_Face);
                Text_Extents
-               (  Context,
-                  To_Chars_Ptr (Data'Unchecked_Access),
-                  Result'Access
-               );
+                 (Context,
+                  Interfaces.C.Strings.To_Chars_Ptr (Data'Unchecked_Access),
+                  Result'Access);
                Extents := Result;
             end;
          when Pango_Font =>
             declare
                Layout : constant Pango_Layout :=
                         Create_Text_Layout
-                        (  Font.Pango_Handle,
-                           Context,
-                           Text
-                        );
+                            (Font.Pango_Handle,
+                             Context,
+                             Text);
                Ink     : Pango_Rectangle;
                Logical : Pango_Rectangle;
             begin
-               Layout.Get_Pixel_Extents (Ink, Logical);
-               Extents := (  Width     => GDouble (Ink.Width),
-                             Height    => GDouble (Ink.Height),
-                             X_Bearing => GDouble (Ink.X),
-                             Y_Bearing => GDouble (Ink.Y),
-                             others => 0.0
-                          );
+               Layout.all.Get_Pixel_Extents (Ink, Logical);
+               Extents := (Width     => Gdouble (Ink.Width),
+                           Height    => Gdouble (Ink.Height),
+                           X_Bearing => Gdouble (Ink.X),
+                           Y_Bearing => Gdouble (Ink.Y),
+                           others    => 0.0);
 --                 Width  : GInt;
 --                 Height : GInt;
 --              begin
@@ -404,10 +375,10 @@ package body Pango.Cairo.Fonts is
 --                               Height => GDouble (Height),
 --                               others => 0.0
 --                            );
-               Layout.Unref;
+               Layout.all.Unref;
             exception
                when others =>
-                  Layout.Unref;
+                  Layout.all.Unref;
                   raise;
             end;
       end case;
@@ -418,20 +389,30 @@ package body Pango.Cairo.Fonts is
       return Font.Mode;
    end Get_Type;
 
+   function Get_Weight (Handle : Cairo_Font_Face_Handle)
+      return Cairo_Font_Weight is
+   begin
+      if Handle.Face = Null_Font_Face then
+         raise Constraint_Error with "Null toy font";
+      else
+         return Standard.Cairo.Font_Face.Toy_Font_Face_Get_Weight (Handle.Face);
+      end if;
+   end Get_Weight;
+
    function Get_Weight (Font : Pango_Cairo_Font)
       return Cairo_Font_Weight is
    begin
       case Font.Mode is
          when Null_Font =>
-            return CAIRO_FONT_WEIGHT_NORMAL;
+            return Cairo_Font_Weight_Normal;
          when Toy_Font =>
             return Font.Toy_Face.Get_Weight;
          when Pango_Font =>
-            case Get_Weight (Font.Pango_Handle.Ptr.Description) is
-               when Pango_Weight_Thin..Pango_Weight_Medium =>
-                  return CAIRO_FONT_WEIGHT_NORMAL;
-               when Pango_Weight_Semibold..Pango_Weight_Ultraheavy =>
-                  return CAIRO_FONT_WEIGHT_BOLD;
+            case Pango.Font.Get_Weight (Font.Pango_Handle.Ptr.all.Description) is
+               when Pango.Enums.Pango_Weight_Thin .. Pango.Enums.Pango_Weight_Medium =>
+                  return Cairo_Font_Weight_Normal;
+               when Pango.Enums.Pango_Weight_Semibold .. Pango.Enums.Pango_Weight_Ultraheavy =>
+                  return Cairo_Font_Weight_Bold;
             end case;
       end case;
    end Get_Weight;
@@ -441,43 +422,41 @@ package body Pango.Cairo.Fonts is
    begin
       case Font.Mode is
          when Null_Font =>
-            return Pango_Weight_Normal;
+            return Pango.Enums.Pango_Weight_Normal;
          when Toy_Font =>
             case Font.Toy_Face.Get_Weight is
-               when CAIRO_FONT_WEIGHT_NORMAL =>
-                  return Pango_Weight_Normal;
-               when CAIRO_FONT_WEIGHT_BOLD =>
-                  return Pango_Weight_Bold;
+               when Cairo_Font_Weight_Normal =>
+                  return Pango.Enums.Pango_Weight_Normal;
+               when Cairo_Font_Weight_Bold =>
+                  return Pango.Enums.Pango_Weight_Bold;
             end case;
          when Pango_Font =>
-            return Get_Weight (Font.Pango_Handle.Ptr.Description);
+            return Pango.Font.Get_Weight (Font.Pango_Handle.Ptr.all.Description);
       end case;
    end Get_Weight;
 
-   function Ref (Description : Pango_Font_Description)
+   function Ref (Description : Pango.Font.Pango_Font_Description)
       return Pango_Font_Description_Handle is
    begin
       return Result : Pango_Font_Description_Handle do
          Result.Ptr := new Pango_Font_Description_Object;
-         Result.Ptr.Count := 1;
-         Result.Ptr.Description := Description;
+         Result.Ptr.all.Count := 1;
+         Result.Ptr.all.Description := Description;
       end return;
    end Ref;
 
-   procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Font   : out Pango_Cairo_Font
-             )  is
+   procedure Restore (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+                      Font   : out Pango_Cairo_Font) is
       Tag : Font_Type;
    begin
       declare
-         Data : GUInt;
+         Data : Guint;
       begin
-         Restore (Stream, Data);
+         Gtk.Layered.Stream_IO.Restore (Stream, Data);
          Tag := Font_Type'Val (Data);
       exception
          when Constraint_Error =>
-            raise Data_Error with "Font type out of range";
+            raise Gtkada.Types.Data_Error with "Font type out of range";
       end;
       case Tag is
          when Null_Font =>
@@ -486,26 +465,20 @@ package body Pango.Cairo.Fonts is
             declare
                Face : Cairo_Font_Face;
             begin
-               Restore (Stream, Face); -- Reference count is 1
+               Gtk.Layered.Stream_IO.Restore (Stream, Face); -- Reference count is 1
                Font :=
-                  (  Mode     => Toy_Font,
-                     Toy_Face => (Ada.Finalization.Controlled with Face)
-                  );
+                 (Mode     => Toy_Font,
+                  Toy_Face => (Ada.Finalization.Controlled with Face));
             end;
          when Pango_Font =>
             Font :=
-               (  Mode =>
-                     Pango_Font,
-                  Pango_Handle =>
-                     Ref (From_String (Restore (Stream'Access)))
-               );
+              (Mode         => Pango_Font,
+               Pango_Handle => Ref (Pango.Font.From_String (Gtk.Layered.Stream_IO.Restore (Stream'Access))));
       end case;
    end Restore;
 
-   procedure Set_Family
-             (  Font   : in out Pango_Cairo_Font;
-                Family : UTF8_String
-             )  is
+   procedure Set_Family (Font   : in out Pango_Cairo_Font;
+                         Family : UTF8_String) is
    begin
       case Font.Mode is
          when Null_Font =>
@@ -513,48 +486,43 @@ package body Pango.Cairo.Fonts is
          when Toy_Font =>
             Font :=
                Create_Toy
-               (  Family => Family,
-                  Slant  => Font.Toy_Face.Get_Slant,
-                  Weight => Font.Toy_Face.Get_Weight
-               );
+                (Family => Family,
+                 Slant  => Font.Toy_Face.Get_Slant,
+                 Weight => Font.Toy_Face.Get_Weight);
          when Pango_Font =>
-            Set_Family (Font.Pango_Handle.Ptr.Description, Family);
+            Pango.Font.Set_Family (Font.Pango_Handle.Ptr.all.Description, Family);
       end case;
    end Set_Family;
 
-   procedure Set_Font
-             (  Context : Cairo_Context;
-                Font    : Cairo_Font_Face_Handle
-             )  is
+   procedure Set_Font (Context : Cairo_Context;
+                       Font    : Cairo_Font_Face_Handle) is
    begin
       Check (Context);
       Font.Check;
       Set_Font_Face (Context, Font.Face);
       if Get_Font_Face (Context) /= Font.Face then
-         Log
-         (  GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            (  "Failed to set font: "
-            &  To_String (Status (Get_Font_Face (Context)))
-            &  Where ("Set_Font")
-         )  );
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Failed to set font: " &
+              Gtk.Missed.To_String
+              (Standard.Cairo.Font_Face.Status (Get_Font_Face (Context))) &
+              Where ("Set_Font"));
       end if;
    end Set_Font;
 
-   procedure Set_Size (Font : in out Pango_Cairo_Font; Size : GInt) is
+   procedure Set_Size (Font : in out Pango_Cairo_Font; Size : Gint) is
    begin
       case Font.Mode is
          when Null_Font | Toy_Font =>
             null;
          when Pango_Font =>
-            Set_Size (Font.Pango_Handle.Ptr.Description, Size);
+            Pango.Font.Set_Size (Font.Pango_Handle.Ptr.all.Description, Size);
       end case;
    end Set_Size;
 
-   procedure Set_Slant
-             (  Font  : in out Pango_Cairo_Font;
-                Slant : Cairo_Font_Slant
-             )  is
+   procedure Set_Slant (Font  : in out Pango_Cairo_Font;
+                        Slant : Cairo_Font_Slant) is
    begin
       case Font.Mode is
          when Null_Font =>
@@ -562,35 +530,29 @@ package body Pango.Cairo.Fonts is
          when Toy_Font =>
             Font :=
                Create_Toy
-               (  Family => Font.Toy_Face.Get_Family,
-                  Slant  => Slant,
-                  Weight => Font.Toy_Face.Get_Weight
-               );
+                (Family => Font.Toy_Face.Get_Family,
+                 Slant  => Slant,
+                 Weight => Font.Toy_Face.Get_Weight);
          when Pango_Font =>
             case Slant is
-               when CAIRO_FONT_SLANT_NORMAL =>
-                  Set_Style
-                  (  Font.Pango_Handle.Ptr.Description,
-                     Pango_Style_Normal
-                  );
-               when CAIRO_FONT_SLANT_ITALIC =>
-                  Set_Style
-                  (  Font.Pango_Handle.Ptr.Description,
-                     Pango_Style_Oblique
-                  );
-               when CAIRO_FONT_SLANT_OBLIQUE =>
-                  Set_Style
-                  (  Font.Pango_Handle.Ptr.Description,
-                     Pango_Style_Italic
-                  );
+               when Cairo_Font_Slant_Normal =>
+                  Pango.Font.Set_Style
+                    (Font.Pango_Handle.Ptr.all.Description,
+                     Pango.Enums.Pango_Style_Normal);
+               when Cairo_Font_Slant_Italic =>
+                  Pango.Font.Set_Style
+                    (Font.Pango_Handle.Ptr.all.Description,
+                     Pango.Enums.Pango_Style_Oblique);
+               when Cairo_Font_Slant_Oblique =>
+                  Pango.Font.Set_Style
+                    (Font.Pango_Handle.Ptr.all.Description,
+                     Pango.Enums.Pango_Style_Italic);
             end case;
       end case;
    end Set_Slant;
 
-   procedure Set_Type
-             (  Font : in out Pango_Cairo_Font;
-                Mode : Font_Type
-             )  is
+   procedure Set_Type (Font : in out Pango_Cairo_Font;
+                       Mode : Font_Type) is
    begin
       if Mode /= Font.Mode then
          case Mode is
@@ -599,42 +561,36 @@ package body Pango.Cairo.Fonts is
             when Toy_Font =>
                Font :=
                   Create_Toy
-                  (  Family => Get_Family (Font),
-                     Slant  => Get_Slant  (Font),
-                     Weight => Get_Weight (Font)
-                  );
+                   (Family => Get_Family (Font),
+                    Slant  => Get_Slant  (Font),
+                    Weight => Get_Weight (Font));
             when Pango_Font =>
                case Get_Slant  (Font) is
-                  when CAIRO_FONT_SLANT_NORMAL =>
+                  when Cairo_Font_Slant_Normal =>
                      Font :=
                         Create_Pango
-                        (  Family => Get_Family (Font),
-                           Style  => Pango_Style_Normal,
-                           Weight => Get_Weight (Font)
-                        );
-                  when CAIRO_FONT_SLANT_ITALIC =>
+                         (Family => Get_Family (Font),
+                          Style  => Pango.Enums.Pango_Style_Normal,
+                          Weight => Get_Weight (Font));
+                  when Cairo_Font_Slant_Italic =>
                      Font :=
                         Create_Pango
-                        (  Family => Get_Family (Font),
-                           Style  => Pango_Style_Italic,
-                           Weight => Get_Weight (Font)
-                        );
-                  when CAIRO_FONT_SLANT_OBLIQUE =>
+                         (Family => Get_Family (Font),
+                          Style  => Pango.Enums.Pango_Style_Italic,
+                          Weight => Get_Weight (Font));
+                  when Cairo_Font_Slant_Oblique =>
                      Font :=
                         Create_Pango
-                        (  Family => Get_Family (Font),
-                           Style  => Pango_Style_Oblique,
-                           Weight => Get_Weight (Font)
-                        );
+                         (Family => Get_Family (Font),
+                          Style  => Pango.Enums.Pango_Style_Oblique,
+                          Weight => Get_Weight (Font));
                end case;
          end case;
       end if;
    end Set_Type;
 
-   procedure Set_Weight
-             (  Font   : in out Pango_Cairo_Font;
-                Weight : Cairo_Font_Weight
-             )  is
+   procedure Set_Weight (Font   : in out Pango_Cairo_Font;
+                         Weight : Cairo_Font_Weight) is
    begin
       case Font.Mode is
          when Null_Font =>
@@ -642,55 +598,158 @@ package body Pango.Cairo.Fonts is
          when Toy_Font =>
             Font :=
                Create_Toy
-               (  Family => Font.Toy_Face.Get_Family,
-                  Slant  => Font.Toy_Face.Get_Slant,
-                  Weight => Weight
-               );
+                (Family => Font.Toy_Face.Get_Family,
+                 Slant  => Font.Toy_Face.Get_Slant,
+                 Weight => Weight);
          when Pango_Font =>
             case Weight is
-               when CAIRO_FONT_WEIGHT_NORMAL =>
-                   Set_Weight
-                   (  Font.Pango_Handle.Ptr.Description,
-                      Pango_Weight_Normal
-                   );
-               when CAIRO_FONT_WEIGHT_BOLD =>
-                   Set_Weight
-                   (  Font.Pango_Handle.Ptr.Description,
-                      Pango_Weight_Bold
-                   );
+               when Cairo_Font_Weight_Normal =>
+                  Pango.Font.Set_Weight
+                    (Font.Pango_Handle.Ptr.all.Description,
+                     Pango.Enums.Pango_Weight_Normal);
+               when Cairo_Font_Weight_Bold =>
+                  Pango.Font.Set_Weight
+                    (Font.Pango_Handle.Ptr.all.Description,
+                     Pango.Enums.Pango_Weight_Bold);
             end case;
       end case;
    end Set_Weight;
 
-   procedure Set_Weight
-             (  Font   : in out Pango_Cairo_Font;
-                Weight : Pango.Enums.Weight
-             )  is
+   procedure Set_Weight (Font   : in out Pango_Cairo_Font;
+                         Weight : Pango.Enums.Weight) is
    begin
       case Font.Mode is
          when Null_Font =>
             null;
          when Toy_Font =>
             case Weight is
-               when Pango_Weight_Thin..Pango_Weight_Medium =>
+               when Pango.Enums.Pango_Weight_Thin .. Pango.Enums.Pango_Weight_Medium =>
                   Font :=
                      Create_Toy
-                     (  Family => Font.Toy_Face.Get_Family,
-                        Slant  => Font.Toy_Face.Get_Slant,
-                        Weight => CAIRO_FONT_WEIGHT_NORMAL
-                     );
-               when Pango_Weight_Semibold..Pango_Weight_Ultraheavy =>
+                      (Family => Font.Toy_Face.Get_Family,
+                       Slant  => Font.Toy_Face.Get_Slant,
+                       Weight => Cairo_Font_Weight_Normal);
+               when Pango.Enums.Pango_Weight_Semibold .. Pango.Enums.Pango_Weight_Ultraheavy =>
                   Font :=
                      Create_Toy
-                     (  Family => Font.Toy_Face.Get_Family,
-                        Slant  => Font.Toy_Face.Get_Slant,
-                        Weight => CAIRO_FONT_WEIGHT_BOLD
-                     );
+                      (Family => Font.Toy_Face.Get_Family,
+                       Slant  => Font.Toy_Face.Get_Slant,
+                       Weight => Cairo_Font_Weight_Bold);
             end case;
          when Pango_Font =>
-            Set_Weight (Font.Pango_Handle.Ptr.Description, Weight);
+            Pango.Font.Set_Weight (Font.Pango_Handle.Ptr.all.Description, Weight);
       end case;
    end Set_Weight;
+
+   procedure Show_Markup (Font    : Pango_Cairo_Font;
+                          Context : Cairo_Context;
+                          Text    : UTF8_String) is
+   begin
+      case Font.Mode is
+         when Null_Font =>
+            null;
+         when Toy_Font =>
+            begin
+               Set_Font (Context, Font.Toy_Face);
+               Show_Text (Context, Strip_Tags (Text));
+            exception
+               when Error : Gtkada.Types.Data_Error =>
+                  Glib.Messages.Log
+                    (Gtk.Missed.GtkAda_Contributions_Domain,
+                     Glib.Messages.Log_Level_Warning,
+                     "Pango markup: " &
+                       Ada.Exceptions.Exception_Message (Error) &
+                       Where ("Set_Font"));
+            end;
+         when Pango_Font =>
+            declare
+               Layout : constant Pango_Layout :=
+                          Create_Markup_Layout
+                            (Font.Pango_Handle,
+                             Context,
+                             Text);
+            begin
+               Show_Layout (Context, Layout);
+               Layout.all.Unref;
+            end;
+      end case;
+   end Show_Markup;
+
+   procedure Show_Text (Font    : Pango_Cairo_Font;
+                        Context : Cairo_Context;
+                        Text    : UTF8_String) is
+   begin
+      case Font.Mode is
+         when Null_Font =>
+            null;
+         when Toy_Font =>
+            Set_Font (Context, Font.Toy_Face);
+            Show_Text (Context, Text);
+         when Pango_Font =>
+            declare
+               Layout : constant Pango_Layout :=
+                          Create_Text_Layout
+                            (Font.Pango_Handle,
+                             Context,
+                             Text);
+            begin
+               Show_Layout (Context, Layout);
+--             Show_Layout_Line (Context, Layout);
+               Layout.all.Unref;
+            end;
+      end case;
+   end Show_Text;
+
+   procedure Store (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+                    Font   : Pango_Cairo_Font) is
+   begin
+      Gtk.Layered.Stream_IO.Store (Stream, Guint (Font_Type'Pos (Font.Mode)));
+      case Font.Mode is
+         when Null_Font =>
+            null;
+         when Toy_Font =>
+            Gtk.Layered.Stream_IO.Store (Stream, Font.Toy_Face.Face);
+         when Pango_Font =>
+            Gtk.Layered.Stream_IO.Store
+              (Stream,
+               Pango.Font.To_String (Font.Pango_Handle.Ptr.all.Description));
+      end case;
+   end Store;
+
+   function Strip_Tags (Text : UTF8_String) return UTF8_String is
+      use Glib.Error;
+      use System;
+      use Interfaces.C;
+
+      function Internal (Markup_Text  : Address;
+                         Length       : int;
+                         Accel_Marker : Gunichar := 0;
+                         Attr_List    : Address  := Null_Address;
+                         Text         : access Interfaces.C.Strings.chars_ptr;
+                         Accel_Char   : Address  := Null_Address;
+                         Error        : access GError) return Gboolean;
+      pragma Import (C, Internal, "pango_parse_markup");
+      Result : aliased Interfaces.C.Strings.chars_ptr;
+      Error  : aliased GError;
+   begin
+      if 0 =  Internal (Markup_Text => Text (Text'First)'Address,
+                        Length      => Text'Length,
+                        Text        => Result'Access,
+                        Error       => Error'Access)
+      then
+         return Text;
+      else
+         return Value : constant String :=
+                        Interfaces.C.Strings.Value (Result) do
+            Gtkada.Types.g_free (Result);
+         end return;
+      end if;
+   end Strip_Tags;
+
+   function Where (Name : String) return String is
+   begin
+      return " in Pango.Cairo.Fonts." & Name;
+   end Where;
 
 --     procedure Show_Layout_Line
 --               (  Context : Cairo_Context;
@@ -716,125 +775,5 @@ package body Pango.Cairo.Fonts is
 --           Unref (This);
 --        end if;
 --     end Show_Layout_Line;
-
-   procedure Show_Markup
-             (  Font    : Pango_Cairo_Font;
-                Context : Cairo_Context;
-                Text    : UTF8_String
-             )  is
-   begin
-      case Font.Mode is
-         when Null_Font =>
-            null;
-         when Toy_Font =>
-            begin
-               Set_Font (Context, Font.Toy_Face);
-               Show_Text (Context, Strip_Tags (Text));
-            exception
-               when Error : Data_Error =>
-                  Log
-                  (  GtkAda_Contributions_Domain,
-                     Log_Level_Warning,
-                     (  "Pango markup: "
-                     &  Exception_Message (Error)
-                     &  Where ("Set_Font")
-                  )  );
-            end;
-         when Pango_Font =>
-            declare
-               Layout : constant Pango_Layout :=
-                        Create_Markup_Layout
-                        (  Font.Pango_Handle,
-                           Context,
-                           Text
-                        );
-            begin
-               Show_Layout (Context, Layout);
-               Layout.Unref;
-            end;
-      end case;
-   end Show_Markup;
-
-   procedure Show_Text
-             (  Font    : Pango_Cairo_Font;
-                Context : Cairo_Context;
-                Text    : UTF8_String
-             )  is
-   begin
-      case Font.Mode is
-         when Null_Font =>
-            null;
-         when Toy_Font =>
-            Set_Font (Context, Font.Toy_Face);
-            Show_Text (Context, Text);
-         when Pango_Font =>
-            declare
-               Layout : constant Pango_Layout :=
-                        Create_Text_Layout
-                        (  Font.Pango_Handle,
-                           Context,
-                           Text
-                        );
-            begin
-               Show_Layout (Context, Layout);
---             Show_Layout_Line (Context, Layout);
-               Layout.Unref;
-            end;
-      end case;
-   end Show_Text;
-
-   function Strip_Tags (Text : UTF8_String) return UTF8_String is
-      use Glib.Error;
-      use System;
-      use Interfaces.C;
-
-      function Internal
-               (  Markup_Text  : Address;
-                  Length       : int;
-                  Accel_Marker : gunichar := 0;
-                  Attr_List    : Address  := Null_Address;
-                  Text         : access Interfaces.C.Strings.Chars_Ptr;
-                  Accel_Char   : Address  := Null_Address;
-                  Error        : access GError
-               )  return GBoolean;
-      pragma Import (C, Internal, "pango_parse_markup");
-      Result : aliased Interfaces.C.Strings.Chars_Ptr;
-      Error  : aliased GError;
-   begin
-      if (  0
-         =  Internal
-            (  Markup_Text => Text (Text'First)'Address,
-               Length      => Text'Length,
-               Text        => Result'Access,
-               Error       => Error'Access
-         )  )
-      then
-         return Text;
-      else
-         return Value : constant String :=
-                        Interfaces.C.Strings.Value (Result) do
-            G_Free (Result);
-         end return;
-      end if;
-   end Strip_Tags;
-
-   procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Font   : Pango_Cairo_Font
-             )  is
-   begin
-      Store (Stream, GUInt (Font_Type'Pos (Font.Mode)));
-      case Font.Mode is
-         when Null_Font =>
-            null;
-         when Toy_Font =>
-            Store (Stream, Font.Toy_Face.Face);
-         when Pango_Font =>
-            Store
-            (  Stream,
-               To_String (Font.Pango_Handle.Ptr.Description)
-            );
-      end case;
-   end Store;
 
 end Pango.Cairo.Fonts;

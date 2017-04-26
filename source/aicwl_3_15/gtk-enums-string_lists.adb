@@ -22,7 +22,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 with Ada.Unchecked_Deallocation;
 
@@ -30,28 +30,42 @@ package body Gtk.Enums.String_Lists is
 
    use String_List;
 
-   procedure Adjust (List : in out Controlled_String_List) is
+   function "/" (Left : Controlled_String_List; Right : UTF8_String)
+      return Controlled_String_List is
+   begin
+      Left.Ptr.all.Use_Count := Left.Ptr.all.Use_Count + 1;
+      Append (Left.Ptr.all.List, Right);
+      return (Ada.Finalization.Controlled with Left.Ptr);
+   end "/";
+
+   function "/" (Left, Right : UTF8_String)
+      return Controlled_String_List is
+      Ptr : constant String_List_Body_Ptr := new String_List_Body;
+   begin
+      Append (Ptr.all.List, Left);
+      Append (Ptr.all.List, Right);
+      return (Ada.Finalization.Controlled with Ptr);
+   end "/";
+
+   overriding procedure Adjust (List : in out Controlled_String_List) is
    begin
       if List.Ptr /= null then
-         List.Ptr.Use_Count := List.Ptr.Use_Count + 1;
+         List.Ptr.all.Use_Count := List.Ptr.all.Use_Count + 1;
       end if;
    end Adjust;
 
-   procedure Finalize (List : in out Controlled_String_List) is
+   overriding procedure Finalize (List : in out Controlled_String_List) is
       procedure Free is
-         new Ada.Unchecked_Deallocation
-             (  String_List_Body,
-                String_List_Body_Ptr
-             );
+        new Ada.Unchecked_Deallocation (String_List_Body, String_List_Body_Ptr);
    begin
       if List.Ptr /= null then
-         if List.Ptr.Use_Count = 0 then
+         if List.Ptr.all.Use_Count = 0 then
             raise Program_Error;
-         elsif List.Ptr.Use_Count = 1 then
-            Free_String_List (List.Ptr.List);
+         elsif List.Ptr.all.Use_Count = 1 then
+            Free_String_List (List.Ptr.all.List);
             Free (List.Ptr);
          else
-            List.Ptr.Use_Count := List.Ptr.Use_Count - 1;
+            List.Ptr.all.Use_Count := List.Ptr.all.Use_Count - 1;
             List.Ptr := null;
          end if;
       end if;
@@ -60,24 +74,7 @@ package body Gtk.Enums.String_Lists is
    function Get_GList (List : Controlled_String_List)
       return String_List.Glist is
    begin
-      return List.Ptr.List;
+      return List.Ptr.all.List;
    end Get_GList;
-
-   function "/" (Left : Controlled_String_List; Right : UTF8_String)
-      return Controlled_String_List is
-   begin
-      Left.Ptr.Use_Count := Left.Ptr.Use_Count + 1;
-      Append (Left.Ptr.List, Right);
-      return (Ada.Finalization.Controlled with Left.Ptr);
-   end "/";
-
-   function "/" (Left, Right : UTF8_String)
-      return Controlled_String_List is
-      Ptr : constant String_List_Body_Ptr := new String_List_Body;
-   begin
-      Append (Ptr.List, Left);
-      Append (Ptr.List, Right);
-      return (Ada.Finalization.Controlled with Ptr);
-   end "/";
 
 end Gtk.Enums.String_Lists;

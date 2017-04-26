@@ -22,7 +22,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 --
 --  This  package  is  provided  to  ease  handling  of  lists of static
 --  strings. When a String_List.GList expression is expected at  Foo  it
@@ -88,7 +88,7 @@ private
    record
       Ptr : String_List_Body_Ptr;
    end record;
-   procedure Adjust (List : in out Controlled_String_List);
-   procedure Finalize (List : in out Controlled_String_List);
+   overriding procedure Adjust (List : in out Controlled_String_List);
+   overriding procedure Finalize (List : in out Controlled_String_List);
 
 end Gtk.Enums.String_Lists;

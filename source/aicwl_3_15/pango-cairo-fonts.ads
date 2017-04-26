@@ -23,16 +23,15 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 --
 --  This package provides an  abstraction  layer  above  toy  and  Pango
 --  fonts, which are differently handled in Cairo.
 --
-with Ada.Streams;      use Ada.Streams;
-with Cairo.Font_Face;  use Cairo.Font_Face;
-with Glib;             use Glib;
-with Pango.Enums;      use Pango.Enums;
-with Pango.Font;       use Pango.Font;
+with Ada.Streams;
+
+with Pango.Enums;
+with Pango.Font;
 
 with Ada.Finalization;
 with Interfaces.C.Strings;
@@ -61,13 +60,13 @@ package Pango.Cairo.Fonts is
 --    The font face object
 --
    function Create_Pango
-            (  Family  : String;
-               Style   : Pango.Enums.Style   := Pango_Style_Normal;
-               Variant : Pango.Enums.Variant := Pango_Variant_Normal;
-               Weight  : Pango.Enums.Weight  := Pango_Weight_Normal;
-               Stretch : Pango.Enums.Stretch := Pango_Stretch_Normal;
-               Size    : Gint                := 12
-            )  return Pango_Cairo_Font;
+     (Family  : String;
+      Style   : Pango.Enums.Style   := Pango.Enums.Pango_Style_Normal;
+      Variant : Pango.Enums.Variant := Pango.Enums.Pango_Variant_Normal;
+      Weight  : Pango.Enums.Weight  := Pango.Enums.Pango_Weight_Normal;
+      Stretch : Pango.Enums.Stretch := Pango.Enums.Pango_Stretch_Normal;
+      Size    : Gint                := 12) return Pango_Cairo_Font;
+
 --
 -- Create_Pango_From_Description -- Create pango font face
 --
@@ -91,10 +90,11 @@ package Pango.Cairo.Fonts is
 --    The font face object corresponding to the parameters
 --
    function Create_Toy
-            (  Family : UTF8_String;
-               Slant  : Cairo_Font_Slant  := Cairo_Font_Slant_Normal;
-               Weight : Cairo_Font_Weight := Cairo_Font_Weight_Normal
-            )  return Pango_Cairo_Font;
+     (Family : UTF8_String;
+      Slant  : Cairo_Font_Slant  := Cairo_Font_Slant_Normal;
+      Weight : Cairo_Font_Weight := Cairo_Font_Weight_Normal)
+      return Pango_Cairo_Font;
+
 --
 -- Get_Family -- Get font face family
 --
@@ -118,12 +118,11 @@ package Pango.Cairo.Fonts is
 -- tags  stripped.  Note  that the implementation may change the context
 -- settings.
 --
-   procedure Get_Markup_Extents
-             (  Font    : Pango_Cairo_Font;
-                Context : Cairo_Context;
-                Text    : UTF8_String;
-                Extents : out Cairo_Text_Extents
-             );
+   procedure Get_Markup_Extents (Font    : Pango_Cairo_Font;
+                                 Context : Cairo_Context;
+                                 Text    : UTF8_String;
+                                 Extents : out Cairo_Text_Extents);
+
 --
 -- Get_Size -- Get font size (relevant for pango only)
 --
@@ -143,8 +142,8 @@ package Pango.Cairo.Fonts is
 --
 --    The slant
 --
-   function Get_Slant (Font : Pango_Cairo_Font)
-      return Cairo_Font_Slant;
+   function Get_Slant (Font : Pango_Cairo_Font) return Cairo_Font_Slant;
+
 --
 -- Get_Text_Extents -- Get extents of a text
 --
@@ -155,12 +154,11 @@ package Pango.Cairo.Fonts is
 --
 -- Note that the implementation may change the context settings.
 --
-   procedure Get_Text_Extents
-             (  Font    : Pango_Cairo_Font;
-                Context : Cairo_Context;
-                Text    : UTF8_String;
-                Extents : out Cairo_Text_Extents
-             );
+   procedure Get_Text_Extents (Font    : Pango_Cairo_Font;
+                               Context : Cairo_Context;
+                               Text    : UTF8_String;
+                               Extents : out Cairo_Text_Extents);
+
 --
 -- Get_Type -- Get font type
 --
@@ -190,20 +188,18 @@ package Pango.Cairo.Fonts is
 --    Stream - The stream to read
 --    Font   - The font face to restore
 --
-   procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Font   : out Pango_Cairo_Font
-             );
+   procedure Restore (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+                      Font   : out Pango_Cairo_Font);
+
 --
 -- Set_Family -- Set font face family
 --
 --    Font   - The font face
 --    Family - To set
 --
-   procedure Set_Family
-             (  Font   : in out Pango_Cairo_Font;
-                Family : UTF8_String
-             );
+   procedure Set_Family (Font   : in out Pango_Cairo_Font;
+                         Family : UTF8_String);
+
 --
 -- Get_Size -- Get font size (relevant for pango only)
 --
@@ -217,10 +213,9 @@ package Pango.Cairo.Fonts is
 --    Font  - The font face
 --    Slant - To set
 --
-   procedure Set_Slant
-             (  Font  : in out Pango_Cairo_Font;
-                Slant : Cairo_Font_Slant
-             );
+   procedure Set_Slant (Font  : in out Pango_Cairo_Font;
+                        Slant : Cairo_Font_Slant);
+
 --
 -- Set_Type -- Change font type
 --
@@ -229,24 +224,21 @@ package Pango.Cairo.Fonts is
 --
 -- The procedure tries to retain the font family and other settings.
 --
-   procedure Set_Type
-             (  Font : in out Pango_Cairo_Font;
-                Mode : Font_Type
-             );
+   procedure Set_Type (Font : in out Pango_Cairo_Font;
+                       Mode : Font_Type);
+
 --
 -- Set_Weight -- Set font weight
 --
 --    Font   - The font face
 --    Weight - To set
 --
-   procedure Set_Weight
-             (  Font   : in out Pango_Cairo_Font;
-                Weight : Cairo_Font_Weight
-             );
-   procedure Set_Weight
-             (  Font   : in out Pango_Cairo_Font;
-                Weight : Pango.Enums.Weight
-             );
+   procedure Set_Weight (Font   : in out Pango_Cairo_Font;
+                         Weight : Cairo_Font_Weight);
+
+   procedure Set_Weight (Font   : in out Pango_Cairo_Font;
+                         Weight : Pango.Enums.Weight);
+
 --
 -- Show_Markup -- Render text
 --
@@ -257,11 +249,10 @@ package Pango.Cairo.Fonts is
 -- For the toy font the result  is equivalent  to the extent of the text
 -- with all tags stripped.
 --
-   procedure Show_Markup
-             (  Font    : Pango_Cairo_Font;
-                Context : Cairo_Context;
-                Text    : UTF8_String
-             );
+   procedure Show_Markup (Font    : Pango_Cairo_Font;
+                          Context : Cairo_Context;
+                          Text    : UTF8_String);
+
 --
 -- Show_Text -- Get extents of a text
 --
@@ -269,93 +260,91 @@ package Pango.Cairo.Fonts is
 --    Context - The cairo context
 --    Text    - The text to render
 --
-   procedure Show_Text
-             (  Font    : Pango_Cairo_Font;
-                Context : Cairo_Context;
-                Text    : UTF8_String
-             );
+   procedure Show_Text (Font    : Pango_Cairo_Font;
+                        Context : Cairo_Context;
+                        Text    : UTF8_String);
+
 --
 -- Store -- Store font face into the stream
 --
 --    Stream - The stream to write
 --    Font   - The font face to store
 --
-   procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Font   : Pango_Cairo_Font
-             );
+   procedure Store (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+                    Font   : Pango_Cairo_Font);
+
 private
    type Pango_Font_Description_Object is
-      new Ada.Finalization.Limited_Controlled with
-   record
-      Count       : Natural := 0;
-      Description : Pango_Font_Description := null;
-   end record;
+     new Ada.Finalization.Limited_Controlled with
+      record
+         Count       : Natural := 0;
+         Description : Pango.Font.Pango_Font_Description := null;
+      end record;
+
    type Pango_Font_Description_Object_Ptr is
-      access Pango_Font_Description_Object;
+     access Pango_Font_Description_Object;
+
    overriding
-      procedure Finalize
-                (  Object : in out Pango_Font_Description_Object
-                );
+   procedure Finalize (Object : in out Pango_Font_Description_Object);
 
    type Pango_Font_Description_Handle is
-      new Ada.Finalization.Controlled with
-   record
-      Ptr : Pango_Font_Description_Object_Ptr;
-   end record;
-   function Create_Text_Layout
-            (  Handle  : Pango_Font_Description_Handle;
-               Context : Cairo_Context;
-               Text    : UTF8_String
-            )  return Pango_Layout;
-   function Create_Markup_Layout
-            (  Handle  : Pango_Font_Description_Handle;
-               Context : Cairo_Context;
-               Text    : UTF8_String
-            )  return Pango_Layout;
+     new Ada.Finalization.Controlled with
+      record
+         Ptr : Pango_Font_Description_Object_Ptr;
+      end record;
+
+   function Create_Text_Layout (Handle  : Pango_Font_Description_Handle;
+                                Context : Cairo_Context;
+                                Text    : UTF8_String) return Pango_Layout;
+
+   function Create_Markup_Layout (Handle  : Pango_Font_Description_Handle;
+                                  Context : Cairo_Context;
+                                  Text    : UTF8_String) return Pango_Layout;
+
    overriding
-      procedure Adjust (Handle : in out Pango_Font_Description_Handle);
+   procedure Adjust (Handle : in out Pango_Font_Description_Handle);
+
    overriding
-      procedure Finalize
-                (  Handle : in out Pango_Font_Description_Handle
-                );
-   function Ref (Description : Pango_Font_Description)
-      return Pango_Font_Description_Handle;
+   procedure Finalize (Handle : in out Pango_Font_Description_Handle);
+
+   function Ref (Description : Pango.Font.Pango_Font_Description)
+                 return Pango_Font_Description_Handle;
 
    type Cairo_Font_Face_Handle is
-      new Ada.Finalization.Controlled with
-   record
-      Face : Cairo_Font_Face := Null_Font_Face;
-   end record;
+     new Ada.Finalization.Controlled with
+      record
+         Face : Cairo_Font_Face := Null_Font_Face;
+      end record;
+
    procedure Check (Font : Cairo_Font_Face_Handle);
+
+   function Get_Family (Handle : Cairo_Font_Face_Handle) return UTF8_String;
+
    function Get_Family (Handle : Cairo_Font_Face_Handle)
-      return UTF8_String;
-   function Get_Family (Handle : Cairo_Font_Face_Handle)
-      return Interfaces.C.Strings.chars_ptr;
-   function Get_Slant (Handle : Cairo_Font_Face_Handle)
-      return Cairo_Font_Slant;
+                        return Interfaces.C.Strings.chars_ptr;
+
+   function Get_Slant (Handle : Cairo_Font_Face_Handle) return Cairo_Font_Slant;
+
    function Get_Weight (Handle : Cairo_Font_Face_Handle)
-      return Cairo_Font_Weight;
-   overriding
-      procedure Adjust (Handle : in out Cairo_Font_Face_Handle);
-   overriding
-      procedure Finalize (Handle : in out Cairo_Font_Face_Handle);
+                        return Cairo_Font_Weight;
 
-   type Pango_Cairo_Font (Mode : Font_Type := Null_Font) is record
-      case Mode is
-         when Null_Font =>
-            null;
-         when Toy_Font =>
-            Toy_Face : Cairo_Font_Face_Handle;
-         when Pango_Font =>
-            Pango_Handle : Pango_Font_Description_Handle;
-      end case;
-   end record;
+   overriding procedure Adjust (Handle : in out Cairo_Font_Face_Handle);
+   overriding procedure Finalize (Handle : in out Cairo_Font_Face_Handle);
 
-   procedure Set_Font
-             (  Context : Cairo_Context;
-                Font    : Cairo_Font_Face_Handle
-             );
+   type Pango_Cairo_Font (Mode : Font_Type := Null_Font) is
+      record
+         case Mode is
+            when Null_Font =>
+               null;
+            when Toy_Font =>
+               Toy_Face : Cairo_Font_Face_Handle;
+            when Pango_Font =>
+               Pango_Handle : Pango_Font_Description_Handle;
+         end case;
+      end record;
+
+   procedure Set_Font (Context : Cairo_Context;
+                       Font    : Cairo_Font_Face_Handle);
 
    function Strip_Tags (Text : UTF8_String) return UTF8_String;
 

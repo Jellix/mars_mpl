@@ -15,12 +15,13 @@ with Gtk.Main;
 with Gtk.Switch;
 with Gtk.Window;
 
-with Gtk.Gauge.Round_270_60s;
+with Gtk.Gauge.Elliptic_180;
 with Gtk.Oscilloscope;
 
 package body GUI is
 
-   type Leg_Switches is array (Landing_Legs.Legs_Index) of Gtk.Switch.Gtk_Switch;
+   type Leg_Switches is
+     array (Landing_Legs.Legs_Index) of Gtk.Switch.Gtk_Switch;
 
    type Dynamic_Elements is
       record
@@ -37,11 +38,12 @@ package body GUI is
          Height_Channel    : Gtk.Oscilloscope.Channel_Number;
          Touchdown_Channel : Gtk.Oscilloscope.Channel_Number;
          Thruster_Channel  : Gtk.Oscilloscope.Channel_Number;
-         Tachometer        : Gtk.Gauge.Round_270_60s.Gtk_Gauge_Round_270_60s;
+         Tachometer        : Gtk.Gauge.Elliptic_180.Gtk_Gauge_Elliptic_180;
       end record;
    type Main_Window is access all Main_Window_Record'Class;
 
-   package Windows_CB is new Gtk.Handlers.Callback (Widget_Type => Main_Window_Record);
+   package Windows_CB is
+     new Gtk.Handlers.Callback (Widget_Type => Main_Window_Record);
 
    task GUI_Task;
 
@@ -190,11 +192,11 @@ package body GUI is
 
             declare
                use type Gtk.Enums.String_Lists.Controlled_String_List;
-               Gauge : Gtk.Gauge.Round_270_60s.Gtk_Gauge_Round_270_60s;
+               Gauge : Gtk.Gauge.Elliptic_180.Gtk_Gauge_Elliptic_180;
                List  : constant Gtk.Enums.String_Lists.Controlled_String_List
                  := "0" / "20" / "40" / "60" / "80" / "100" / "120" / "140";
             begin
-               Gtk.Gauge.Round_270_60s.Gtk_New
+               Gtk.Gauge.Elliptic_180.Gtk_New
                  (Widget  => Gauge,
                   Texts   => List,
                   Sectors => 7);
@@ -268,9 +270,10 @@ package body GUI is
       Gtk.Main.Init;
       Win := new Main_Window_Record;
       Initialize (Window => Win.all);
-      Windows_CB.Connect (Widget => Win,
-                          Name   => "destroy",
-                          Marsh  => Windows_CB.To_Marshaller (Exit_Main'Access));
+      Windows_CB.Connect
+        (Widget => Win,
+         Name   => "destroy",
+         Marsh  => Windows_CB.To_Marshaller (Exit_Main'Access));
 
       Win.all.Show_All;
 
@@ -305,7 +308,10 @@ package body GUI is
                V       => Glib.Gdouble (Update_State.Height));
             Win.all.Oscilloscope.all.Feed
               (Channel => Win.all.Touchdown_Channel,
-               V       => Glib.Gdouble (Boolean'Pos ((for some L of Update_State.Legs => L = Landing_Legs.Touched_Down))));
+               V       =>
+                 Glib.Gdouble
+                   (Boolean'Pos ((for some L of Update_State.Legs =>
+                                      L = Landing_Legs.Touched_Down))));
             Win.all.Oscilloscope.all.Feed
               (Channel => Win.all.Thruster_Channel,
                V       => Glib.Gdouble (Boolean'Pos (Update_State.Thruster)));
