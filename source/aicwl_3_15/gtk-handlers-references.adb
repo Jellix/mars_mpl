@@ -55,29 +55,29 @@ package body Gtk.Handlers.References is
    procedure Invalidated (Data : Address; Closure : GClosure);
    pragma Convention (C, Invalidated);
 
-   function Get (Reference : Handler_Reference) return Handler_ID is
+   function Get (Reference : Handler_Reference) return Handler_Id is
    begin
       return (Reference.ID, Reference.Closure);
    end Get;
 
    procedure Invalidated (Data : Address; Closure : GClosure) is
    begin
-      Conversions.To_Pointer (Data).ID := Null_Handler_ID;
+      Conversions.To_Pointer (Data).ID := Null_Handler_Id;
    end Invalidated;
 
    procedure Set
              (  Reference : in out Handler_Reference;
-                Handler   : Handler_ID
+                Handler   : Handler_Id
              )  is
    begin
-      if (  Reference.ID /= Handler.ID
+      if (  Reference.ID /= Handler.Id
          or else
             Reference.Closure /= Handler.Closure
          )
       then
          Finalize (Reference);
-         if Handler.ID /= Null_Handler_ID then
-            Reference.ID      := Handler.ID;
+         if Handler.Id /= Null_Handler_Id then
+            Reference.ID      := Handler.Id;
             Reference.Closure := Handler.Closure;
             Add_Invalidate_Notifier
             (  Handler.Closure,
@@ -95,7 +95,7 @@ package body Gtk.Handlers.References is
 
    procedure Adjust (Reference : in out Handler_Reference) is
    begin
-      if Reference.ID /= Null_Handler_ID then
+      if Reference.ID /= Null_Handler_Id then
          Add_Invalidate_Notifier
          (  Reference.Closure,
             Reference'Address,
@@ -106,9 +106,9 @@ package body Gtk.Handlers.References is
 
    procedure Finalize (Reference : in out Handler_Reference) is
    begin
-      if Reference.ID /= Null_Handler_ID then
+      if Reference.ID /= Null_Handler_Id then
          Invalidate (Reference.Closure);
-         Reference.ID := Null_Handler_ID;
+         Reference.ID := Null_Handler_Id;
       end if;
    end Finalize;
 

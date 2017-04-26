@@ -26,7 +26,7 @@
 --____________________________________________________________________--
 
 with Ada.Strings;
-with GLib.Generic_Properties;
+with Glib.Generic_Properties;
 
 package Gtk.Layered.Alignment_Property is
    new GLib.Generic_Properties.Generic_Enumeration_Property

@@ -147,4 +147,4 @@ private
    pragma Convention (C, Notifier);
    Notifier_Ptr : constant Weak_Notify := Notifier'Access;
 
-end GLib.Object.Weak_References;
+end Glib.Object.Weak_References;

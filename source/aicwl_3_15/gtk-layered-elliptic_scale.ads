@@ -75,31 +75,31 @@ package Gtk.Layered.Elliptic_Scale is
 --
    procedure Add_Elliptic_Scale
              (  Under    : not null access Layer_Location'Class;
-                Step     : GDouble;
+                Step     : Gdouble;
                 First    : Tick_Number        := Tick_Number'Last;
                 Skipped  : Tick_Number        := Tick_Number'Last;
                 Outer    : Ellipse_Parameters := Unit_Circle;
                 Inner    : Ellipse_Parameters := Unit_Circle / 2.0;
-                From     : GDouble            := 0.0;
-                Length   : GDouble            := 2.0 * Pi;
-                Width    : GDouble            := 1.0;
+                From     : Gdouble            := 0.0;
+                Length   : Gdouble            := 2.0 * Pi;
+                Width    : Gdouble            := 1.0;
                 Color    : Gdk_Color          := RGB (0.0, 0.0, 0.0);
-                Line_Cap : Cairo_Line_Cap     := CAIRO_LINE_CAP_BUTT;
+                Line_Cap : Cairo_Line_Cap     := Cairo_Line_Cap_Butt;
                 Scaled   : Boolean            := False;
                 Widened  : Boolean            := False
              );
    function Add_Elliptic_Scale
             (  Under    : not null access Layer_Location'Class;
-               Step     : GDouble;
+               Step     : Gdouble;
                First    : Tick_Number        := Tick_Number'Last;
                Skipped  : Tick_Number        := Tick_Number'Last;
                Outer    : Ellipse_Parameters := Unit_Circle;
                Inner    : Ellipse_Parameters := Unit_Circle / 2.0;
-               From     : GDouble            := 0.0;
-               Length   : GDouble            := 2.0 * Pi;
-               Width    : GDouble            := 1.0;
+               From     : Gdouble            := 0.0;
+               Length   : Gdouble            := 2.0 * Pi;
+               Width    : Gdouble            := 1.0;
                Color    : Gdk_Color          := RGB (0.0, 0.0, 0.0);
-               Line_Cap : Cairo_Line_Cap     := CAIRO_LINE_CAP_BUTT;
+               Line_Cap : Cairo_Line_Cap     := Cairo_Line_Cap_Butt;
                Scaled   : Boolean            := False;
                Widened  : Boolean            := False
             )  return not null access Elliptic_Scale_Layer;
@@ -112,7 +112,7 @@ package Gtk.Layered.Elliptic_Scale is
 --
 --    The angle
 --
-   function Get_From (Layer : Elliptic_Scale_Layer) return GDouble;
+   function Get_From (Layer : Elliptic_Scale_Layer) return Gdouble;
 --
 -- Get_Inner -- The parameters of the inner ellipse bounding ticks
 --
@@ -133,7 +133,7 @@ package Gtk.Layered.Elliptic_Scale is
 --
 --    The angle
 --
-   function Get_Length (Layer : Elliptic_Scale_Layer) return GDouble;
+   function Get_Length (Layer : Elliptic_Scale_Layer) return Gdouble;
 --
 -- Get_Line -- Ticks line parameters
 --
@@ -188,8 +188,8 @@ package Gtk.Layered.Elliptic_Scale is
                 Inner  : Ellipse_Parameters;
                 Line   : Line_Parameters;
                 Ticks  : Tick_Parameters;
-                From   : GDouble;
-                Length : GDouble
+                From   : Gdouble;
+                Length : Gdouble
              );
 
    overriding
@@ -238,7 +238,7 @@ package Gtk.Layered.Elliptic_Scale is
    overriding
       procedure Scale
                 (  Layer  : in out Elliptic_Scale_Layer;
-                   Factor : GDouble
+                   Factor : Gdouble
                 );
    overriding
       procedure Set_Property_Value
@@ -269,8 +269,8 @@ private
       Inner   : Ellipse_Parameters;
       Ticks   : Tick_Parameters;
       Line    : Line_Parameters;
-      From    : GDouble;
-      Length  : GDouble;
+      From    : Gdouble;
+      Length  : Gdouble;
       Scaled  : Boolean := False;
       Widened : Boolean := False;
       Updated : Boolean := True;

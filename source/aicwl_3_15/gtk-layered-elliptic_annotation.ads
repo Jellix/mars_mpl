@@ -80,21 +80,21 @@ package Gtk.Layered.Elliptic_Annotation is
 --
    procedure Add_Elliptic_Annotation
              (  Under   : not null access Layer_Location'Class;
-                Texts   : Gtk.Enums.String_List.GList;
-                Step    : GDouble;
+                Texts   : Gtk.Enums.String_List.Glist;
+                Step    : Gdouble;
                 First   : Tick_Number         := Tick_Number'Last;
                 Skipped : Tick_Number         := Tick_Number'Last;
                 Ellipse : Ellipse_Parameters  := Unit_Circle;
-                From    : GDouble             := 0.0;
-                Length  : GDouble             := 2.0 * Pi;
+                From    : Gdouble             := 0.0;
+                Length  : Gdouble             := 2.0 * Pi;
                 Face    : Pango_Cairo_Font :=
                              Create_Toy
                              (  Family => "arial",
-                                Slant  => CAIRO_FONT_SLANT_NORMAL,
-                                Weight => CAIRO_FONT_WEIGHT_NORMAL
+                                Slant  => Cairo_Font_Slant_Normal,
+                                Weight => Cairo_Font_Weight_Normal
                              );
-                Height  : GDouble             := 12.0;
-                Stretch : GDouble             := 1.0;
+                Height  : Gdouble             := 12.0;
+                Stretch : Gdouble             := 1.0;
                 Mode    : Text_Transformation := Moved_Centered;
                 Color   : Gdk_Color           := RGB (0.0, 0.0, 0.0);
                 Markup  : Boolean             := False;
@@ -103,20 +103,20 @@ package Gtk.Layered.Elliptic_Annotation is
    procedure Add_Elliptic_Annotation
              (  Under   : not null access Layer_Location'Class;
                 Texts   : Controlled_String_List;
-                Step    : GDouble;
+                Step    : Gdouble;
                 First   : Tick_Number         := Tick_Number'Last;
                 Skipped : Tick_Number         := Tick_Number'Last;
                 Ellipse : Ellipse_Parameters  := Unit_Circle;
-                From    : GDouble             := 0.0;
-                Length  : GDouble             := 2.0 * Pi;
+                From    : Gdouble             := 0.0;
+                Length  : Gdouble             := 2.0 * Pi;
                 Face    : Pango_Cairo_Font :=
                              Create_Toy
                              (  Family => "arial",
-                                Slant  => CAIRO_FONT_SLANT_NORMAL,
-                                Weight => CAIRO_FONT_WEIGHT_NORMAL
+                                Slant  => Cairo_Font_Slant_Normal,
+                                Weight => Cairo_Font_Weight_Normal
                              );
-                Height  : GDouble             := 12.0;
-                Stretch : GDouble             := 1.0;
+                Height  : Gdouble             := 12.0;
+                Stretch : Gdouble             := 1.0;
                 Mode    : Text_Transformation := Moved_Centered;
                 Color   : Gdk_Color           := RGB (0.0, 0.0, 0.0);
                 Markup  : Boolean             := False;
@@ -125,7 +125,7 @@ package Gtk.Layered.Elliptic_Annotation is
    procedure Add_Elliptic_Annotation
              (  Under     : not null access Layer_Location'Class;
                 Texts     : UTF8_String;
-                Step      : GDouble;
+                Step      : Gdouble;
                 First     : Tick_Number         := Tick_Number'Last;
                 Skipped   : Tick_Number         := Tick_Number'Last;
                 Ellipse   : Ellipse_Parameters  := Unit_Circle;

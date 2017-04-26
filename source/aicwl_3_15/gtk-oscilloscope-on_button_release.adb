@@ -40,16 +40,16 @@ separate (Gtk.Oscilloscope)
 begin
    case Get_Button (Event) is
       when 1 =>
-         if Oscilloscope.Selection.Area /= null then
-            Oscilloscope.Change_Selection
-            (  Oscilloscope.Mouse_Event (Event, False)
+         if Oscilloscope.all.Selection.all.Area /= null then
+            Oscilloscope.all.Change_Selection
+            (  Oscilloscope.all.Mouse_Event (Event, False)
             );
-            Box := Oscilloscope.Selection.Area.Get_Box;
+            Box := Oscilloscope.all.Selection.all.Area.all.Get_Box;
             if Box.X2 - Box.X1 < 2.0 or else Box.Y2 - Box.Y1 < 2.0 then
-               Oscilloscope.Restore_State;
-               Free (Oscilloscope.Selection.Area);
+               Oscilloscope.all.Restore_State;
+               Free (Oscilloscope.all.Selection.all.Area);
             else
-               case Oscilloscope.Selection_Mode is
+               case Oscilloscope.all.Selection_Mode is
                   when Interactive =>
                      Gtk_New (Menu);
                         -- Zoom in
@@ -221,15 +221,15 @@ begin
                   when User_Action =>
                      declare
                         Box : constant Cairo_Box :=
-                              Oscilloscope.Selection.Area.Get_Box;
+                              Oscilloscope.all.Selection.all.Area.all.Get_Box;
                      begin
-                        Free (Oscilloscope.Selection.Area);
-                        Oscilloscope.Restore_State;
-                        Oscilloscope.On_Selection (Box);
+                        Free (Oscilloscope.all.Selection.all.Area);
+                        Oscilloscope.all.Restore_State;
+                        Oscilloscope.all.On_Selection (Box);
                      end;
                   when None =>
-                     Free (Oscilloscope.Selection.Area);
-                     Oscilloscope.Restore_State;
+                     Free (Oscilloscope.all.Selection.all.Area);
+                     Oscilloscope.all.Restore_State;
                end case;
             end if;
          end if;

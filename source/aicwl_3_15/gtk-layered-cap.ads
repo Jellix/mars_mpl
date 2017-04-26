@@ -23,10 +23,9 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Cairo.Pattern;                  use Cairo.Pattern;
-with Gtk.Enums;                      use Gtk.Enums;
+with Gtk.Enums;
 with Gtk.Layered.Abstract_Bordered;  use Gtk.Layered.Abstract_Bordered;
 
 package Gtk.Layered.Cap is
@@ -69,167 +68,165 @@ package Gtk.Layered.Cap is
 --    Constraint_Error - Wrong parameters
 --
    procedure Add_Cap
-             (  Under  : not null access Layer_Location'Class;
-                Center : Cairo_Tuple := (0.0, 0.0);
-                Radius : GDouble     := 1.0;
-                From   : Gdk_Color   := RGB (1.0, 1.0, 1.0);
-                To     : Gdk_Color   := RGB (0.5, 0.5, 0.5);
-                Border_Width         : GDouble    := 0.0;
-                Border_Depth         : GDouble    := 1.0;
-                Border_Color  : Border_Color_Type := Default_Color;
-                Border_Shadow : Gtk_Shadow_Type   := Shadow_Out;
-                Deepened      : Boolean           := False;
-                Scaled        : Boolean           := False;
-                Widened       : Boolean           := False
-             );
+     (Under         : not null access Layer_Location'Class;
+      Center        : Cairo_Tuple               := (0.0, 0.0);
+      Radius        : Gdouble                   := 1.0;
+      From          : Gdk_Color                 := RGB (1.0, 1.0, 1.0);
+      To            : Gdk_Color                 := RGB (0.5, 0.5, 0.5);
+      Border_Width  : Gdouble                   := 0.0;
+      Border_Depth  : Gdouble                   := 1.0;
+      Border_Color  : Border_Color_Type         := Default_Color;
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type := Gtk.Enums.Shadow_Out;
+      Deepened      : Boolean                   := False;
+      Scaled        : Boolean                   := False;
+      Widened       : Boolean                   := False);
+
    function Add_Cap
-            (  Under  : not null access Layer_Location'Class;
-               Center : Cairo_Tuple := (0.0, 0.0);
-               Radius : GDouble     := 1.0;
-               From   : Gdk_Color   := RGB (1.0, 1.0, 1.0);
-               To     : Gdk_Color   := RGB (0.5, 0.5, 0.5);
-               Border_Width         : GDouble    := 0.0;
-               Border_Depth         : GDouble    := 1.0;
-               Border_Color  : Border_Color_Type := Default_Color;
-               Border_Shadow : Gtk_Shadow_Type   := Shadow_Out;
-               Deepened      : Boolean           := False;
-               Scaled        : Boolean           := False;
-               Widened       : Boolean           := False
-            )  return not null access Cap_Layer;
---
--- Get_Center -- The cap center
---
---    Layer - The cap layer
---
--- Returns :
---
---    The location of the cap
---
+     (Under         : not null access Layer_Location'Class;
+      Center        : Cairo_Tuple               := (0.0, 0.0);
+      Radius        : Gdouble                   := 1.0;
+      From          : Gdk_Color                 := RGB (1.0, 1.0, 1.0);
+      To            : Gdk_Color                 := RGB (0.5, 0.5, 0.5);
+      Border_Width  : Gdouble                   := 0.0;
+      Border_Depth  : Gdouble                   := 1.0;
+      Border_Color  : Border_Color_Type         := Default_Color;
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type := Gtk.Enums.Shadow_Out;
+      Deepened      : Boolean                   := False;
+      Scaled        : Boolean                   := False;
+      Widened       : Boolean                   := False)
+      return not null access Cap_Layer;
+
+   --
+   -- Get_Center -- The cap center
+   --
+   --    Layer - The cap layer
+   --
+   -- Returns :
+   --
+   --    The location of the cap
+   --
    function Get_Center (Layer : Cap_Layer) return Cairo_Tuple;
---
--- Get_From -- The color in the upper left corner
---
---    Layer - The cap layer
---
--- Returns :
---
---    The color
---
+
+   --
+   -- Get_From -- The color in the upper left corner
+   --
+   --    Layer - The cap layer
+   --
+   -- Returns :
+   --
+   --    The color
+   --
    function Get_From (Layer : Cap_Layer) return Gdk_Color;
---
--- Get_Radius -- The cap radius
---
---    Layer - The cap layer
---
--- Returns :
---
---    The radius
---
-   function Get_Radius (Layer : Cap_Layer) return GDouble;
---
--- Get_To -- The color in the lower right corner
---
---    Layer - The cap layer
---
--- Returns :
---
---    The color
---
+
+   --
+   -- Get_Radius -- The cap radius
+   --
+   --    Layer - The cap layer
+   --
+   -- Returns :
+   --
+   --    The radius
+   --
+   function Get_Radius (Layer : Cap_Layer) return Gdouble;
+
+   --
+   -- Get_To -- The color in the lower right corner
+   --
+   --    Layer - The cap layer
+   --
+   -- Returns :
+   --
+   --    The color
+   --
    function Get_To (Layer : Cap_Layer) return Gdk_Color;
---
--- Set -- Parameters of the cap
---
---    Layer         - The cap layer
---    Center        - Of the cap
---    Radius        - The cap radius
---    From          - The color in upper left corner
---    To            - The color in lower right corner
---    Border_Width  - Border width
---    Border_Depth  - Border depth
---    Border_Color  - The border color
---    Border_Shadow - The border shape
---
--- Exceptions :
---
---    Constraint_Error - Wrong parameters
---
-   procedure Set
-             (  Layer         : in out Cap_Layer;
-                Center        : Cairo_Tuple;
-                Radius        : GDouble;
-                From          : Gdk_Color;
-                To            : Gdk_Color;
-                Border_Width  : GDouble;
-                Border_Depth  : GDouble;
-                Border_Color  : Border_Color_Type;
-                Border_Shadow : Gtk_Shadow_Type
-             );
+
+   --
+   -- Set -- Parameters of the cap
+   --
+   --    Layer         - The cap layer
+   --    Center        - Of the cap
+   --    Radius        - The cap radius
+   --    From          - The color in upper left corner
+   --    To            - The color in lower right corner
+   --    Border_Width  - Border width
+   --    Border_Depth  - Border depth
+   --    Border_Color  - The border color
+   --    Border_Shadow - The border shape
+   --
+   -- Exceptions :
+   --
+   --    Constraint_Error - Wrong parameters
+   --
+   procedure Set (Layer         : in out Cap_Layer;
+                  Center        : Cairo_Tuple;
+                  Radius        : Gdouble;
+                  From          : Gdk_Color;
+                  To            : Gdk_Color;
+                  Border_Width  : Gdouble;
+                  Border_Depth  : Gdouble;
+                  Border_Color  : Border_Color_Type;
+                  Border_Shadow : Gtk.Enums.Gtk_Shadow_Type);
 
    overriding
-      function Add
-               (  Under  : not null access Layer_Location'Class;
-                  Stream : not null access Root_Stream_Type'Class
-               )  return not null access Cap_Layer;
+   function Add (Under  : not null access Layer_Location'Class;
+                 Stream : not null access Root_Stream_Type'Class)
+                 return not null access Cap_Layer;
+
    overriding
-      procedure Draw_Contents
-                (  Layer   : in out Cap_Layer;
-                   Context : Cairo_Context;
-                   Area    : Gdk_Rectangle
-                );
+   procedure Draw_Contents (Layer   : in out Cap_Layer;
+                            Context : Cairo_Context;
+                            Area    : Gdk_Rectangle);
+
    overriding
-      procedure Finalize (Layer : in out Cap_Layer);
+   procedure Finalize (Layer : in out Cap_Layer);
+
    overriding
-      function Get_Properties_Number (Layer : Cap_Layer) return Natural;
+   function Get_Properties_Number (Layer : Cap_Layer) return Natural;
+
    overriding
-      function Get_Property_Specification
-               (  Layer    : Cap_Layer;
-                  Property : Positive
-               )  return Param_Spec;
+   function Get_Property_Specification (Layer    : Cap_Layer;
+                                        Property : Positive) return Param_Spec;
+
    overriding
-      function Get_Property_Value
-               (  Layer    : Cap_Layer;
-                  Property : Positive
-               )  return GValue;
+   function Get_Property_Value (Layer    : Cap_Layer;
+                                Property : Positive) return GValue;
+
    overriding
-      procedure Move
-                (  Layer  : in out Cap_Layer;
-                   Offset : Cairo_Tuple
-                );
+   procedure Move (Layer  : in out Cap_Layer;
+                   Offset : Cairo_Tuple);
+
    overriding
-      procedure Restore
-                (  Stream : in out Root_Stream_Type'Class;
-                   Layer  : in out Cap_Layer
-                );
+   procedure Restore (Stream : in out Root_Stream_Type'Class;
+                      Layer  : in out Cap_Layer);
+
    overriding
-      procedure Scale
-                (  Layer  : in out Cap_Layer;
-                   Factor : GDouble
-                );
+   procedure Scale (Layer  : in out Cap_Layer;
+                    Factor : Gdouble);
+
    overriding
-      procedure Set_Contents_Path
-                (  Layer   : in out Cap_Layer;
-                   Context : Cairo_Context;
-                   Area    : Gdk_Rectangle
-                );
+   procedure Set_Contents_Path (Layer   : in out Cap_Layer;
+                                Context : Cairo_Context;
+                                Area    : Gdk_Rectangle);
+
    overriding
-      procedure Set_Property_Value
-                (  Layer    : in out Cap_Layer;
-                   Property : Positive;
-                   Value    : GValue
-                );
+   procedure Set_Property_Value (Layer    : in out Cap_Layer;
+                                 Property : Positive;
+                                 Value    : GValue);
+
    overriding
-      procedure Store
-                (  Stream : in out Root_Stream_Type'Class;
-                   Layer  : Cap_Layer
-                );
+   procedure Store (Stream : in out Root_Stream_Type'Class;
+                    Layer  : Cap_Layer);
+
 private
-   type Cap_Layer is new Abstract_Bordered_Layer with record
-      Center  : Cairo_Tuple;
-      Radius  : GDouble;
-      From    : Gdk_Color;
-      To      : Gdk_Color;
-      Mask    : Cairo_Pattern;
-      Pattern : Cairo_Pattern;
-   end record;
+
+   type Cap_Layer is new Abstract_Bordered_Layer with
+      record
+         Center  : Cairo_Tuple;
+         Radius  : Gdouble;
+         From    : Gdk_Color;
+         To      : Gdk_Color;
+         Mask    : Cairo_Pattern;
+         Pattern : Cairo_Pattern;
+      end record;
 
 end Gtk.Layered.Cap;

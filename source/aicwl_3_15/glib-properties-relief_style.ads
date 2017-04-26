@@ -29,13 +29,13 @@
 --  corresponding to Gtk_Relief_Style. For  the  latter  properties  are
 --  defined by instantiation of Generic_Enumeration_Property.
 --
-with GLib.Generic_Properties;
+with Glib.Generic_Properties;
 with Gtk.Enums;
 
-package GLib.Properties.Relief_Style is
+package Glib.Properties.Relief_Style is
    package Property is
       new GLib.Generic_Properties.Generic_Enumeration_Property
           (  "relief-style",
              Gtk.Enums.Gtk_Relief_Style
           );
-end GLib.Properties.Relief_Style;
+end Glib.Properties.Relief_Style;

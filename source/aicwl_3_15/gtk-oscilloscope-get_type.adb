@@ -54,7 +54,7 @@ begin
       )    )
    then
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Boxed
          (  Name       => "background-color",
             Boxed_Type => Gdk_Color_Type,
@@ -62,7 +62,7 @@ begin
             Blurb      => "The background color"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Double
          (  Name    => "background-opacity",
             Nick    => "Background opacity",
@@ -72,7 +72,7 @@ begin
             Blurb   => "The background opacity"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Uint
          (  Name    => "waveform-proximity",
             Nick    => "Proximity",
@@ -84,7 +84,7 @@ begin
                        "of the waveform"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Boxed
          (  Name       => "selection-color",
             Boxed_Type => Gdk_Color_Type,
@@ -95,7 +95,7 @@ begin
       -- Menus
       --
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_String
          (  Name    => "menu-cancel",
             Default => "Cancel selection",
@@ -104,7 +104,7 @@ begin
                        "of the selection"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_String
          (  Name    => "menu-copy-values",
             Default => "Get values at the mouse cursor",
@@ -113,7 +113,7 @@ begin
                        "values under the cursor"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_String
          (  Name    => "menu-copy-differences",
             Default => "Subtract values at the mouse cursor",
@@ -123,7 +123,7 @@ begin
                        "under the cursor"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_String
          (  Name    => "menu-copy-range",
             Default => "Get differences between the margins",
@@ -133,7 +133,7 @@ begin
                        "the margins of the selection box"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_String
          (  Name    => "menu-latest",
             Default => "Latest data",
@@ -142,7 +142,7 @@ begin
                        "showing the latest data"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_String
          (  Name    => "menu-pause",
             Default => "Hold",
@@ -151,7 +151,7 @@ begin
                        "sweepers"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_String
          (  Name    => "menu-redo",
             Default => "Redo zooming",
@@ -159,7 +159,7 @@ begin
             Blurb   => "The menu item label redo"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_String
          (  Name    => "menu-release",
             Default => "Release",
@@ -168,7 +168,7 @@ begin
                        "sweepers"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_String
          (  Name    => "menu-snapshot",
             Default => "Snapshot",
@@ -177,7 +177,7 @@ begin
                        "oscilloscope's contents"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_String
          (  Name    => "menu-toggle-grid",
             Default => "Toggle grid",
@@ -185,7 +185,7 @@ begin
             Blurb   => "The menu item label for toggling grid"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_String
          (  Name    => "menu-toggle-interpolation",
             Default => "Toggle interpolation mode",
@@ -194,7 +194,7 @@ begin
                        "interpolation mode"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_String
          (  Name    => "menu-undo",
             Default => "Undo zooming",
@@ -202,7 +202,7 @@ begin
             Blurb   => "The menu item label undo"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_String
          (  Name    => "menu-zoom-in",
             Default => "Zoom in",
@@ -211,7 +211,7 @@ begin
                        "the selected area"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_String
          (  Name    => "menu-zoom-in-t",
             Default => "Zoom in time",
@@ -220,7 +220,7 @@ begin
                        "the selected horizontal range"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_String
          (  Name    => "menu-zoom-in-v",
             Default => "Zoom in values",
@@ -229,7 +229,7 @@ begin
                        "the selected vertical range"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_String
          (  Name    => "menu-zoom-out",
             Default => "Zoom out",
@@ -238,7 +238,7 @@ begin
                        "of the selected area"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_String
          (  Name    => "menu-zoom-out-t",
             Default => "Zoom out time",
@@ -247,7 +247,7 @@ begin
                        "of the selected horizontal range"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_String
          (  Name    => "menu-zoom-out-v",
             Default => "Zoom out values",
@@ -259,7 +259,7 @@ begin
       -- Time axis properties
       --
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Uint
          (  Name       => "time-axis-height",
             Minimum    => 1,
@@ -271,7 +271,7 @@ begin
                           "axis is shown"
       )  );
       Install_Style
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Cairo.Line_Cap_Property.Gnew_Enum
          (  Name    => "time-line-cap",
             Nick    => "Time line cap",
@@ -279,7 +279,7 @@ begin
             Default => Cairo_Line_Cap_Round
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Boxed
          (  Name       => "time-line-color",
             Boxed_Type => Gdk_Color_Type,
@@ -287,7 +287,7 @@ begin
             Blurb      => "The color of the time axis line"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Uint
          (  Name       => "time-line-width",
             Minimum    => 0,
@@ -297,7 +297,7 @@ begin
             Blurb      => "The width of the time axis line"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Boxed
          (  Name       => "time-major-tick-color",
             Boxed_Type => Gdk_Color_Type,
@@ -305,7 +305,7 @@ begin
             Blurb      => "The color of the time axis major tick"
       )  );
       Install_Style
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Cairo.Line_Cap_Property.Gnew_Enum
          (  Name    => "time-major-tick-cap",
             Nick    => "Time major cap",
@@ -314,7 +314,7 @@ begin
                        "time axis major ticks"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Uint
          (  Name       => "time-major-tick-width",
             Minimum    => 0,
@@ -324,7 +324,7 @@ begin
             Blurb      => "The width of the time axis major tick"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Boxed
          (  Name       => "time-minor-tick-color",
             Boxed_Type => Gdk_Color_Type,
@@ -332,7 +332,7 @@ begin
             Blurb      => "The color of the time axis minor tick"
       )  );
       Install_Style
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Cairo.Line_Cap_Property.Gnew_Enum
          (  Name    => "time-minor-tick-cap",
             Nick    => "Time minor cap",
@@ -341,7 +341,7 @@ begin
                        "time axis minor ticks"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Uint
          (  Name       => "time-minor-tick-width",
             Minimum    => 0,
@@ -351,7 +351,7 @@ begin
             Blurb      => "The width of the time axis minor tick"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Uint
          (  Name       => "time-tick-height",
             Minimum    => 1,
@@ -361,7 +361,7 @@ begin
             Blurb      => "The height of the time axis ticks"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Uint
          (  Name       => "time-tick-step",
             Minimum    => 1,
@@ -371,7 +371,7 @@ begin
             Blurb      => "The approximate step of time ticks"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Boxed
          (  Name       => "time-text-border-color",
             Boxed_Type => Gdk_Color_Type,
@@ -380,7 +380,7 @@ begin
                           "the annotation texts of the time axis"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Double
          (  Name       => "time-text-border-opacity",
             Minimum    => 0.0,
@@ -391,7 +391,7 @@ begin
                           "the annotation texts of the time axis"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Uint
          (  Name       => "time-text-border",
             Minimum    => 0,
@@ -403,7 +403,7 @@ begin
                           "the text of a time axis"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Int
          (  Name       => "time-text-overlap",
             Minimum    => Gint'First,
@@ -422,7 +422,7 @@ begin
       -- Values axis properties
       --
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Uint
          (  Name       => "values-axis-width",
             Minimum    => 1,
@@ -434,7 +434,7 @@ begin
                           "axis is shown"
       )  );
       Install_Style
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Cairo.Line_Cap_Property.Gnew_Enum
          (  Name    => "values-line-cap",
             Nick    => "Values line cap",
@@ -442,7 +442,7 @@ begin
             Default => Cairo_Line_Cap_Round
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Boxed
          (  Name       => "values-line-color",
             Boxed_Type => Gdk_Color_Type,
@@ -450,7 +450,7 @@ begin
             Blurb      => "The color of the values axis line"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Uint
          (  Name       => "values-line-width",
             Minimum    => 0,
@@ -460,7 +460,7 @@ begin
             Blurb      => "The width of the values axis line"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Boxed
          (  Name       => "values-major-tick-color",
             Boxed_Type => Gdk_Color_Type,
@@ -468,7 +468,7 @@ begin
             Blurb      => "The color of the values axis major tick"
       )  );
       Install_Style
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Cairo.Line_Cap_Property.Gnew_Enum
          (  Name    => "values-major-tick-cap",
             Nick    => "Values major cap",
@@ -477,7 +477,7 @@ begin
                        "values axis major ticks"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Uint
          (  Name       => "values-major-tick-width",
             Minimum    => 0,
@@ -487,7 +487,7 @@ begin
             Blurb      => "The width of the values axis major tick"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Boxed
          (  Name       => "values-minor-tick-color",
             Boxed_Type => Gdk_Color_Type,
@@ -495,7 +495,7 @@ begin
             Blurb      => "The color of the values axis minor tick"
       )  );
       Install_Style
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Cairo.Line_Cap_Property.Gnew_Enum
          (  Name    => "values-minor-tick-cap",
             Nick    => "Values minor cap",
@@ -504,7 +504,7 @@ begin
                        "values axis minor ticks"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Uint
          (  Name       => "values-minor-tick-width",
             Minimum    => 0,
@@ -514,7 +514,7 @@ begin
             Blurb      => "The width of the values axis minor tick"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Uint
          (  Name       => "values-tick-width",
             Minimum    => 1,
@@ -524,7 +524,7 @@ begin
             Blurb      => "The width of the values axis ticks"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Uint
          (  Name       => "values-tick-step",
             Minimum    => 1,
@@ -534,7 +534,7 @@ begin
             Blurb      => "The approximate step of time ticks"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Boxed
          (  Name       => "values-text-border-color",
             Boxed_Type => Gdk_Color_Type,
@@ -543,7 +543,7 @@ begin
                           "the annotation texts of the values axis"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Double
          (  Name       => "values-text-border-opacity",
             Minimum    => 0.0,
@@ -554,7 +554,7 @@ begin
                           "the annotation texts of the values axis"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Uint
          (  Name       => "values-text-border",
             Minimum    => 0,
@@ -566,7 +566,7 @@ begin
                           "the text of a values axis"
       )  );
       Install_Style_Property
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Gnew_Int
          (  Name       => "values-text-overlap",
             Minimum    => Gint'First,
@@ -585,7 +585,7 @@ begin
       -- Waveform properties
       --
       Install_Style
-      (  Class_Ref (Class_Record.The_Type),
+      (  Class_Ref (Class_Record.all.The_Type),
          Cairo.Line_Cap_Property.Gnew_Enum
          (  Name    => "waveform-line-cap",
             Nick    => "Waeform line cap",
@@ -593,5 +593,5 @@ begin
             Default => Cairo_Line_Cap_Round
       )  );
    end if;
-   return Class_Record.The_Type;
+   return Class_Record.all.The_Type;
 end Get_Type;

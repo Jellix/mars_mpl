@@ -25,7 +25,7 @@
 --  executable file might be covered by the GNU Public License.       --
 --____________________________________________________________________--
 
-with GLib.Properties.Creation;  use GLib.Properties.Creation;
+with Glib.Properties.Creation;  use Glib.Properties.Creation;
 with Gtk.Layered.Stream_IO;     use Gtk.Layered.Stream_IO;
 
 with Ada.Unchecked_Deallocation;
@@ -70,11 +70,11 @@ package body Gtk.Layered.Arc is
    procedure Add_Arc
              (  Under    : not null access Layer_Location'Class;
                 Ellipse  : Ellipse_Parameters := Unit_Circle;
-                From     : GDouble            := 0.0;
-                Length   : GDouble            := 2.0 * Pi;
-                Width    : GDouble            := 1.0;
+                From     : Gdouble            := 0.0;
+                Length   : Gdouble            := 2.0 * Pi;
+                Width    : Gdouble            := 1.0;
                 Color    : Gdk_Color          := RGB (0.0, 0.0, 0.0);
-                Line_Cap : Cairo_Line_Cap     := CAIRO_LINE_CAP_BUTT;
+                Line_Cap : Cairo_Line_Cap     := Cairo_Line_Cap_Butt;
                 Scaled   : Boolean            := False;
                 Widened  : Boolean            := False
              )  is
@@ -100,11 +100,11 @@ package body Gtk.Layered.Arc is
    function Add_Arc
             (  Under    : not null access Layer_Location'Class;
                Ellipse  : Ellipse_Parameters := Unit_Circle;
-               From     : GDouble            := 0.0;
-               Length   : GDouble            := 2.0 * Pi;
-               Width    : GDouble            := 1.0;
+               From     : Gdouble            := 0.0;
+               Length   : Gdouble            := 2.0 * Pi;
+               Width    : Gdouble            := 1.0;
                Color    : Gdk_Color          := RGB (0.0, 0.0, 0.0);
-               Line_Cap : Cairo_Line_Cap     := CAIRO_LINE_CAP_BUTT;
+               Line_Cap : Cairo_Line_Cap     := Cairo_Line_Cap_Butt;
                Scaled   : Boolean            := False;
                Widened  : Boolean            := False
             )  return not null access Arc_Layer is
@@ -143,11 +143,11 @@ package body Gtk.Layered.Arc is
       else
          Set_Line_Width (Context, Layer.Line.Width);
       end if;
-      Set_Source_RGB
+      Set_Source_Rgb
       (  Context,
-         GDouble (Red   (Layer.Line.Color)) / GDouble (Guint16'Last),
-         GDouble (Green (Layer.Line.Color)) / GDouble (Guint16'Last),
-         GDouble (Blue  (Layer.Line.Color)) / GDouble (Guint16'Last)
+         Gdouble (Red   (Layer.Line.Color)) / Gdouble (Guint16'Last),
+         Gdouble (Green (Layer.Line.Color)) / Gdouble (Guint16'Last),
+         Gdouble (Blue  (Layer.Line.Color)) / Gdouble (Guint16'Last)
       );
       Set_Line_Cap (Context, Layer.Line.Line_Cap);
       if Layer.Scaled then
@@ -176,12 +176,12 @@ package body Gtk.Layered.Arc is
       return Layer.Ellipse;
    end Get_Ellipse;
 
-   function Get_From (Layer : Arc_Layer) return GDouble is
+   function Get_From (Layer : Arc_Layer) return Gdouble is
    begin
       return Layer.From;
    end Get_From;
 
-   function Get_Length  (Layer : Arc_Layer) return GDouble is
+   function Get_Length  (Layer : Arc_Layer) return Gdouble is
    begin
       return Layer.Length;
    end Get_Length;
@@ -214,8 +214,8 @@ package body Gtk.Layered.Arc is
                   Gnew_Double
                   (  Name    => "x",
                      Nick    => "x",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb =>
                         "The x-coordinate of the arc's ellipse center"
@@ -225,7 +225,7 @@ package body Gtk.Layered.Arc is
                   Gnew_Double
                   (  Name    => "y",
                      Nick    => "y",
-                     Minimum => GDouble'First,
+                     Minimum => Gdouble'First,
                      Maximum => GDouble'Last,
                      Default => 0.0,
                      Blurb =>

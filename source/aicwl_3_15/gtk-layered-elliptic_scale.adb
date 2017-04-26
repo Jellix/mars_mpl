@@ -25,7 +25,7 @@
 --  executable file might be covered by the GNU Public License.       --
 --____________________________________________________________________--
 
-with GLib.Properties.Creation;  use GLib.Properties.Creation;
+with Glib.Properties.Creation;  use Glib.Properties.Creation;
 with Gtk.Layered.Stream_IO;     use Gtk.Layered.Stream_IO;
 
 with Ada.Unchecked_Deallocation;
@@ -80,16 +80,16 @@ package body Gtk.Layered.Elliptic_Scale is
 
    procedure Add_Elliptic_Scale
              (  Under    : not null access Layer_Location'Class;
-                Step     : GDouble;
+                Step     : Gdouble;
                 First    : Tick_Number        := Tick_Number'Last;
                 Skipped  : Tick_Number        := Tick_Number'Last;
                 Outer    : Ellipse_Parameters := Unit_Circle;
                 Inner    : Ellipse_Parameters := Unit_Circle / 2.0;
-                From     : GDouble            := 0.0;
-                Length   : GDouble            := 2.0 * Pi;
-                Width    : GDouble            := 1.0;
+                From     : Gdouble            := 0.0;
+                Length   : Gdouble            := 2.0 * Pi;
+                Width    : Gdouble            := 1.0;
                 Color    : Gdk_Color          := RGB (0.0, 0.0, 0.0);
-                Line_Cap : Cairo_Line_Cap     := CAIRO_LINE_CAP_BUTT;
+                Line_Cap : Cairo_Line_Cap     := Cairo_Line_Cap_Butt;
                 Scaled   : Boolean            := False;
                 Widened  : Boolean            := False
              )  is
@@ -116,16 +116,16 @@ package body Gtk.Layered.Elliptic_Scale is
 
    function Add_Elliptic_Scale
             (  Under    : not null access Layer_Location'Class;
-               Step     : GDouble;
+               Step     : Gdouble;
                First    : Tick_Number        := Tick_Number'Last;
                Skipped  : Tick_Number        := Tick_Number'Last;
                Outer    : Ellipse_Parameters := Unit_Circle;
                Inner    : Ellipse_Parameters := Unit_Circle / 2.0;
-               From     : GDouble            := 0.0;
-               Length   : GDouble            := 2.0 * Pi;
-               Width    : GDouble            := 1.0;
+               From     : Gdouble            := 0.0;
+               Length   : Gdouble            := 2.0 * Pi;
+               Width    : Gdouble            := 1.0;
                Color    : Gdk_Color          := RGB (0.0, 0.0, 0.0);
-               Line_Cap : Cairo_Line_Cap     := CAIRO_LINE_CAP_BUTT;
+               Line_Cap : Cairo_Line_Cap     := Cairo_Line_Cap_Butt;
                Scaled   : Boolean            := False;
                Widened  : Boolean            := False
             )  return not null access Elliptic_Scale_Layer is
@@ -156,17 +156,17 @@ package body Gtk.Layered.Elliptic_Scale is
                 Context : Cairo_Context;
                 Area    : Gdk_Rectangle
              )  is
-      This     : GDouble;
+      This     : Gdouble;
       Thick    : Natural := Layer.Ticks.First;
       From, To : Cairo_Tuple;
-      Length   : constant GDouble := abs Layer.Length +
+      Length   : constant Gdouble := abs Layer.Length +
                                      abs Layer.Ticks.Step * 0.05;
       State    : Context_State := Save (Context);
    begin
       New_Path (Context);
-      Set_Source_RGB
+      Set_Source_Rgb
       (  Context,
-         GDouble (Red   (Layer.Line.Color)) / GDouble (Guint16'Last),
+         Gdouble (Red   (Layer.Line.Color)) / Gdouble (Guint16'Last),
          GDouble (Green (Layer.Line.Color)) / GDouble (Guint16'Last),
          GDouble (Blue  (Layer.Line.Color)) / GDouble (Guint16'Last)
       );

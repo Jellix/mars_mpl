@@ -29,16 +29,16 @@ with Ada.Exceptions;            use Ada.Exceptions;
 with Ada.Tags;                  use Ada.Tags;
 with Ada.Text_IO;               use Ada.Text_IO;
 with Gdk.Cairo;                 use Gdk.Cairo;
-with GLib.Messages;             use GLib.Messages;
-with GLib.Properties.Creation;  use GLib.Properties.Creation;
-with GLib.Object;               use GLib.Object;
-with GtkAda.Types;              use GtkAda.Types;
+with Glib.Messages;             use Glib.Messages;
+with Glib.Properties.Creation;  use Glib.Properties.Creation;
+with Glib.Object;               use Glib.Object;
+with Gtkada.Types;              use Gtkada.Types;
 with Interfaces.C.Strings;      use Interfaces.C;
 with Strings_Edit.Integers;     use Strings_Edit.Integers;
 with System.Storage_Elements;   use System.Storage_Elements;
 
 with Cairo.Region;
-with GLib.Object.Checked_Destroy;
+with Glib.Object.Checked_Destroy;
 with Gtk.Main;
 
 package body Gtk.Layered is
@@ -50,12 +50,12 @@ package body Gtk.Layered is
 
    Class : Ada_GObject_Class := Uninitialized_Class;
 
-   Signal_Names : constant GtkAda.Types.Chars_Ptr_Array :=
+   Signal_Names : constant Gtkada.Types.Chars_Ptr_Array :=
       (  0 => Interfaces.C.Strings.New_String ("layer-added"),
          1 => Interfaces.C.Strings.New_String ("layer-removed")
       );
-   Layer_Added_ID   : Signal_ID := Invalid_Signal_Id;
-   Layer_Removed_ID : Signal_ID := Invalid_Signal_Id;
+   Layer_Added_ID   : Signal_Id := Invalid_Signal_Id;
+   Layer_Removed_ID : Signal_Id := Invalid_Signal_Id;
 
    generic
       type Scalar is private;
@@ -80,17 +80,17 @@ package body Gtk.Layered is
    end Match;
 
    function Match_Char is
-      new Match (GInt8, GType_Char, Param_Spec_Char);
+      new Match (Gint8, GType_Char, Param_Spec_Char);
    function Match_UChar is
-      new Match (GUInt8, GType_UChar, Param_Spec_UChar);
+      new Match (Guint8, GType_Uchar, Param_Spec_Uchar);
    function Match_Int is
-      new Match (GInt, GType_Int, Param_Spec_Int);
+      new Match (Gint, GType_Int, Param_Spec_Int);
    function Match_UInt is
-      new Match (GUInt, GType_UInt, Param_Spec_UInt);
+      new Match (Guint, GType_Uint, Param_Spec_Uint);
    function Match_Long is
-      new Match (GLong, GType_Long, Param_Spec_Long);
+      new Match (Glong, GType_Long, Param_Spec_Long);
    function Match_ULong is
-      new Match (GULong, GType_ULong, Param_Spec_ULong);
+      new Match (Gulong, GType_Ulong, Param_Spec_Ulong);
    function Match_Float is
       new Match (GFloat, GType_Float, Param_Spec_Float);
    function Match_Double is

@@ -25,9 +25,9 @@
 --  executable file might be covered by the GNU Public License.       --
 --____________________________________________________________________--
 
-with GLib.Object;  use GLib.Object;
+with Glib.Object;  use Glib.Object;
 
-package GLib.Values.Handling is
+package Glib.Values.Handling is
 --
 -- Copy -- A value
 --
@@ -63,4 +63,4 @@ package GLib.Values.Handling is
    function Get_Type (Value : GValue) return GType;
    pragma Inline (Get_Type);
 
-end GLib.Values.Handling;
+end Glib.Values.Handling;

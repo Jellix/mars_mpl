@@ -26,7 +26,7 @@
 --____________________________________________________________________--
 --
 --  This  package  provides  a  renderer to indicate fixed-point numbers
---  aligned along their decimal points. 
+--  aligned along their decimal points.
 --
 with Cairo;                     use Cairo;
 with Gdk.Color;                 use Gdk.Color;
@@ -51,7 +51,7 @@ package Gtk.Cell_Renderer_Fixed is
 -- Customary,  we  need  to  declare a representation record type and an
 -- interface access type for dealing with renderer's objects. The record
 -- type is never used directly, though all operations are defined in its
--- terms. 
+-- terms.
 --
    type Gtk_Cell_Renderer_Fixed_Record is
       new Gtk.Cell_Renderer.Abstract_Renderer.
@@ -125,7 +125,7 @@ package Gtk.Cell_Renderer_Fixed is
 --
 -- This procedure is never called directly, only from  Gtk_New  or  else
 -- from  Initialize  of  a  derived  type.  In the latter case a call to
--- Initialize is obligatory. 
+-- Initialize is obligatory.
 --
    procedure Initialize
              (  Cell  : not null access
@@ -178,7 +178,7 @@ private
 -- places  before  the point including the sign. This field is evaluated
 -- dynamically and adjusted each time the renderer is  queried  for  its
 -- size or asked to render a cell. This heuristics might not work if new
--- rows are added to the tree model after it was rendered once. 
+-- rows are added to the tree model after it was rendered once.
 --
    type Gtk_Cell_Renderer_Fixed_Record is
       new Gtk.Cell_Renderer.

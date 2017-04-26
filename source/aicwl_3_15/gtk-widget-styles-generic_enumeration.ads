@@ -47,11 +47,11 @@
 --  should  be  its  child,  but that is impossible, because the generic
 --  parent were a nested package in that case.
 --
-with GLib.Generic_Properties;
+with Glib.Generic_Properties;
 
 generic
    with package Enumeration_Property is
-      new GLib.Generic_Properties.Generic_Enumeration_Property (<>);
+      new Glib.Generic_Properties.Generic_Enumeration_Property (<>);
 package Gtk.Widget.Styles.Generic_Enumeration is
    use Enumeration_Property;
 --
@@ -90,7 +90,7 @@ private
             (  PSpec          : Param_Spec;
                RC_String      : GString;
                Property_Value : access GValue
-            )  return GBoolean;
+            )  return Gboolean;
    pragma Convention (C, Enum_Property_Parser);
 
    Parser : constant Gtk_RC_Property_Parser :=

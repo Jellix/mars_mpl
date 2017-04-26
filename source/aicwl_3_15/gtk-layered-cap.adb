@@ -23,112 +23,36 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 with Ada.Numerics;                use Ada.Numerics;
 with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
-with GLib.Properties.Creation;    use GLib.Properties.Creation;
+with Cairo.Pattern;               use Cairo.Pattern;
+with Glib.Properties.Creation;    use Glib.Properties.Creation;
 with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
 
 with Ada.Unchecked_Deallocation;
-with ada.Text_IO;
+
 package body Gtk.Layered.Cap is
    type Cap_Ptr is access all Cap_Layer;
 
-   Cos_45 : constant GDouble := sqrt (2.0) * 0.5;
+   Cos_45 : constant Gdouble := Sqrt (2.0) * 0.5;
 
    type Layer_Property is
-        (  Property_Center_X,
-           Property_Center_Y,
-           Property_Radius,
-           Property_From_Color,
-           Property_To_Color
-        );
+     (Property_Center_X,
+      Property_Center_Y,
+      Property_Radius,
+      Property_From_Color,
+      Property_To_Color);
 
    procedure Free is
-      new Ada.Unchecked_Deallocation (Cap_Layer, Cap_Ptr);
+     new Ada.Unchecked_Deallocation (Cap_Layer, Cap_Ptr);
 
-   procedure Add_Cap
-             (  Under  : not null access Layer_Location'Class;
-                Center : Cairo_Tuple := (0.0, 0.0);
-                Radius : GDouble     := 1.0;
-                From   : Gdk_Color   := RGB (1.0, 1.0, 1.0);
-                To     : Gdk_Color   := RGB (0.5, 0.5, 0.5);
-                Border_Width         : GDouble     := 0.0;
-                Border_Depth         : GDouble     := 1.0;
-                Border_Color  : Border_Color_Type  := Default_Color;
-                Border_Shadow : Gtk_Shadow_Type    := Shadow_Out;
-                Deepened      : Boolean            := False;
-                Scaled        : Boolean            := False;
-                Widened       : Boolean            := False
-             )  is
-      Ptr   : Cap_Ptr := new Cap_Layer;
-      Layer : Cap_Layer renames Ptr.all;
-   begin
-      Set_Deepened (Layer, Deepened);
-      Set_Scaled   (Layer, Scaled);
-      Set_Widened  (Layer, Widened);
-      Add (Ptr, Under);
-      Set
-      (  Layer         => Layer,
-         Center        => Center,
-         Radius        => Radius,
-         From          => From,
-         To            => To,
-         Border_Width  => Border_Width,
-         Border_Depth  => Border_Depth,
-         Border_Color  => Border_Color,
-         Border_Shadow => Border_Shadow
-      );
-   exception
-      when others =>
-         Free (Ptr);
-         raise;
-   end Add_Cap;
-
-   function Add_Cap
-            (  Under  : not null access Layer_Location'Class;
-               Center : Cairo_Tuple := (0.0, 0.0);
-               Radius : GDouble      := 1.0;
-               From   : Gdk_Color   := RGB (1.0, 1.0, 1.0);
-               To     : Gdk_Color   := RGB (0.5, 0.5, 0.5);
-               Border_Width         : GDouble     := 0.0;
-               Border_Depth         : GDouble     := 1.0;
-               Border_Color  : Border_Color_Type := Default_Color;
-               Border_Shadow : Gtk_Shadow_Type   := Shadow_Out;
-               Deepened      : Boolean           := False;
-               Scaled        : Boolean           := False;
-               Widened       : Boolean           := False
-            )  return not null access Cap_Layer is
-      Ptr   : Cap_Ptr := new Cap_Layer;
-      Layer : Cap_Layer renames Ptr.all;
-   begin
-      Set_Deepened (Layer, Deepened);
-      Set_Scaled   (Layer, Scaled);
-      Set_Widened  (Layer, Widened);
-      Add (Ptr, Under);
-      Set
-      (  Layer         => Layer,
-         Center        => Center,
-         Radius        => Radius,
-         From          => From,
-         To            => To,
-         Border_Width  => Border_Width,
-         Border_Depth  => Border_Depth,
-         Border_Color  => Border_Color,
-         Border_Shadow => Border_Shadow
-      );
-      return Layer'Unchecked_Access;
-   exception
-      when others =>
-         Free (Ptr);
-         raise;
-   end Add_Cap;
-
-   function Add
-            (  Under  : not null access Layer_Location'Class;
-               Stream : not null access Root_Stream_Type'Class
-            )  return not null access Cap_Layer is
+   overriding
+   function Add (Under  : not null access Layer_Location'Class;
+                 Stream : not null access Root_Stream_Type'Class)
+                 return not null access Cap_Layer
+   is
       Ptr : Cap_Ptr := new Cap_Layer;
    begin
       Restore (Stream.all, Ptr.all);
@@ -140,55 +64,123 @@ package body Gtk.Layered.Cap is
          raise;
    end Add;
 
+   procedure Add_Cap
+     (Under         : not null access Layer_Location'Class;
+      Center        : Cairo_Tuple               := (0.0, 0.0);
+      Radius        : Gdouble                   := 1.0;
+      From          : Gdk_Color                 := RGB (1.0, 1.0, 1.0);
+      To            : Gdk_Color                 := RGB (0.5, 0.5, 0.5);
+      Border_Width  : Gdouble                   := 0.0;
+      Border_Depth  : Gdouble                   := 1.0;
+      Border_Color  : Border_Color_Type         := Default_Color;
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type := Gtk.Enums.Shadow_Out;
+      Deepened      : Boolean                   := False;
+      Scaled        : Boolean                   := False;
+      Widened       : Boolean                   := False)
+   is
+      Ptr   : Cap_Ptr := new Cap_Layer;
+      Layer : Cap_Layer renames Ptr.all;
+   begin
+      Set_Deepened (Layer, Deepened);
+      Set_Scaled   (Layer, Scaled);
+      Set_Widened  (Layer, Widened);
+      Add (Ptr, Under);
+      Set (Layer         => Layer,
+           Center        => Center,
+           Radius        => Radius,
+           From          => From,
+           To            => To,
+           Border_Width  => Border_Width,
+           Border_Depth  => Border_Depth,
+           Border_Color  => Border_Color,
+           Border_Shadow => Border_Shadow);
+   exception
+      when others =>
+         Free (Ptr);
+         raise;
+   end Add_Cap;
+
+   function Add_Cap
+     (Under         : not null access Layer_Location'Class;
+      Center        : Cairo_Tuple               := (0.0, 0.0);
+      Radius        : Gdouble                   := 1.0;
+      From          : Gdk_Color                 := RGB (1.0, 1.0, 1.0);
+      To            : Gdk_Color                 := RGB (0.5, 0.5, 0.5);
+      Border_Width  : Gdouble                   := 0.0;
+      Border_Depth  : Gdouble                   := 1.0;
+      Border_Color  : Border_Color_Type         := Default_Color;
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type := Gtk.Enums.Shadow_Out;
+      Deepened      : Boolean                   := False;
+      Scaled        : Boolean                   := False;
+      Widened       : Boolean                   := False)
+      return not null access Cap_Layer
+   is
+      Ptr   : Cap_Ptr := new Cap_Layer;
+      Layer : Cap_Layer renames Ptr.all;
+   begin
+      Set_Deepened (Layer, Deepened);
+      Set_Scaled   (Layer, Scaled);
+      Set_Widened  (Layer, Widened);
+      Add (Ptr, Under);
+      Set (Layer         => Layer,
+           Center        => Center,
+           Radius        => Radius,
+           From          => From,
+           To            => To,
+           Border_Width  => Border_Width,
+           Border_Depth  => Border_Depth,
+           Border_Color  => Border_Color,
+           Border_Shadow => Border_Shadow);
+      return Layer'Unchecked_Access;
+   exception
+      when others =>
+         Free (Ptr);
+         raise;
+   end Add_Cap;
+
+   procedure Create_Patterns (Layer : in out Cap_Layer);
    procedure Create_Patterns (Layer : in out Cap_Layer) is
    begin
       Layer.Pattern := Create_Linear (-Cos_45, -Cos_45, Cos_45, Cos_45);
-      Add_Color_Stop_RGB
-      (  Layer.Pattern,
+      Add_Color_Stop_Rgb
+        (Layer.Pattern,
          0.0,
-         GDouble (Red   (Layer.From)) / GDouble (GUInt16'Last),
-         GDouble (Green (Layer.From)) / GDouble (GUInt16'Last),
-         GDouble (Blue  (Layer.From)) / GDouble (GUInt16'Last)
-      );
-      Add_Color_Stop_RGB
-      (  Layer.Pattern,
+         Gdouble (Red   (Layer.From)) / Gdouble (Guint16'Last),
+         Gdouble (Green (Layer.From)) / Gdouble (Guint16'Last),
+         Gdouble (Blue  (Layer.From)) / Gdouble (Guint16'Last));
+      Add_Color_Stop_Rgb
+      (Layer.Pattern,
          1.0,
-         GDouble (Red   (Layer.To)) / GDouble (GUInt16'Last),
-         GDouble (Green (Layer.To)) / GDouble (GUInt16'Last),
-         GDouble (Blue  (Layer.To)) / GDouble (GUInt16'Last)
+         Gdouble (Red   (Layer.To)) / Gdouble (Guint16'Last),
+         Gdouble (Green (Layer.To)) / Gdouble (Guint16'Last),
+         Gdouble (Blue  (Layer.To)) / Gdouble (Guint16'Last)
       );
-      Layer.Mask :=
-         Create_Radial
-         (  0.0, 0.0, 0.0,
-            0.0, 0.0, 1.0
-         );
-      Add_Color_Stop_RGBA
-      (  Layer.Mask,
+      Layer.Mask := Create_Radial (0.0, 0.0, 0.0,
+                                   0.0, 0.0, 1.0);
+      Add_Color_Stop_Rgba
+        (Layer.Mask,
          0.0,
          0.0, 0.0, 0.0,
-         1.0
-      );
-      Add_Color_Stop_RGBA
-      (  Layer.Mask,
+         1.0);
+      Add_Color_Stop_Rgba
+        (Layer.Mask,
          1.0,
          0.0, 0.0, 0.0,
-         1.0
-      );
-      Add_Color_Stop_RGBA
-      (  Layer.Mask,
-         GDouble'Succ (1.0),
+         1.0);
+      Add_Color_Stop_Rgba
+        (Layer.Mask,
+         Gdouble'Succ (1.0),
          0.0, 0.0, 0.0,
-         0.0
-      );
+         0.0);
    end Create_Patterns;
 
-   procedure Draw_Contents
-             (  Layer   : in out Cap_Layer;
-                Context : Cairo_Context;
-                Area    : Gdk_Rectangle
-             )  is
+   overriding
+   procedure Draw_Contents (Layer   : in out Cap_Layer;
+                            Context : Cairo_Context;
+                            Area    : Gdk_Rectangle)
+   is
       Box     : constant Cairo_Box := Get_Path_Extents (Context);
-      Radius  : constant GDouble   := 0.5 * (Box.X2 - Box.X1);
+      Radius  : constant Gdouble   := 0.5 * (Box.X2 - Box.X1);
       Matrix  : aliased Cairo_Matrix;
    begin
       Get_Matrix (Context, Matrix'Access);
@@ -203,6 +195,7 @@ package body Gtk.Layered.Cap is
       Mask (Context, Layer.Mask);
    end Draw_Contents;
 
+   overriding
    procedure Finalize (Layer : in out Cap_Layer) is
    begin
       if Null_Pattern /= Layer.Mask then
@@ -226,105 +219,84 @@ package body Gtk.Layered.Cap is
       return Layer.From;
    end Get_From;
 
-   function Get_To (Layer : Cap_Layer) return Gdk_Color is
-   begin
-      return Layer.To;
-   end Get_To;
-
+   overriding
    function Get_Properties_Number (Layer : Cap_Layer) return Natural is
    begin
       return
-      (  Layer_Property'Pos (Layer_Property'Last)
-      -  Layer_Property'Pos (Layer_Property'First)
-      +  1
-      +  Get_Properties_Number (Abstract_Bordered_Layer (Layer))
-      );
+        (Layer_Property'Pos (Layer_Property'Last) -
+             Layer_Property'Pos (Layer_Property'First) +  1 +
+             Get_Properties_Number (Abstract_Bordered_Layer (Layer)));
    end Get_Properties_Number;
 
-   function Get_Property_Specification
-            (  Layer    : Cap_Layer;
-               Property : Positive
-            )  return Param_Spec is
+   overriding
+   function Get_Property_Specification (Layer    : Cap_Layer;
+                                        Property : Positive) return Param_Spec
+   is
       Inherited : constant Natural :=
          Get_Properties_Number (Abstract_Bordered_Layer (Layer));
    begin
       if Property <= Inherited then
          return
-            Get_Property_Specification
-            (  Abstract_Bordered_Layer (Layer),
-               Property
-            );
+           Get_Property_Specification (Abstract_Bordered_Layer (Layer),
+                                       Property);
       elsif Property <= Get_Properties_Number (Layer) then
          case Layer_Property'Val (Property - Inherited - 1) is
             when Property_Center_X =>
                return
                   Gnew_Double
-                  (  Name    => "x",
-                     Nick    => "x",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
-                     Default => 0.0,
-                     Blurb =>
-                        "The x-coordinate of the cap's center"
-                  );
+                   (Name    => "x",
+                    Nick    => "x",
+                    Minimum => Gdouble'First,
+                    Maximum => Gdouble'Last,
+                    Default => 0.0,
+                    Blurb   => "The x-coordinate of the cap's center");
             when Property_Center_Y =>
                return
                   Gnew_Double
-                  (  Name    => "outer-y",
-                     Nick    => "outer y",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
-                     Default => 0.0,
-                     Blurb =>
-                        "The y-coordinate of the caps's center"
-                  );
+                   (Name    => "outer-y",
+                    Nick    => "outer y",
+                    Minimum => Gdouble'First,
+                    Maximum => Gdouble'Last,
+                    Default => 0.0,
+                    Blurb   => "The y-coordinate of the caps's center");
             when Property_Radius =>
                return
                   Gnew_Double
-                  (  Name    => "r",
-                     Nick    => "r",
-                     Minimum => 1.0E-6,
-                     Maximum => GDouble'Last,
-                     Default => 0.5,
-                     Blurb   => "The radius of the cap"
-                  );
+                   (Name    => "r",
+                    Nick    => "r",
+                    Minimum => 1.0E-6,
+                    Maximum => Gdouble'Last,
+                    Default => 0.5,
+                    Blurb   => "The radius of the cap");
             when Property_From_Color =>
                return
                   Gnew_Boxed
-                  (  Name       => "from-color",
-                     Boxed_Type => Gdk_Color_Type,
-                     Nick       => "from color",
-                     Blurb      => "The color in upper left corner " &
-                                   "of the cap"
-                  );
+                   (Name       => "from-color",
+                    Boxed_Type => Gdk_Color_Type,
+                    Nick       => "from color",
+                    Blurb      => "The color in upper left corner of the cap");
             when Property_To_Color =>
                return
                   Gnew_Boxed
-                  (  Name       => "to-color",
-                     Boxed_Type => Gdk_Color_Type,
-                     Nick       => "to color",
-                     Blurb      => "The color in lower right corner " &
-                                   "of the cap"
-                  );
+                   (Name       => "to-color",
+                    Boxed_Type => Gdk_Color_Type,
+                    Nick       => "to color",
+                    Blurb      => "The color in lower right corner of the cap");
          end case;
       else
          raise Constraint_Error;
       end if;
    end Get_Property_Specification;
 
-   function Get_Property_Value
-            (  Layer    : Cap_Layer;
-               Property : Positive
-            )  return GValue is
+   overriding
+   function Get_Property_Value (Layer    : Cap_Layer;
+                                Property : Positive) return GValue
+   is
       Inherited : constant Natural :=
          Get_Properties_Number (Abstract_Bordered_Layer (Layer));
    begin
       if Property <= Inherited then
-         return
-            Get_Property_Value
-            (  Abstract_Bordered_Layer (Layer),
-               Property
-            );
+         return Get_Property_Value (Abstract_Bordered_Layer (Layer), Property);
       elsif Property <= Get_Properties_Number (Layer) then
          declare
             Value : GValue;
@@ -351,27 +323,31 @@ package body Gtk.Layered.Cap is
       end if;
    end Get_Property_Value;
 
-   function Get_Radius (Layer : Cap_Layer) return GDouble is
+   function Get_Radius (Layer : Cap_Layer) return Gdouble is
    begin
       return Layer.Radius;
    end Get_Radius;
 
-   procedure Move
-             (  Layer  : in out Cap_Layer;
-                Offset : Cairo_Tuple
-             )  is
+   function Get_To (Layer : Cap_Layer) return Gdk_Color is
+   begin
+      return Layer.To;
+   end Get_To;
+
+   overriding
+   procedure Move (Layer  : in out Cap_Layer;
+                   Offset : Cairo_Tuple) is
    begin
       Layer.Center.X := Layer.Center.X + Offset.X;
       Layer.Center.Y := Layer.Center.Y + Offset.Y;
       Set_Updated (Layer);
    end Move;
 
-   procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Layer  : in out Cap_Layer
-             ) is
+   overriding
+   procedure Restore (Stream : in out Root_Stream_Type'Class;
+                      Layer  : in out Cap_Layer)
+   is
       Center  : Cairo_Tuple;
-      Radius  : GDouble;
+      Radius  : Gdouble;
       From    : Gdk_Color;
       To      : Gdk_Color;
    begin
@@ -387,11 +363,11 @@ package body Gtk.Layered.Cap is
       Create_Patterns (Layer);
    end Restore;
 
-   procedure Scale
-             (  Layer  : in out Cap_Layer;
-                Factor : GDouble
-             )  is
-      Radius : constant GDouble := Layer.Radius * Factor;
+   overriding
+   procedure Scale (Layer  : in out Cap_Layer;
+                    Factor : Gdouble)
+   is
+      Radius : constant Gdouble := Layer.Radius * Factor;
    begin
       if Radius <= 0.0 then
          raise Constraint_Error with "Non-positive radius";
@@ -400,17 +376,15 @@ package body Gtk.Layered.Cap is
       Set_Updated (Layer);
    end Scale;
 
-   procedure Set
-             (  Layer         : in out Cap_Layer;
-                Center        : Cairo_Tuple;
-                Radius        : GDouble;
-                From          : Gdk_Color;
-                To            : Gdk_Color;
-                Border_Width  : GDouble;
-                Border_Depth  : GDouble;
-                Border_Color  : Border_Color_Type;
-                Border_Shadow : Gtk_Shadow_Type
-             )  is
+   procedure Set (Layer         : in out Cap_Layer;
+                  Center        : Cairo_Tuple;
+                  Radius        : Gdouble;
+                  From          : Gdk_Color;
+                  To            : Gdk_Color;
+                  Border_Width  : Gdouble;
+                  Border_Depth  : Gdouble;
+                  Border_Color  : Border_Color_Type;
+                  Border_Shadow : Gtk.Enums.Gtk_Shadow_Type) is
    begin
       if Radius <= 0.0 then
          raise Constraint_Error with "Non-positive radius";
@@ -421,61 +395,56 @@ package body Gtk.Layered.Cap is
       Layer.To      := To;
       Create_Patterns (Layer);
       Set
-      (  Layer         => Layer,
+        (Layer         => Layer,
          Border_Width  => Border_Width,
          Border_Depth  => Border_Depth,
          Border_Color  => Border_Color,
-         Border_Shadow => Border_Shadow
-      );
+         Border_Shadow => Border_Shadow);
    end Set;
 
-   procedure Set_Contents_Path
-             (  Layer   : in out Cap_Layer;
-                Context : Cairo_Context;
-                Area    : Gdk_Rectangle
-             )  is
+   overriding
+   procedure Set_Contents_Path (Layer   : in out Cap_Layer;
+                                Context : Cairo_Context;
+                                Area    : Gdk_Rectangle) is
    begin
       if Get_Scaled (Layer) then
          declare
             Center : constant Cairo_Tuple :=
-                              Layer.Get_Widget.Get_Center;
-            Size   : constant GDouble      := Layer.Get_Widget.Get_Size;
+                              Layer.Get_Widget.all.Get_Center;
+            Size   : constant Gdouble      := Layer.Get_Widget.all.Get_Size;
          begin
             Arc
-            (  Cr     => Context,
+              (Cr     => Context,
                Xc     => Layer.Center.X * Size + Center.X,
                Yc     => Layer.Center.Y * Size + Center.Y,
                Radius => Layer.Radius * Size,
                Angle1 => 0.0,
-               Angle2 => 2.0 * Pi
-            );
+               Angle2 => 2.0 * Pi);
          end;
       else
          Arc
-         (  Cr     => Context,
+           (Cr     => Context,
             Xc     => Layer.Center.X,
             Yc     => Layer.Center.Y,
             Radius => Layer.Radius,
             Angle1 => 0.0,
-            Angle2 => 2.0 * Pi
-         );
+            Angle2 => 2.0 * Pi);
       end if;
    end Set_Contents_Path;
 
-   procedure Set_Property_Value
-             (  Layer    : in out Cap_Layer;
-                Property : Positive;
-                Value    : GValue
-             )  is
+   overriding
+   procedure Set_Property_Value (Layer    : in out Cap_Layer;
+                                 Property : Positive;
+                                 Value    : GValue)
+   is
       Inherited : constant Natural :=
          Get_Properties_Number (Abstract_Bordered_Layer (Layer));
    begin
       if Property <= Inherited then
          Set_Property_Value
-         (  Abstract_Bordered_Layer (Layer),
+           (Abstract_Bordered_Layer (Layer),
             Property,
-            Value
-         );
+            Value);
       elsif Property <= Get_Properties_Number (Layer) then
          case Layer_Property'Val (Property - Inherited - 1) is
             when Property_Center_X =>
@@ -498,10 +467,9 @@ package body Gtk.Layered.Cap is
       end if;
    end Set_Property_Value;
 
-   procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Layer  : Cap_Layer
-             )  is
+   overriding
+   procedure Store (Stream : in out Root_Stream_Type'Class;
+                    Layer  : Cap_Layer) is
    begin
       Store (Stream, Layer.Center);
       Store (Stream, Layer.Radius);

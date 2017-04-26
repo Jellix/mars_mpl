@@ -44,16 +44,16 @@ separate (Gtk.Layered.Waveform)
    end Line_To;
 
    Antialias : constant Cairo_Antialias := Get_Antialias (Context);
-   X1, X2    : GDouble;
-   Y1, Y2    : GDouble;
+   X1, X2    : Gdouble;
+   Y1, Y2    : Gdouble;
 begin
    if Data.Count > 0 then
       if Layer.Scaled then
          declare
-            X_Size : constant GDouble :=
-                     GDouble (Layer.Widget.Get_Allocated_Width);
-            Y_Size : constant GDouble :=
-                     GDouble (Layer.Widget.Get_Allocated_Height);
+            X_Size : constant Gdouble :=
+                     Gdouble (Layer.Widget.Get_Allocated_Width);
+            Y_Size : constant Gdouble :=
+                     Gdouble (Layer.Widget.Get_Allocated_Height);
          begin
             X1 := Layer.Box.X1 * X_Size + Layer.Widget.Get_Center.X;
             X2 := Layer.Box.X2 * X_Size + Layer.Widget.Get_Center.X;
@@ -90,8 +90,8 @@ begin
                   Points ((Data.First + Offset) mod Points'Length);
             begin
                return
-               (  GDouble (Result.X),
-                  Layer.Y0 - Layer.YY * GDouble (Result.Y)
+               (  Gdouble (Result.X),
+                  Layer.Y0 - Layer.YY * Gdouble (Result.Y)
                );
             end Point;
 
@@ -101,8 +101,8 @@ begin
                   Points ((Data.First + Offset) mod Points'Length);
             begin
                return
-               (  GDouble (Result.X) + 0.5,
-                  Layer.Y0 - Layer.YY * GDouble (Result.Y) + 0.5
+               (  Gdouble (Result.X) + 0.5,
+                  Layer.Y0 - Layer.YY * Gdouble (Result.Y) + 0.5
                );
             end Line_Point;
          begin
@@ -120,42 +120,42 @@ begin
                   Set_Line_Width (Context, Layer.Line.Width);
                end if;
                Set_Line_Cap (Context, Layer.Line.Line_Cap);
-               Set_Source_RGB
+               Set_Source_Rgb
                (  Cr    => Context,
-                  Red   => GDouble (Red (Layer.Line.Color)) /
-                           GDouble (GUint16'Last),
-                  Green => GDouble (Green (Layer.Line.Color)) /
-                           GDouble (GUInt16'Last),
-                  Blue  => GDouble (Blue (Layer.Line.Color)) /
-                           GDouble (GUInt16'Last)
+                  Red   => Gdouble (Red (Layer.Line.Color)) /
+                           Gdouble (Guint16'Last),
+                  Green => Gdouble (Green (Layer.Line.Color)) /
+                           Gdouble (Guint16'Last),
+                  Blue  => Gdouble (Blue (Layer.Line.Color)) /
+                           Gdouble (Guint16'Last)
                );
                Stroke (Context);
             elsif Layer.Opacity = 1.0 then -- Opaque filling
                Line_To (Context, Point (Data.Count - 1).X, Y2);
                Line_To (Context, Point (0             ).X, Y2);
                Close_Path (Context);
-               Set_Source_RGB
+               Set_Source_Rgb
                (  Cr    => Context,
-                  Red   => GDouble (Red (Layer.Line.Color)) /
-                           GDouble (GUInt16'Last),
-                  Green => GDouble (Green (Layer.Line.Color)) /
-                           GDouble (GUInt16'Last),
-                  Blue  => GDouble (Blue (Layer.Line.Color)) /
-                           GDouble (GUint16'Last)
+                  Red   => Gdouble (Red (Layer.Line.Color)) /
+                           Gdouble (Guint16'Last),
+                  Green => Gdouble (Green (Layer.Line.Color)) /
+                           Gdouble (Guint16'Last),
+                  Blue  => Gdouble (Blue (Layer.Line.Color)) /
+                           Gdouble (Guint16'Last)
                );
                Fill (Context);
             else -- Transparent filling
                Line_To (Context, Point (Data.Count - 1).X, Y2);
                Line_To (Context, Point (0             ).X, Y2);
                Close_Path (Context);
-               Set_Source_RGBA
+               Set_Source_Rgba
                (  Cr    => Context,
-                  Red   => GDouble (Red   (Layer.Line.Color)) /
-                           GDouble (GUInt16'Last),
-                  Green => GDouble (Green (Layer.Line.Color)) /
-                           GDouble (GUint16'Last),
-                  Blue  => GDouble (Blue  (Layer.Line.Color)) /
-                           GDouble (GUint16'Last),
+                  Red   => Gdouble (Red   (Layer.Line.Color)) /
+                           Gdouble (Guint16'Last),
+                  Green => Gdouble (Green (Layer.Line.Color)) /
+                           Gdouble (Guint16'Last),
+                  Blue  => Gdouble (Blue  (Layer.Line.Color)) /
+                           Gdouble (Guint16'Last),
                   Alpha => 1.0 - Layer.Opacity
                );
                Fill (Context);
@@ -173,9 +173,9 @@ begin
                   Set_Line_Width (Context, Layer.Line.Width);
                end if;
                Set_Line_Cap (Context, Layer.Line.Line_Cap);
-               Set_Source_RGB
+               Set_Source_Rgb
                (  Cr    => Context,
-                  Red   => GDouble (Red (Layer.Line.Color)) /
+                  Red   => Gdouble (Red (Layer.Line.Color)) /
                            GDouble (GUInt16'Last),
                   Green => GDouble (Green (Layer.Line.Color)) /
                            GDouble (GUInt16'Last),

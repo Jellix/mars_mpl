@@ -29,10 +29,10 @@
 --  corresponding  to  Gtk_Icon_Size.  For  the  latter  properties  are
 --  defined by instantiation of Generic_Enumeration_Property.
 --
-with GLib.Generic_Properties;
+with Glib.Generic_Properties;
 with Gtk.Enums;
 
-package GLib.Properties.Icon_Size is
+package Glib.Properties.Icon_Size is
    --
    -- Since  GtkAda  2.10 Gtk_Icon_Size_Enum is not an enumeration type.
    -- Therefore we have to declare an enumeration type here.
@@ -52,13 +52,13 @@ package GLib.Properties.Icon_Size is
           Small_Toolbar => Gtk.Enums.Icon_Size_Small_Toolbar,
           Large_Toolbar => Gtk.Enums.Icon_Size_Large_Toolbar,
           Button        => Gtk.Enums.Icon_Size_Button,
-          DND           => Gtk.Enums.Icon_Size_DND,
+          DND           => Gtk.Enums.Icon_Size_Dnd,
           Dialog        => Gtk.Enums.Icon_Size_Dialog
        );
-   for Gtk_Icon_Size_Enum'Size use GInt'Size;
+   for Gtk_Icon_Size_Enum'Size use Gint'Size;
    package Property is
       new GLib.Generic_Properties.Generic_Enumeration_Property
           (  "icon-size",
              Gtk_Icon_Size_Enum
           );
-end GLib.Properties.Icon_Size;
+end Glib.Properties.Icon_Size;

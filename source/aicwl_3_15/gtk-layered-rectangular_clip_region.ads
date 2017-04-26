@@ -71,23 +71,24 @@ package Gtk.Layered.Rectangular_Clip_Region is
 --    Constraint_Error - Wrong parameters
 --
    procedure Add_Rectangular_Clip_Region
-             (  Under          : not null access Layer_Location'Class;
-                Height         : GDouble     := 1.0;
-                Width          : GDouble     := 1.0;
-                Center         : Cairo_Tuple := (0.0, 0.0);
-                Rotation_Angle : GDouble     := 0.0;
-                Corner_Radius  : GDouble     := 0.0;
-                Scaled         : Boolean     := False
-             );
+     (Under          : not null access Layer_Location'Class;
+      Height         : Gdouble     := 1.0;
+      Width          : Gdouble     := 1.0;
+      Center         : Cairo_Tuple := (0.0, 0.0);
+      Rotation_Angle : Gdouble     := 0.0;
+      Corner_Radius  : Gdouble     := 0.0;
+      Scaled         : Boolean     := False);
+
    function Add_Rectangular_Clip_Region
-            (  Under          : not null access Layer_Location'Class;
-               Height         : GDouble     := 1.0;
-               Width          : GDouble     := 1.0;
-               Center         : Cairo_Tuple := (0.0, 0.0);
-               Rotation_Angle : GDouble     := 0.0;
-               Corner_Radius  : GDouble     := 0.0;
-               Scaled         : Boolean     := False
-            )  return not null access Rectangular_Clip_Region_On_Layer;
+     (Under          : not null access Layer_Location'Class;
+      Height         : Gdouble     := 1.0;
+      Width          : Gdouble     := 1.0;
+      Center         : Cairo_Tuple := (0.0, 0.0);
+      Rotation_Angle : Gdouble     := 0.0;
+      Corner_Radius  : Gdouble     := 0.0;
+      Scaled         : Boolean     := False)
+      return not null access Rectangular_Clip_Region_On_Layer;
+
 --
 -- Get_Center -- Of the rectangle
 --
@@ -109,7 +110,7 @@ package Gtk.Layered.Rectangular_Clip_Region is
 --    The corner's radius
 --
    function Get_Corner_Radius (Layer : Rectangular_Clip_Region_On_Layer)
-      return GDouble;
+      return Gdouble;
 --
 -- Get_Height -- The height of the rectangle
 --
@@ -120,7 +121,7 @@ package Gtk.Layered.Rectangular_Clip_Region is
 --    The rectangle's height
 --
    function Get_Height (Layer : Rectangular_Clip_Region_On_Layer)
-      return GDouble;
+      return Gdouble;
 --
 -- Get_Rotation_Angle -- The rotation angle
 --
@@ -132,7 +133,7 @@ package Gtk.Layered.Rectangular_Clip_Region is
 --
    function Get_Rotation_Angle
             (  Layer : Rectangular_Clip_Region_On_Layer
-            )  return GDouble;
+            )  return Gdouble;
 --
 -- Get_Width -- The width of the rectangle
 --
@@ -144,7 +145,7 @@ package Gtk.Layered.Rectangular_Clip_Region is
 --
    function Get_Width
             (  Layer : Rectangular_Clip_Region_On_Layer
-            )  return GDouble;
+            )  return Gdouble;
 --
 -- Set -- Parameters of the layer
 --
@@ -161,11 +162,11 @@ package Gtk.Layered.Rectangular_Clip_Region is
 --
    procedure Set
              (  Layer   : in out Rectangular_Clip_Region_On_Layer;
-                Height         : GDouble;
-                Width          : GDouble;
+                Height         : Gdouble;
+                Width          : Gdouble;
                 Center         : Cairo_Tuple;
-                Rotation_Angle : GDouble;
-                Corner_Radius  : GDouble
+                Rotation_Angle : Gdouble;
+                Corner_Radius  : Gdouble
              );
 
    overriding
@@ -261,12 +262,12 @@ package Gtk.Layered.Rectangular_Clip_Region is
    overriding
       procedure Scale
                 (  Layer  : in out Rectangular_Clip_Region_On_Layer;
-                   Factor : GDouble
+                   Factor : Gdouble
                 );
    overriding
       procedure Scale
                 (  Layer  : in out Rectangular_Clip_Region_Off_Layer;
-                   Factor : GDouble
+                   Factor : Gdouble
                 )  is null;
    overriding
       procedure Set_Property_Value
@@ -304,11 +305,11 @@ private
    type Rectangular_Clip_Region_On_Layer is
       new Abstract_Layer and Scalable_Layer with
    record
-      Height  : GDouble;
-      Width   : GDouble;
+      Height  : Gdouble;
+      Width   : Gdouble;
       Center  : Cairo_Tuple;
-      Angle   : GDouble;
-      Radius  : GDouble;
+      Angle   : Gdouble;
+      Radius  : Gdouble;
       Off     : Rectangular_Clip_Region_Off_Layer_Ptr;
       Drawn   : Boolean := False;
       Scaled  : Boolean := False;

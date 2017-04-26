@@ -33,8 +33,8 @@ with Strings_Edit.Float_Edit;
 with Strings_Edit.Generic_Scale;
 
 package Gtk.Layered.Waveform is
-   type X_Axis is new GDouble;
-   type Y_Axis is new GDouble;
+   type X_Axis is new Gdouble;
+   type Y_Axis is new Gdouble;
 --
 -- Waveform_Layer -- A waveform layer
 --
@@ -279,7 +279,7 @@ package Gtk.Layered.Waveform is
 --      ...
 --
    type Waveform_Amplifier is interface;
-   subtype Waveform_Scaling is GDouble range 0.0..10.0;
+   subtype Waveform_Scaling is Gdouble range 0.0..10.0;
 --
 -- Add_Range -- Notify the amplifier about values range of a waveform
 --
@@ -394,9 +394,9 @@ package Gtk.Layered.Waveform is
    procedure Add_Waveform
              (  Under     : not null access Layer_Location'Class;
                 Box       : Cairo_Box;
-                Width     : GDouble            := 1.0;
+                Width     : Gdouble            := 1.0;
                 Color     : Gdk_Color          := RGB (1.0, 0.0, 0.0);
-                Line_Cap  : Cairo_Line_Cap     := CAIRO_LINE_CAP_BUTT;
+                Line_Cap  : Cairo_Line_Cap     := Cairo_Line_Cap_Butt;
                 Sweeper   : access Gtk_Adjustment_Record'Class := null;
                 Amplifier : access Gtk_Adjustment_Record'Class := null;
                 Mode      : Interpolation_Mode := Linear;
@@ -409,9 +409,9 @@ package Gtk.Layered.Waveform is
    function Add_Waveform
             (  Under     : not null access Layer_Location'Class;
                Box       : Cairo_Box;
-               Width     : GDouble            := 1.0;
+               Width     : Gdouble            := 1.0;
                Color     : Gdk_Color          := RGB (1.0, 0.0, 0.0);
-               Line_Cap  : Cairo_Line_Cap     := CAIRO_LINE_CAP_BUTT;
+               Line_Cap  : Cairo_Line_Cap     := Cairo_Line_Cap_Butt;
                Sweeper   : access Gtk_Adjustment_Record'Class := null;
                Amplifier : access Gtk_Adjustment_Record'Class := null;
                Mode      : Interpolation_Mode := Linear;
@@ -474,7 +474,7 @@ package Gtk.Layered.Waveform is
 --
 --    End_Error - There is no value corresponding to X
 --
-   function Get (Layer : Waveform_Layer; X : GDouble) return Y_Axis;
+   function Get (Layer : Waveform_Layer; X : Gdouble) return Y_Axis;
 --
 -- Get -- The data source value by horizontal coordinate
 --
@@ -490,7 +490,7 @@ package Gtk.Layered.Waveform is
 --
    procedure Get
              (  Layer  : Waveform_Layer;
-                X      : GDouble;
+                X      : Gdouble;
                 Y      : out Y_Axis;
                 Got_It : out Boolean
              );
@@ -587,13 +587,13 @@ package Gtk.Layered.Waveform is
 --
    procedure Get_Point
              (  Layer : Waveform_Layer;
-                X     : GDouble;
+                X     : Gdouble;
                 T     : out X_Axis;
                 V     : out Y_Axis
              );
    procedure Get_Point
              (  Layer  : Waveform_Layer;
-                X      : GDouble;
+                X      : Gdouble;
                 T      : out X_Axis;
                 V      : out Y_Axis;
                 Got_It : out Boolean
@@ -667,8 +667,8 @@ package Gtk.Layered.Waveform is
 --
 --    The corresponding value
 --
-   function Get_T (Layer : Waveform_Layer; X : GDouble) return X_Axis;
-   function Get_V (Layer : Waveform_Layer; Y : GDouble) return Y_Axis;
+   function Get_T (Layer : Waveform_Layer; X : Gdouble) return X_Axis;
+   function Get_V (Layer : Waveform_Layer; Y : Gdouble) return Y_Axis;
 --
 -- Get_{T1|T2|V1|V2} -- Get values at the box margins
 --
@@ -694,8 +694,8 @@ package Gtk.Layered.Waveform is
 --
 --    The oordinate of the argument
 --
-   function Get_X (Layer : Waveform_Layer; T : X_Axis) return GDouble;
-   function Get_Y (Layer : Waveform_Layer; V : Y_Axis) return GDouble;
+   function Get_X (Layer : Waveform_Layer; T : X_Axis) return Gdouble;
+   function Get_Y (Layer : Waveform_Layer; V : Y_Axis) return Gdouble;
 --
 -- Is_Visible -- Get visibility status
 --
@@ -917,7 +917,7 @@ package Gtk.Layered.Waveform is
    overriding
       procedure Scale
                 (  Layer  : in out Waveform_Layer;
-                   Factor : GDouble
+                   Factor : Gdouble
                 );
    overriding
       procedure Set_Property_Value
@@ -963,8 +963,8 @@ package Gtk.Layered.Waveform is
 --
 --    Constraint_Error - Value cannot be converted
 --
-   function To_Double (Value : Time) return GDouble;
-   function To_Double (Value : Ada.Calendar.Time) return GDouble;
+   function To_Double (Value : Time) return Gdouble;
+   function To_Double (Value : Ada.Calendar.Time) return Gdouble;
 --
 -- To_Time -- Seconds count to time conversion
 --
@@ -978,8 +978,8 @@ package Gtk.Layered.Waveform is
 --
 --    Constraint_Error - Value cannot be converted
 --
-   function To_Time (Value : GDouble) return Time;
-   function To_Time (Value : GDouble) return Ada.Calendar.Time;
+   function To_Time (Value : Gdouble) return Time;
+   function To_Time (Value : Gdouble) return Ada.Calendar.Time;
 
    package Rasters is new Strings_Edit.Generic_Scale (GDouble);
    package Edit is new Strings_Edit.Float_Edit (GDouble);
@@ -996,7 +996,7 @@ private
    pragma Inline (To_Double);
    pragma Inline (To_Time);
 
-   type Horizontal_Offset is new GInt;
+   type Horizontal_Offset is new Gint;
    type Point_Data is record
       X : Horizontal_Offset;
       Y : Y_Axis;
@@ -1030,7 +1030,7 @@ private
       T2        : X_Axis := 0.0; --                              X2
       V1        : Y_Axis := 0.0; -- The value at the box boundary Y1
       V2        : Y_Axis := 0.0; --                               Y2
-      Y0, YY    : GDouble; -- Linear conversion to Y coordinates
+      Y0, YY    : Gdouble; -- Linear conversion to Y coordinates
       dT        : X_Axis := 0.0;  -- Current step, time per one pixel
       Mode      : Interpolation_Mode := Linear;
       Opacity   : Fill_Opacity       := 1.0;
@@ -1110,7 +1110,7 @@ private
 --
    procedure Set_Y_Conversion
              (  Layer  : in out Waveform_Layer;
-                Y1, Y2 : GDouble
+                Y1, Y2 : Gdouble
              );
 --
 -- To_Y -- Value to y-coordinate conversion
@@ -1122,7 +1122,7 @@ private
 --
 --    The y-coordinate
 --
-   function To_Y (Layer : Waveform_Layer; V : Y_Axis) return GDouble;
+   function To_Y (Layer : Waveform_Layer; V : Y_Axis) return Gdouble;
 
    pragma Inline (To_Y);
 

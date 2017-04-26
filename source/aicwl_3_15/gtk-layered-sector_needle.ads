@@ -77,8 +77,8 @@ package Gtk.Layered.Sector_Needle is
              (  Under      : not null access Layer_Location'Class;
                 Outer      : Ellipse_Parameters := Unit_Circle;
                 Inner      : Ellipse_Parameters;
-                From       : GDouble   := 3.0 * Pi / 4.0;
-                Length     : GDouble   := 3.0 * Pi / 2.0;
+                From       : Gdouble   := 3.0 * Pi / 4.0;
+                Length     : Gdouble   := 3.0 * Pi / 2.0;
                 Color      : Gdk_Color := RGB (1.0, 0.0, 0.0);
                 Adjustment : access Gtk_Adjustment_Record'Class := null;
                 Scaled     : Boolean   := False
@@ -87,8 +87,8 @@ package Gtk.Layered.Sector_Needle is
              (  Under      : not null access Layer_Location'Class;
                 Outer      : Ellipse_Parameters := Unit_Circle;
                 Center     : Cairo_Tuple;
-                From       : GDouble   := 3.0 * Pi / 4.0;
-                Length     : GDouble   := 3.0 * Pi / 2.0;
+                From       : Gdouble   := 3.0 * Pi / 4.0;
+                Length     : Gdouble   := 3.0 * Pi / 2.0;
                 Color      : Gdk_Color := RGB (1.0, 0.0, 0.0);
                 Adjustment : access Gtk_Adjustment_Record'Class := null;
                 Scaled     : Boolean   := False
@@ -96,8 +96,8 @@ package Gtk.Layered.Sector_Needle is
    procedure Add_Sector_Needle
              (  Under      : not null access Layer_Location'Class;
                 Outer      : Ellipse_Parameters := Unit_Circle;
-                From       : GDouble   := 3.0 * Pi / 4.0;
-                Length     : GDouble   := 3.0 * Pi / 2.0;
+                From       : Gdouble   := 3.0 * Pi / 4.0;
+                Length     : Gdouble   := 3.0 * Pi / 2.0;
                 Color      : Gdk_Color := RGB (1.0, 0.0, 0.0);
                 Adjustment : access Gtk_Adjustment_Record'Class := null;
                 Scaled     : Boolean   := False
@@ -106,8 +106,8 @@ package Gtk.Layered.Sector_Needle is
             (  Under      : not null access Layer_Location'Class;
                Outer      : Ellipse_Parameters := Unit_Circle;
                Inner      : Ellipse_Parameters;
-               From       : GDouble   := 3.0 * Pi / 4.0;
-               Length     : GDouble   := 3.0 * Pi / 2.0;
+               From       : Gdouble   := 3.0 * Pi / 4.0;
+               Length     : Gdouble   := 3.0 * Pi / 2.0;
                Color      : Gdk_Color := RGB (1.0, 0.0, 0.0);
                Adjustment : access Gtk_Adjustment_Record'Class := null;
                Scaled     : Boolean   := False
@@ -116,8 +116,8 @@ package Gtk.Layered.Sector_Needle is
             (  Under      : not null access Layer_Location'Class;
                Outer      : Ellipse_Parameters := Unit_Circle;
                Center     : Cairo_Tuple;
-               From       : GDouble   := 3.0 * Pi / 4.0;
-               Length     : GDouble   := 3.0 * Pi / 2.0;
+               From       : Gdouble   := 3.0 * Pi / 4.0;
+               Length     : Gdouble   := 3.0 * Pi / 2.0;
                Color      : Gdk_Color := RGB (1.0, 0.0, 0.0);
                Adjustment : access Gtk_Adjustment_Record'Class := null;
                Scaled     : Boolean   := False
@@ -125,8 +125,8 @@ package Gtk.Layered.Sector_Needle is
    function Add_Sector_Needle
             (  Under      : not null access Layer_Location'Class;
                Outer      : Ellipse_Parameters := Unit_Circle;
-               From       : GDouble   := 3.0 * Pi / 4.0;
-               Length     : GDouble   := 3.0 * Pi / 2.0;
+               From       : Gdouble   := 3.0 * Pi / 4.0;
+               Length     : Gdouble   := 3.0 * Pi / 2.0;
                Color      : Gdk_Color := RGB (1.0, 0.0, 0.0);
                Adjustment : access Gtk_Adjustment_Record'Class := null;
                Scaled     : Boolean   := False
@@ -150,7 +150,7 @@ package Gtk.Layered.Sector_Needle is
 --
 --    The angle
 --
-   function Get_From (Layer : Sector_Needle_Layer) return GDouble;
+   function Get_From (Layer : Sector_Needle_Layer) return Gdouble;
 --
 -- Get_Inner -- Inner ellipse parameters of the sector
 --
@@ -171,7 +171,7 @@ package Gtk.Layered.Sector_Needle is
 --
 --    The angle
 --
-   function Get_Length (Layer : Sector_Needle_Layer) return GDouble;
+   function Get_Length (Layer : Sector_Needle_Layer) return Gdouble;
 --
 -- Get_Outer -- Outer ellipse parameters of the sector
 --

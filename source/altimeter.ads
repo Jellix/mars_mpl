@@ -13,7 +13,7 @@ package Altimeter is
                      Ada.Real_Time.Milliseconds (10);
 
    Acceleration  : constant          := 3.8; -- m/s**2
-   Base_Velocity : constant Velocity := -120.0;
+   Base_Velocity : constant Velocity := 0.0;
    Base_Height   : constant Height   := 2_000.0;
 
    procedure Current_Height (H : out Height);

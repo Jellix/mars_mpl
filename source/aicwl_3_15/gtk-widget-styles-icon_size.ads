@@ -25,7 +25,7 @@
 --  executable file might be covered by the GNU Public License.       --
 --____________________________________________________________________--
 
-with GLib.Properties.Icon_Size;
+with Glib.Properties.Icon_Size;
 with Gtk.Widget.Styles.Generic_Enumeration;
 
 package Gtk.Widget.Styles.Icon_Size is

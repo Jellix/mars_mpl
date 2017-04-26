@@ -86,8 +86,8 @@ package body Gtk.Layered.Cache is
                 Context : Cairo_Context;
                 Area    : Gdk_Rectangle
              )  is
-      Height : constant GInt := Layer.Widget.Get_Allocated_Height;
-      Width  : constant GInt := Layer.Widget.Get_Allocated_Width;
+      Height : constant Gint := Layer.Widget.Get_Allocated_Height;
+      Width  : constant Gint := Layer.Widget.Get_Allocated_Width;
    begin
       if (  Layer.Cache /= Null_Context
          and then
@@ -96,7 +96,7 @@ package body Gtk.Layered.Cache is
             Layer.Width = Width
          )
       then
-         Set_Operator (Context, CAIRO_OPERATOR_SOURCE);
+         Set_Operator (Context, Cairo_Operator_Source);
          Set_Source_Surface
          (  Cr      => Context,
             Surface => Get_Target (Layer.Cache),
@@ -175,8 +175,8 @@ package body Gtk.Layered.Cache is
              (  Layer   : in out Cache_Layer;
                 Context : Cairo_Context
              )  is
-      Height : constant GInt := Layer.Widget.Get_Allocated_Height;
-      Width  : constant GInt := Layer.Widget.Get_Allocated_Width;
+      Height : constant Gint := Layer.Widget.Get_Allocated_Height;
+      Width  : constant Gint := Layer.Widget.Get_Allocated_Width;
    begin
       if (  Layer.Cache = Null_Context
          or else
@@ -189,7 +189,7 @@ package body Gtk.Layered.Cache is
             Surface : constant Cairo_Surface :=
                          Create_Similar
                          (  Get_Target (Context),
-                            CAIRO_CONTENT_COLOR,
+                            Cairo_Content_Color,
                             Width,
                             Height
                          );
@@ -202,7 +202,7 @@ package body Gtk.Layered.Cache is
          Layer.Height := Height;
          Layer.Width  := Width;
       end if;
-      Set_Operator (Layer.Cache, CAIRO_OPERATOR_SOURCE);
+      Set_Operator (Layer.Cache, Cairo_Operator_Source);
       Set_Source_Surface
       (  Layer.Cache,
          Get_Target (Context),

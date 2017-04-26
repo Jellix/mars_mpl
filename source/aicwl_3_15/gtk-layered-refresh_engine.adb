@@ -26,7 +26,7 @@
 --____________________________________________________________________--
 
 with Ada.IO_Exceptions;  use Ada.IO_Exceptions;
-with GLib.Messages;      use GLib.Messages;
+with Glib.Messages;      use Glib.Messages;
 with Gtk.Missed;         use Gtk.Missed;
 
 with Ada.Unchecked_Deallocation;
@@ -156,8 +156,8 @@ package body Gtk.Layered.Refresh_Engine is
    begin
       if Period /= Engine.Period then
          declare
-            Interval : constant GUInt :=
-                       GUInt (GDouble (Period) * 1_000.0);
+            Interval : constant Guint :=
+                       Guint (Gdouble (Period) * 1_000.0);
          begin
             if Engine.Timer /= 0 then
                if 0 = Remove (Engine.Timer) then
@@ -176,7 +176,7 @@ package body Gtk.Layered.Refresh_Engine is
       end if;
    end Set_Period;
 
-   function Timer (Data : System.Address) return GBoolean is
+   function Timer (Data : System.Address) return Gboolean is
       Engine : Layered_Refresh_Engine renames
                   Conversions.To_Pointer (Data).all;
    begin

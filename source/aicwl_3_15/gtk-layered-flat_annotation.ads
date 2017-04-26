@@ -81,23 +81,23 @@ package Gtk.Layered.Flat_Annotation is
 --
    procedure Add_Flat_Annotation
              (  Under       : not null access Layer_Location'Class;
-                Texts       : Gtk.Enums.String_List.GList;
-                Step        : GDouble;
+                Texts       : Gtk.Enums.String_List.Glist;
+                Step        : Gdouble;
                 First       : Tick_Number := Tick_Number'Last;
                 Skipped     : Tick_Number := Tick_Number'Last;
                 From        : Cairo_Tuple := (0.0, 0.0);
-                Length      : GDouble     := 1.0;
-                Scale_Angle : GDouble     := 0.0;
+                Length      : Gdouble     := 1.0;
+                Scale_Angle : Gdouble     := 0.0;
                 Face        : Pango_Cairo_Font :=
                                  Create_Toy
                                  (  Family => "arial",
-                                    Slant  => CAIRO_FONT_SLANT_NORMAL,
-                                    Weight => CAIRO_FONT_WEIGHT_NORMAL
+                                    Slant  => Cairo_Font_Slant_Normal,
+                                    Weight => Cairo_Font_Weight_Normal
                                  );
-                Height      : GDouble     := 12.0;
-                Stretch     : GDouble     := 1.0;
+                Height      : Gdouble     := 12.0;
+                Stretch     : Gdouble     := 1.0;
                 Color       : Gdk_Color   := RGB (0.0, 0.0, 0.0);
-                Text_Angle  : GDouble     := 0.0;
+                Text_Angle  : Gdouble     := 0.0;
                 Justify     : Alignment   := Center;
                 Markup      : Boolean     := False;
                 Scaled      : Boolean     := False
@@ -105,11 +105,11 @@ package Gtk.Layered.Flat_Annotation is
    procedure Add_Flat_Annotation
              (  Under       : not null access Layer_Location'Class;
                 Texts       : Controlled_String_List;
-                Step        : GDouble;
+                Step        : Gdouble;
                 First       : Tick_Number := Tick_Number'Last;
                 Skipped     : Tick_Number := Tick_Number'Last;
                 From        : Cairo_Tuple := (0.0, 0.0);
-                Length      : GDouble     := 1.0;
+                Length      : Gdouble     := 1.0;
                 Scale_Angle : GDouble     := 0.0;
                 Face        : Pango_Cairo_Font :=
                                  Create_Toy

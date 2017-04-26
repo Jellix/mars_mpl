@@ -36,7 +36,7 @@
 --     This package provides a refresh engine object, which can be  used
 --  in order to periodically refresh the state of layered widgets.
 --
-with GLib.Object.Weak_References;
+with Glib.Object.Weak_References;
 
 package Gtk.Layered.Refresh_Engine is
 --
@@ -115,7 +115,7 @@ private
    type Layered_Refresh_Engine is
       new Ada.Finalization.Limited_Controlled with
    record
-      Timer  : GUInt    := 0;
+      Timer  : Guint    := 0;
       Period : Duration := Duration'Last;
       Active : Boolean  := False;
       List   : access List_Element;
@@ -126,19 +126,19 @@ private
    type Layered_Refresh_Engine_Ptr is
       not null access all Layered_Refresh_Engine'Class;
 
-   function Timer (Data : System.Address) return GBoolean;
+   function Timer (Data : System.Address) return Gboolean;
    pragma Convention (C, Timer);
 
    type Timer_Ptr is access
-      function (Engine : System.Address) return GBoolean;
+      function (Engine : System.Address) return Gboolean;
    pragma Convention (C, Timer_Ptr);
 
    function Timeout_Add
-            (  Interval : GUInt;
+            (  Interval : Guint;
                Timer    : Timer_Ptr;
                Data     : System.Address
-            )  return GUInt;
-   function Remove (Timer : GUInt) return GBoolean;
+            )  return Guint;
+   function Remove (Timer : Guint) return Gboolean;
 
    pragma Import (C, Timeout_Add, "g_timeout_add");
    pragma Import (C, Remove, "g_source_remove");

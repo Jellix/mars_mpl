@@ -58,7 +58,7 @@ package body Gtk.Enums.String_Lists is
    end Finalize;
 
    function Get_GList (List : Controlled_String_List)
-      return String_List.GList is
+      return String_List.Glist is
    begin
       return List.Ptr.List;
    end Get_GList;

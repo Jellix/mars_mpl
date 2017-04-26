@@ -23,19 +23,19 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 with Ada.Numerics;              use Ada.Numerics;
 with Cairo.Line_Cap_Property;   use Cairo.Line_Cap_Property;
-with GLib.Properties.Creation;  use GLib.Properties.Creation;
-with GLib.Types;                use GLib.Types;
-with GtkAda.Types;              use GtkAda.Types;
+with Glib.Properties.Creation;  use Glib.Properties.Creation;
+with Glib.Types;                use Glib.Types;
+-- with Gtkada.Types;              use Gtkada.Types;
 with Gtk.Enums;                 use Gtk.Enums;
 with Gtk.Missed;                use Gtk.Missed;
 with Gtk.Widget.Styles;         use Gtk.Widget.Styles;
 with Pango.Cairo.Fonts;         use Pango.Cairo.Fonts;
 
-with GLib.Object.Checked_Destroy;
+with Glib.Object.Checked_Destroy;
 
 with Gtk.Widget.Styles.Line_Cap_Property;
 use  Gtk.Widget.Styles.Line_Cap_Property;
@@ -53,10 +53,12 @@ package body Gtk.Gauge.Round_270_60s is
    Class_Record : aliased Ada_GObject_Class := Uninitialized_Class;
 
    procedure Create_Background
-             (  Widget  : not null access
-                          Gtk_Gauge_Round_270_60s_Record'Class;
-                Sectors : Positive
-             )  is
+     (Widget  : not null access Gtk_Gauge_Round_270_60s_Record'Class;
+      Sectors : Positive);
+
+   procedure Create_Background
+     (Widget  : not null access Gtk_Gauge_Round_270_60s_Record'Class;
+      Sectors : Positive) is
    begin
       G_New (Widget, Get_Type);
       Gtk.Layered.Initialize (Widget);

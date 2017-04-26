@@ -25,11 +25,11 @@
 --  executable file might be covered by the GNU Public License.       --
 --____________________________________________________________________--
 
-package body GLib.Wrappers is
+package body Glib.Wrappers is
 
    function G_Dir_Open
             (  Path  : Address;
-               Flags : GUInt;
+               Flags : Guint;
                Error : Address
             )  return Address;
    pragma Import (C, G_Dir_Open, "g_dir_open");
@@ -41,8 +41,8 @@ package body GLib.Wrappers is
 
    function G_File_Test
             (  File_Name : Address;
-               Test      : GInt
-            )  return GBoolean;
+               Test      : Gint
+            )  return Gboolean;
    pragma Import (C, G_File_Test, "g_file_test");
    pragma Weak_External (G_File_Test);
 
@@ -58,7 +58,7 @@ package body GLib.Wrappers is
             (  Working_Directory : Address;
                ArgV              : Address;
                EnvP              : Address;
-               Flags             : GUInt;
+               Flags             : Guint;
                Child_Setup       : Address;
                User_Data         : Address;
                Child_PID         : Address;

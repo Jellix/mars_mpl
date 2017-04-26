@@ -36,7 +36,7 @@ package body Gtk.Widget.Styles.Generic_Enumeration is
       -- convertible to. The number is used as the position to  get  the
       -- Ada equivalent.
       --
-      Position : constant GUInt := Style_Get (Widget, Property_Name);
+      Position : constant Guint := Style_Get (Widget, Property_Name);
    begin
       return Enumeration'Val (Integer (Position));
    end Style_Get;
@@ -45,7 +45,7 @@ package body Gtk.Widget.Styles.Generic_Enumeration is
             (  PSpec          : Param_Spec;
                RC_String      : GString;
                Property_Value : access GValue
-            )  return GBoolean is
+            )  return Gboolean is
    begin
       Set_Enum
       (  Property_Value.all,

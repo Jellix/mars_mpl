@@ -30,7 +30,7 @@ with Ada.IO_Exceptions;           use Ada.IO_Exceptions;
 with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
 with Gdk.Color.IHLS;              use Gdk.Color.IHLS;
 with Gdk.RGBA;                    use Gdk.RGBA;
-with GLib.Properties.Creation;    use GLib.Properties.Creation;
+with Glib.Properties.Creation;    use Glib.Properties.Creation;
 with Gtk.Style_Context;           use Gtk.Style_Context;
 with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
 with Gtk.Style;                   use Gtk.Style;
@@ -44,7 +44,7 @@ package body Gtk.Layered.Abstract_Bordered is
 
    Darken_By  : constant Gdk_Luminance := Gdk_Luminance'Last / 3;
    Lighten_By : constant Gdk_Luminance := Gdk_Luminance'Last / 3;
-   Cos_45     : constant GDouble := sqrt (2.0) * 0.5;
+   Cos_45     : constant Gdouble := Sqrt (2.0) * 0.5;
 
    type Layer_Property is
         (  Property_Scaled,
@@ -139,11 +139,11 @@ package body Gtk.Layered.Abstract_Bordered is
          else
             Color := Darken (Layer.Border_Color.Color, Darken_By);
          end if;
-         Set_Source_RGB
+         Set_Source_Rgb
          (  Context,
-            GDouble (Red   (Color)) / GDouble (GUInt16'Last),
-            GDouble (Green (Color)) / GDouble (GUInt16'Last),
-            GDouble (Blue  (Color)) / GDouble (GUInt16'Last)
+            Gdouble (Red   (Color)) / Gdouble (Guint16'Last),
+            Gdouble (Green (Color)) / Gdouble (Guint16'Last),
+            Gdouble (Blue  (Color)) / Gdouble (Guint16'Last)
          );
       end Set_Dark;
 
@@ -155,9 +155,9 @@ package body Gtk.Layered.Abstract_Bordered is
          else
             Color := Lighten (Layer.Border_Color.Color, Lighten_By);
          end if;
-         Set_Source_RGB
+         Set_Source_Rgb
          (  Context,
-            GDouble (Red   (Color)) / GDouble (GUInt16'Last),
+            Gdouble (Red   (Color)) / Gdouble (GUInt16'Last),
             GDouble (Green (Color)) / GDouble (GUInt16'Last),
             GDouble (Blue  (Color)) / GDouble (GUInt16'Last)
          );

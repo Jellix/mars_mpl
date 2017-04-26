@@ -26,7 +26,7 @@
 --____________________________________________________________________--
 
 with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
-with GLib.Properties.Creation;    use GLib.Properties.Creation;
+with Glib.Properties.Creation;    use Glib.Properties.Creation;
 with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
 
 with Ada.Unchecked_Deallocation;
@@ -105,9 +105,9 @@ package body Gtk.Layered.Elliptic_Bar is
             Layer'Unchecked_Access
          );
       declare
-         Lower : constant GDouble := Adjustment.Get_Lower;
-         Upper : constant GDouble := Adjustment.Get_Upper;
-         Value : constant GDouble := Adjustment.Get_Value;
+         Lower : constant Gdouble := Adjustment.Get_Lower;
+         Upper : constant Gdouble := Adjustment.Get_Upper;
+         Value : constant Gdouble := Adjustment.Get_Value;
       begin
          if Upper <= Lower or else Value <= Lower then
             Layer.Set_Value (0.0);
@@ -122,11 +122,11 @@ package body Gtk.Layered.Elliptic_Bar is
    procedure Add_Elliptic_Bar
              (  Under      : not null access Layer_Location'Class;
                 Ellipse    : Ellipse_Parameters := Unit_Circle;
-                From       : GDouble        := 3.0 * Pi / 4.0;
-                Length     : GDouble        := 3.0 * Pi / 2.0;
-                Width      : GDouble        := 1.0;
+                From       : Gdouble        := 3.0 * Pi / 4.0;
+                Length     : Gdouble        := 3.0 * Pi / 2.0;
+                Width      : Gdouble        := 1.0;
                 Color      : Gdk_Color      := RGB (1.0, 0.0, 0.0);
-                Line_Cap   : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+                Line_Cap   : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                 Adjustment : access Gtk_Adjustment_Record'Class := null;
                 Scaled     : Boolean        := False;
                 Widened    : Boolean        := False
@@ -156,11 +156,11 @@ package body Gtk.Layered.Elliptic_Bar is
    function Add_Elliptic_Bar
             (  Under      : not null access Layer_Location'Class;
                Ellipse    : Ellipse_Parameters := Unit_Circle;
-               From       : GDouble        := 3.0 * Pi / 4.0;
-               Length     : GDouble        := 3.0 * Pi / 2.0;
-               Width      : GDouble        := 1.0;
+               From       : Gdouble        := 3.0 * Pi / 4.0;
+               Length     : Gdouble        := 3.0 * Pi / 2.0;
+               Width      : Gdouble        := 1.0;
                Color      : Gdk_Color      := RGB (1.0, 0.0, 0.0);
-               Line_Cap   : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+               Line_Cap   : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                Adjustment : access Gtk_Adjustment_Record'Class := null;
                Scaled     : Boolean        := False;
                Widened    : Boolean        := False
@@ -192,9 +192,9 @@ package body Gtk.Layered.Elliptic_Bar is
              (  Adjustment : access GObject_Record'Class;
                 Needle     : Elliptic_Bar_Ptr
              )  is
-      Lower : constant GDouble := Get_Lower (Needle.Adjustment);
-      Upper : constant GDouble := Get_Upper (Needle.Adjustment);
-      Value : constant GDouble := Get_Value (Needle.Adjustment);
+      Lower : constant Gdouble := Get_Lower (Needle.Adjustment);
+      Upper : constant Gdouble := Get_Upper (Needle.Adjustment);
+      Value : constant Gdouble := Get_Value (Needle.Adjustment);
    begin
       if Upper <= Lower or else Value <= Lower then
          Needle.Set_Value (0.0);
@@ -223,7 +223,7 @@ package body Gtk.Layered.Elliptic_Bar is
       else
          Set_Line_Width (Context, Layer.Line.Width);
       end if;
-      Set_Source_RGB
+      Set_Source_Rgb
       (  Context,
          GDouble (Red   (Layer.Line.Color)) / GDouble (Guint16'Last),
          GDouble (Green (Layer.Line.Color)) / GDouble (Guint16'Last),

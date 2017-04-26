@@ -81,15 +81,15 @@ package Gtk.Layered.Label is
                 Face     : Pango_Cairo_Font :=
                               Create_Toy
                               (  Family => "sans",
-                                 Slant  => CAIRO_FONT_SLANT_NORMAL,
-                                 Weight => CAIRO_FONT_WEIGHT_NORMAL
+                                 Slant  => Cairo_Font_Slant_Normal,
+                                 Weight => Cairo_Font_Weight_Normal
                               );
-                Height   : GDouble             := 12.0;
-                Stretch  : GDouble             := 1.0;
+                Height   : Gdouble             := 12.0;
+                Stretch  : Gdouble             := 1.0;
                 Mode     : Text_Transformation := Moved_Centered;
                 Color    : Gdk_Color           := RGB (0.0, 0.0, 0.0);
-                Angle    : GDouble             := 3.0 * Pi / 2.0;
-                Skew     : GDouble             := 0.0;
+                Angle    : Gdouble             := 3.0 * Pi / 2.0;
+                Skew     : Gdouble             := 0.0;
                 Markup   : Boolean             := False;
                 Scaled   : Boolean             := False
              );
@@ -100,15 +100,15 @@ package Gtk.Layered.Label is
                Face     : Pango_Cairo_Font :=
                              Create_Toy
                              (  Family => "sans",
-                                Slant  => CAIRO_FONT_SLANT_NORMAL,
-                                Weight => CAIRO_FONT_WEIGHT_NORMAL
+                                Slant  => Cairo_Font_Slant_Normal,
+                                Weight => Cairo_Font_Weight_Normal
                              );
-               Height   : GDouble             := 12.0;
-               Stretch  : GDouble             := 1.0;
+               Height   : Gdouble             := 12.0;
+               Stretch  : Gdouble             := 1.0;
                Mode     : Text_Transformation := Moved_Centered;
                Color    : Gdk_Color           := RGB (0.0, 0.0, 0.0);
-               Angle    : GDouble             := 3.0 * Pi / 2.0;
-               Skew     : GDouble             := 0.0;
+               Angle    : Gdouble             := 3.0 * Pi / 2.0;
+               Skew     : Gdouble             := 0.0;
                Markup   : Boolean             := False;
                Scaled   : Boolean             := False
             )  return not null access Label_Layer;
@@ -121,7 +121,7 @@ package Gtk.Layered.Label is
 --
 --    The angle to the horizontal text axis (when rotated or skewed)
 --
-   function Get_Angle (Layer : Label_Layer) return GDouble;
+   function Get_Angle (Layer : Label_Layer) return Gdouble;
 --
 -- Get_Color -- The text color
 --
@@ -152,7 +152,7 @@ package Gtk.Layered.Label is
 --
 --    The text height
 --
-   function Get_Height (Layer : Label_Layer) return GDouble;
+   function Get_Height (Layer : Label_Layer) return Gdouble;
 --
 -- Get_Location -- The text location
 --
@@ -195,7 +195,7 @@ package Gtk.Layered.Label is
 --
 --    The text stretch
 --
-   function Get_Stretch (Layer : Label_Layer) return GDouble;
+   function Get_Stretch (Layer : Label_Layer) return Gdouble;
 --
 -- Get_Skew -- The skew angle
 --
@@ -205,7 +205,7 @@ package Gtk.Layered.Label is
 --
 --    The skew angle
 --
-   function Get_Skew (Layer : Label_Layer) return GDouble;
+   function Get_Skew (Layer : Label_Layer) return Gdouble;
 --
 -- Get_Text -- The text text
 --
@@ -246,12 +246,12 @@ package Gtk.Layered.Label is
              (  Layer    : in out Label_Layer;
                 Location : Cairo_Tuple;
                 Face     : Pango_Cairo_Font;
-                Height   : GDouble;
-                Stretch  : GDouble;
+                Height   : Gdouble;
+                Stretch  : Gdouble;
                 Mode     : Text_Transformation;
                 Color    : Gdk_Color;
-                Angle    : GDouble;
-                Skew     : GDouble
+                Angle    : Gdouble;
+                Skew     : Gdouble
              );
 --
 -- Set_Text -- Set text
@@ -316,7 +316,7 @@ package Gtk.Layered.Label is
    overriding
       procedure Scale
                 (  Layer  : in out Label_Layer;
-                   Factor : GDouble
+                   Factor : Gdouble
                 );
    overriding
       procedure Set_Property_Value
@@ -336,14 +336,14 @@ package Gtk.Layered.Label is
                 );
 private
    type Label_Layer is new Abstract_Layer and Scalable_Layer with record
-      X, Y    : GDouble;
+      X, Y    : Gdouble;
       Face    : Pango_Cairo_Font;
-      Height  : GDouble;
-      Stretch : GDouble;
+      Height  : Gdouble;
+      Stretch : Gdouble;
       Mode    : Text_Transformation;
       Color   : Gdk_Color;
-      Angle   : GDouble;
-      Skew    : GDouble;
+      Angle   : Gdouble;
+      Skew    : Gdouble;
       Text    : String_Ptr;
       Markup  : Boolean := False;
       Scaled  : Boolean := False;

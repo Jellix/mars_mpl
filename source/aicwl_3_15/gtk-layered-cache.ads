@@ -93,7 +93,7 @@ package Gtk.Layered.Cache is
    overriding
       procedure Scale
                 (  Layer  : in out Cache_Layer;
-                   Factor : GDouble
+                   Factor : Gdouble
                 )  is null;
    overriding
       procedure Set_Property_Value
@@ -114,10 +114,10 @@ package Gtk.Layered.Cache is
 private
    type Cache_Layer is new Abstract_Layer with record
       Cache  : Cairo_Context;
-      Size   : GDouble;
+      Size   : Gdouble;
       Center : Cairo_Tuple;
-      Height : GInt;
-      Width  : GInt;
+      Height : Gint;
+      Width  : Gint;
    end record;
 
 end Gtk.Layered.Cache;

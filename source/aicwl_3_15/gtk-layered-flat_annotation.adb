@@ -26,7 +26,7 @@
 --____________________________________________________________________--
 
 with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
-with GLib.Properties.Creation;    use GLib.Properties.Creation;
+with Glib.Properties.Creation;    use Glib.Properties.Creation;
 with Gtk.Layered.Label;           use Gtk.Layered.Label;
 with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
 
@@ -93,7 +93,7 @@ package body Gtk.Layered.Flat_Annotation is
           );
 
    function Get_List
-            (  Texts  : Gtk.Enums.String_List.GList;
+            (  Texts  : Gtk.Enums.String_List.Glist;
                Ticks  : Tick_Parameters;
                Markup : Boolean
             )  return Annotation_List_Ptr;
@@ -125,17 +125,17 @@ package body Gtk.Layered.Flat_Annotation is
    function Add_Annotation_Implementation
             (  Under       : not null access Layer_Location'Class;
                Texts       : Annotation_List_Ptr;
-               Step        : GDouble;
+               Step        : Gdouble;
                First       : Tick_Number;
                Skipped     : Tick_Number;
                From        : Cairo_Tuple;
-               Length      : GDouble;
-               Scale_Angle : GDouble;
+               Length      : Gdouble;
+               Scale_Angle : Gdouble;
                Face        : Pango_Cairo_Font;
-               Height      : GDouble;
-               Stretch     : GDouble;
+               Height      : Gdouble;
+               Stretch     : Gdouble;
                Color       : Gdk_Color;
-               Text_Angle  : GDouble;
+               Text_Angle  : Gdouble;
                Justify     : Alignment;
                Scaled      : Boolean
             )  return Annotation_Ptr is
@@ -167,7 +167,7 @@ package body Gtk.Layered.Flat_Annotation is
 
    procedure Add_Flat_Annotation
              (  Under       : not null access Layer_Location'Class;
-                Texts       : Gtk.Enums.String_List.GList;
+                Texts       : Gtk.Enums.String_List.Glist;
                 Step        : GDouble;
                 First       : Tick_Number := Tick_Number'Last;
                 Skipped     : Tick_Number := Tick_Number'Last;

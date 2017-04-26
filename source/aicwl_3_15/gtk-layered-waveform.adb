@@ -29,8 +29,8 @@ with Ada.Exceptions;              use Ada.Exceptions;
 with Ada.IO_Exceptions;           use Ada.IO_Exceptions;
 with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
 with Cairo.Surface;               use Cairo.Surface;
-with GLib.Messages;               use GLib.Messages;
-with GLib.Properties.Creation;    use GLib.Properties.Creation;
+with Glib.Messages;               use Glib.Messages;
+with Glib.Properties.Creation;    use Glib.Properties.Creation;
 with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
 
 with Ada.Unchecked_Deallocation;
@@ -53,11 +53,11 @@ package body Gtk.Layered.Waveform is
       if Dump_X_Value then
          Trace (Layer'Address, Horizontal_Offset'Image (X) & " :");
       end if;
-      Trace (Layer'Address, Edit.Image (GDouble (V)));
+      Trace (Layer'Address, Edit.Image (Gdouble (V)));
       if Dump_Y_Value then
          Trace
          (  Layer'Address,
-            " =" & GInt'Image (GInt (Layer.To_Y (V)))
+            " =" & Gint'Image (Gint (Layer.To_Y (V)))
          );
       end if;
    exception
@@ -163,9 +163,9 @@ package body Gtk.Layered.Waveform is
    procedure Add_Waveform
              (  Under     : not null access Layer_Location'Class;
                 Box       : Cairo_Box;
-                Width     : GDouble            := 1.0;
+                Width     : Gdouble            := 1.0;
                 Color     : Gdk_Color          := RGB (1.0, 0.0, 0.0);
-                Line_Cap  : Cairo_Line_Cap     := CAIRO_LINE_CAP_BUTT;
+                Line_Cap  : Cairo_Line_Cap     := Cairo_Line_Cap_Butt;
                 Sweeper   : access Gtk_Adjustment_Record'Class := null;
                 Amplifier : access Gtk_Adjustment_Record'Class := null;
                 Mode      : Interpolation_Mode := Linear;
@@ -203,9 +203,9 @@ package body Gtk.Layered.Waveform is
    function Add_Waveform
             (  Under     : not null access Layer_Location'Class;
                Box       : Cairo_Box;
-               Width     : GDouble            := 1.0;
+               Width     : Gdouble            := 1.0;
                Color     : Gdk_Color          := RGB (1.0, 0.0, 0.0);
-               Line_Cap  : Cairo_Line_Cap     := CAIRO_LINE_CAP_BUTT;
+               Line_Cap  : Cairo_Line_Cap     := Cairo_Line_Cap_Butt;
                Sweeper   : access Gtk_Adjustment_Record'Class := null;
                Amplifier : access Gtk_Adjustment_Record'Class := null;
                Mode      : Interpolation_Mode := Linear;
@@ -257,9 +257,9 @@ package body Gtk.Layered.Waveform is
                Trace_Line
                (  Layer'Address,
                   (  "Amplify V1 ="
-                  &  Edit.Image (GDouble (Layer.V1))
+                  &  Edit.Image (Gdouble (Layer.V1))
                   &  " /="
-                  &  Edit.Image (GDouble (Upper))
+                  &  Edit.Image (Gdouble (Upper))
                   &  " = upper"
                )  );
             end if;
@@ -267,9 +267,9 @@ package body Gtk.Layered.Waveform is
                Trace_Line
                (  Layer'Address,
                   (  "Amplify V2 ="
-                  &  Edit.Image (GDouble (Layer.V2))
+                  &  Edit.Image (Gdouble (Layer.V2))
                   &  " /="
-                  &  Edit.Image (GDouble (Lower))
+                  &  Edit.Image (Gdouble (Lower))
                   &  " = lower"
                )  );
             end if;
@@ -455,7 +455,7 @@ package body Gtk.Layered.Waveform is
       end if;
    end Get;
 
-   function Get (Layer : Waveform_Layer; X : GDouble) return Y_Axis is
+   function Get (Layer : Waveform_Layer; X : Gdouble) return Y_Axis is
       Got_It : Boolean;
       V      : Y_Axis;
    begin
@@ -469,7 +469,7 @@ package body Gtk.Layered.Waveform is
 
    procedure Get
              (  Layer  : Waveform_Layer;
-                X      : GDouble;
+                X      : Gdouble;
                 Y      : out Y_Axis;
                 Got_It : out Boolean
              )  is
@@ -560,7 +560,7 @@ package body Gtk.Layered.Waveform is
 
    procedure Get_Point
              (  Layer : Waveform_Layer;
-                X     : GDouble;
+                X     : Gdouble;
                 T     : out X_Axis;
                 V     : out Y_Axis
              )  is
@@ -574,7 +574,7 @@ package body Gtk.Layered.Waveform is
 
    procedure Get_Point
              (  Layer  : Waveform_Layer;
-                X      : GDouble;
+                X      : Gdouble;
                 T      : out X_Axis;
                 V      : out Y_Axis;
                 Got_It : out Boolean
@@ -652,8 +652,8 @@ package body Gtk.Layered.Waveform is
                   Gnew_Double
                   (  Name    => "x1",
                      Nick    => "x1",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb   => "The x-coordinate of the waveform's " &
                                 "box left margin"
@@ -663,8 +663,8 @@ package body Gtk.Layered.Waveform is
                   Gnew_Double
                   (  Name    => "x2",
                      Nick    => "x2",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 1.0,
                      Blurb   => "The x-coordinate of the waveform's " &
                                 "box right margin"
@@ -674,8 +674,8 @@ package body Gtk.Layered.Waveform is
                   Gnew_Double
                   (  Name    => "y1",
                      Nick    => "y1",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb   => "The x-coordinate of the waveform's " &
                                 "box top margin"
@@ -685,8 +685,8 @@ package body Gtk.Layered.Waveform is
                   Gnew_Double
                   (  Name    => "y2",
                      Nick    => "y2",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 1.0,
                      Blurb   => "The y-coordinate of the waveform's " &
                                 "box bottom margin"
@@ -696,8 +696,8 @@ package body Gtk.Layered.Waveform is
                   Gnew_Double
                   (  Name    => "t1",
                      Nick    => "t1",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb   => "The time at the waveform's box " &
                                 "left margin in seconds since the epoch"
@@ -707,8 +707,8 @@ package body Gtk.Layered.Waveform is
                   Gnew_Double
                   (  Name    => "t2",
                      Nick    => "t2",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 1.0,
                      Blurb   => "The time at the waveform's box " &
                                 "right margin in seconds since the " &
@@ -719,8 +719,8 @@ package body Gtk.Layered.Waveform is
                   Gnew_Double
                   (  Name    => "v1",
                      Nick    => "v1",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb   => "The value at the waveform's box " &
                                 "top margin"
@@ -730,8 +730,8 @@ package body Gtk.Layered.Waveform is
                   Gnew_Double
                   (  Name    => "v2",
                      Nick    => "v2",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 1.0,
                      Blurb   => "The value at the waveform's box " &
                                 "bottom margin"
@@ -778,7 +778,7 @@ package body Gtk.Layered.Waveform is
                   Cairo.Line_Cap_Property.Gnew_Enum
                   (  Name    => "line-cap",
                      Nick    => "line cap",
-                     Default => CAIRO_LINE_CAP_BUTT,
+                     Default => Cairo_Line_Cap_Butt,
                      Blurb   => "The cap style of the waveform line"
                   );
             when Property_Preferred_Method =>
@@ -796,7 +796,7 @@ package body Gtk.Layered.Waveform is
                   (  Name    => "width",
                      Nick    => "width",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 1.0,
                      Blurb   => "The waveform line width"
                   );
@@ -860,16 +860,16 @@ package body Gtk.Layered.Waveform is
                   Set_Double (Value, Layer.Box.Y2);
                when Property_T1 =>
                   Init (Value, GType_Double);
-                  Set_Double (Value, GDouble (Layer.T1));
+                  Set_Double (Value, Gdouble (Layer.T1));
                when Property_T2 =>
                   Init (Value, GType_Double);
-                  Set_Double (Value, GDouble (Layer.T2));
+                  Set_Double (Value, Gdouble (Layer.T2));
                when Property_V1 =>
                   Init (Value, GType_Double);
-                  Set_Double (Value, GDouble (Layer.V1));
+                  Set_Double (Value, Gdouble (Layer.V1));
                when Property_V2 =>
                   Init (Value, GType_Double);
-                  Set_Double (Value, GDouble (Layer.V2));
+                  Set_Double (Value, Gdouble (Layer.V2));
                when Property_Width =>
                   Init (Value, GType_Double);
                   Set_Double (Value, Layer.Line.Width);
@@ -939,7 +939,7 @@ package body Gtk.Layered.Waveform is
       return Layer.Sweeper_Adjustment;
    end Get_Sweeper;
 
-   function Get_T (Layer : Waveform_Layer; X : GDouble) return X_Axis is
+   function Get_T (Layer : Waveform_Layer; X : Gdouble) return X_Axis is
       X1 : X_Axis := X_Axis (Layer.Box.X1);
       dX : X_Axis := X_Axis (Layer.Box.X2 - Layer.Box.X1 + 1.0);
    begin
@@ -975,7 +975,7 @@ package body Gtk.Layered.Waveform is
       return Layer.V2;
    end Get_V2;
 
-   function Get_V (Layer : Waveform_Layer; Y : GDouble) return Y_Axis is
+   function Get_V (Layer : Waveform_Layer; Y : Gdouble) return Y_Axis is
       Y2 : Y_Axis := Y_Axis (Layer.Box.Y2);
       dY : Y_Axis := Y_Axis (Layer.Box.Y2 - Layer.Box.Y1);
    begin
@@ -996,7 +996,7 @@ package body Gtk.Layered.Waveform is
       return Layer.Widened;
    end Get_Widened;
 
-   function Get_X (Layer : Waveform_Layer; T : X_Axis) return GDouble is
+   function Get_X (Layer : Waveform_Layer; T : X_Axis) return Gdouble is
       X1 : X_Axis := X_Axis (Layer.Box.X1);
       dX : X_Axis := X_Axis (Layer.Box.X2 - Layer.Box.X1 + 1.0);
    begin
@@ -1010,13 +1010,13 @@ package body Gtk.Layered.Waveform is
          end;
       end if;
       return
-         GDouble
+         Gdouble
          (  (T - Layer.T1) * dX / (Layer.T2 - Layer.T1)
          +  X1
          );
    end Get_X;
 
-   function Get_Y (Layer : Waveform_Layer; V : Y_Axis) return GDouble is
+   function Get_Y (Layer : Waveform_Layer; V : Y_Axis) return Gdouble is
       Y2 : Y_Axis := Y_Axis (Layer.Box.Y2);
       dY : Y_Axis := Y_Axis (Layer.Box.Y2 - Layer.Box.Y1 + 1.0);
    begin
@@ -1030,7 +1030,7 @@ package body Gtk.Layered.Waveform is
          end;
       end if;
       return
-         GDouble
+         Gdouble
          (  Y2
          -  (Layer.V2 - V) * dY / (Layer.V2 - Layer.V1)
          );
@@ -1076,8 +1076,8 @@ package body Gtk.Layered.Waveform is
                 Context : Cairo_Context;
                 Area    : Gdk_Rectangle
              )  is
-      X1, X2 : GDouble;
-      Y1, Y2 : GDouble;
+      X1, X2 : Gdouble;
+      Y1, Y2 : Gdouble;
    begin
       if Layer.Sweeper_Object /= null then
          Layer.Sweeper_Object.Set_Current_Time
@@ -1088,10 +1088,10 @@ package body Gtk.Layered.Waveform is
       end if;
       if Layer.Scaled then
          declare
-            X_Size : constant GDouble :=
-                     GDouble (Layer.Widget.Get_Allocated_Width);
-            Y_Size : constant GDouble :=
-                     GDouble (Layer.Widget.Get_Allocated_Height);
+            X_Size : constant Gdouble :=
+                     Gdouble (Layer.Widget.Get_Allocated_Width);
+            Y_Size : constant Gdouble :=
+                     Gdouble (Layer.Widget.Get_Allocated_Height);
          begin
             X1 := Layer.Box.X1 * X_Size + Layer.Widget.Get_Center.X;
             X2 := Layer.Box.X2 * X_Size + Layer.Widget.Get_Center.X;
@@ -1207,7 +1207,7 @@ package body Gtk.Layered.Waveform is
       Line      : Line_Parameters;
       Mode      : Interpolation_Mode;
       Preferred : Waveform_Drawing_Method;
-      Opacity   : GDouble;
+      Opacity   : Gdouble;
       Amplifier : Boolean;
       Sweeper   : Boolean;
       Left      : Boolean;
@@ -1230,7 +1230,7 @@ package body Gtk.Layered.Waveform is
          Left,
          Right
       );
-      Opacity := GDouble'Min (1.0, GDouble'Max (0.0, Opacity));
+      Opacity := Gdouble'Min (1.0, Gdouble'Max (0.0, Opacity));
       Set
       (  Layer   => Layer,
          Box     => Box,
@@ -1250,7 +1250,7 @@ package body Gtk.Layered.Waveform is
          end;
       else
          declare
-            V1, V2 : GDouble;
+            V1, V2 : Gdouble;
          begin
             Restore (Stream, V1);
             Restore (Stream, V2);

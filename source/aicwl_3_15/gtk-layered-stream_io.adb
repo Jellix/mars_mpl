@@ -118,7 +118,7 @@ package body Gtk.Layered.Stream_IO is
                 Widget : not null access Gtk_Layered_Record'Class
              )  is
       Under : access Layer_Location'Class := Widget;
-      Ratio : GDouble;
+      Ratio : Gdouble;
       This  : Layer_Type;
    begin
       Restore (Stream, Ratio);
@@ -197,17 +197,17 @@ package body Gtk.Layered.Stream_IO is
              (  Stream     : in out Root_Stream_Type'Class;
                 Adjustment : out Gtk_Adjustment
              )  is
-      Value          : GDouble;
-      Lower          : GDouble;
-      Upper          : GDouble;
-      Step_Increment : GDouble;
-      Page_Increment : GDouble;
+      Value          : Gdouble;
+      Lower          : Gdouble;
+      Upper          : Gdouble;
+      Step_Increment : Gdouble;
+      Page_Increment : Gdouble;
    begin
-      Restore (Stream, GDouble (Value));
-      Restore (Stream, GDouble (Lower));
-      Restore (Stream, GDouble (Upper));
-      Restore (Stream, GDouble (Step_Increment));
-      Restore (Stream, GDouble (Page_Increment));
+      Restore (Stream, Gdouble (Value));
+      Restore (Stream, Gdouble (Lower));
+      Restore (Stream, Gdouble (Upper));
+      Restore (Stream, Gdouble (Step_Increment));
+      Restore (Stream, Gdouble (Page_Increment));
       Gtk_New
       (  Adjustment,
          Value,
@@ -222,7 +222,7 @@ package body Gtk.Layered.Stream_IO is
              (  Stream : in out Root_Stream_Type'Class;
                 Value  : out Alignment
              )  is
-      Position : GUInt16;
+      Position : Guint16;
    begin
       Restore (Stream, Position);
       Value := Alignment'Val (Position);
@@ -235,7 +235,7 @@ package body Gtk.Layered.Stream_IO is
              (  Stream : in out Root_Stream_Type'Class;
                 Value  : out Boolean
              )  is
-      Data : GUInt16;
+      Data : Guint16;
    begin
       Restore (Stream, Data);
       Value := 0 /= (Data and 1);
@@ -246,7 +246,7 @@ package body Gtk.Layered.Stream_IO is
                 Value_1 : out Boolean;
                 Value_2 : out Boolean
              )  is
-      Value : GUInt16;
+      Value : Guint16;
    begin
       Restore (Stream, Value);
       Value_1 := 0 /= (Value and 1);
@@ -259,7 +259,7 @@ package body Gtk.Layered.Stream_IO is
                 Value_2 : out Boolean;
                 Value_3 : out Boolean
              )  is
-      Value : GUInt16;
+      Value : Guint16;
    begin
       Restore (Stream, Value);
       Value_1 := 0 /= (Value and 1);
@@ -274,7 +274,7 @@ package body Gtk.Layered.Stream_IO is
                 Value_3 : out Boolean;
                 Value_4 : out Boolean
              )  is
-      Value : GUInt16;
+      Value : Guint16;
    begin
       Restore (Stream, Value);
       Value_1 := 0 /= (Value and 1);
@@ -291,7 +291,7 @@ package body Gtk.Layered.Stream_IO is
                 Value_4 : out Boolean;
                 Value_5 : out Boolean
              )  is
-      Value : GUInt16;
+      Value : Guint16;
    begin
       Restore (Stream, Value);
       Value_1 := 0 /= (Value and 1);

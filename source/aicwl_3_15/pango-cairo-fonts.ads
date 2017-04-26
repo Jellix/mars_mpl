@@ -30,7 +30,7 @@
 --
 with Ada.Streams;      use Ada.Streams;
 with Cairo.Font_Face;  use Cairo.Font_Face;
-with Glib;             use GLib;
+with Glib;             use Glib;
 with Pango.Enums;      use Pango.Enums;
 with Pango.Font;       use Pango.Font;
 
@@ -66,7 +66,7 @@ package Pango.Cairo.Fonts is
                Variant : Pango.Enums.Variant := Pango_Variant_Normal;
                Weight  : Pango.Enums.Weight  := Pango_Weight_Normal;
                Stretch : Pango.Enums.Stretch := Pango_Stretch_Normal;
-               Size    : GInt                := 12
+               Size    : Gint                := 12
             )  return Pango_Cairo_Font;
 --
 -- Create_Pango_From_Description -- Create pango font face
@@ -92,8 +92,8 @@ package Pango.Cairo.Fonts is
 --
    function Create_Toy
             (  Family : UTF8_String;
-               Slant  : Cairo_Font_Slant  := CAIRO_FONT_SLANT_NORMAL;
-               Weight : Cairo_Font_Weight := CAIRO_FONT_WEIGHT_NORMAL
+               Slant  : Cairo_Font_Slant  := Cairo_Font_Slant_Normal;
+               Weight : Cairo_Font_Weight := Cairo_Font_Weight_Normal
             )  return Pango_Cairo_Font;
 --
 -- Get_Family -- Get font face family
@@ -133,7 +133,7 @@ package Pango.Cairo.Fonts is
 --
 --    The font size in points
 --
-   function Get_Size (Font : Pango_Cairo_Font) return GInt;
+   function Get_Size (Font : Pango_Cairo_Font) return Gint;
 --
 -- Get_Slant -- Get font face slant
 --
@@ -210,7 +210,7 @@ package Pango.Cairo.Fonts is
 --    Font - The font face
 --    Size - The font size in points
 --
-   procedure Set_Size (Font : in out Pango_Cairo_Font; Size : GInt);
+   procedure Set_Size (Font : in out Pango_Cairo_Font; Size : Gint);
 --
 -- Set_Slant -- Set font slant
 --
@@ -331,7 +331,7 @@ private
    function Get_Family (Handle : Cairo_Font_Face_Handle)
       return UTF8_String;
    function Get_Family (Handle : Cairo_Font_Face_Handle)
-      return Interfaces.C.Strings.Chars_Ptr;
+      return Interfaces.C.Strings.chars_ptr;
    function Get_Slant (Handle : Cairo_Font_Face_Handle)
       return Cairo_Font_Slant;
    function Get_Weight (Handle : Cairo_Font_Face_Handle)

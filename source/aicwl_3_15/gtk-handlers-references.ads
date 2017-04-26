@@ -56,7 +56,7 @@ package Gtk.Handlers.References is
 --
 --    The callback identification
 --
-   function Get (Reference : Handler_Reference) return Handler_ID;
+   function Get (Reference : Handler_Reference) return Handler_Id;
 --
 -- Set -- Reference to callback
 --
@@ -70,7 +70,7 @@ package Gtk.Handlers.References is
 --
    procedure Set
              (  Reference : in out Handler_Reference;
-                Handler   : Handler_ID
+                Handler   : Handler_Id
              );
    procedure Set (Reference : in out Handler_Reference);
 
@@ -78,7 +78,7 @@ private
    type Handler_Reference is
       new Ada.Finalization.Controlled with
    record
-      ID      : Gulong := Null_Handler_ID;
+      ID      : Gulong := Null_Handler_Id;
       Closure : GClosure;
    end record;
 

@@ -81,11 +81,11 @@ package Gtk.Layered.Elliptic_Bar is
    procedure Add_Elliptic_Bar
              (  Under      : not null access Layer_Location'Class;
                 Ellipse    : Ellipse_Parameters := Unit_Circle;
-                From       : GDouble        := 3.0 * Pi / 4.0;
-                Length     : GDouble        := 3.0 * Pi / 2.0;
-                Width      : GDouble        := 1.0;
+                From       : Gdouble        := 3.0 * Pi / 4.0;
+                Length     : Gdouble        := 3.0 * Pi / 2.0;
+                Width      : Gdouble        := 1.0;
                 Color      : Gdk_Color      := RGB (1.0, 0.0, 0.0);
-                Line_Cap   : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+                Line_Cap   : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                 Adjustment : access Gtk_Adjustment_Record'Class := null;
                 Scaled     : Boolean        := False;
                 Widened    : Boolean        := False
@@ -93,11 +93,11 @@ package Gtk.Layered.Elliptic_Bar is
    function Add_Elliptic_Bar
             (  Under      : not null access Layer_Location'Class;
                Ellipse    : Ellipse_Parameters := Unit_Circle;
-               From       : GDouble        := 3.0 * Pi / 4.0;
-               Length     : GDouble        := 3.0 * Pi / 2.0;
-               Width      : GDouble        := 1.0;
+               From       : Gdouble        := 3.0 * Pi / 4.0;
+               Length     : Gdouble        := 3.0 * Pi / 2.0;
+               Width      : Gdouble        := 1.0;
                Color      : Gdk_Color      := RGB (1.0, 0.0, 0.0);
-               Line_Cap   : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+               Line_Cap   : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                Adjustment : access Gtk_Adjustment_Record'Class := null;
                Scaled     : Boolean        := False;
                Widened    : Boolean        := False
@@ -122,7 +122,7 @@ package Gtk.Layered.Elliptic_Bar is
 --
 --    The angle
 --
-   function Get_From (Layer : Elliptic_Bar_Layer) return GDouble;
+   function Get_From (Layer : Elliptic_Bar_Layer) return Gdouble;
 --
 -- Get_Length -- The angular length of the bar positions
 --
@@ -132,7 +132,7 @@ package Gtk.Layered.Elliptic_Bar is
 --
 --    The angle
 --
-   function Get_Length (Layer : Elliptic_Bar_Layer) return GDouble;
+   function Get_Length (Layer : Elliptic_Bar_Layer) return Gdouble;
 --
 -- Get_Line -- Arc's line parameters
 --
@@ -160,8 +160,8 @@ package Gtk.Layered.Elliptic_Bar is
    procedure Set
              (  Layer   : in out Elliptic_Bar_Layer;
                 Ellipse : Ellipse_Parameters;
-                From    : GDouble;
-                Length  : GDouble;
+                From    : Gdouble;
+                Length  : Gdouble;
                 Line    : Line_Parameters
              );
 
@@ -199,7 +199,7 @@ package Gtk.Layered.Elliptic_Bar is
                 );
    overriding procedure Finalize (Layer : in out Elliptic_Bar_Layer);
    overriding
-      function Get_Value (Layer : Elliptic_Bar_Layer) return GDouble;
+      function Get_Value (Layer : Elliptic_Bar_Layer) return Gdouble;
    overriding
       procedure Move
                 (  Layer  : in out Elliptic_Bar_Layer;
@@ -215,7 +215,7 @@ package Gtk.Layered.Elliptic_Bar is
    overriding
       procedure Scale
                 (  Layer  : in out Elliptic_Bar_Layer;
-                   Factor : GDouble
+                   Factor : Gdouble
                 );
    overriding
       procedure Set_Property_Value
@@ -231,7 +231,7 @@ package Gtk.Layered.Elliptic_Bar is
    overriding
       procedure Set_Value
              (  Layer : in out Elliptic_Bar_Layer;
-                Value : GDouble
+                Value : Gdouble
              );
    overriding
       procedure Set_Widened
@@ -251,10 +251,10 @@ private
       and Widened_Layer with
    record
       Ellipse       : Ellipse_Parameters;
-      From          : GDouble;
-      Length        : GDouble;
+      From          : Gdouble;
+      Length        : Gdouble;
       Line          : Line_Parameters;
-      Value         : GDouble := 0.0;
+      Value         : Gdouble := 0.0;
       Adjustment    : Gtk_Adjustment;
       Changed       : Handler_Id;
       Value_Changed : Handler_Id;

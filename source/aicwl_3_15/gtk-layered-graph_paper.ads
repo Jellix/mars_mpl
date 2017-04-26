@@ -87,7 +87,7 @@ package Gtk.Layered.Graph_Paper is
 --
    function Render
             (  Layer  : Graph_Paper_Annotation_Interface;
-               Value  : GDouble;
+               Value  : Gdouble;
                Raster : Gtk.Layered.Waveform.Rasters.Scale
             )  return UTF8_String is abstract;
 ------------------------------------------------------------------------
@@ -132,12 +132,12 @@ package Gtk.Layered.Graph_Paper is
                 Box            : Cairo_Box;
                 X_Tick_Length  : Positive       := 50;
                 Y_Tick_Length  : Positive       := 50;
-                Major_Width    : GDouble        := 1.0;
-                Minor_Width    : GDouble        := 1.0;
+                Major_Width    : Gdouble        := 1.0;
+                Minor_Width    : Gdouble        := 1.0;
                 Major_Color    : Gdk_Color      := RGB (0.0, 0.0, 0.0);
                 Minor_Color    : Gdk_Color      := RGB (0.5, 0.5, 0.5);
-                Major_Line_Cap : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
-                Minor_Line_Cap : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+                Major_Line_Cap : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
+                Minor_Line_Cap : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                 X_Axis  : access Gtk_Adjustment_Record'Class := null;
                 Y_Axis  : access Gtk_Adjustment_Record'Class := null;
                 Scaled  : Boolean := False;
@@ -148,12 +148,12 @@ package Gtk.Layered.Graph_Paper is
                Box            : Cairo_Box;
                X_Tick_Length  : Positive       := 50;
                Y_Tick_Length  : Positive       := 50;
-               Major_Width    : GDouble        := 1.0;
-               Minor_Width    : GDouble        := 1.0;
+               Major_Width    : Gdouble        := 1.0;
+               Minor_Width    : Gdouble        := 1.0;
                Major_Color    : Gdk_Color      := RGB (0.0, 0.0, 0.0);
                Minor_Color    : Gdk_Color      := RGB (0.5, 0.5, 0.5);
-               Major_Line_Cap : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
-               Minor_Line_Cap : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+               Major_Line_Cap : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
+               Minor_Line_Cap : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                X_Axis  : access Gtk_Adjustment_Record'Class := null;
                Y_Axis  : access Gtk_Adjustment_Record'Class := null;
                Scaled  : Boolean := False;
@@ -370,7 +370,7 @@ package Gtk.Layered.Graph_Paper is
    overriding
       procedure Scale
                 (  Layer  : in out Graph_Paper_Layer;
-                   Factor : GDouble
+                   Factor : Gdouble
                 );
    overriding
       procedure Set_Property_Value
@@ -415,8 +415,8 @@ private
       Y_Axis        : Gtk_Adjustment;
       X_Raster      : Gtk.Layered.Waveform.Rasters.Scale;
       Y_Raster      : Gtk.Layered.Waveform.Rasters.Scale;
-      X_Tick_Length : GUInt   := 50;
-      Y_Tick_Length : GUInt   := 50;
+      X_Tick_Length : Guint   := 50;
+      Y_Tick_Length : Guint   := 50;
       Changed       : Boolean := True;  -- Raster is invalid
       Scaled        : Boolean := False;
       Widened       : Boolean := False;

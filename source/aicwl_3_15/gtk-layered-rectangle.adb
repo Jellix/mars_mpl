@@ -26,7 +26,7 @@
 --____________________________________________________________________--
 
 with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
-with GLib.Properties.Creation;    use GLib.Properties.Creation;
+with Glib.Properties.Creation;    use Glib.Properties.Creation;
 with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
 
 with Ada.Unchecked_Deallocation;
@@ -68,7 +68,7 @@ package body Gtk.Layered.Rectangle is
              (  Under      : not null access Layer_Location'Class;
                 Box        : Cairo_Box;
                 Color      : Gdk_Color    := RGB (0.0, 0.0, 0.0);
-                Line_Width : GDouble      := 0.0;
+                Line_Width : Gdouble      := 0.0;
                 Opacity    : Fill_Opacity := 1.0;
                 Scaled     : Boolean      := False;
                 Widened    : Boolean      := False
@@ -96,7 +96,7 @@ package body Gtk.Layered.Rectangle is
             (  Under      : not null access Layer_Location'Class;
                Box        : Cairo_Box;
                Color      : Gdk_Color    := RGB (0.0, 0.0, 0.0);
-               Line_Width : GDouble      := 0.0;
+               Line_Width : Gdouble      := 0.0;
                Opacity    : Fill_Opacity := 1.0;
                Scaled     : Boolean      := False;
                Widened    : Boolean      := False
@@ -126,18 +126,18 @@ package body Gtk.Layered.Rectangle is
                 Context : Cairo_Context;
                 Area    : Gdk_Rectangle
              )  is
-      X      : GDouble := Layer.Box.X1;
-      Y      : GDouble := Layer.Box.Y1;
-      Width  : GDouble := Layer.Box.X2 - Layer.Box.X1;
-      Height : GDouble := Layer.Box.Y2 - Layer.Box.Y1;
+      X      : Gdouble := Layer.Box.X1;
+      Y      : Gdouble := Layer.Box.Y1;
+      Width  : Gdouble := Layer.Box.X2 - Layer.Box.X1;
+      Height : Gdouble := Layer.Box.Y2 - Layer.Box.Y1;
    begin
       New_Path (Context);
       if Layer.Scaled then
          declare
-            Size_X : constant GDouble :=
-                        GDouble (Layer.Widget.Get_Allocated_Width);
-            Size_Y : constant GDouble :=
-                        GDouble (Layer.Widget.Get_Allocated_Height);
+            Size_X : constant Gdouble :=
+                        Gdouble (Layer.Widget.Get_Allocated_Width);
+            Size_Y : constant Gdouble :=
+                        Gdouble (Layer.Widget.Get_Allocated_Height);
             Center : constant Cairo_Tuple := Layer.Widget.Get_Center;
          begin
             X      := X * Size_X + Center.X;
@@ -155,18 +155,18 @@ package body Gtk.Layered.Rectangle is
       );
       if Layer.Opacity > 0.0 then
          if Layer.Opacity = 1.0 then
-            Set_Source_RGB
+            Set_Source_Rgb
             (  Context,
-               GDouble (Red   (Layer.Color)) / GDouble (Guint16'Last),
-               GDouble (Green (Layer.Color)) / GDouble (Guint16'Last),
-               GDouble (Blue  (Layer.Color)) / GDouble (Guint16'Last)
+               Gdouble (Red   (Layer.Color)) / Gdouble (Guint16'Last),
+               Gdouble (Green (Layer.Color)) / Gdouble (Guint16'Last),
+               Gdouble (Blue  (Layer.Color)) / Gdouble (Guint16'Last)
             );
          else
-            Set_Source_RGBA
+            Set_Source_Rgba
             (  Context,
-               GDouble (Red   (Layer.Color)) / GDouble (Guint16'Last),
-               GDouble (Green (Layer.Color)) / GDouble (Guint16'Last),
-               GDouble (Blue  (Layer.Color)) / GDouble (Guint16'Last),
+               Gdouble (Red   (Layer.Color)) / Gdouble (Guint16'Last),
+               Gdouble (Green (Layer.Color)) / Gdouble (Guint16'Last),
+               Gdouble (Blue  (Layer.Color)) / Gdouble (Guint16'Last),
                Layer.Opacity
             );
          end if;
@@ -185,11 +185,11 @@ package body Gtk.Layered.Rectangle is
          else
             Set_Line_Width (Context, Layer.Width);
          end if;
-         Set_Source_RGB
+         Set_Source_Rgb
          (  Context,
-            GDouble (Red   (Layer.Color)) / GDouble (Guint16'Last),
-            GDouble (Green (Layer.Color)) / GDouble (Guint16'Last),
-            GDouble (Blue  (Layer.Color)) / GDouble (Guint16'Last)
+            Gdouble (Red   (Layer.Color)) / Gdouble (Guint16'Last),
+            Gdouble (Green (Layer.Color)) / Gdouble (Guint16'Last),
+            Gdouble (Blue  (Layer.Color)) / Gdouble (Guint16'Last)
          );
          Stroke (Context);
       end if;
@@ -207,7 +207,7 @@ package body Gtk.Layered.Rectangle is
    end Get_Color;
 
    function Get_Line_Width  (Layer : Rectangle_Layer)
-      return GDouble is
+      return Gdouble is
    begin
       return Layer.Width;
    end Get_Line_Width;
@@ -242,8 +242,8 @@ package body Gtk.Layered.Rectangle is
                   Gnew_Double
                   (  Name    => "x",
                      Nick    => "x",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb   => "The x-coordinate of the left " &
                                 "margin of the rectangle"
@@ -253,8 +253,8 @@ package body Gtk.Layered.Rectangle is
                   Gnew_Double
                   (  Name    => "y",
                      Nick    => "y",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb   => "The y-coordinate of the top " &
                                 "margin of the rectangle"
@@ -265,7 +265,7 @@ package body Gtk.Layered.Rectangle is
                   (  Name    => "width",
                      Nick    => "width",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 1.0,
                      Blurb   => "The width of the rectangle"
                   );
@@ -275,7 +275,7 @@ package body Gtk.Layered.Rectangle is
                   (  Name    => "height",
                      Nick    => "height",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 1.0,
                      Blurb   => "The height of the rectangle"
                   );
@@ -304,7 +304,7 @@ package body Gtk.Layered.Rectangle is
                   (  Name    => "width",
                      Nick    => "width",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb   => "The rectangle's line width"
                   );
@@ -352,19 +352,19 @@ package body Gtk.Layered.Rectangle is
                   Init (Value, GType_Double);
                   Set_Double
                   (  Value,
-                     GDouble (Layer.Box.X2 - Layer.Box.X1)
+                     Gdouble (Layer.Box.X2 - Layer.Box.X1)
                   );
                when Property_Height =>
                   Init (Value, GType_Double);
                   Set_Double
                   (  Value,
-                     GDouble (Layer.Box.Y2 - Layer.Box.Y1)
+                     Gdouble (Layer.Box.Y2 - Layer.Box.Y1)
                   );
                when Property_Color =>
                   Set_Value (Value, Layer.Color);
                when Property_Opacity =>
                   Init (Value, GType_Double);
-                  Set_Double (Value, GDouble (Layer.Opacity));
+                  Set_Double (Value, Gdouble (Layer.Opacity));
                when Property_Line_Width =>
                   Init (Value, GType_Double);
                   Set_Double (Value, Layer.Width);
@@ -414,8 +414,8 @@ package body Gtk.Layered.Rectangle is
       From    : Cairo_Tuple;
       To      : Cairo_Tuple;
       Color   : Gdk_Color;
-      Width   : GDouble;
-      Opacity : GDouble;
+      Width   : Gdouble;
+      Opacity : Gdouble;
    begin
       Restore (Stream, From);
       Restore (Stream, To);
@@ -426,8 +426,8 @@ package body Gtk.Layered.Rectangle is
       Set
       (  Layer => Layer,
          Color => Color,
-         Line_Width => GDouble'Max (0.0, Width),
-         Opacity => GDouble'Min (1.0, GDouble'Max (0.0, Opacity)),
+         Line_Width => Gdouble'Max (0.0, Width),
+         Opacity => Gdouble'Min (1.0, Gdouble'Max (0.0, Opacity)),
          Box     => (  X1 => GDouble'Min (From.X, To.X),
                        Y1 => GDouble'Min (From.Y, To.Y),
                        X2 => GDouble'Max (From.X, To.X),

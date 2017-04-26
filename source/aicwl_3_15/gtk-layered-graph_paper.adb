@@ -27,8 +27,8 @@
 
 with Ada.Exceptions;            use Ada.Exceptions;
 with Ada.IO_Exceptions;         use Ada.IO_Exceptions;
-with GLib.Messages;             use GLib.Messages;
-with GLib.Properties.Creation;  use GLib.Properties.Creation;
+with Glib.Messages;             use Glib.Messages;
+with Glib.Properties.Creation;  use Glib.Properties.Creation;
 with Gtk.Layered.Stream_IO;     use Gtk.Layered.Stream_IO;
 
 with Cairo.Line_Cap_Property;
@@ -158,12 +158,12 @@ package body Gtk.Layered.Graph_Paper is
                 Box            : Cairo_Box;
                 X_Tick_Length  : Positive       := 50;
                 Y_Tick_Length  : Positive       := 50;
-                Major_Width    : GDouble        := 1.0;
-                Minor_Width    : GDouble        := 1.0;
+                Major_Width    : Gdouble        := 1.0;
+                Minor_Width    : Gdouble        := 1.0;
                 Major_Color    : Gdk_Color      := RGB (0.0, 0.0, 0.0);
                 Minor_Color    : Gdk_Color      := RGB (0.5, 0.5, 0.5);
-                Major_Line_Cap : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
-                Minor_Line_Cap : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+                Major_Line_Cap : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
+                Minor_Line_Cap : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                 X_Axis  : access Gtk_Adjustment_Record'Class := null;
                 Y_Axis  : access Gtk_Adjustment_Record'Class := null;
                 Scaled  : Boolean := False;
@@ -200,12 +200,12 @@ package body Gtk.Layered.Graph_Paper is
                Box            : Cairo_Box;
                X_Tick_Length  : Positive       := 50;
                Y_Tick_Length  : Positive       := 50;
-               Major_Width    : GDouble        := 1.0;
-               Minor_Width    : GDouble        := 1.0;
+               Major_Width    : Gdouble        := 1.0;
+               Minor_Width    : Gdouble        := 1.0;
                Major_Color    : Gdk_Color      := RGB (0.0, 0.0, 0.0);
                Minor_Color    : Gdk_Color      := RGB (0.5, 0.5, 0.5);
-               Major_Line_Cap : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
-               Minor_Line_Cap : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+               Major_Line_Cap : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
+               Minor_Line_Cap : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                X_Axis  : access Gtk_Adjustment_Record'Class := null;
                Y_Axis  : access Gtk_Adjustment_Record'Class := null;
                Scaled  : Boolean := False;
@@ -348,28 +348,28 @@ package body Gtk.Layered.Graph_Paper is
                 Area    : Gdk_Rectangle
              )  is
       use Gtk.Layered.Waveform.Rasters;
-      X1, X2 : GDouble;
-      Y1, Y2 : GDouble;
-      T1, T2 : GDouble := 0.0;
-      V1, V2 : GDouble := 0.0;
-      FX, FY : Long_Double;
+      X1, X2 : Gdouble;
+      Y1, Y2 : Gdouble;
+      T1, T2 : Gdouble := 0.0;
+      V1, V2 : Gdouble := 0.0;
+      FX, FY : long_double;
 
       procedure Draw_X (Major : Boolean) is
-         function Abs_X (T : GDouble) return Long_Double is
+         function Abs_X (T : Gdouble) return long_double is
             pragma Inline (Abs_X);
          begin
-            return Long_Double'Rounding (FX * Long_Double (T));
+            return long_double'Rounding (FX * long_double (T));
          end Abs_X;
          Minor : Natural := Layer.X_Raster.Low_Tick;
-         Shift : constant Long_Double :=
-            Long_Double'Rounding (Long_Double (X1)) + 0.5 - Abs_X (T1);
-         X : GDouble;
+         Shift : constant long_double :=
+            long_double'Rounding (long_double (X1)) + 0.5 - Abs_X (T1);
+         X : Gdouble;
       begin
          for Index in Natural'Range loop
-            X := GDouble
+            X := Gdouble
                  (  Abs_X
                     (  Layer.X_Raster.Low_Value
-                    +  Layer.X_Raster.Minor * GDouble (Index)
+                    +  Layer.X_Raster.Minor * Gdouble (Index)
                     )
                  +  Shift
                  );
@@ -393,22 +393,22 @@ package body Gtk.Layered.Graph_Paper is
       end Draw_X;
 
       procedure Draw_Y (Major : Boolean) is
-         function Abs_Y (V : GDouble) return Long_Double is
+         function Abs_Y (V : Gdouble) return long_double is
             pragma Inline (Abs_Y);
          begin
-            return Long_Double'Rounding (FY * Long_Double (V));
+            return long_double'Rounding (FY * long_double (V));
          end Abs_Y;
          Minor : Natural := Layer.Y_Raster.Low_Tick;
-         Shift : constant Long_Double :=
-            Long_Double'Rounding (Long_Double (Y2)) + 0.5 + Abs_Y (V1);
-         Y : GDouble;
+         Shift : constant long_double :=
+            long_double'Rounding (long_double (Y2)) + 0.5 + Abs_Y (V1);
+         Y : Gdouble;
       begin
          for Index in Natural'Range loop
-            Y := GDouble
+            Y := Gdouble
                  (  Shift
                  -  Abs_Y
                     (  Layer.Y_Raster.Low_Value
-                    +  Layer.Y_Raster.Minor * GDouble (Index)
+                    +  Layer.Y_Raster.Minor * Gdouble (Index)
                  )  );
             exit when Y < Y1;
             if Minor = 0 or else Minor > Layer.Y_Raster.Ticks then
@@ -432,19 +432,19 @@ package body Gtk.Layered.Graph_Paper is
    begin
       if Layer.Scaled then
          declare
-            X_Size : constant GDouble :=
-                     GDouble (Layer.Widget.Get_Allocated_Width);
-            Y_Size : constant GDouble :=
-                     GDouble (Layer.Widget.Get_Allocated_Height);
+            X_Size : constant Gdouble :=
+                     Gdouble (Layer.Widget.Get_Allocated_Width);
+            Y_Size : constant Gdouble :=
+                     Gdouble (Layer.Widget.Get_Allocated_Height);
          begin
             X1 := Layer.Box.X1 * X_Size + Layer.Widget.Get_Center.X;
             X2 := Layer.Box.X2 * X_Size + Layer.Widget.Get_Center.X;
             Y1 := Layer.Box.Y1 * Y_Size + Layer.Widget.Get_Center.Y;
             Y2 := Layer.Box.Y2 * Y_Size + Layer.Widget.Get_Center.Y;
-            X1 := GDouble'Floor   (X1) + 0.5;
-            X2 := GDouble'Ceiling (X2) - 0.5;
-            Y1 := GDouble'Floor   (Y1) + 0.5;
-            Y2 := GDouble'Ceiling (Y2) - 0.5;
+            X1 := Gdouble'Floor   (X1) + 0.5;
+            X2 := Gdouble'Ceiling (X2) - 0.5;
+            Y1 := Gdouble'Floor   (Y1) + 0.5;
+            Y2 := Gdouble'Ceiling (Y2) - 0.5;
          end;
       else
          X1 := Layer.Box.X1;
@@ -469,10 +469,10 @@ package body Gtk.Layered.Graph_Paper is
                   T2,
                   Natural
                   (  (X2 - X1 + 1.0)
-                  /  GDouble (Layer.X_Tick_Length)
+                  /  Gdouble (Layer.X_Tick_Length)
                )  );
          end if;
-         FX := Long_Double (X2 - X1 + 1.0) / Long_Double (T2 - T1);
+         FX := long_double (X2 - X1 + 1.0) / long_double (T2 - T1);
       end if;
       if Layer.Y_Axis /= null then
          V1 := Get_Value (Layer.Y_Axis);
@@ -487,10 +487,10 @@ package body Gtk.Layered.Graph_Paper is
                   V2,
                   Natural
                   (  (Y2 - Y1 + 1.0)
-                  /  GDouble (Layer.Y_Tick_Length)
+                  /  Gdouble (Layer.Y_Tick_Length)
                )  );
          end if;
-         FY := Long_Double (Y2 - Y1 + 1.0) / Long_Double (V2 - V1);
+         FY := long_double (Y2 - Y1 + 1.0) / long_double (V2 - V1);
       end if;
       if Layer.Changed then
          Layer.Changed := False;
@@ -526,16 +526,16 @@ package body Gtk.Layered.Graph_Paper is
          end;
       end if;
       if Layer.Major_Line.Width > 0.0 then -- Major ticks
-         Set_Source_RGB
+         Set_Source_Rgb
          (  Context,
-            (  GDouble (Red (Layer.Major_Line.Color))
-            /  GDouble (Guint16'Last)
+            (  Gdouble (Red (Layer.Major_Line.Color))
+            /  Gdouble (Guint16'Last)
             ),
-            (  GDouble (Green (Layer.Major_Line.Color))
-            /  GDouble (Guint16'Last)
+            (  Gdouble (Green (Layer.Major_Line.Color))
+            /  Gdouble (Guint16'Last)
             ),
-            (  GDouble (Blue (Layer.Major_Line.Color))
-            /  GDouble (Guint16'Last)
+            (  Gdouble (Blue (Layer.Major_Line.Color))
+            /  Gdouble (Guint16'Last)
          )  );
          Set_Line_Cap (Context, Layer.Major_Line.Line_Cap);
          if Layer.Widened then
@@ -556,16 +556,16 @@ package body Gtk.Layered.Graph_Paper is
          Stroke (Context);
       end if;
       if Layer.Minor_Line.Width > 0.0 then -- Minor ticks
-         Set_Source_RGB
+         Set_Source_Rgb
          (  Context,
-            (  GDouble (Red (Layer.Minor_Line.Color))
-            /  GDouble (Guint16'Last)
+            (  Gdouble (Red (Layer.Minor_Line.Color))
+            /  Gdouble (Guint16'Last)
             ),
-            (  GDouble (Green (Layer.Minor_Line.Color))
-            /  GDouble (Guint16'Last)
+            (  Gdouble (Green (Layer.Minor_Line.Color))
+            /  Gdouble (Guint16'Last)
             ),
-            (  GDouble (Blue (Layer.Minor_Line.Color))
-            /  GDouble (Guint16'Last)
+            (  Gdouble (Blue (Layer.Minor_Line.Color))
+            /  Gdouble (Guint16'Last)
          )  );
          Set_Line_Cap (Context, Layer.Minor_Line.Line_Cap);
          if Layer.Widened then
@@ -630,10 +630,10 @@ package body Gtk.Layered.Graph_Paper is
    begin
       if Layer.Scaled then
          declare
-            X_Size : constant GDouble :=
-                     GDouble (Layer.Widget.Get_Allocated_Width);
-            Y_Size : constant GDouble :=
-                     GDouble (Layer.Widget.Get_Allocated_Height);
+            X_Size : constant Gdouble :=
+                     Gdouble (Layer.Widget.Get_Allocated_Width);
+            Y_Size : constant Gdouble :=
+                     Gdouble (Layer.Widget.Get_Allocated_Height);
          begin
             return
             (  X1 => Layer.Box.X1 * X_Size + Layer.Widget.Get_Center.X,
@@ -684,8 +684,8 @@ package body Gtk.Layered.Graph_Paper is
                   Gnew_Double
                   (  Name    => "x1",
                      Nick    => "x1",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb   => "The x-coordinate of the waveform's " &
                                 "box left margin"
@@ -695,8 +695,8 @@ package body Gtk.Layered.Graph_Paper is
                   Gnew_Double
                   (  Name    => "x2",
                      Nick    => "x2",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 1.0,
                      Blurb   => "The x-coordinate of the waveform's " &
                                 "box right margin"

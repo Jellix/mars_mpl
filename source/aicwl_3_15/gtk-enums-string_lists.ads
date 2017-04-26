@@ -49,7 +49,7 @@ package Gtk.Enums.String_Lists is
 --    The GList of
 --
    function Get_GList (List : Controlled_String_List)
-      return String_List.GList;
+      return String_List.Glist;
 --
 -- + -- Conversion to GList
 --
@@ -60,7 +60,7 @@ package Gtk.Enums.String_Lists is
 --    The GList of
 --
    function "+" (List : Controlled_String_List)
-      return String_List.GList renames Get_GList;
+      return String_List.Glist renames Get_GList;
 --
 -- / -- List construction
 --
@@ -79,7 +79,7 @@ package Gtk.Enums.String_Lists is
 private
    type String_List_Body is record
       Use_Count : Natural := 1;
-      List      : String_List.GList;
+      List      : String_List.Glist;
    end record;
    type String_List_Body_Ptr is access String_List_Body;
 

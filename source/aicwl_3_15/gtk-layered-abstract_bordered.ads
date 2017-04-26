@@ -110,7 +110,7 @@ package Gtk.Layered.Abstract_Bordered is
 --    The border depth
 --
    function Get_Border_Depth (Layer : Abstract_Bordered_Layer)
-      return GDouble;
+      return Gdouble;
 --
 -- Get_Border_Shadow -- The shadow type
 --
@@ -132,7 +132,7 @@ package Gtk.Layered.Abstract_Bordered is
 --    The border width
 --
    function Get_Border_Width (Layer : Abstract_Bordered_Layer)
-      return GDouble;
+      return Gdouble;
 --
 -- Get_Deepened -- The behavior when the parent widget is resized
 --
@@ -170,8 +170,8 @@ package Gtk.Layered.Abstract_Bordered is
 --
    procedure Set
              (  Layer         : in out Abstract_Bordered_Layer;
-                Border_Width  : GDouble;
-                Border_Depth  : GDouble;
+                Border_Width  : Gdouble;
+                Border_Depth  : Gdouble;
                 Border_Color  : Border_Color_Type;
                 Border_Shadow : Gtk_Shadow_Type
              );
@@ -307,8 +307,8 @@ private
       Foreground    : Foreground_Layer_Ptr;
       Border_Color  : Border_Color_Type := (Style_Color => True);
       Border_Shadow : Gtk_Shadow_Type   := Shadow_None;
-      Border_Width  : GDouble  := 0.0;
-      Border_Depth  : GDouble  := 1.0;
+      Border_Width  : Gdouble  := 0.0;
+      Border_Depth  : Gdouble  := 1.0;
       Aspected      : Boolean := False;
       Scaled        : Boolean := False;
       Widened       : Boolean := False;
@@ -319,7 +319,7 @@ private
       procedure Remove (Layer : in out Abstract_Bordered_Layer);
 
    type Foreground_Layer is new Abstract_Layer with record
-      Size   : GDouble;
+      Size   : Gdouble;
       Border : access Abstract_Bordered_Layer'Class;
    end record;
    overriding
@@ -354,7 +354,7 @@ private
    overriding
       procedure Scale
                 (  Layer  : in out Foreground_Layer;
-                   Factor : GDouble
+                   Factor : Gdouble
                 )  is null;
    overriding
       procedure Set_Property_Value

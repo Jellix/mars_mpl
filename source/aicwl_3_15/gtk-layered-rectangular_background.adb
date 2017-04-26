@@ -27,7 +27,7 @@
 
 with Ada.Numerics;              use Ada.Numerics;
 with Cairo.Transformations;     use Cairo.Transformations;
-with GLib.Properties.Creation;  use GLib.Properties.Creation;
+with Glib.Properties.Creation;  use Glib.Properties.Creation;
 with Gtk.Layered.Stream_IO;     use Gtk.Layered.Stream_IO;
 
 with Ada.Unchecked_Deallocation;
@@ -70,14 +70,14 @@ package body Gtk.Layered.Rectangular_Background is
 
    procedure Add_Rectangular_Background
              (  Under          : not null access Layer_Location'Class;
-                Height         : GDouble      := 1.0;
-                Width          : GDouble      := 1.0;
+                Height         : Gdouble      := 1.0;
+                Width          : Gdouble      := 1.0;
                 Center         : Cairo_Tuple := (0.0, 0.0);
-                Rotation_Angle : GDouble      := 0.0;
-                Corner_Radius  : GDouble      := 0.0;
+                Rotation_Angle : Gdouble      := 0.0;
+                Corner_Radius  : Gdouble      := 0.0;
                 Color          : Gdk_Color   := RGB (0.0, 0.0, 0.0);
-                Border_Width   : GDouble            := 0.0;
-                Border_Depth   : GDouble            := 1.0;
+                Border_Width   : Gdouble            := 0.0;
+                Border_Depth   : Gdouble            := 1.0;
                 Border_Color   : Border_Color_Type := Default_Color;
                 Border_Shadow  : Gtk_Shadow_Type   := Shadow_In;
                 Deepened       : Boolean           := False;
@@ -114,11 +114,11 @@ package body Gtk.Layered.Rectangular_Background is
 
    function Add_Rectangular_Background
             (  Under          : not null access Layer_Location'Class;
-               Height         : GDouble      := 1.0;
-               Width          : GDouble      := 1.0;
+               Height         : Gdouble      := 1.0;
+               Width          : Gdouble      := 1.0;
                Center         : Cairo_Tuple := (0.0, 0.0);
-               Rotation_Angle : GDouble      := 0.0;
-               Corner_Radius  : GDouble      := 0.0;
+               Rotation_Angle : Gdouble      := 0.0;
+               Corner_Radius  : Gdouble      := 0.0;
                Color          : Gdk_Color   := RGB (0.0, 0.0, 0.0);
                Border_Width   : GDouble            := 0.0;
                Border_Depth   : GDouble            := 1.0;

@@ -5,7 +5,7 @@ with Global;
 with Glib;
 
 with Gtk.Box;
-with Gtk.Enums;
+with Gtk.Enums.String_Lists;
 with Gtk.Frame;
 with Gtk.GEntry;
 with Gtk.Grid;
@@ -15,6 +15,7 @@ with Gtk.Main;
 with Gtk.Switch;
 with Gtk.Window;
 
+with Gtk.Gauge.Round_270_60s;
 with Gtk.Oscilloscope;
 
 package body GUI is
@@ -36,6 +37,7 @@ package body GUI is
          Height_Channel    : Gtk.Oscilloscope.Channel_Number;
          Touchdown_Channel : Gtk.Oscilloscope.Channel_Number;
          Thruster_Channel  : Gtk.Oscilloscope.Channel_Number;
+         Tachometer        : Gtk.Gauge.Round_270_60s.Gtk_Gauge_Round_270_60s;
       end record;
    type Main_Window is access all Main_Window_Record'Class;
 
@@ -180,6 +182,27 @@ package body GUI is
             end;
          end;
 
+         declare Frame : Gtk.Frame.Gtk_Frame;
+         begin
+            Gtk.Frame.Gtk_New (Frame => Frame, Label => "Velocity");
+            Frame.all.Set_Size_Request (Width => 400, Height => 400);
+            VBox.all.Pack_Start (Child => Frame);
+
+            declare
+               use type Gtk.Enums.String_Lists.Controlled_String_List;
+               Gauge : Gtk.Gauge.Round_270_60s.Gtk_Gauge_Round_270_60s;
+               List  : constant Gtk.Enums.String_Lists.Controlled_String_List
+                 := "0" / "20" / "40" / "60" / "80" / "100" / "120" / "140";
+            begin
+               Gtk.Gauge.Round_270_60s.Gtk_New
+                 (Widget  => Gauge,
+                  Texts   => List,
+                  Sectors => 7);
+               Frame.all.Add (Widget => Gauge);
+               Window.Tachometer := Gauge;
+            end;
+         end;
+
          declare
             Frame : Gtk.Frame.Gtk_Frame;
          begin
@@ -256,6 +279,7 @@ package body GUI is
 
          declare
             use type Altimeter.Height;
+            use type Altimeter.Velocity;
             use type Glib.Gdouble;
             use type Landing_Legs.Leg_State;
             DE : Dynamic_Elements renames Win.all.Elements;
@@ -271,6 +295,10 @@ package body GUI is
               (Text => Altimeter.Image (Update_State.Height));
             DE.Velocity.all.Set_Text
               (Text => Altimeter.Image (Update_State.Velocity));
+
+            Win.all.Tachometer.all.Set_Value
+              (Value => Glib.Gdouble (abs Update_State.Velocity / 140.0));
+            Win.all.Tachometer.all.Queue_Draw;
 
             Win.all.Oscilloscope.all.Feed
               (Channel => Win.all.Height_Channel,

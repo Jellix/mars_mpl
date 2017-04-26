@@ -27,7 +27,7 @@
 
 with Cairo;                     use Cairo;
 with Gdk.Color.IHLS;            use Gdk.Color.IHLS;
-with GLib.Properties.Creation;  use GLib.Properties.Creation;
+with Glib.Properties.Creation;  use Glib.Properties.Creation;
 with Gtk.Layered.Stream_IO;     use Gtk.Layered.Stream_IO;
 
 with Ada.Unchecked_Deallocation;
@@ -63,11 +63,11 @@ package body Gtk.Layered.Elliptic_Background is
              (  Under  : not null access Layer_Location'Class;
                 Outer  : Ellipse_Parameters := Unit_Circle;
                 Inner  : Ellipse_Parameters;
-                From          : GDouble    := 0.0;
-                Length        : GDouble    := 2.0 * Pi;
+                From          : Gdouble    := 0.0;
+                Length        : Gdouble    := 2.0 * Pi;
                 Color         : Gdk_Color := RGB (0.0, 0.0, 0.0);
-                Border_Width  : GDouble    := 0.0;
-                Border_Depth  : GDouble    := 1.0;
+                Border_Width  : Gdouble    := 0.0;
+                Border_Depth  : Gdouble    := 1.0;
                 Border_Color  : Border_Color_Type := Default_Color;
                 Border_Shadow : Gtk_Shadow_Type   := Shadow_In;
                 Deepened      : Boolean           := False;
@@ -103,11 +103,11 @@ package body Gtk.Layered.Elliptic_Background is
              (  Under  : not null access Layer_Location'Class;
                 Outer  : Ellipse_Parameters := Unit_Circle;
                 Center : Cairo_Tuple;
-                From          : GDouble    := 0.0;
-                Length        : GDouble    := 2.0 * Pi;
+                From          : Gdouble    := 0.0;
+                Length        : Gdouble    := 2.0 * Pi;
                 Color         : Gdk_Color := RGB (0.0, 0.0, 0.0);
-                Border_Width  : GDouble    := 0.0;
-                Border_Depth  : GDouble    := 1.0;
+                Border_Width  : Gdouble    := 0.0;
+                Border_Depth  : Gdouble    := 1.0;
                 Border_Color  : Border_Color_Type := Default_Color;
                 Border_Shadow : Gtk_Shadow_Type   := Shadow_In;
                 Deepened      : Boolean           := False;
@@ -142,11 +142,11 @@ package body Gtk.Layered.Elliptic_Background is
    procedure Add_Elliptic_Background
              (  Under  : not null access Layer_Location'Class;
                 Outer  : Ellipse_Parameters := Unit_Circle;
-                From          : GDouble      := 0.0;
-                Length        : GDouble      := 2.0 * Pi;
+                From          : Gdouble      := 0.0;
+                Length        : Gdouble      := 2.0 * Pi;
                 Color         : Gdk_Color   := RGB (0.0, 0.0, 0.0);
-                Border_Width  : GDouble    := 0.0;
-                Border_Depth  : GDouble    := 1.0;
+                Border_Width  : Gdouble    := 0.0;
+                Border_Depth  : Gdouble    := 1.0;
                 Border_Color  : Border_Color_Type := Default_Color;
                 Border_Shadow : Gtk_Shadow_Type   := Shadow_In;
                 Deepened      : Boolean           := False;
@@ -182,10 +182,10 @@ package body Gtk.Layered.Elliptic_Background is
             (  Under  : not null access Layer_Location'Class;
                Outer  : Ellipse_Parameters := Unit_Circle;
                Inner  : Ellipse_Parameters;
-               From          : GDouble    := 0.0;
-               Length        : GDouble    := 2.0 * Pi;
+               From          : Gdouble    := 0.0;
+               Length        : Gdouble    := 2.0 * Pi;
                Color         : Gdk_Color := RGB (0.0, 0.0, 0.0);
-               Border_Width  : GDouble    := 0.0;
+               Border_Width  : Gdouble    := 0.0;
                Border_Depth  : GDouble    := 1.0;
                Border_Color  : Border_Color_Type := Default_Color;
                Border_Shadow : Gtk_Shadow_Type   := Shadow_In;

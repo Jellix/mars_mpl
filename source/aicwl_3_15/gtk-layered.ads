@@ -55,8 +55,8 @@ package Gtk.Layered is
 --    Cap    - The style of the end
 --
    type End_Parameters is record
-      Length : GDouble;
-      Width  : GDouble;
+      Length : Gdouble;
+      Width  : Gdouble;
       Cap    : Cairo_Line_Cap;
    end record;
 --
@@ -102,7 +102,7 @@ package Gtk.Layered is
 --    Line_Cap - The way lines ends
 --
    type Line_Parameters is record
-      Width    : GDouble;
+      Width    : Gdouble;
       Color    : Gdk_Color;
       Line_Cap : Cairo_Line_Cap;
    end record;
@@ -119,7 +119,7 @@ package Gtk.Layered is
 --
    subtype Tick_Number is Integer range 1..1_000_000;
    type Tick_Parameters is record
-       Step    : GDouble;
+       Step    : Gdouble;
        First   : Tick_Number;
        Skipped : Tick_Number;
    end record;
@@ -143,7 +143,7 @@ package Gtk.Layered is
 --
 -- Fill_Opacity -- Opacity, when filling shapes
 --
-   subtype Fill_Opacity is GDouble range 0.0..1.0;
+   subtype Fill_Opacity is Gdouble range 0.0..1.0;
 --
 -- Vertical alignment -- Alignment along the vertical axis
 --
@@ -193,7 +193,7 @@ package Gtk.Layered is
 --
 --    The value
 --
-   function Get_Value (Layer : Gauge_Needle) return GDouble is abstract;
+   function Get_Value (Layer : Gauge_Needle) return Gdouble is abstract;
 --
 -- Set_Value -- Change the value indicated by the needle
 --
@@ -208,7 +208,7 @@ package Gtk.Layered is
 --
    procedure Set_Value
              (  Layer : in out Gauge_Needle;
-                Value : GDouble
+                Value : Gdouble
              )  is abstract;
 ------------------------------------------------------------------------
 -- Layer_Location -- Where a layer can be placed
@@ -249,7 +249,7 @@ package Gtk.Layered is
 --    The text height
 --
    function Get_Height (Layer : Annotation_Layer)
-      return GDouble is abstract;
+      return Gdouble is abstract;
 --
 -- Get_Markup -- The annotation text markup
 --
@@ -283,7 +283,7 @@ package Gtk.Layered is
 --    The text stretch
 --
    function Get_Stretch (Layer : Annotation_Layer)
-      return GDouble is abstract;
+      return Gdouble is abstract;
 --
 -- Get_Text -- The annotation text
 --
@@ -370,7 +370,7 @@ package Gtk.Layered is
 --
    procedure Set_Texts
              (  Layer  : in out Annotation_Layer;
-                Texts  : Gtk.Enums.String_List.GList;
+                Texts  : Gtk.Enums.String_List.Glist;
                 Markup : Boolean := False
              )  is abstract;
    procedure Set_Texts
@@ -479,7 +479,7 @@ package Gtk.Layered is
 --
    function Get_Aspect_Ratio
             (  Widget : not null access constant Gtk_Layered_Record
-            )  return GDouble;
+            )  return Gdouble;
 --
 -- Get_Bottom -- The bottom layer of the widget
 --
@@ -569,7 +569,7 @@ package Gtk.Layered is
 --
    function Get_Size
             (  Widget : not null access constant Gtk_Layered_Record
-            )  return GDouble;
+            )  return Gdouble;
 --
 -- Get_Type -- The type of the widget
 --
@@ -677,7 +677,7 @@ package Gtk.Layered is
 --
    procedure Set_Aspect_Ratio
              (  Widget       : not null access Gtk_Layered_Record;
-                Aspect_Ratio : GDouble
+                Aspect_Ratio : Gdouble
              );
 --
 -- Snapshot -- Transfer the contents of the widget onto a surface
@@ -1015,7 +1015,7 @@ package Gtk.Layered is
 --
    procedure Scale
              (  Layer  : in out Abstract_Layer;
-                Factor : GDouble
+                Factor : Gdouble
              )  is abstract;
 --
 -- Set_Property_Value -- Set value of a property
@@ -1111,9 +1111,9 @@ private
    record
       Bottom        : Abstract_Layer_Ptr;
       Depth         : Natural     := 0;
-      Aspect_Ratio  : GDouble     := 1.0;
+      Aspect_Ratio  : Gdouble     := 1.0;
       Center        : Cairo_Tuple := (0.0, 0.0);
-      Size          : GDouble     := 0.0;
+      Size          : Gdouble     := 0.0;
       Updated       : Boolean     := True;
       Drawing       : Boolean     := False;
       Drawing_Time  : Time        := Clock;
@@ -1136,8 +1136,8 @@ private
 --
    procedure Emit
              (  Widget : not null access Gtk_Layered_Record'Class;
-                Signal : Signal_ID;
-                Value  : GUInt
+                Signal : Signal_Id;
+                Value  : Guint
              );
 --
 -- Notify -- The property set event's callback

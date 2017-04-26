@@ -26,7 +26,7 @@
 --____________________________________________________________________--
 
 with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
-with GLib.Properties.Creation;       use GLib.Properties.Creation;
+with Glib.Properties.Creation;       use Glib.Properties.Creation;
 with Gtk.Layered.Stream_IO;          use Gtk.Layered.Stream_IO;
 
 with Ada.Unchecked_Deallocation;
@@ -68,11 +68,11 @@ package body Gtk.Layered.Line is
    procedure Add_Line
              (  Under    : not null access Layer_Location'Class;
                 From     : Cairo_Tuple    := (0.0, 0.0);
-                Angle    : GDouble         := 0.0;
-                Length   : GDouble         := 1.0;
-                Width    : GDouble         := 1.0;
+                Angle    : Gdouble         := 0.0;
+                Length   : Gdouble         := 1.0;
+                Width    : Gdouble         := 1.0;
                 Color    : Gdk_Color      := RGB (0.0, 0.0, 0.0);
-                Line_Cap : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+                Line_Cap : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                 Scaled   : Boolean        := False;
                 Widened  : Boolean        := False
              )  is
@@ -99,9 +99,9 @@ package body Gtk.Layered.Line is
              (  Under    : not null access Layer_Location'Class;
                 From     : Cairo_Tuple    := (0.0, 0.0);
                 To       : Cairo_Tuple    := (0.0, 1.0);
-                Width    : GDouble         := 1.0;
+                Width    : Gdouble         := 1.0;
                 Color    : Gdk_Color      := RGB (0.0, 0.0, 0.0);
-                Line_Cap : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+                Line_Cap : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                 Scaled   : Boolean        := False;
                 Widened  : Boolean        := False
              )  is
@@ -126,11 +126,11 @@ package body Gtk.Layered.Line is
    function Add_Line
             (  Under    : not null access Layer_Location'Class;
                From     : Cairo_Tuple    := (0.0, 0.0);
-               Angle    : GDouble         := 0.0;
-               Length   : GDouble         := 1.0;
-               Width    : GDouble         := 1.0;
+               Angle    : Gdouble         := 0.0;
+               Length   : Gdouble         := 1.0;
+               Width    : Gdouble         := 1.0;
                Color    : Gdk_Color      := RGB (0.0, 0.0, 0.0);
-               Line_Cap : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+               Line_Cap : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                Scaled   : Boolean        := False;
                Widened  : Boolean        := False
             )  return not null access Line_Layer is
@@ -158,9 +158,9 @@ package body Gtk.Layered.Line is
             (  Under    : not null access Layer_Location'Class;
                From     : Cairo_Tuple    := (0.0, 0.0);
                To       : Cairo_Tuple    := (0.0, 1.0);
-               Width    : GDouble         := 1.0;
+               Width    : Gdouble         := 1.0;
                Color    : Gdk_Color      := RGB (0.0, 0.0, 0.0);
-               Line_Cap : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+               Line_Cap : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                Scaled   : Boolean        := False;
                Widened  : Boolean        := False
             )  return not null access Line_Layer is
@@ -198,16 +198,16 @@ package body Gtk.Layered.Line is
       else
          Set_Line_Width (Context, Layer.Line.Width);
       end if;
-      Set_Source_RGB
+      Set_Source_Rgb
       (  Context,
-         GDouble (Red   (Layer.Line.Color)) / GDouble (Guint16'Last),
-         GDouble (Green (Layer.Line.Color)) / GDouble (Guint16'Last),
-         GDouble (Blue  (Layer.Line.Color)) / GDouble (Guint16'Last)
+         Gdouble (Red   (Layer.Line.Color)) / Gdouble (Guint16'Last),
+         Gdouble (Green (Layer.Line.Color)) / Gdouble (Guint16'Last),
+         Gdouble (Blue  (Layer.Line.Color)) / Gdouble (Guint16'Last)
       );
       Set_Line_Cap (Context, Layer.Line.Line_Cap);
       if Layer.Scaled then
          declare
-            Size   : constant GDouble := Layer.Widget.Get_Size;
+            Size   : constant Gdouble := Layer.Widget.Get_Size;
             Center : constant Cairo_Tuple := Layer.Widget.Get_Center;
          begin
             Move_To
@@ -237,10 +237,10 @@ package body Gtk.Layered.Line is
       Layer.Updated := False;
    end Draw;
 
-   function Get_Angle (Layer : Line_Layer) return GDouble is
+   function Get_Angle (Layer : Line_Layer) return Gdouble is
    begin
       return
-         arctan
+         Arctan
          (  X => Layer.To.X - Layer.From.X,
             Y => Layer.To.Y - Layer.From.Y
          );
@@ -251,10 +251,10 @@ package body Gtk.Layered.Line is
       return Layer.From;
    end Get_From;
 
-   function Get_Length  (Layer : Line_Layer) return GDouble is
+   function Get_Length  (Layer : Line_Layer) return Gdouble is
    begin
       return
-         sqrt
+         Sqrt
          (  (Layer.To.X - Layer.From.X)**2
          +  (Layer.To.Y - Layer.From.Y)**2
          );
@@ -288,8 +288,8 @@ package body Gtk.Layered.Line is
                   Gnew_Double
                   (  Name    => "x0",
                      Nick    => "x0",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb   => "The x-coordinate of the point " &
                                 "corresponding to the value 0"
@@ -299,8 +299,8 @@ package body Gtk.Layered.Line is
                   Gnew_Double
                   (  Name    => "y0",
                      Nick    => "y0",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb   => "The y-coordinate of the point " &
                                 "corresponding to the value 0"
@@ -310,8 +310,8 @@ package body Gtk.Layered.Line is
                   Gnew_Double
                   (  Name    => "x1",
                      Nick    => "x1",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb   => "The x-coordinate of the point " &
                                 "corresponding to the value 1"
@@ -321,8 +321,8 @@ package body Gtk.Layered.Line is
                   Gnew_Double
                   (  Name    => "y1",
                      Nick    => "y1",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb   => "The y-coordinate of the point " &
                                 "corresponding to the value 1"
@@ -333,7 +333,7 @@ package body Gtk.Layered.Line is
                   (  Name    => "width",
                      Nick    => "width",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 1.0,
                      Blurb   => "The line width"
                   );
@@ -350,7 +350,7 @@ package body Gtk.Layered.Line is
                   Cairo.Line_Cap_Property.Gnew_Enum
                   (  Name    => "line-cap",
                      Nick    => "line cap",
-                     Default => CAIRO_LINE_CAP_BUTT,
+                     Default => Cairo_Line_Cap_Butt,
                      Blurb   => "The cap style of the line"
                   );
             when Property_Scaled =>
@@ -475,7 +475,7 @@ package body Gtk.Layered.Line is
 
    procedure Scale
              (  Layer  : in out Line_Layer;
-                Factor : GDouble
+                Factor : Gdouble
              )  is
    begin
       Layer.From.X  := Layer.From.X * Factor;
@@ -488,8 +488,8 @@ package body Gtk.Layered.Line is
    procedure Set
              (  Layer  : in out Line_Layer;
                 From   : Cairo_Tuple;
-                Angle  : GDouble;
-                Length : GDouble;
+                Angle  : Gdouble;
+                Length : Gdouble;
                 Line   : Line_Parameters
              )  is
    begin
@@ -497,8 +497,8 @@ package body Gtk.Layered.Line is
       (  Layer => Layer,
          Line  => Line,
          From  => From,
-         To    => (  X => From.X + Length * cos (Angle),
-                     Y => From.Y + Length * sin (Angle)
+         To    => (  X => From.X + Length * Cos (Angle),
+                     Y => From.Y + Length * Sin (Angle)
       )           );
    end Set;
 

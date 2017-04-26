@@ -40,8 +40,8 @@ package body Gdk.Color.IHLS is
    Hue_Third   : constant Gdk_Stimulus := Hue_Range / 3.0;
    Hue_Sixth   : constant Gdk_Stimulus := Hue_Range / 6.0;
    Hue_Eps     : constant Gdk_Stimulus := 1.0 / Hue_Range;
-   RGB_Max     : constant Gdk_Stimulus := Gdk_Stimulus (GUInt16'Last);
-   S_Factor    : constant Gdk_Stimulus := sqrt (3.0) / 2.0;
+   RGB_Max     : constant Gdk_Stimulus := Gdk_Stimulus (Guint16'Last);
+   S_Factor    : constant Gdk_Stimulus := Sqrt (3.0) / 2.0;
    S_Eps       : constant Gdk_Stimulus :=
                     1.0 / Gdk_Stimulus (Gdk_Saturation'Modulus);
 --
@@ -59,20 +59,20 @@ package body Gdk.Color.IHLS is
 --       H = 2Pi - arcos(y/x)
 --
 -- This expression is replaced by a  simpler  expression  based  on  the
--- two-argument arctan: 
+-- two-argument arctan:
 --
 --    arcos (y/x) = arctan (sqrt (xx-yy)/y)) =
 --  = arctan (sqrt(xx-yy), y)
 --
 -- Substitution of x and y gives:
 --
---    arctan (sqrt(RR + GG   + BB   - RG - RB - GB 
+--    arctan (sqrt(RR + GG   + BB   - RG - RB - GB
 --                -RR - GG/4 - BB/4 + RG + RB - GB/2), y) =
 --  = arctan (sqrt(3/4 GG + 3/4 BB - 3/2 GB), y) =
 --  = arctan (sqrt(3)/2 (G-B), y) =
 --  = arctan (sqrt(3)/2 (G-B), R - (G+B)/2) =
 --       (for G >= B)
---      
+--
 --    2Pi + arctan (sqrt(3)/2 (G-B), R - (G+B)/2)
 --       (for G < B)
 --
@@ -92,7 +92,7 @@ package body Gdk.Color.IHLS is
             Hue := Hue_Quarter;
          end if;
       else
-         Hue := arctan (S_Factor * (G - B), Hue, Hue_Range);
+         Hue := Arctan (S_Factor * (G - B), Hue, Hue_Range);
       end if;
       if Hue < 0.0 then
          return Hue_Range + Hue;
@@ -140,7 +140,7 @@ package body Gdk.Color.IHLS is
       -- values involved. So a straightforward averaging is used.
       --
       declare
-         Color : Gdk_Color; 
+         Color : Gdk_Color;
       begin
          for Index in List'Range loop
             Color := List (Index);
@@ -153,7 +153,7 @@ package body Gdk.Color.IHLS is
          Factor : constant Gdk_Stimulus := Gdk_Stimulus (List'Length);
          Color  : Gdk_Color;
       begin
-         Set_RGB
+         Set_Rgb
          (  Color,
             Red   => To_RGB (R_Sum / Factor),
             Green => To_RGB (G_Sum / Factor),
@@ -177,7 +177,7 @@ package body Gdk.Color.IHLS is
 
    function Darken
             (  Color : Gdk_Color;
-               By    : Gdk_Luminance 
+               By    : Gdk_Luminance
             )  return Gdk_Color is
    begin
       return To_RGB (Darken (To_IHLS (Color), By));
@@ -185,7 +185,7 @@ package body Gdk.Color.IHLS is
 
    function Lighten
             (  Color : Gdk_IHLS_Color;
-               By    : Gdk_Luminance 
+               By    : Gdk_Luminance
             )  return Gdk_IHLS_Color is
    begin
       if Color.Luminance + By < Color.Luminance then
@@ -244,10 +244,10 @@ package body Gdk.Color.IHLS is
       return To_RGB (Purify (To_IHLS (Color), By));
    end Purify;
 
-   function To_IHLS (Color : Gdk_Color) return Gdk_IHLS_Color is      
-      G  : constant GUInt16      := Green (Color);
-      R  : constant GUInt16      := Red   (Color);
-      B  : constant GUInt16      := Blue  (Color);
+   function To_IHLS (Color : Gdk_Color) return Gdk_IHLS_Color is
+      G  : constant Guint16      := Green (Color);
+      R  : constant Guint16      := Red   (Color);
+      B  : constant Guint16      := Blue  (Color);
       FR : constant Gdk_Stimulus := Gdk_Stimulus (R);
       FG : constant Gdk_Stimulus := Gdk_Stimulus (G);
       FB : constant Gdk_Stimulus := Gdk_Stimulus (B);
@@ -258,22 +258,22 @@ package body Gdk.Color.IHLS is
       Result.Hue := To_Hue (Get_Hue (FR, FG, FB));
       if B > G then
          Result.Saturation :=
-            Gdk_Saturation (GUInt16'Max (R, B) - GUInt16'Min (R, G));
+            Gdk_Saturation (Guint16'Max (R, B) - Guint16'Min (R, G));
       else
          Result.Saturation :=
-            Gdk_Saturation (GUInt16'Max (R, G) - GUInt16'Min (R, B));
+            Gdk_Saturation (Guint16'Max (R, G) - Guint16'Min (R, B));
       end if;
       return Result;
    end To_IHLS;
 
-   function To_RGB (Stimulus : Gdk_Stimulus) return GUInt16 is
+   function To_RGB (Stimulus : Gdk_Stimulus) return Guint16 is
    begin
       if Stimulus >= RGB_Max then
-         return GUInt16'Last;
+         return Guint16'Last;
       elsif Stimulus <= 0.0 then
-         return GUInt16'First;
+         return Guint16'First;
       else
-         return GUInt16 (Stimulus);
+         return Guint16 (Stimulus);
       end if;
    end To_RGB;
 
@@ -298,7 +298,7 @@ package body Gdk.Color.IHLS is
       if C1 >= Hue_Sixth then
          C1 := C1 - Hue_Sixth;
       end if;
-      C2 := sin (Hue_Third - C1, Hue_Range);
+      C2 := Sin (Hue_Third - C1, Hue_Range);
       if C2 < S_Eps then
          Red   := Luminance;
          Green := Luminance;
@@ -308,8 +308,8 @@ package body Gdk.Color.IHLS is
             C : constant Gdk_Stimulus :=
                    S_Factor * Gdk_Stimulus (Color.Saturation) / C2;
          begin
-            C1 :=  C * cos (Hue, Hue_Range);
-            C2 := -C * sin (Hue, Hue_Range);
+            C1 :=  C * Cos (Hue, Hue_Range);
+            C2 := -C * Sin (Hue, Hue_Range);
             Red   := Luminance + 0.7875 * C1 + 0.3714 * C2;
             Green := Luminance - 0.2125 * C1 - 0.2059 * C2;
             Blue  := Luminance - 0.2125 * C1 + 0.9488 * C2;
@@ -335,21 +335,21 @@ package body Gdk.Color.IHLS is
          Scale := Gdk_Stimulus'Min (RGB_Max / Green, Scale);
       end if;
       if Scale <= 1.0 then
-         Set_RGB
+         Set_Rgb
          (  Color,
             Red   => To_RGB (Red),
             Green => To_RGB (Green),
-            Blue  => To_RGB (Blue) 
+            Blue  => To_RGB (Blue)
          );
       else
-         Set_RGB
+         Set_Rgb
          (  Color,
             Red   => To_RGB (Red   * Scale),
             Green => To_RGB (Green * Scale),
-            Blue  => To_RGB (Blue  * Scale) 
+            Blue  => To_RGB (Blue  * Scale)
          );
       end if;
-      return Color;   
+      return Color;
    end To_RGB;
 
    function To_RGB_Saturating
@@ -373,7 +373,7 @@ package body Gdk.Color.IHLS is
       if C1 >= Hue_Sixth then
          C1 := C1 - Hue_Sixth;
       end if;
-      C2 := sin (Hue_Third - C1, Hue_Range);
+      C2 := Sin (Hue_Third - C1, Hue_Range);
       if C2 < S_Eps then
          Red   := Luminance;
          Green := Luminance;
@@ -384,8 +384,8 @@ package body Gdk.Color.IHLS is
             C : Gdk_Stimulus :=
                    S_Factor * Gdk_Stimulus (Color.Saturation) / C2;
          begin
-            C1 :=  cos (Hue, Hue_Range);
-            C2 := -sin (Hue, Hue_Range);
+            C1 :=  Cos (Hue, Hue_Range);
+            C2 := -Sin (Hue, Hue_Range);
             Red   :=  0.7875 * C1 + 0.3714 * C2;
             Green := -0.2125 * C1 - 0.2059 * C2;
             Blue  := -0.2125 * C1 + 0.9488 * C2;
@@ -403,7 +403,7 @@ package body Gdk.Color.IHLS is
             Blue  := Luminance + C * Blue;
          end;
       end if;
-      return To_RGB (Red, Green, Blue);   
+      return To_RGB (Red, Green, Blue);
    end To_RGB_Saturating;
 
    function To_RGB

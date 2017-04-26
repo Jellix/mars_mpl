@@ -71,31 +71,31 @@ package Gtk.Layered.Flat_Scale is
 --
    procedure Add_Flat_Scale
              (  Under    : not null access Layer_Location'Class;
-                Step     : GDouble;
+                Step     : Gdouble;
                 First    : Tick_Number    := Tick_Number'Last;
                 Skipped  : Tick_Number    := Tick_Number'Last;
                 From     : Cairo_Tuple    := (0.0, 0.0);
-                Length   : GDouble        := 1.0;
-                Breadth  : GDouble        := 1.0;
-                Angle    : GDouble        := 0.0;
-                Width    : GDouble        := 1.0;
+                Length   : Gdouble        := 1.0;
+                Breadth  : Gdouble        := 1.0;
+                Angle    : Gdouble        := 0.0;
+                Width    : Gdouble        := 1.0;
                 Color    : Gdk_Color      := RGB (0.0, 0.0, 0.0);
-                Line_Cap : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+                Line_Cap : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                 Scaled   : Boolean        := False;
                 Widened  : Boolean        := False
              );
    function Add_Flat_Scale
             (  Under    : not null access Layer_Location'Class;
-               Step     : GDouble;
+               Step     : Gdouble;
                First    : Tick_Number    := Tick_Number'Last;
                Skipped  : Tick_Number    := Tick_Number'Last;
                From     : Cairo_Tuple    := (0.0, 0.0);
-               Length   : GDouble        := 1.0;
-               Breadth  : GDouble        := 1.0;
-               Angle    : GDouble        := 0.0;
-               Width    : GDouble        := 1.0;
+               Length   : Gdouble        := 1.0;
+               Breadth  : Gdouble        := 1.0;
+               Angle    : Gdouble        := 0.0;
+               Width    : Gdouble        := 1.0;
                Color    : Gdk_Color      := RGB (0.0, 0.0, 0.0);
-               Line_Cap : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+               Line_Cap : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                Scaled   : Boolean        := False;
                Widened  : Boolean        := False
             )  return not null access Flat_Scale_Layer;

@@ -1,7 +1,7 @@
 --                                                                    --
 --  package Cairo.Transformations   Copyright (c)  Dmitry A. Kazakov  --
 --  Interface                                      Luebeck            --
---                                                 Summer 2013       --
+--                                                 Summer 2013        --
 --                                                                    --
 --                                Last revision :  13:51 30 May 2014  --
 --                                                                    --

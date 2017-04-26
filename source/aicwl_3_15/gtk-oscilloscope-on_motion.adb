@@ -33,6 +33,10 @@ is
    procedure Put (Destination : in out String;
                   Pointer     : in out Integer;
                   X1, X2      : Gint;
+                  V1, V2, V   : Gdouble);
+   procedure Put (Destination : in out String;
+                  Pointer     : in out Integer;
+                  X1, X2      : Gint;
                   V1, V2, V   : Gdouble)
    is
       use Strings_Edit;

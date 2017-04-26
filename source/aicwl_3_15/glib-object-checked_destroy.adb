@@ -27,7 +27,7 @@
 
 with System;  use System;
 
-procedure GLib.Object.Checked_Destroy
+procedure Glib.Object.Checked_Destroy
           (  Object : not null access Gtk_Widget_Record'Class
           )  is
    procedure Gtk_Widget_Destroy (Object : Address);
@@ -42,7 +42,7 @@ procedure GLib.Object.Checked_Destroy
    procedure G_Object_Unref (Object : Address);
    pragma Import (C, G_Object_Unref, "g_object_unref");
 
-   function G_Object_Is_Floating (Object : Address) return GBoolean;
+   function G_Object_Is_Floating (Object : Address) return Gboolean;
    pragma Import (C, G_Object_Is_Floating, "g_object_is_floating");
 
    This : constant Address := Get_Object (Object);
@@ -56,4 +56,4 @@ begin
       Set_Object (Object, Null_Address);
       G_Object_Unref (This);
    end if;
-end GLib.Object.Checked_Destroy;
+end Glib.Object.Checked_Destroy;

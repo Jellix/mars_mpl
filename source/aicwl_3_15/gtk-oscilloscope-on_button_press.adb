@@ -26,11 +26,10 @@
 --____________________________________________________________________--
 
 separate (Gtk.Oscilloscope)
-   function On_Button_Press
-            (  Object       : access GObject_Record'Class;
-               Event        : Gdk_Event;
-               Oscilloscope : Gtk_Oscilloscope
-            )  return Boolean is
+function On_Button_Press (Object       : access GObject_Record'Class;
+                          Event        : Gdk_Event;
+                          Oscilloscope : Gtk_Oscilloscope) return Boolean
+is
    procedure Free is new
       Ada.Unchecked_Deallocation (Gtk_Menu_Record'Class, Gtk_Menu);
 
@@ -39,36 +38,37 @@ separate (Gtk.Oscilloscope)
    Item : Gtk_Image_Menu_Item;
    Icon : Gtk_Image;
 
+   procedure Save;
    procedure Save is
       First : Boolean := True;
    begin
-      for Group in 1..Oscilloscope.Groups_Number loop
-         Oscilloscope.Save_Amplifier (Group, First);
-         Oscilloscope.Set_Auto_Scaling (Group, False);
+      for Group in 1 .. Oscilloscope.all.Groups_Number loop
+         Oscilloscope.all.Save_Amplifier (Group, First);
+         Oscilloscope.all.Set_Auto_Scaling (Group, False);
       end loop;
       for Index in Sweeper_Type'Range loop
-         Oscilloscope.Save_Sweeper (Index, First);
-         Oscilloscope.Set_Frozen (Index, True);
+         Oscilloscope.all.Save_Sweeper (Index, First);
+         Oscilloscope.all.Set_Frozen (Index, True);
       end loop;
-      Oscilloscope.Selection.Saved := True;
+      Oscilloscope.all.Selection.all.Saved := True;
    end Save;
 begin
    case Get_Button (Event) is
       when 1 =>
-         if Oscilloscope.Selection_Mode /= None then
-            if Oscilloscope.Selection.Area = null then
-               Oscilloscope.Selection.Engaged := True;
+         if Oscilloscope.all.Selection_Mode /= None then
+            if Oscilloscope.all.Selection.all.Area = null then
+               Oscilloscope.all.Selection.all.Engaged := True;
                declare
-                  Box   : constant Cairo_Box := Oscilloscope.Get_Box;
+                  Box   : constant Cairo_Box := Oscilloscope.all.Get_Box;
                   Point : constant Cairo_Tuple :=
-                          Oscilloscope.Mouse_Event (Event, False);
+                          Oscilloscope.all.Mouse_Event (Event, False);
                begin
                   if Point.X in Box.X1..Box.X2 and then
                      Point.Y in Box.Y1..Box.Y2
                   then
-                     Oscilloscope.Selection.Area :=
+                     Oscilloscope.all.Selection.all.Area :=
                         Add_Rectangle
-                        (  Under => Oscilloscope.Layers,
+                        (  Under => Oscilloscope.all.Layers,
                            Box   => (  X1 => Point.X,
                                        X2 => Point.X,
                                        Y1 => Point.Y,
@@ -81,15 +81,15 @@ begin
                                             "selection-color",
                                             Selection_Color
                         )                ) .all'Unchecked_Access;
-                     Oscilloscope.Selection.Right := True;
-                     Oscilloscope.Selection.Below := True;
+                     Oscilloscope.all.Selection.all.Right := True;
+                     Oscilloscope.all.Selection.all.Below := True;
                      Save;
                   end if;
                end;
-               Oscilloscope.Selection.Engaged := False;
+               Oscilloscope.all.Selection.all.Engaged := False;
             else
-               Oscilloscope.Change_Selection
-               (  Oscilloscope.Mouse_Event (Event, False)
+               Oscilloscope.all.Change_Selection
+               (  Oscilloscope.all.Mouse_Event (Event, False)
                );
             end if;
          end if;
@@ -98,13 +98,13 @@ begin
             Have_Menu : Boolean := False;
          begin
             Gtk_New (Menu);
-            if (  Oscilloscope.Manual_Sweep
+            if (  Oscilloscope.all.Manual_Sweep
                and then
-                  0 /= (Oscilloscope.Menu_Enabled and Hold_Release_Item)
+                  0 /= (Oscilloscope.all.Menu_Enabled and Hold_Release_Item)
                )
             then
-               for Sweeper in Oscilloscope.Time_Axis'Range loop
-                  if Oscilloscope.Get_Frozen (Sweeper) then
+               for Sweeper in Oscilloscope.all.Time_Axis'Range loop
+                  if Oscilloscope.all.Get_Frozen (Sweeper) then
                      -- Add release button
                      Gtk_New
                      (  Item,
@@ -123,8 +123,8 @@ begin
                      exit;
                   end if;
                end loop;
-               for Sweeper in Oscilloscope.Time_Axis'Range loop
-                  if not Oscilloscope.Get_Frozen (Sweeper) then
+               for Sweeper in Oscilloscope.all.Time_Axis'Range loop
+                  if not Oscilloscope.all.Get_Frozen (Sweeper) then
                      -- Add hold button
                      Gtk_New
                      (  Item,
@@ -145,7 +145,7 @@ begin
                end loop;
             end if;
             -- Add latest
-            if 0 /= (Oscilloscope.Menu_Enabled and Latest_Data_Item)
+            if 0 /= (Oscilloscope.all.Menu_Enabled and Latest_Data_Item)
             then
                declare
                   Have_Time : Boolean := False;
@@ -153,7 +153,7 @@ begin
                   for Sweeper in Sweeper_Type'Range loop
                      declare
                         Data : Time_Axis_Data renames
-                               Oscilloscope.Time_Axis (Sweeper);
+                               Oscilloscope.all.Time_Axis (Sweeper);
                      begin
                         if Data.On and then Data.Time_Mode then
                            Have_Time := True;
@@ -184,9 +184,9 @@ begin
                end;
             end if;
             -- Add undo
-            if (  Oscilloscope.Undo_Stack.Actions /= null
+            if (  Oscilloscope.all.Undo_Stack.Actions /= null
                and then
-                  0 /= (Oscilloscope.Menu_Enabled and Undo_Redo_Item)
+                  0 /= (Oscilloscope.all.Menu_Enabled and Undo_Redo_Item)
                )
             then
                Gtk_New
@@ -205,9 +205,9 @@ begin
                Have_Menu := True;
             end if;
             -- Add redo
-            if (  Oscilloscope.Redo_Stack.Actions /= null
+            if (  Oscilloscope.all.Redo_Stack.Actions /= null
                and then
-                  0 /= (Oscilloscope.Menu_Enabled and Undo_Redo_Item)
+                  0 /= (Oscilloscope.all.Menu_Enabled and Undo_Redo_Item)
                )
             then
                Gtk_New
@@ -226,7 +226,7 @@ begin
                Have_Menu := True;
             end if;
             -- Add toggle grid
-            if 0 /= (Oscilloscope.Menu_Enabled and Grid_Item) then
+            if 0 /= (Oscilloscope.all.Menu_Enabled and Grid_Item) then
                Gtk_New
                (  Item,
                   Style_Get (Oscilloscope, "menu-toggle-grid")
@@ -243,7 +243,7 @@ begin
                Have_Menu := True;
             end if;
             -- Add toggle interpolation
-            if 0 /= (Oscilloscope.Menu_Enabled and Interpolation_Item)
+            if 0 /= (Oscilloscope.all.Menu_Enabled and Interpolation_Item)
             then
                Gtk_New
                (  Item,
@@ -260,20 +260,20 @@ begin
                );
                Have_Menu := True;
             end if;
-            if (  Oscilloscope.Format /= No_Snapshot
+            if (  Oscilloscope.all.Format /= No_Snapshot
                and then
-                  0 /= (Oscilloscope.Menu_Enabled and Snapshot_Item)
+                  0 /= (Oscilloscope.all.Menu_Enabled and Snapshot_Item)
                and then
-                  Oscilloscope.File /= null
+                  Oscilloscope.all.File /= null
                and then
-                  Oscilloscope.File'Length > 0
+                  Oscilloscope.all.File'Length > 0
                )
             then -- Add snapshot button
                Gtk_New
                (  Item,
                   (  Style_Get (Oscilloscope, "menu-snapshot")
                   &  " to "
-                  &  Oscilloscope.File.all
+                  &  Oscilloscope.all.File.all
                )  );
                Gtk_New (Icon, Stock_Save, Icon_Size_Menu);
                Set_Image (Item, Icon);
@@ -294,7 +294,7 @@ begin
                   Activate_Time => Gdk.Event.Get_Time (Event)
                );
             else
-               Menu.Destroy;
+               Menu.all.Destroy;
                Free (Menu);
             end if;
          end;
@@ -304,12 +304,9 @@ begin
    return True;
 exception
    when Error : others =>
-      Log
-      (  GtkAda_Contributions_Domain,
-         Log_Level_Critical,
-         (  "Fault: "
-         &  Exception_Information (Error)
-         &  Where ("On_Button_Press")
-      )  );
+      Log (GtkAda_Contributions_Domain,
+           Log_Level_Critical,
+           ("Fault: " & Exception_Information (Error) &
+              Where ("On_Button_Press")));
       return True;
 end On_Button_Press;

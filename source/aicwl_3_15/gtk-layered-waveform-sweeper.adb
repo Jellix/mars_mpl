@@ -26,11 +26,11 @@
 --____________________________________________________________________--
 
 with Ada.Exceptions;        use Ada.Exceptions;
-with GLib.Types;            use GLib.Types;
-with GLib.Values.Handling;  use GLib.Values.Handling;
+with Glib.Types;            use Glib.Types;
+with Glib.Values.Handling;  use Glib.Values.Handling;
 
-with GtkAda.Handlers;
-with GtkAda.Types;
+with Gtkada.Handlers;
+with Gtkada.Types;
 with Interfaces.C.Strings;
 
 package body Gtk.Layered.Waveform.Sweeper is
@@ -41,15 +41,15 @@ package body Gtk.Layered.Waveform.Sweeper is
    Def_Page : constant Duration := 20.0;
 
    Class_Record : Ada_GObject_Class := Uninitialized_Class;
-   Signal_Names : constant GtkAda.Types.Chars_Ptr_Array :=
+   Signal_Names : constant Gtkada.Types.Chars_Ptr_Array :=
       (  0 => Interfaces.C.Strings.New_String ("freezing-changed"),
          1 => Interfaces.C.Strings.New_String ("offset-changed")
       );
-   Freezing_Changed_ID : Signal_ID := Invalid_Signal_Id;
+   Freezing_Changed_ID : Signal_Id := Invalid_Signal_Id;
 
    procedure EmitV
              (  Params : System.Address;
-                Signal : Signal_ID;
+                Signal : Signal_Id;
                 Quark  : GQuark;
                 Result : System.Address
              );
@@ -58,7 +58,7 @@ package body Gtk.Layered.Waveform.Sweeper is
    procedure Emit
              (  Sweeper : not null access
                           Gtk_Waveform_Sweeper_Record'Class;
-                Signal  : Signal_ID
+                Signal  : Signal_Id
              )  is
       procedure Set_Object
                 (  Value  : in out GValue;
@@ -119,7 +119,7 @@ package body Gtk.Layered.Waveform.Sweeper is
             )  return Time is
    begin
       return To_Time
-             (  GDouble
+             (  Gdouble
                 (  Get_Value (Sweeper)
                 +  Sweeper.Get_Page_Size
              )  );
@@ -130,7 +130,7 @@ package body Gtk.Layered.Waveform.Sweeper is
             )  return Ada.Calendar.Time is
    begin
       return To_Time
-             (  GDouble
+             (  Gdouble
                 (  Get_Value (Sweeper)
                 +  Sweeper.Get_Page_Size
              )  );

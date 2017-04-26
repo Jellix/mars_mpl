@@ -25,7 +25,7 @@
 --  executable file might be covered by the GNU Public License.       --
 --____________________________________________________________________--
 
-with GLib.Properties.Relief_Style;
+with Glib.Properties.Relief_Style;
 with Gtk.Widget.Styles.Generic_Enumeration;
 
 package Gtk.Widget.Styles.Relief_Style is

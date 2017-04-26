@@ -31,9 +31,9 @@ with Ada.Streams;              use Ada.Streams;
 with Ada.Strings.Fixed;        use Ada.Strings.Fixed;
 with Ada.Task_Identification;  use Ada.Task_Identification;
 with Gdk.Color.IHLS;           use Gdk.Color.IHLS;
-with GLib.Main;                use GLib.Main;
-with GLib.Messages;            use GLib.Messages;
-with GLib.Values;              use GLib.Values;
+with Glib.Main;                use Glib.Main;
+with Glib.Messages;            use Glib.Messages;
+with Glib.Values;              use Glib.Values;
 with GNAT.Sockets;             use GNAT.Sockets;
 with GNAT.Traceback;           use GNAT.Traceback;
 with GNAT.Traceback.Symbolic;  use GNAT.Traceback.Symbolic;
@@ -96,10 +96,10 @@ package body Gtk.Main.Router is
    GPS_Port      : Natural         := 50_000;
    Connected     : Boolean         := Standard.False;
    Recursion     : Natural         := 0;
-   Window_X      : GInt            := 0;
-   Window_Y      : GInt            := 0;
+   Window_X      : Gint            := 0;
+   Window_Y      : Gint            := 0;
    Parent        : Gtk_Window      := null;
-   Main          : Task_ID         := Null_Task_ID;
+   Main          : Task_Id         := Null_Task_Id;
    Trace_Dialog  : Gtk_Dialog;
    Channel       : Socket_Type;
    Command       : Unbounded_String;
@@ -329,11 +329,11 @@ package body Gtk.Main.Router is
          Message.Data    := Data;
          if Main = Current_Task then
             declare
-               ID : G_Source_ID;
+               ID : G_Source_Id;
             begin
                ID := Sources.Idle_Add (Service'Access, Message);
             end;
-         elsif Main = Null_Task_ID then
+         elsif Main = Null_Task_Id then
             raise Program_Error;
          else
             select
@@ -528,7 +528,7 @@ package body Gtk.Main.Router is
              )  is
    begin
       Gtk.Main.Router.GPS_Port := GPS_Port;
-      if Main = Null_Task_ID then
+      if Main = Null_Task_Id then
          Main := Current_Task;
          declare
             ID : G_Source_Id;
@@ -561,7 +561,7 @@ package body Gtk.Main.Router is
                   raise;
             end;
          end if;
-      elsif Main = Null_Task_ID then
+      elsif Main = Null_Task_Id then
          Log
          (  GtkAda_Contributions_Domain,
             Log_Level_Critical,
@@ -710,8 +710,8 @@ package body Gtk.Main.Router is
             )  return Boolean is
    begin
       if Get_Event_Type (Event) = Button_Press then
-         Window_X := GInt (Event.Button.X);
-         Window_Y := GInt (Event.Button.Y);
+         Window_X := Gint (Event.Button.X);
+         Window_Y := Gint (Event.Button.Y);
       end if;
       return Standard.False;
    end On_Button_Press;
@@ -855,12 +855,12 @@ package body Gtk.Main.Router is
             );
             Menu.Add (Item);
          end if;
-         if Main /= Null_Task_ID then -- Go to the location item
+         if Main /= Null_Task_Id then -- Go to the location item
             declare
                use Gdk.Device_Manager;
                use type Gdk.Gdk_Window;
-               Buffer_X : GInt;
-               Buffer_Y : GInt;
+               Buffer_X : Gint;
+               Buffer_Y : Gint;
                Moved    : Boolean;
             begin
                Dialog.Window_To_Buffer_Coords
@@ -1062,7 +1062,7 @@ package body Gtk.Main.Router is
       end if;
       declare
 --           Max_Buffer_Size : constant := 10_000;
-         Offset : constant GInt := Messages_List.Get_Char_Count;
+         Offset : constant Gint := Messages_List.Get_Char_Count;
       begin
 --           while Offset > Max_Buffer_Size loop
 --              Messages_List.Get_Iter_At_Line (Start, 0);
@@ -1103,7 +1103,7 @@ package body Gtk.Main.Router is
          )  )  );
       end if;
       declare
-         Offset : constant GInt := Messages_List.Get_Char_Count;
+         Offset : constant Gint := Messages_List.Get_Char_Count;
       begin
          Messages_List.Get_Iter_At_Offset (Stop, Offset);
       end;

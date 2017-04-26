@@ -26,7 +26,7 @@
 --____________________________________________________________________--
 
 with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
-with GLib.Properties.Creation;    use GLib.Properties.Creation;
+with Glib.Properties.Creation;    use Glib.Properties.Creation;
 with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
 
 with Ada.Unchecked_Deallocation;
@@ -87,9 +87,9 @@ package body Gtk.Layered.Bar is
             Layer'Unchecked_Access
          );
       declare
-         Lower : constant GDouble := Adjustment.Get_Lower;
-         Upper : constant GDouble := Adjustment.Get_Upper;
-         Value : constant GDouble := Adjustment.Get_Value;
+         Lower : constant Gdouble := Adjustment.Get_Lower;
+         Upper : constant Gdouble := Adjustment.Get_Upper;
+         Value : constant Gdouble := Adjustment.Get_Value;
       begin
          if Upper <= Lower or else Value <= Lower then
             Layer.Set_Value (0.0);
@@ -104,11 +104,11 @@ package body Gtk.Layered.Bar is
    procedure Add_Bar
              (  Under      : not null access Layer_Location'Class;
                 From       : Cairo_Tuple    := (0.0, 0.0);
-                Angle      : GDouble        := 0.0;
-                Length     : GDouble        := 1.0;
-                Width      : GDouble        := 1.0;
+                Angle      : Gdouble        := 0.0;
+                Length     : Gdouble        := 1.0;
+                Width      : Gdouble        := 1.0;
                 Color      : Gdk_Color      := RGB (1.0, 0.0, 0.0);
-                Line_Cap   : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+                Line_Cap   : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                 Adjustment : access Gtk_Adjustment_Record'Class := null;
                 Scaled     : Boolean        := False;
                 Widened    : Boolean        := False
@@ -139,9 +139,9 @@ package body Gtk.Layered.Bar is
              (  Under      : not null access Layer_Location'Class;
                 From       : Cairo_Tuple    := (0.0, 0.0);
                 To         : Cairo_Tuple    := (0.0, 1.0);
-                Width      : GDouble        := 1.0;
+                Width      : Gdouble        := 1.0;
                 Color      : Gdk_Color      := RGB (1.0, 0.0, 0.0);
-                Line_Cap   : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+                Line_Cap   : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                 Adjustment : access Gtk_Adjustment_Record'Class := null;
                 Scaled     : Boolean        := False;
                 Widened    : Boolean        := False
@@ -170,11 +170,11 @@ package body Gtk.Layered.Bar is
    function Add_Bar
             (  Under      : not null access Layer_Location'Class;
                From       : Cairo_Tuple    := (0.0, 0.0);
-               Angle      : GDouble        := 0.0;
-               Length     : GDouble        := 1.0;
-               Width      : GDouble        := 1.0;
+               Angle      : Gdouble        := 0.0;
+               Length     : Gdouble        := 1.0;
+               Width      : Gdouble        := 1.0;
                Color      : Gdk_Color      := RGB (1.0, 0.0, 0.0);
-               Line_Cap   : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+               Line_Cap   : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                Adjustment : access Gtk_Adjustment_Record'Class := null;
                Scaled     : Boolean        := False;
                Widened    : Boolean        := False
@@ -206,9 +206,9 @@ package body Gtk.Layered.Bar is
             (  Under      : not null access Layer_Location'Class;
                From       : Cairo_Tuple    := (0.0, 0.0);
                To         : Cairo_Tuple    := (0.0, 1.0);
-               Width      : GDouble        := 1.0;
+               Width      : Gdouble        := 1.0;
                Color      : Gdk_Color      := RGB (1.0, 0.0, 0.0);
-               Line_Cap   : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+               Line_Cap   : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                Adjustment : access Gtk_Adjustment_Record'Class := null;
                Scaled     : Boolean        := False;
                Widened    : Boolean        := False
@@ -254,9 +254,9 @@ package body Gtk.Layered.Bar is
              (  Adjustment : access GObject_Record'Class;
                 Bar        : Bar_Ptr
              )  is
-      Lower : constant GDouble := Get_Lower (Bar.Adjustment);
-      Upper : constant GDouble := Get_Upper (Bar.Adjustment);
-      Value : constant GDouble := Get_Value (Bar.Adjustment);
+      Lower : constant Gdouble := Get_Lower (Bar.Adjustment);
+      Upper : constant Gdouble := Get_Upper (Bar.Adjustment);
+      Value : constant Gdouble := Get_Value (Bar.Adjustment);
    begin
       if Upper <= Lower or else Value <= Lower then
          Bar.Set_Value (0.0);
@@ -276,8 +276,8 @@ package body Gtk.Layered.Bar is
                 Area    : Gdk_Rectangle
              )  is
       From, To : Cairo_Tuple;
-      B : constant GDouble := Layer.Value;
-      A : constant GDouble := 1.0 - B;
+      B : constant Gdouble := Layer.Value;
+      A : constant Gdouble := 1.0 - B;
    begin
       New_Path (Context);
       if Layer.Widened then

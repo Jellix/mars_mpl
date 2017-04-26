@@ -30,7 +30,7 @@
 --  in Gtk.Handlers, it also  handles  the  signal  return  value  as  a
 --  GValue.
 --
-with GLib.Values;  use GLib.Values;
+with Glib.Values;  use Glib.Values;
 
 generic
    type Object_Type is new GObject_Record with private;
@@ -72,17 +72,17 @@ package Gtk.Handlers.Generic_Callback is
 --
    procedure Connect
              (  Object   : not null access Object_Type'Class;
-                Name     : GLib.Signal_Name;
+                Name     : Glib.Signal_Name;
                 Callback : Handler;
                 Data     : User_Type;
                 After    : Boolean := False
              );
    function Connect
             (  Object   : not null access Object_Type'Class;
-               Name     : GLib.Signal_Name;
+               Name     : Glib.Signal_Name;
                Callback : Handler;
                Data     : User_Type;
                After    : Boolean := False
-            )  return Handler_ID;
+            )  return Handler_Id;
 
 end Gtk.Handlers.Generic_Callback;

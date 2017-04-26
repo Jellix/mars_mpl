@@ -32,7 +32,7 @@ with Gdk.Pixbuf;                use Gdk.Pixbuf;
 with Gdk.RGBA;                  use Gdk.RGBA;
 with Gdk.Types;                 use Gdk.Types;
 with Glib.Error;                use Glib.Error;
-with GLib.Properties.Creation;  use GLib.Properties.Creation;
+with Glib.Properties.Creation;  use Glib.Properties.Creation;
 with Glib.Values;               use Glib.Values;
 with Gtk.Button;                use Gtk.Button;
 with Gtk.Cell_Renderer_Pixbuf;  use Gtk.Cell_Renderer_Pixbuf;
@@ -81,7 +81,7 @@ package Gtk.Missed is
            User_Directory_Videos        -- Movies directory
         );
 
-   type GFileTest is new GUInt;
+   type GFileTest is new Guint;
    File_Test_Is_Regular    : constant GFileTest := 2**0;
    File_Test_Is_Symlink    : constant GFileTest := 2**1;
    File_Test_Is_Dir        : constant GFileTest := 2**2;
@@ -109,7 +109,7 @@ package Gtk.Missed is
                 Icon       : UTF8_String   := "";
                 Icon_Left  : Boolean       := True;
                 Size       : Gtk_Icon_Size := Icon_Size_Button;
-                Spacing    : GUInt         := 3;
+                Spacing    : Guint         := 3;
                 Tip        : UTF8_String   := "";
                 Relief     : Gtk_Relief_Style := Relief_Normal
              );
@@ -120,7 +120,7 @@ package Gtk.Missed is
                Icon       : UTF8_String   := "";
                Icon_Left  : Boolean       := True;
                Size       : Gtk_Icon_Size := Icon_Size_Button;
-               Spacing    : GUInt         := 3;
+               Spacing    : Guint         := 3;
                Tip        : UTF8_String   := "";
                Relief     : Gtk_Relief_Style := Relief_Normal
             )  return Gtk_Button;
@@ -156,7 +156,7 @@ package Gtk.Missed is
                               Gtk_Tree_View_Column_Record'Class;
                 Cell        : not null access
                               Gtk_Cell_Renderer_Pixbuf_Record'Class;
-                Column      : GInt
+                Column      : Gint
              );
 --
 -- Build_Filename -- File base name
@@ -432,17 +432,17 @@ package Gtk.Missed is
    function Get
             (  Store  : not null access Gtk_List_Store_Record'Class;
                Row    : Gtk_Tree_Iter;
-               Column : GInt
+               Column : Gint
             )  return String;
    function Get
             (  Store  : Gtk_Tree_Model;
                Row    : Gtk_Tree_Iter;
-               Column : GInt
+               Column : Gint
             )  return String;
    function Get
             (  Store  : not null access Gtk_Tree_Store_Record'Class;
                Row    : Gtk_Tree_Iter;
-               Column : GInt
+               Column : Gint
             )  return String;
 --
 -- Insert_Alt -- Alternative version of text buffer insert
@@ -673,7 +673,7 @@ package Gtk.Missed is
             (  Tree_View : not null access Gtk_Tree_View_Record'Class;
                Column    : not null access
                            Gtk_Tree_View_Column_Record'Class
-            )  return GInt;
+            )  return Gint;
 --
 -- Get_Dirname -- File directory name
 --
@@ -717,11 +717,11 @@ package Gtk.Missed is
    function Get_Row_No
             (  Model : Gtk_Tree_Model;
                Path  : Gtk_Tree_Path
-            )  return GInt;
+            )  return Gint;
    function Get_Row_No
             (  Model : Gtk_Tree_Model;
                Iter  : Gtk_Tree_Iter
-            )  return GInt;
+            )  return Gint;
 --
 -- GType_Icon -- Type of GIcon
 --
@@ -739,8 +739,8 @@ package Gtk.Missed is
 --
    procedure Get_Screen_Position
              (  Widget : not null access Gtk_Widget_Record'Class;
-                X      : out GInt;
-                Y      : out GInt
+                X      : out Gint;
+                Y      : out Gint
              );
 --
 -- Get_User_Special_Dir -- Directories associated with the user
@@ -774,7 +774,7 @@ package Gtk.Missed is
 --
    function Is_Absolute (File_Name : UTF8_String) return Boolean;
 
-   function Keyval_To_Unicode (Key_Val : Gdk_Key_Type) return GUnichar;
+   function Keyval_To_Unicode (Key_Val : Gdk_Key_Type) return Gunichar;
 --
 -- Keyval_To_UTF8 -- Key to UTF8 conversion
 --
@@ -843,7 +843,7 @@ package Gtk.Missed is
 --
 --    The coresponding color
 --
-   function RGB (Red, Green, Blue : GDouble) return Gdk_Color;
+   function RGB (Red, Green, Blue : Gdouble) return Gdk_Color;
 --
 -- Set_Tip -- Remove tooltip
 --
@@ -862,13 +862,13 @@ package Gtk.Missed is
    procedure Set
              (  Store  : not null access Gtk_List_Store_Record'Class;
                 Row    : Gtk_Tree_Iter;
-                Column : GInt;
+                Column : Gint;
                 Value  : String
              );
    procedure Set
              (  Store  : not null access Gtk_Tree_Store_Record'Class;
                 Row    : Gtk_Tree_Iter;
-                Column : GInt;
+                Column : Gint;
                 Value  : String
              );
 --
@@ -951,7 +951,7 @@ package Gtk.Missed is
 --
    function To_String (Status : Cairo_Status) return String;
 
-   function Unicode_To_Keyval (WC : GUnichar) return Gdk_Key_Type;
+   function Unicode_To_Keyval (WC : Gunichar) return Gdk_Key_Type;
 --
 -- Wait_Cursor -- Temporarily show wait cursor
 --

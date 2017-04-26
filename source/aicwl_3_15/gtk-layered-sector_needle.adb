@@ -26,7 +26,7 @@
 --____________________________________________________________________--
 
 with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
-with GLib.Properties.Creation;    use GLib.Properties.Creation;
+with Glib.Properties.Creation;    use Glib.Properties.Creation;
 with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
 
 with Ada.Unchecked_Deallocation;
@@ -34,7 +34,7 @@ with Gtk.Layered.Elliptic_Shape_Property;
 
 package body Gtk.Layered.Sector_Needle is
 
-   Sqrt_2 : constant GDouble := sqrt (2.0);
+   Sqrt_2 : constant Gdouble := Sqrt (2.0);
 
    type Needle_Ptr is access all Sector_Needle_Layer;
 
@@ -105,9 +105,9 @@ package body Gtk.Layered.Sector_Needle is
             Layer'Unchecked_Access
          );
       declare
-         Lower : constant GDouble := Adjustment.Get_Lower;
-         Upper : constant GDouble := Adjustment.Get_Upper;
-         Value : constant GDouble := Adjustment.Get_Value;
+         Lower : constant Gdouble := Adjustment.Get_Lower;
+         Upper : constant Gdouble := Adjustment.Get_Upper;
+         Value : constant Gdouble := Adjustment.Get_Value;
       begin
          if Upper <= Lower or else Value <= Lower then
             Layer.Set_Value (0.0);
@@ -123,8 +123,8 @@ package body Gtk.Layered.Sector_Needle is
              (  Under      : not null access Layer_Location'Class;
                 Outer      : Ellipse_Parameters := Unit_Circle;
                 Inner      : Ellipse_Parameters;
-                From       : GDouble   := 3.0 * Pi / 4.0;
-                Length     : GDouble   := 3.0 * Pi / 2.0;
+                From       : Gdouble   := 3.0 * Pi / 4.0;
+                Length     : Gdouble   := 3.0 * Pi / 2.0;
                 Color      : Gdk_Color := RGB (1.0, 0.0, 0.0);
                 Adjustment : access Gtk_Adjustment_Record'Class := null;
                 Scaled     : Boolean   := False
@@ -155,8 +155,8 @@ package body Gtk.Layered.Sector_Needle is
              (  Under      : not null access Layer_Location'Class;
                 Outer      : Ellipse_Parameters := Unit_Circle;
                 Center     : Cairo_Tuple;
-                From       : GDouble   := 3.0 * Pi / 4.0;
-                Length     : GDouble   := 3.0 * Pi / 2.0;
+                From       : Gdouble   := 3.0 * Pi / 4.0;
+                Length     : Gdouble   := 3.0 * Pi / 2.0;
                 Color      : Gdk_Color := RGB (1.0, 0.0, 0.0);
                 Adjustment : access Gtk_Adjustment_Record'Class := null;
                 Scaled     : Boolean   := False
@@ -186,8 +186,8 @@ package body Gtk.Layered.Sector_Needle is
    procedure Add_Sector_Needle
              (  Under      : not null access Layer_Location'Class;
                 Outer      : Ellipse_Parameters := Unit_Circle;
-                From       : GDouble   := 3.0 * Pi / 4.0;
-                Length     : GDouble   := 3.0 * Pi / 2.0;
+                From       : Gdouble   := 3.0 * Pi / 4.0;
+                Length     : Gdouble   := 3.0 * Pi / 2.0;
                 Color      : Gdk_Color := RGB (1.0, 0.0, 0.0);
                 Adjustment : access Gtk_Adjustment_Record'Class := null;
                 Scaled     : Boolean   := False

@@ -164,7 +164,7 @@ package Gtk.Layered.Stream_IO is
              );
    procedure Restore
              (  Stream : in out Root_Stream_Type'Class;
-                Value  : out GDouble
+                Value  : out Gdouble
              );
    procedure Restore
              (  Stream : in out Root_Stream_Type'Class;
@@ -192,7 +192,7 @@ package Gtk.Layered.Stream_IO is
              );
    procedure Restore
              (  Stream : in out Root_Stream_Type'Class;
-                Value  : out GUInt
+                Value  : out Guint
              );
    procedure Restore
              (  Stream : in out Root_Stream_Type'Class;
@@ -324,7 +324,7 @@ package Gtk.Layered.Stream_IO is
              );
    procedure Store
              (  Stream : in out Root_Stream_Type'Class;
-                Value  : GDouble
+                Value  : Gdouble
              );
    procedure Store
              (  Stream : in out Root_Stream_Type'Class;
@@ -352,7 +352,7 @@ package Gtk.Layered.Stream_IO is
              );
    procedure Store
              (  Stream : in out Root_Stream_Type'Class;
-                Value  : GUInt
+                Value  : Guint
              );
    procedure Store
              (  Stream : in out Root_Stream_Type'Class;

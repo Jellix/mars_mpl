@@ -56,7 +56,7 @@ package Glib.Wrappers is
 
    function G_Dir_Open_UTF8
             (  Path  : Address;
-               Flags : GUInt;
+               Flags : Guint;
                Error : Address
             )  return Address;
    pragma External (C, G_Dir_Open_UTF8, "g_dir_open_utf8");
@@ -68,8 +68,8 @@ package Glib.Wrappers is
 
    function G_File_Test_UTF8
             (  File_Name : Address;
-               Test      : GInt
-            )  return GBoolean;
+               Test      : Gint
+            )  return Gboolean;
    pragma External
           (  C,
              G_File_Test_UTF8,
@@ -98,12 +98,12 @@ package Glib.Wrappers is
             (  Working_Directory : Address;
                ArgV              : Address;
                EnvP              : Address;
-               Flags             : GUInt;
+               Flags             : Guint;
                Child_Setup       : Address;
                User_Data         : Address;
                Child_PID         : Address;
                Error             : Address
-            )  return GBoolean;
+            )  return Gboolean;
    pragma External
           (  C,
              G_Spawn_Async_UTF8,
@@ -115,7 +115,7 @@ package Glib.Wrappers is
             (  Working_Directory : Address;
                ArgV              : Address;
                EnvP              : Address;
-               Flags             : GUInt;
+               Flags             : Guint;
                Child_Setup       : Address;
                User_Data         : Address;
                Child_PID         : Address;
@@ -123,7 +123,7 @@ package Glib.Wrappers is
                Standard_Output   : Address;
                Standard_Error    : Address;
                Error             : Address
-            )  return GBoolean;
+            )  return Gboolean;
    pragma External
           (  C,
              G_Spawn_Async_With_Pipes_UTF8,
@@ -135,14 +135,14 @@ package Glib.Wrappers is
             (  Working_Directory : Address;
                ArgV              : Address;
                EnvP              : Address;
-               Flags             : GUInt;
+               Flags             : Guint;
                Child_Setup       : Address;
                User_Data         : Address;
                Standard_Output   : Address;
                Standard_Error    : Address;
                Exit_Status       : Address;
                Error             : Address
-            )  return GBoolean;
+            )  return Gboolean;
    pragma External
           (  C,
              G_Spawn_Sync_UTF8,
@@ -153,7 +153,7 @@ package Glib.Wrappers is
    function G_Spawn_Command_Line_Async_UTF8
             (  Command_Line : Address;
                Error        : Address
-            )  return GBoolean;
+            )  return Gboolean;
    pragma External
           (  C,
              G_Spawn_Command_Line_Async_UTF8,
@@ -167,7 +167,7 @@ package Glib.Wrappers is
                Standard_Error  : Address;
                Exit_Status     : Address;
                Error           : Address
-            )  return GBoolean;
+            )  return Gboolean;
    pragma External
           (  C,
              G_Spawn_Command_Line_Sync_UTF8,
@@ -180,4 +180,4 @@ package Glib.Wrappers is
    pragma External (Stdcall, SetErrorMode, "SetErrorMode");
    pragma Weak_External (SetErrorMode);
 
-end GLib.Wrappers;
+end Glib.Wrappers;

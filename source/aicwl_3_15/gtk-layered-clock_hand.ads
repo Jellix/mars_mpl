@@ -1,6 +1,6 @@
 --                                                                    --
 --  package                         Copyright (c)  Dmitry A. Kazakov  --
---     Gtk.Layered.Clock_Hand                     Luebeck            --
+--     Gtk.Layered.Clock_Hand                      Luebeck            --
 --  Interface                                      Winter, 2010       --
 --                                                                    --
 --                                Last revision :  13:51 30 May 2014  --
@@ -85,17 +85,17 @@ package Gtk.Layered.Clock_Hand is
    procedure Add_Clock_Hand
              (  Under         : not null access Layer_Location'Class;
                 Center        : Cairo_Tuple    := (0.0, 0.0);
-                From          : GDouble        := 3.0 * Pi / 4.0;
-                Length        : GDouble        := 3.0 * Pi / 2.0;
-                Tip_Length    : GDouble        := 20.0;
-                Tip_Width     : GDouble        := 2.0;
-                Tip_Cap       : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
-                Rear_Length   : GDouble        := 3.0;
-                Rear_Width    : GDouble        := 3.0;
-                Rear_Cap      : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
-                Bulb_Position : GDouble        := 13.0;
-                Bulb_Radius   : GDouble        := 5.0;
-                Bulb_Width    : GDouble        := 2.0;
+                From          : Gdouble        := 3.0 * Pi / 4.0;
+                Length        : Gdouble        := 3.0 * Pi / 2.0;
+                Tip_Length    : Gdouble        := 20.0;
+                Tip_Width     : Gdouble        := 2.0;
+                Tip_Cap       : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
+                Rear_Length   : Gdouble        := 3.0;
+                Rear_Width    : Gdouble        := 3.0;
+                Rear_Cap      : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
+                Bulb_Position : Gdouble        := 13.0;
+                Bulb_Radius   : Gdouble        := 5.0;
+                Bulb_Width    : Gdouble        := 2.0;
                 Color         : Gdk_Color      := RGB (1.0, 0.0, 0.0);
                 Adjustment    : access Gtk_Adjustment_Record'Class :=
                                        null;
@@ -104,12 +104,12 @@ package Gtk.Layered.Clock_Hand is
    function Add_Clock_Hand
             (  Under         : not null access Layer_Location'Class;
                Center        : Cairo_Tuple    := (0.0, 0.0);
-               From          : GDouble        := 3.0 * Pi / 4.0;
-               Length        : GDouble        := 3.0 * Pi / 2.0;
-               Tip_Length    : GDouble        := 20.0;
-               Tip_Width     : GDouble        := 2.0;
-               Tip_Cap       : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
-               Rear_Length   : GDouble        := 3.0;
+               From          : Gdouble        := 3.0 * Pi / 4.0;
+               Length        : Gdouble        := 3.0 * Pi / 2.0;
+               Tip_Length    : Gdouble        := 20.0;
+               Tip_Width     : Gdouble        := 2.0;
+               Tip_Cap       : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
+               Rear_Length   : Gdouble        := 3.0;
                Rear_Width    : GDouble        := 3.0;
                Rear_Cap      : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
                Bulb_Position : GDouble        := 13.0;

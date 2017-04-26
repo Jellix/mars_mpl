@@ -139,11 +139,11 @@ separate (Gtk.Layered.Waveform)
                &  " |"
                &  Integer'Image (Data.Count)
                &  " : "
-               &  Edit.Image (GDouble (Data.Last_T))
+               &  Edit.Image (Gdouble (Data.Last_T))
                &  " L"
                &  Horizontal_Offset'Image (To_X (Layer.Last_T1))
                &  " = "
-               &  Edit.Image (GDouble (Layer.Last_T1))
+               &  Edit.Image (Gdouble (Layer.Last_T1))
             )  );
          else
             Trace
@@ -151,7 +151,7 @@ separate (Gtk.Layered.Waveform)
                (  " >"
                &  Integer'Image (Data.Last_Count)
                &  " : "
-               &  Edit.Image (GDouble (Data.Last_T))
+               &  Edit.Image (Gdouble (Data.Last_T))
                &  " |"
                &  Integer'Image (Data.Count)
             )  );
@@ -251,15 +251,15 @@ begin
             Trace
             (  Layer'Address,
                (  "T1 "
-               &  Edit.Image (GDouble (Layer.T1))
+               &  Edit.Image (Gdouble (Layer.T1))
                &  " L"
                &  Horizontal_Offset'Image (To_X (T))
                &  " = "
-               &  Edit.Image (GDouble (T))
+               &  Edit.Image (Gdouble (T))
                &  " shift"
                &  Horizontal_Offset'Image (Shift)
                &  " = "
-               &  Edit.Image (GDouble (X_Axis (Shift) * Layer.dT))
+               &  Edit.Image (Gdouble (X_Axis (Shift) * Layer.dT))
                &  ", count"
                &  Integer'Image (Data.Count)
                &  " @"
@@ -289,11 +289,11 @@ begin
                &  " |"
                &  Integer'Image (Data.Count)
                &  " : "
-               &  Edit.Image (GDouble (Data.Last_T))
+               &  Edit.Image (Gdouble (Data.Last_T))
                &  " L"
                &  Horizontal_Offset'Image (To_X (Layer.Last_T1))
                &  " = "
-               &  Edit.Image (GDouble (Layer.Last_T1))
+               &  Edit.Image (Gdouble (Layer.Last_T1))
             )  );
          end if; -------------------------------------------------------
          return;
@@ -306,7 +306,7 @@ begin
             &  " T"
             &  Horizontal_Offset'Image (To_X (T))
             &  " = "
-            &  Edit.Image (GDouble (T))
+            &  Edit.Image (Gdouble (T))
             &  " >|"
          )  );
       end if; ----------------------------------------------------------
@@ -348,20 +348,20 @@ begin
                Trace
                (  Layer'Address,
                   (  "sample [not Valid] step "
-                  &  Edit.Image (GDouble (Layer.dT))
+                  &  Edit.Image (Gdouble (Layer.dT))
                   &  ">|"
                )  );
             elsif Data.Last_T not in Layer.T1..Layer.T2 + Layer.dT then
                Trace
                (  Layer'Address,
                   (  "sample [Last_T "
-                  &  Edit.Image (GDouble (Data.Last_T))
+                  &  Edit.Image (Gdouble (Data.Last_T))
                   &  " out "
-                  &  Edit.Image (GDouble (Layer.T1))
+                  &  Edit.Image (Gdouble (Layer.T1))
                   &  ".."
-                  &  Edit.Image (GDouble (Layer.T2 + Layer.dT))
+                  &  Edit.Image (Gdouble (Layer.T2 + Layer.dT))
                   &  "] step "
-                  &  Edit.Image (GDouble (Layer.dT))
+                  &  Edit.Image (Gdouble (Layer.dT))
                   &  ">|"
                )  );
             elsif not Layer.Data.Is_In (Data.Last_T) then
@@ -377,18 +377,18 @@ begin
                      Trace
                      (  Layer'Address,
                         (  "sample [Last_T "
-                        &  Edit.Image (GDouble (Data.Last_T))
+                        &  Edit.Image (Gdouble (Data.Last_T))
                         &  " not in "
-                        &  Edit.Image (GDouble (T1))
+                        &  Edit.Image (Gdouble (T1))
                         &  ".."
-                        &  Edit.Image (GDouble (T2))
+                        &  Edit.Image (Gdouble (T2))
                         &  ">|"
                      )  );
                   else
                      Trace
                      (  Layer'Address,
                         (  "sample [Last_T "
-                        &  Edit.Image (GDouble (Data.Last_T))
+                        &  Edit.Image (Gdouble (Data.Last_T))
                         &  " not in empty>|"
                      )  );
                   end if;
@@ -397,9 +397,9 @@ begin
                Trace
                (  Layer'Address,
                   (  "sample [Last_T "
-                  &  Edit.Image (GDouble (Data.Last_T))
+                  &  Edit.Image (Gdouble (Data.Last_T))
                   &  "] step "
-                  &  Edit.Image (GDouble (Layer.dT))
+                  &  Edit.Image (Gdouble (Layer.dT))
                   &  ">|"
                )  );
             end if;
@@ -426,7 +426,7 @@ begin
                   (  " >"
                   &  Integer'Image (Data.Last_Count)
                   &  " : "
-                  &  Edit.Image (GDouble (Data.Last_T))
+                  &  Edit.Image (Gdouble (Data.Last_T))
                   &  " |"
                   &  Integer'Image (Data.Count)
                )  );
@@ -445,11 +445,11 @@ begin
                   &  " |"
                   &  Integer'Image (Data.Count)
                   &  " : "
-                  &  Edit.Image (GDouble (Data.Last_T))
+                  &  Edit.Image (Gdouble (Data.Last_T))
                   &  " L"
                   &  Horizontal_Offset'Image (To_X (Layer.Last_T1))
                   &  " = "
-                  &  Edit.Image (GDouble (Layer.Last_T1))
+                  &  Edit.Image (Gdouble (Layer.Last_T1))
                )  );
             end if; ----------------------------------------------------
             if not Layer.Extrapolate_Left then
@@ -494,11 +494,11 @@ begin
                      &  " |"
                      &  Integer'Image (Data.Count)
                      &  " : "
-                     &  Edit.Image (GDouble (Data.Last_T))
+                     &  Edit.Image (Gdouble (Data.Last_T))
                      &  " L"
                      &  Horizontal_Offset'Image (To_X(Layer.Last_T1))
                      &  " = "
-                     &  Edit.Image (GDouble (Layer.Last_T1))
+                     &  Edit.Image (Gdouble (Layer.Last_T1))
                   )  );
                end if; -------------------------------------------------
                return;

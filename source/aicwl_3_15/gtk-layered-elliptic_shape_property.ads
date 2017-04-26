@@ -25,7 +25,7 @@
 --  executable file might be covered by the GNU Public License.       --
 --____________________________________________________________________--
 
-with GLib.Generic_Properties;
+with Glib.Generic_Properties;
 
 package Gtk.Layered.Elliptic_Shape_Property is
    new GLib.Generic_Properties.Generic_Enumeration_Property

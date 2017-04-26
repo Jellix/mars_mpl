@@ -73,11 +73,11 @@ package Gtk.Layered.Bar is
    procedure Add_Bar
              (  Under      : not null access Layer_Location'Class;
                 From       : Cairo_Tuple    := (0.0, 0.0);
-                Angle      : GDouble        := 0.0;
-                Length     : GDouble        := 1.0;
-                Width      : GDouble        := 1.0;
+                Angle      : Gdouble        := 0.0;
+                Length     : Gdouble        := 1.0;
+                Width      : Gdouble        := 1.0;
                 Color      : Gdk_Color      := RGB (1.0, 0.0, 0.0);
-                Line_Cap   : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+                Line_Cap   : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                 Adjustment : access Gtk_Adjustment_Record'Class := null;
                 Scaled     : Boolean        := False;
                 Widened    : Boolean        := False
@@ -86,9 +86,9 @@ package Gtk.Layered.Bar is
              (  Under      : not null access Layer_Location'Class;
                 From       : Cairo_Tuple    := (0.0, 0.0);
                 To         : Cairo_Tuple    := (0.0, 1.0);
-                Width      : GDouble        := 1.0;
+                Width      : Gdouble        := 1.0;
                 Color      : Gdk_Color      := RGB (1.0, 0.0, 0.0);
-                Line_Cap   : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+                Line_Cap   : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                 Adjustment : access Gtk_Adjustment_Record'Class := null;
                 Scaled     : Boolean        := False;
                 Widened    : Boolean        := False
@@ -96,11 +96,11 @@ package Gtk.Layered.Bar is
    function Add_Bar
             (  Under      : not null access Layer_Location'Class;
                From       : Cairo_Tuple    := (0.0, 0.0);
-               Angle      : GDouble        := 0.0;
-               Length     : GDouble        := 1.0;
-               Width      : GDouble        := 1.0;
+               Angle      : Gdouble        := 0.0;
+               Length     : Gdouble        := 1.0;
+               Width      : Gdouble        := 1.0;
                Color      : Gdk_Color      := RGB (1.0, 0.0, 0.0);
-               Line_Cap   : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+               Line_Cap   : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                Adjustment : access Gtk_Adjustment_Record'Class := null;
                Scaled     : Boolean        := False;
                Widened    : Boolean        := False
@@ -109,9 +109,9 @@ package Gtk.Layered.Bar is
             (  Under      : not null access Layer_Location'Class;
                From       : Cairo_Tuple    := (0.0, 0.0);
                To         : Cairo_Tuple    := (0.0, 1.0);
-               Width      : GDouble        := 1.0;
+               Width      : Gdouble        := 1.0;
                Color      : Gdk_Color      := RGB (1.0, 0.0, 0.0);
-               Line_Cap   : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+               Line_Cap   : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                Adjustment : access Gtk_Adjustment_Record'Class := null;
                Scaled     : Boolean        := False;
                Widened    : Boolean        := False
@@ -125,7 +125,7 @@ package Gtk.Layered.Bar is
 --
 --    The line angle
 --
-   function Get_Angle (Layer : Bar_Layer) return GDouble;
+   function Get_Angle (Layer : Bar_Layer) return Gdouble;
 --
 -- Get_From -- The position of the lowest value
 --
@@ -145,7 +145,7 @@ package Gtk.Layered.Bar is
 --
 --    The length
 --
-   function Get_Length (Layer : Bar_Layer) return GDouble;
+   function Get_Length (Layer : Bar_Layer) return Gdouble;
 --
 -- Get_Line -- Line's parameters
 --
@@ -181,8 +181,8 @@ package Gtk.Layered.Bar is
    procedure Set
              (  Layer  : in out Bar_Layer;
                 From   : Cairo_Tuple;
-                Angle  : GDouble;
-                Length : GDouble;
+                Angle  : Gdouble;
+                Length : Gdouble;
                 Line   : Line_Parameters
              );
    procedure Set
@@ -235,7 +235,7 @@ package Gtk.Layered.Bar is
    overriding
       procedure Scale
                 (  Layer  : in out Bar_Layer;
-                   Factor : GDouble
+                   Factor : Gdouble
                 );
    overriding
       procedure Set_Property_Value
@@ -251,7 +251,7 @@ package Gtk.Layered.Bar is
    overriding
       procedure Set_Value
                 (  Layer : in out Bar_Layer;
-                   Value : GDouble
+                   Value : Gdouble
                 );
    overriding
       procedure Set_Widened
@@ -273,7 +273,7 @@ private
       From          : Cairo_Tuple;
       To            : Cairo_Tuple;
       Line          : Line_Parameters;
-      Value         : GDouble := 0.0;
+      Value         : Gdouble := 0.0;
       Adjustment    : Gtk_Adjustment;
       Changed       : Handler_Id;
       Value_Changed : Handler_Id;

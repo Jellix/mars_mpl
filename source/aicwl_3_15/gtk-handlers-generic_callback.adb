@@ -50,7 +50,7 @@ package body Gtk.Handlers.Generic_Callback is
    type GClosureMarshal is access procedure
         (  Closure         : GClosure;
            Return_Value    : GValue_Ptr;
-           N_Params        : GUInt;
+           N_Params        : Guint;
            Params          : C_GValues;
            Invocation_Hint : System.Address;
            User_Data       : Closure_Data_Ptr
@@ -83,16 +83,16 @@ package body Gtk.Handlers.Generic_Callback is
                Signal_Id_Ptr      : access Signal_Id;
                Detail_Ptr         : access GQuark;
                Force_Detail_Quark : Gboolean
-            )  return GBoolean;
+            )  return Gboolean;
    pragma Import (C, Parse_Name, "g_signal_parse_name");
 
    function Connect_Closure_By_ID
             (  Instance : System.Address;
-               ID       : Signal_ID;
+               ID       : Signal_Id;
                Detail   : GQuark;
                Closure  : GClosure;
                After    : Gint := 0
-            )  return GUlong;
+            )  return Gulong;
    pragma Import
           (  C,
              Connect_Closure_By_ID,
@@ -105,7 +105,7 @@ package body Gtk.Handlers.Generic_Callback is
    procedure Marshaller
              (  Closure         : GClosure;
                 Return_Value    : GValue_Ptr;
-                N_Params        : GUInt;
+                N_Params        : Guint;
                 Params          : C_GValues;
                 Invocation_Hint : System.Address;
                 User_Data       : Closure_Data_Ptr
@@ -126,17 +126,17 @@ package body Gtk.Handlers.Generic_Callback is
    procedure Marshaller
              (  Closure         : GClosure;
                 Return_Value    : GValue_Ptr;
-                N_Params        : GUInt;
+                N_Params        : Guint;
                 Params          : C_GValues;
                 Invocation_Hint : System.Address;
                 User_Data       : Closure_Data_Ptr
              )  is
       Stub      : Object_Type;
       Values    : constant GValues := Make_Values (N_Params, Params);
-      Arguments : GValue_Array (1..GInt (N_Params) - 1);
+      Arguments : GValue_Array (1..Gint (N_Params) - 1);
    begin
       for Index in Arguments'Range loop
-         Arguments (Index) := Nth (Values, GUInt (Index));
+         Arguments (Index) := Nth (Values, Guint (Index));
       end loop;
       if Return_Value = null then
          declare
@@ -188,12 +188,12 @@ package body Gtk.Handlers.Generic_Callback is
 
    procedure Connect
              (  Object   : not null access Object_Type'Class;
-                Name     : GLib.Signal_Name;
+                Name     : Glib.Signal_Name;
                 Callback : Handler;
                 Data     : User_Type;
                 After    : Boolean := False
              )  is
-      ID : Handler_ID;
+      ID : Handler_Id;
    begin
       ID := Connect
             (  Object   => Object,
@@ -206,12 +206,12 @@ package body Gtk.Handlers.Generic_Callback is
 
    function Connect
             (  Object   : not null access Object_Type'Class;
-               Name     : GLib.Signal_Name;
+               Name     : Glib.Signal_Name;
                Callback : Handler;
                Data     : User_Type;
                After    : Boolean := False
-            )  return Handler_ID is
-      ID        : Handler_ID;
+            )  return Handler_Id is
+      ID        : Handler_Id;
       Signal    : aliased Signal_Id;
       Detail    : aliased GQuark;
       User_Data : Closure_Data_Ptr;
@@ -226,7 +226,7 @@ package body Gtk.Handlers.Generic_Callback is
                   Force_Detail_Quark => 0
             )  )
          or else
-            Signal = Invalid_Signal_ID
+            Signal = Invalid_Signal_Id
          )
       then
          raise Constraint_Error with
@@ -245,7 +245,7 @@ package body Gtk.Handlers.Generic_Callback is
             Notify'Access
          );
       Set_Meta_Marshal (ID.Closure, User_Data, Marshaller'Access);
-      ID.ID :=
+      ID.Id :=
          Connect_Closure_By_ID
          (  Instance => Get_Object (Object),
             ID       => Signal,

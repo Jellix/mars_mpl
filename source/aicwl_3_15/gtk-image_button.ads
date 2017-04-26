@@ -40,7 +40,7 @@ package Gtk.Image_Button is
 --
 --    Set_Text (Get_Label (Button), ...);
 --    Set_Tip  (..., Button, ...);
---    Set_Spacing (Get_Box (Button), ...); 
+--    Set_Spacing (Get_Box (Button), ...);
 --
    type Gtk_Image_Button_Record is new Gtk_Button_Record with private;
    type Gtk_Image_Button is access all Gtk_Image_Button_Record'Class;
@@ -102,7 +102,7 @@ package Gtk.Image_Button is
 --    Label  - The button label
 --
 -- Each derived type is responsible to  call  this  procedure  upon  its
--- construction. 
+-- construction.
 --
    procedure Initialize
              (  Button : not null access Gtk_Image_Button_Record'Class;

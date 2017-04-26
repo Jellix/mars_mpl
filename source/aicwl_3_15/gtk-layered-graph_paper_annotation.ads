@@ -51,20 +51,20 @@ package Gtk.Layered.Graph_Paper_Annotation is
    record
       case Orientation is
          when Horizontal =>
-            Left  : GDouble := -0.5;
-            Right : GDouble :=  0.5;
+            Left  : Gdouble := -0.5;
+            Right : Gdouble :=  0.5;
             case Alignment is
                when Absolute =>
-                  Y_Position : GDouble := 0.0;
+                  Y_Position : Gdouble := 0.0;
                when Relative =>
                   Y_Value : Y_Axis := 0.0;
             end case;
          when Vertical =>
-            Top    : GDouble := -0.5;
-            Bottom : GDouble :=  0.5;
+            Top    : Gdouble := -0.5;
+            Bottom : Gdouble :=  0.5;
             case Alignment is
                when Absolute =>
-                  X_Position : GDouble := 0.0;
+                  X_Position : Gdouble := 0.0;
                when Relative =>
                   X_Value : X_Axis := 0.0;
             end case;
@@ -136,16 +136,16 @@ package Gtk.Layered.Graph_Paper_Annotation is
                                  );
                 Face        : Pango_Cairo_Font :=
                                  Create_Pango ("arial unicode ms");
-                Height      : GDouble            := 12.0;
-                Stretch     : GDouble            := 1.0;
+                Height      : Gdouble            := 12.0;
+                Stretch     : Gdouble            := 1.0;
                 Color       : Gdk_Color          := RGB (0.0, 0.0, 0.0);
-                Text_Angle  : GDouble            := 0.0;
+                Text_Angle  : Gdouble            := 0.0;
                 Justify_X   : Alignment          := Center;
                 Justify_Y   : Vertical_Alignment := Center;
                 Superscript : Boolean            := True;
                 Background  : Gdk_Color          := RGB (1.0, 1.0, 1.0);
-                Border      : GDouble            := 2.0;
-                Overlap     : GDouble            :=-2.0;
+                Border      : Gdouble            := 2.0;
+                Overlap     : Gdouble            :=-2.0;
                 Opacity     : Fill_Opacity       := 1.0;
                 Scaled      : Boolean            := False;
                 Enlarged    : Boolean            := False
@@ -162,16 +162,16 @@ package Gtk.Layered.Graph_Paper_Annotation is
                                 );
                Face        : Pango_Cairo_Font :=
                                 Create_Pango ("arial unicode ms");
-               Height      : GDouble            := 12.0;
-               Stretch     : GDouble            := 1.0;
+               Height      : Gdouble            := 12.0;
+               Stretch     : Gdouble            := 1.0;
                Color       : Gdk_Color          := RGB (0.0, 0.0, 0.0);
-               Text_Angle  : GDouble            := 0.0;
+               Text_Angle  : Gdouble            := 0.0;
                Justify_X   : Alignment          := Center;
                Justify_Y   : Vertical_Alignment := Center;
                Superscript : Boolean            := True;
                Background  : Gdk_Color          := RGB (1.0, 1.0, 1.0);
-               Border      : GDouble            := 2.0;
-               Overlap     : GDouble            :=-2.0;
+               Border      : Gdouble            := 2.0;
+               Overlap     : Gdouble            :=-2.0;
                Opacity     : Fill_Opacity       := 1.0;
                Scaled      : Boolean            := False;
                Enlarged    : Boolean            := False
@@ -201,7 +201,7 @@ package Gtk.Layered.Graph_Paper_Annotation is
 --    The border
 --
    function Get_Border (Layer : Graph_Paper_Annotation_Layer)
-      return GDouble;
+      return Gdouble;
 --
 -- Get_Color -- The text color
 --
@@ -267,7 +267,7 @@ package Gtk.Layered.Graph_Paper_Annotation is
 --    The text height
 --
    function Get_Height (Layer : Graph_Paper_Annotation_Layer)
-      return GDouble;
+      return Gdouble;
 --
 -- Get_Location -- The the annotation axis location
 --
@@ -302,7 +302,7 @@ package Gtk.Layered.Graph_Paper_Annotation is
 --    The overlap
 --
    function Get_Overlap (Layer : Graph_Paper_Annotation_Layer)
-      return GDouble;
+      return Gdouble;
 --
 -- Get_Stretch -- The text stretch
 --
@@ -316,7 +316,7 @@ package Gtk.Layered.Graph_Paper_Annotation is
 --    The text stretch
 --
    function Get_Stretch (Layer : Graph_Paper_Annotation_Layer)
-      return GDouble;
+      return Gdouble;
 --
 -- Get_Suffix -- The text added to all annotation texts
 --
@@ -349,7 +349,7 @@ package Gtk.Layered.Graph_Paper_Annotation is
 --    The angle of the texts
 --
    function Get_Text_Angle (Layer : Graph_Paper_Annotation_Layer)
-      return GDouble;
+      return Gdouble;
 --
 -- Image -- Textual representation of a value
 --
@@ -365,7 +365,7 @@ package Gtk.Layered.Graph_Paper_Annotation is
 --
    function Image
             (  Layer : Graph_Paper_Annotation_Layer;
-               Value : GDouble
+               Value : Gdouble
             )  return UTF8_String;
 --
 -- Image -- Conversion of a time stamp to human-readable format
@@ -404,16 +404,16 @@ package Gtk.Layered.Graph_Paper_Annotation is
              (  Layer       : in out Graph_Paper_Annotation_Layer;
                 Location    : Axis_Location;
                 Face        : Pango_Cairo_Font;
-                Height      : GDouble;
-                Stretch     : GDouble;
+                Height      : Gdouble;
+                Stretch     : Gdouble;
                 Color       : Gdk_Color;
-                Text_Angle  : GDouble;
+                Text_Angle  : Gdouble;
                 Justify_X   : Alignment;
                 Justify_Y   : Vertical_Alignment;
                 Superscript : Boolean;
                 Background  : Gdk_Color;
-                Border      : GDouble;
-                Overlap     : GDouble;
+                Border      : Gdouble;
+                Overlap     : Gdouble;
                 Opacity     : Fill_Opacity
              );
 --
@@ -456,7 +456,7 @@ package Gtk.Layered.Graph_Paper_Annotation is
 --
    type Renderer_Function is access function
         (  Layer  : Graph_Paper_Annotation_Layer'Class;
-           Value  : GDouble;
+           Value  : Gdouble;
            Raster : Gtk.Layered.Waveform.Rasters.Scale
         )  return UTF8_String;
    procedure Set_Renderer
@@ -529,7 +529,7 @@ package Gtk.Layered.Graph_Paper_Annotation is
    overriding
       function Render
                (  Layer  : Graph_Paper_Annotation_Layer;
-                  Value  : GDouble;
+                  Value  : Gdouble;
                   Raster : Gtk.Layered.Waveform.Rasters.Scale
                )  return UTF8_String;
    overriding
@@ -540,7 +540,7 @@ package Gtk.Layered.Graph_Paper_Annotation is
    overriding
       procedure Scale
                 (  Layer  : in out Graph_Paper_Annotation_Layer;
-                   Factor : GDouble
+                   Factor : Gdouble
                 );
    overriding
       procedure Set_Property_Value
@@ -608,16 +608,16 @@ package Gtk.Layered.Graph_Paper_Annotation is
                                  );
                 Face        : Pango_Cairo_Font :=
                                  Create_Pango ("arial unicode ms");
-                Height      : GDouble            := 12.0;
-                Stretch     : GDouble            := 1.0;
+                Height      : Gdouble            := 12.0;
+                Stretch     : Gdouble            := 1.0;
                 Color       : Gdk_Color          := RGB (0.0, 0.0, 0.0);
-                Text_Angle  : GDouble            := 0.0;
+                Text_Angle  : Gdouble            := 0.0;
                 Justify_X   : Alignment          := Center;
                 Justify_Y   : Vertical_Alignment := Center;
                 Superscript : Boolean            := True;
                 Background  : Gdk_Color          := RGB (1.0, 1.0, 1.0);
-                Border      : GDouble            := 2.0;
-                Overlap     : GDouble            :=-2.0;
+                Border      : Gdouble            := 2.0;
+                Overlap     : Gdouble            :=-2.0;
                 Opacity     : Fill_Opacity       := 1.0;
                 Scaled      : Boolean            := False;
                 Enlarged    : Boolean            := False
@@ -634,16 +634,16 @@ package Gtk.Layered.Graph_Paper_Annotation is
                                 );
                Face        : Pango_Cairo_Font :=
                                 Create_Pango ("arial unicode ms");
-               Height      : GDouble            := 12.0;
-               Stretch     : GDouble            := 1.0;
+               Height      : Gdouble            := 12.0;
+               Stretch     : Gdouble            := 1.0;
                Color       : Gdk_Color          := RGB (0.0, 0.0, 0.0);
-               Text_Angle  : GDouble            := 0.0;
+               Text_Angle  : Gdouble            := 0.0;
                Justify_X   : Alignment          := Center;
                Justify_Y   : Vertical_Alignment := Center;
                Superscript : Boolean            := True;
                Background  : Gdk_Color          := RGB (1.0, 1.0, 1.0);
-               Border      : GDouble            := 2.0;
-               Overlap     : GDouble            :=-2.0;
+               Border      : Gdouble            := 2.0;
+               Overlap     : Gdouble            :=-2.0;
                Opacity     : Fill_Opacity       := 1.0;
                Scaled      : Boolean            := False;
                Enlarged    : Boolean            := False
@@ -661,16 +661,16 @@ package Gtk.Layered.Graph_Paper_Annotation is
                   Paper       : not null access Graph_Paper_Layer'Class;
                   Location    : Axis_Location;
                   Face        : Pango_Cairo_Font;
-                  Height      : GDouble;
-                  Stretch     : GDouble;
+                  Height      : Gdouble;
+                  Stretch     : Gdouble;
                   Color       : Gdk_Color;
-                  Text_Angle  : GDouble;
+                  Text_Angle  : Gdouble;
                   Justify_X   : Alignment;
                   Justify_Y   : Vertical_Alignment;
                   Superscript : Boolean;
                   Background  : Gdk_Color;
-                  Border      : GDouble;
-                  Overlap     : GDouble;
+                  Border      : Gdouble;
+                  Overlap     : Gdouble;
                   Opacity     : Fill_Opacity;
                   Scaled      : Boolean;
                   Enlarged    : Boolean
@@ -680,7 +680,7 @@ package Gtk.Layered.Graph_Paper_Annotation is
    overriding
       function Render
                (  Layer  : Graph_Paper_Time_Annotation_Layer;
-                  Value  : GDouble;
+                  Value  : Gdouble;
                   Raster : Gtk.Layered.Waveform.Rasters.Scale
                )  return UTF8_String;
 private
@@ -704,13 +704,13 @@ private
       Location    : Axis_Location;
       Paper       : access Graph_Paper_Layer;
       Face        : Pango_Cairo_Font;
-      Height      : GDouble;
-      Stretch     : GDouble;
-      Text_Angle  : GDouble;
+      Height      : Gdouble;
+      Stretch     : Gdouble;
+      Text_Angle  : Gdouble;
       Color       : Gdk_Color;
       Background  : Gdk_Color;
-      Border      : GDouble;
-      Overlap     : GDouble;
+      Border      : Gdouble;
+      Overlap     : Gdouble;
       Opacity     : Fill_Opacity;
       Texts       : Annotation_List_Ptr;
       Suffix      : Annotation_Text_Ptr;
@@ -722,8 +722,8 @@ private
       Updated     : Boolean := True;
       Superscript : Boolean := True;
          -- Parent's data, set when Updated is true
-      T1, T2 : GDouble := 0.0; -- Horizontal range
-      V1, V2 : GDouble := 0.0; -- Vertical range
+      T1, T2 : Gdouble := 0.0; -- Horizontal range
+      V1, V2 : Gdouble := 0.0; -- Vertical range
       Box    : Cairo_Box := (others => 0.0);
       Raster : Gtk.Layered.Waveform.Rasters.Scale :=
                   (  Minor     => 1.0,
@@ -733,7 +733,7 @@ private
                      Small     => 0
                   );
          -- The last value with annotations closest to the middle
-      Middle_Value : GDouble := GDouble'First;
+      Middle_Value : Gdouble := Gdouble'First;
    end record;
    type Graph_Paper_Annotation_Ptr is
       access all Graph_Paper_Annotation_Layer;

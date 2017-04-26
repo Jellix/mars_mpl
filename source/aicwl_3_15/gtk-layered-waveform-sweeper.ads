@@ -254,6 +254,6 @@ private
 
    procedure Set_Time
              (  Sweeper : not null access Gtk_Waveform_Sweeper_Record;
-                Stamp   : GDouble
+                Stamp   : Gdouble
              );
 end Gtk.Layered.Waveform.Sweeper;

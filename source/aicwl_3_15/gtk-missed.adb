@@ -27,13 +27,13 @@
 with Ada.Exceptions;        use Ada.Exceptions;
 with Ada.IO_Exceptions;     use Ada.IO_Exceptions;
 with Gdk.Window;            use Gdk.Window;
-with GLib.Messages;         use GLib.Messages;
-with GLib.Properties;       use GLib.Properties;
-with GLib.Types;            use GLib.Types;
-with GLib.Unicode;          use GLib.Unicode;
+with Glib.Messages;         use Glib.Messages;
+with Glib.Properties;       use Glib.Properties;
+with Glib.Types;            use Glib.Types;
+with Glib.Unicode;          use Glib.Unicode;
 with Gtk.Main;              use Gtk.Main;
 with Gtk.Box;               use Gtk.Box;
-with Gtk.CSS_Provider;      use Gtk.CSS_Provider;
+with Gtk.Css_Provider;      use Gtk.Css_Provider;
 with Gtk.Icon_Source;       use Gtk.Icon_Source;
 with Gtk.Icon_Set;          use Gtk.Icon_Set;
 with Gtk.Icon_Theme;        use Gtk.Icon_Theme;
@@ -45,7 +45,7 @@ with Interfaces.C.Strings;  use Interfaces.C.Strings;
 with System;                use System;
 
 with Ada.Unchecked_Conversion;
-with GLib.Object.Checked_Destroy;
+with Glib.Object.Checked_Destroy;
 with Gtk.Adjustment;
 
 package body Gtk.Missed is
@@ -56,17 +56,17 @@ package body Gtk.Missed is
       return " in Gtk.Missed." & Name;
    end Where;
 
-   procedure G_Free (Border : Interfaces.C.Strings.Chars_Ptr);
+   procedure G_Free (Border : Interfaces.C.Strings.chars_ptr);
    pragma Import (C, G_Free, "g_free");
 ------------------------------------------------------------------------
    type GHashTable is new System.Address;
    No_Table : constant GHashTable := GHashTable (Null_Address);
 
    type GEqualFunc is access function (A, B : char_array)
-      return GBoolean;
+      return Gboolean;
    pragma Convention (C, GEqualFunc);
 
-   type GHashFunc is access function (Key : char_array) return GInt;
+   type GHashFunc is access function (Key : char_array) return Gint;
    pragma Convention (C, GHashFunc);
 
    type GDestroyNotify is access procedure (Data : chars_ptr);
@@ -81,10 +81,10 @@ package body Gtk.Missed is
       Free (Ptr);
    end Destroy;
 
-   function Str_Hash (Key : char_array) return GInt;
+   function Str_Hash (Key : char_array) return Gint;
    pragma Import (C, Str_Hash, "g_str_hash");
 
-   function Str_Equal (A, B : char_array) return GBoolean;
+   function Str_Equal (A, B : char_array) return Gboolean;
    pragma Import (C, Str_Equal, "g_str_equal");
 
    function Table_New
@@ -99,7 +99,7 @@ package body Gtk.Missed is
             (  Table : GHashTable;
                Key   : chars_ptr;
                Value : System.Address
-            )  return GBoolean;
+            )  return Gboolean;
    pragma Import (C, Insert, "g_hash_table_insert");
 
    function Look_Up
@@ -110,7 +110,7 @@ package body Gtk.Missed is
 ------------------------------------------------------------------------
    Stock_Icons : GHashTable := No_Table;
 
-   function "+" (Width : GInt) return Gtk_Icon_Size is
+   function "+" (Width : Gint) return Gtk_Icon_Size is
    begin
       if Width <= 16 then
          return Icon_Size_Menu;
@@ -132,7 +132,7 @@ package body Gtk.Missed is
                 Icon       : UTF8_String   := "";
                 Icon_Left  : Boolean       := True;
                 Size       : Gtk_Icon_Size := Icon_Size_Button;
-                Spacing    : GUInt         := 3;
+                Spacing    : Guint         := 3;
                 Tip        : UTF8_String   := "";
                 Relief     : Gtk_Relief_Style := Relief_Normal
              )  is
@@ -158,19 +158,19 @@ package body Gtk.Missed is
                Icon       : UTF8_String   := "";
                Icon_Left  : Boolean       := True;
                Size       : Gtk_Icon_Size := Icon_Size_Button;
-               Spacing    : GUInt         := 3;
+               Spacing    : Guint         := 3;
                Tip        : UTF8_String   := "";
                Relief     : Gtk_Relief_Style := Relief_Normal
             )  return Gtk_Button is
       Button : Gtk_Button;
-      Box    : Gtk_HBox;
+      Box    : Gtk_Hbox;
       Text   : Gtk_Label;
       Image  : Gtk_Image;
    begin
       Gtk_New (Button);
-      Gtk_New_HBox (Box, False, 0);
+      Gtk_New_Hbox (Box, False, 0);
       Box.Set_Border_Width (0);
-      Box.Set_Spacing (GInt (Spacing));
+      Box.Set_Spacing (Gint (Spacing));
       Button.Add (Box);
       Button.Set_Relief (Relief);
       if Icon_Left then
@@ -203,9 +203,9 @@ package body Gtk.Missed is
              (  Name : UTF8_String;
                 Icon : Gdk_Pixbuf
              )  is
-      Key    : Chars_Ptr;
+      Key    : chars_ptr;
       Set    : Gtk_Icon_Set;
-      Result : GBoolean;
+      Result : Gboolean;
    begin
       Key := New_String (Name);
       if Stock_Icons = No_Table then
@@ -240,11 +240,11 @@ package body Gtk.Missed is
 
    function Build_Filename (First_Element, Second_Element : UTF8_String)
       return UTF8_String is
-      function Internal (Args : Chars_Ptr_Array) return Chars_Ptr;
+      function Internal (Args : chars_ptr_array) return chars_ptr;
       pragma Import (C, Internal, "g_build_filenamev");
-      First  : aliased Char_Array := To_C (First_Element);
-      Second : aliased Char_Array := To_C (Second_Element);
-      Ptr    : constant Chars_Ptr :=
+      First  : aliased char_array := To_C (First_Element);
+      Second : aliased char_array := To_C (Second_Element);
+      Ptr    : constant chars_ptr :=
                   Internal
                   (  (  0 => To_Chars_Ptr (First'Unchecked_Access),
                         1 => To_Chars_Ptr (Second'Unchecked_Access),
@@ -261,7 +261,7 @@ package body Gtk.Missed is
                Second_Element : UTF8_String;
                Third_Element  : UTF8_String
             )  return UTF8_String is
-      function Internal (Args : Chars_Ptr_Array) return Chars_Ptr;
+      function Internal (Args : chars_ptr_array) return chars_ptr;
       pragma Import (C, Internal, "g_build_filenamev");
       First  : aliased Char_Array := To_C (First_Element);
       Second : aliased Char_Array := To_C (Second_Element);

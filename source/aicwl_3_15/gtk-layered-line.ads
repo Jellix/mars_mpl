@@ -62,11 +62,11 @@ package Gtk.Layered.Line is
    procedure Add_Line
              (  Under    : not null access Layer_Location'Class;
                 From     : Cairo_Tuple    := (0.0, 0.0);
-                Angle    : GDouble        := 0.0;
-                Length   : GDouble        := 1.0;
-                Width    : GDouble        := 1.0;
+                Angle    : Gdouble        := 0.0;
+                Length   : Gdouble        := 1.0;
+                Width    : Gdouble        := 1.0;
                 Color    : Gdk_Color      := RGB (0.0, 0.0, 0.0);
-                Line_Cap : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+                Line_Cap : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                 Scaled   : Boolean        := False;
                 Widened  : Boolean        := False
              );
@@ -74,20 +74,20 @@ package Gtk.Layered.Line is
              (  Under    : not null access Layer_Location'Class;
                 From     : Cairo_Tuple    := (0.0, 0.0);
                 To       : Cairo_Tuple    := (0.0, 1.0);
-                Width    : GDouble        := 1.0;
+                Width    : Gdouble        := 1.0;
                 Color    : Gdk_Color      := RGB (0.0, 0.0, 0.0);
-                Line_Cap : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+                Line_Cap : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                 Scaled   : Boolean        := False;
                 Widened  : Boolean        := False
              );
    function Add_Line
             (  Under    : not null access Layer_Location'Class;
                From     : Cairo_Tuple    := (0.0, 0.0);
-               Angle    : GDouble        := 0.0;
-               Length   : GDouble        := 1.0;
-               Width    : GDouble        := 1.0;
+               Angle    : Gdouble        := 0.0;
+               Length   : Gdouble        := 1.0;
+               Width    : Gdouble        := 1.0;
                Color    : Gdk_Color      := RGB (0.0, 0.0, 0.0);
-               Line_Cap : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+               Line_Cap : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                Scaled   : Boolean        := False;
                Widened  : Boolean        := False
             )  return not null access Line_Layer;
@@ -95,9 +95,9 @@ package Gtk.Layered.Line is
             (  Under    : not null access Layer_Location'Class;
                From     : Cairo_Tuple    := (0.0, 0.0);
                To       : Cairo_Tuple    := (0.0, 1.0);
-               Width    : GDouble        := 1.0;
+               Width    : Gdouble        := 1.0;
                Color    : Gdk_Color      := RGB (0.0, 0.0, 0.0);
-               Line_Cap : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+               Line_Cap : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                Scaled   : Boolean        := False;
                Widened  : Boolean        := False
             )  return not null access Line_Layer;
@@ -110,7 +110,7 @@ package Gtk.Layered.Line is
 --
 --    The line angle
 --
-   function Get_Angle (Layer : Line_Layer) return GDouble;
+   function Get_Angle (Layer : Line_Layer) return Gdouble;
 --
 -- Get_From -- The point where the line starts
 --
@@ -130,7 +130,7 @@ package Gtk.Layered.Line is
 --
 --    The line length
 --
-   function Get_Length (Layer : Line_Layer) return GDouble;
+   function Get_Length (Layer : Line_Layer) return Gdouble;
 --
 -- Get_Line -- Line's parameters
 --
@@ -166,8 +166,8 @@ package Gtk.Layered.Line is
    procedure Set
              (  Layer  : in out Line_Layer;
                 From   : Cairo_Tuple;
-                Angle  : GDouble;
-                Length : GDouble;
+                Angle  : Gdouble;
+                Length : Gdouble;
                 Line   : Line_Parameters
              );
    procedure Set
@@ -220,7 +220,7 @@ package Gtk.Layered.Line is
    overriding
       procedure Scale
                 (  Layer  : in out Line_Layer;
-                   Factor : GDouble
+                   Factor : Gdouble
                 );
    overriding
       procedure Set_Property_Value

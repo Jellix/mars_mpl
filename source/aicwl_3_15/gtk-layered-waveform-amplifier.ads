@@ -218,19 +218,19 @@ package Gtk.Layered.Waveform.Amplifier is
    overriding
       function Get_Lower
                (  Amplifier : access Gtk_Waveform_Amplifier_Record
-               )  return GDouble;
+               )  return Gdouble;
    overriding
       function Get_Page_Size
                (  Amplifier : access Gtk_Waveform_Amplifier_Record
-               )  return GDouble;
+               )  return Gdouble;
    overriding
       function Get_Upper
                (  Amplifier : access Gtk_Waveform_Amplifier_Record
-               )  return GDouble;
+               )  return Gdouble;
    overriding
       function Get_Value
                (  Amplifier : access Gtk_Waveform_Amplifier_Record
-               )  return GDouble;
+               )  return Gdouble;
 
    Class_Name : constant String := "GtkLayeredWaveformAmplifier";
 private
@@ -245,7 +245,7 @@ private
       Tick    : Positive := 50;
       Y1      : Y_Axis   := 0.0;
       Y2      : Y_Axis   := 1.0;
-      Width   : GDouble   := 1.0;
+      Width   : Gdouble   := 1.0;
    end record;
 
    procedure Set_Range

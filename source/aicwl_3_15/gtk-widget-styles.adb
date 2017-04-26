@@ -25,8 +25,8 @@
 --  executable file might be covered by the GNU Public License.       --
 --____________________________________________________________________--
 
-with GLib.Properties.Creation;  use GLib.Properties.Creation;
-with GLib.Values.Handling;      use GLib.Values.Handling;
+with Glib.Properties.Creation;  use Glib.Properties.Creation;
+with Glib.Values.Handling;      use Glib.Values.Handling;
 with Gtk.Missed;                use Gtk.Missed;
 
 with System.Address_To_Access_Conversions;
@@ -45,14 +45,14 @@ package body Gtk.Widget.Styles is
       pragma Import (C, G_Free, "g_free");
       function Internal
                (  Class        : GObject_Class;
-                  N_Properties : access GUInt
+                  N_Properties : access Guint
                )  return Flat_Array_Ptr;
       pragma Import
              (  C,
                 Internal,
                 "gtk_widget_class_list_style_properties"
              );
-      Count : aliased GUInt;
+      Count : aliased Guint;
       List  : constant Flat_Array_Ptr := Internal (Class, Count'Access);
    begin
       declare
@@ -90,7 +90,7 @@ package body Gtk.Widget.Styles is
       procedure Get_Direct
                 (  Widget        : Address;
                    Path_Length   : Address := Null_Address;
-                   Path          : out Chars_Ptr;
+                   Path          : out chars_ptr;
                    Path_Reversed : Address := Null_Address
                 );
       pragma Import (C, Get_Direct, "gtk_widget_path");
@@ -98,10 +98,10 @@ package body Gtk.Widget.Styles is
                 (  Widget        : Address;
                    Path_Length   : Address := Null_Address;
                    Path          : Address := Null_Address;
-                   Path_Reversed : out Chars_Ptr
+                   Path_Reversed : out chars_ptr
                 );
       pragma Import (C, Get_Reversed, "gtk_widget_path");
-      Path : Chars_Ptr;
+      Path : chars_ptr;
    begin
       if Reversed then
          Get_Reversed
@@ -130,7 +130,7 @@ package body Gtk.Widget.Styles is
       procedure Get_Direct
                 (  Widget        : Address;
                    Path_Length   : Address := Null_Address;
-                   Path          : out Chars_Ptr;
+                   Path          : out chars_ptr;
                    Path_Reversed : Address := Null_Address
                 );
       pragma Import (C, Get_Direct, "gtk_widget_class_path");
@@ -138,10 +138,10 @@ package body Gtk.Widget.Styles is
                 (  Widget        : Address;
                    Path_Length   : Address := Null_Address;
                    Path          : Address := Null_Address;
-                   Path_Reversed : out Chars_Ptr
+                   Path_Reversed : out chars_ptr
                 );
       pragma Import (C, Get_Reversed, "gtk_widget_class_path");
-      Path : Chars_Ptr;
+      Path : chars_ptr;
    begin
       if Reversed then
          Get_Reversed
@@ -244,28 +244,28 @@ package body Gtk.Widget.Styles is
    function Style_Get_Char_Impl is
       new Generic_Style_Get
           (  Char_Type,
-             GChar,
+             Gchar,
              Get_Char
           );
    function Style_Get
             (  Widget        : not null access Gtk_Widget_Record'Class;
                Property_Name : UTF8_String
-            )  return GChar renames Style_Get_Char_Impl;
+            )  return Gchar renames Style_Get_Char_Impl;
 
    function UChar_Type return GType is
    begin
-      return GType_UChar;
+      return GType_Uchar;
    end UChar_Type;
    function Style_Get_UChar_Impl is
       new Generic_Style_Get
           (  UChar_Type,
-             GUChar,
-             Get_UChar
+             Guchar,
+             Get_Uchar
           );
    function Style_Get
             (  Widget        : not null access Gtk_Widget_Record'Class;
                Property_Name : UTF8_String
-            )  return GUChar renames Style_Get_UChar_Impl;
+            )  return Guchar renames Style_Get_UChar_Impl;
 
    function Int_Type return GType is
    begin
@@ -274,28 +274,28 @@ package body Gtk.Widget.Styles is
    function Style_Get_Int_Impl is
       new Generic_Style_Get
           (  Int_Type,
-             GInt,
+             Gint,
              Get_Int
           );
    function Style_Get
             (  Widget        : not null access Gtk_Widget_Record'Class;
                Property_Name : UTF8_String
-            )  return GInt renames Style_Get_Int_Impl;
+            )  return Gint renames Style_Get_Int_Impl;
 
    function UInt_Type return GType is
    begin
-      return GType_UInt;
+      return GType_Uint;
    end UInt_Type;
    function Style_Get_UInt_Impl is
       new Generic_Style_Get
           (  UInt_Type,
-             GUInt,
-             Get_UInt
+             Guint,
+             Get_Uint
           );
    function Style_Get
             (  Widget        : not null access Gtk_Widget_Record'Class;
                Property_Name : UTF8_String
-            )  return GUInt renames Style_Get_UInt_Impl;
+            )  return Guint renames Style_Get_UInt_Impl;
 
    function Long_Type return GType is
    begin
@@ -304,28 +304,28 @@ package body Gtk.Widget.Styles is
    function Style_Get_Long_Impl is
       new Generic_Style_Get
           (  Long_Type,
-             GLong,
+             Glong,
              Get_Long
           );
    function Style_Get
             (  Widget        : not null access Gtk_Widget_Record'Class;
                Property_Name : UTF8_String
-            )  return GLong renames Style_Get_Long_Impl;
+            )  return Glong renames Style_Get_Long_Impl;
 
    function ULong_Type return GType is
    begin
-      return GType_ULong;
+      return GType_Ulong;
    end ULong_Type;
    function Style_Get_ULong_Impl is
       new Generic_Style_Get
           (  ULong_Type,
-             GULong,
+             Gulong,
              Get_ULong
           );
    function Style_Get
             (  Widget        : not null access Gtk_Widget_Record'Class;
                Property_Name : UTF8_String
-            )  return GULong renames Style_Get_ULong_Impl;
+            )  return Gulong renames Style_Get_ULong_Impl;
 
    function Float_Type return GType is
    begin
@@ -334,13 +334,13 @@ package body Gtk.Widget.Styles is
    function Style_Get_Float_Impl is
       new Generic_Style_Get
           (  Float_Type,
-             GFloat,
+             Gfloat,
              Get_Float
           );
    function Style_Get
             (  Widget        : not null access Gtk_Widget_Record'Class;
                Property_Name : UTF8_String
-            )  return GFloat renames Style_Get_Float_Impl;
+            )  return Gfloat renames Style_Get_Float_Impl;
 
    function GDouble_Type return GType is
    begin
@@ -349,13 +349,13 @@ package body Gtk.Widget.Styles is
    function Style_Get_GDouble_Impl is
        new Generic_Style_Get
            (  GDouble_Type,
-              GDouble,
+              Gdouble,
               Get_Double
            );
    function Style_Get
             (  Widget        : not null access Gtk_Widget_Record'Class;
                Property_Name : UTF8_String
-            )  return GDouble renames Style_Get_GDouble_Impl;
+            )  return Gdouble renames Style_Get_GDouble_Impl;
 
    function String_Type return GType is
    begin

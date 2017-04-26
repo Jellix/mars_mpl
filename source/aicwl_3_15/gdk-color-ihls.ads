@@ -45,21 +45,21 @@ package Gdk.Color.IHLS is
 -- value  2*Gdk_Hue'Modulus/3  corresponds to Blue. The type is declared
 -- compatible with the color datatypes used in GDK.
 --
-   type Gdk_Hue is new GUInt16;
+   type Gdk_Hue is new Guint16;
 --
 -- Gdk_Luminance -- The type luminance
 --
 -- Luminance  is  subjective  perception  of  luminous  intensity of the
 -- color. Higher values of Liminance correspond to more light colors.
 --
-   type Gdk_Luminance is new GUInt16;
+   type Gdk_Luminance is new Guint16;
 --
 -- Gdk_Saturation -- The type saturation
 --
 -- Saturation  is  the  color  purity.  The  value 0 corresponds to grey
 -- colors. The maximal value corresponds to monochrome (pure) colors.
 --
-   type Gdk_Saturation is new GUInt16;
+   type Gdk_Saturation is new Guint16;
 --
 -- Gdk_IHLS_Color -- The color value Hue/Luminance/Saturation
 --
@@ -79,11 +79,11 @@ package Gdk.Color.IHLS is
 -- Gdk_*_Luminance -- Subypes of visible chromatic luminances
 --
    subtype Gdk_Red_Luminance is Gdk_Luminance
-      range 0..Gdk_Luminance (Gdk_Stimulus (GUInt16'Last)*0.2126);
+      range 0..Gdk_Luminance (Gdk_Stimulus (Guint16'Last)*0.2126);
    subtype Gdk_Green_Luminance is Gdk_Luminance
-      range 0..Gdk_Luminance (Gdk_Stimulus (GUInt16'Last)*0.7152);
+      range 0..Gdk_Luminance (Gdk_Stimulus (Guint16'Last)*0.7152);
    subtype Gdk_Blue_Luminance is Gdk_Luminance
-      range 0..Gdk_Luminance (Gdk_Stimulus (GUInt16'Last)*0.0722);
+      range 0..Gdk_Luminance (Gdk_Stimulus (Guint16'Last)*0.0722);
 --
 -- Average -- An array of colors preserving lightness
 --
@@ -203,7 +203,7 @@ package Gdk.Color.IHLS is
 --
 --    A Gdk color component in the range of GUInt16
 --
-   function To_RGB (Stimulus : Gdk_Stimulus) return GUInt16;
+   function To_RGB (Stimulus : Gdk_Stimulus) return Guint16;
    pragma Inline (To_RGB);
 --
 -- To_RGB -- Color model conversion

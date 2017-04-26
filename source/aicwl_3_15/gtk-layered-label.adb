@@ -26,8 +26,8 @@
 --____________________________________________________________________--
 
 with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
-with GLib.Messages;               use GLib.Messages;
-with GLib.Properties.Creation;    use GLib.Properties.Creation;
+with Glib.Messages;               use Glib.Messages;
+with Glib.Properties.Creation;    use Glib.Properties.Creation;
 with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
 with Pango.Layout;                use Pango.Layout;
 
@@ -124,15 +124,15 @@ package body Gtk.Layered.Label is
                 Face     : Pango_Cairo_Font :=
                               Create_Toy
                               (  Family => "sans",
-                                 Slant  => CAIRO_FONT_SLANT_NORMAL,
-                                 Weight => CAIRO_FONT_WEIGHT_NORMAL
+                                 Slant  => Cairo_Font_Slant_Normal,
+                                 Weight => Cairo_Font_Weight_Normal
                               );
-                Height   : GDouble             := 12.0;
-                Stretch  : GDouble             := 1.0;
+                Height   : Gdouble             := 12.0;
+                Stretch  : Gdouble             := 1.0;
                 Mode     : Text_Transformation := Moved_Centered;
                 Color    : Gdk_Color           := RGB (0.0, 0.0, 0.0);
-                Angle    : GDouble             := 3.0 * Pi / 2.0;
-                Skew     : GDouble             := 0.0;
+                Angle    : Gdouble             := 3.0 * Pi / 2.0;
+                Skew     : Gdouble             := 0.0;
                 Markup   : Boolean             := False;
                 Scaled   : Boolean             := False
              )  is
@@ -167,15 +167,15 @@ package body Gtk.Layered.Label is
                Face     : Pango_Cairo_Font :=
                              Create_Toy
                              (  Family => "sans",
-                                Slant  => CAIRO_FONT_SLANT_NORMAL,
-                                Weight => CAIRO_FONT_WEIGHT_NORMAL
+                                Slant  => Cairo_Font_Slant_Normal,
+                                Weight => Cairo_Font_Weight_Normal
                              );
-               Height   : GDouble             := 12.0;
-               Stretch  : GDouble             := 1.0;
+               Height   : Gdouble             := 12.0;
+               Stretch  : Gdouble             := 1.0;
                Mode     : Text_Transformation := Moved_Centered;
                Color    : Gdk_Color           := RGB (0.0, 0.0, 0.0);
-               Angle    : GDouble             := 3.0 * Pi / 2.0;
-               Skew     : GDouble             := 0.0;
+               Angle    : Gdouble             := 3.0 * Pi / 2.0;
+               Skew     : Gdouble             := 0.0;
                Markup   : Boolean             := False;
                Scaled   : Boolean             := False
             )  return not null access Label_Layer is
@@ -209,7 +209,7 @@ package body Gtk.Layered.Label is
                 Context : Cairo_Context;
                 Area    : Gdk_Rectangle
              )  is
-      Size    : constant GDouble     := Layer.Widget.Get_Size;
+      Size    : constant Gdouble     := Layer.Widget.Get_Size;
       Text    : constant UTF8_String := Text_Mutex.Get_Text (Layer);
       Gain    : GDouble              := 1.0;
       State   : Context_State        := Save (Context);

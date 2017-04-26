@@ -26,12 +26,12 @@
 --____________________________________________________________________--
 
 with Ada.Exceptions;         use Ada.Exceptions;
-with GLib.Messages;          use GLib.Messages;
-with GLib.Object;            use GLib.Object;
+with Glib.Messages;          use Glib.Messages;
+with Glib.Object;            use Glib.Object;
 with Gtk.Layered;            use Gtk.Layered;
 with Gtk.Layered.Stream_IO;  use Gtk.Layered.Stream_IO;
 with Gtk.Missed;             use Gtk.Missed;
-with GtkAda.Types;           use GtkAda.Types;
+with Gtkada.Types;           use Gtkada.Types;
 with Interfaces.C;           use Interfaces.C;
 with Interfaces.C.Strings;   use Interfaces.C.Strings;
 with Pango.Layout;           use Pango.Layout;
@@ -70,7 +70,7 @@ package body Pango.Cairo.Fonts is
          raise Status_Error with "Null font";
       else
          Error := Status (Font.Face);
-         if Error /= CAIRO_STATUS_SUCCESS then
+         if Error /= Cairo_Status_Success then
             raise Status_Error with To_String (Error);
          end if;
       end if;
@@ -81,7 +81,7 @@ package body Pango.Cairo.Fonts is
       Error : Cairo_Status;
    begin
       Error := Status (Context);
-      if Error /= CAIRO_STATUS_SUCCESS then
+      if Error /= Cairo_Status_Success then
          raise Status_Error with To_String (Error);
       end if;
    end Check;
@@ -115,7 +115,7 @@ package body Pango.Cairo.Fonts is
                Variant : Pango.Enums.Variant := Pango_Variant_Normal;
                Weight  : Pango.Enums.Weight  := Pango_Weight_Normal;
                Stretch : Pango.Enums.Stretch := Pango_Stretch_Normal;
-               Size    : GInt                := 12
+               Size    : Gint                := 12
             )  return Pango_Cairo_Font is
    begin
       return
@@ -158,10 +158,10 @@ package body Pango.Cairo.Fonts is
 
    function Create_Toy
             (  Family : UTF8_String;
-               Slant  : Cairo_Font_Slant  := CAIRO_FONT_SLANT_NORMAL;
-               Weight : Cairo_Font_Weight := CAIRO_FONT_WEIGHT_NORMAL
+               Slant  : Cairo_Font_Slant  := Cairo_Font_Slant_Normal;
+               Weight : Cairo_Font_Weight := Cairo_Font_Weight_Normal
             )  return Pango_Cairo_Font is
-      Text : aliased Char_Array := To_C (Family);
+      Text : aliased char_array := To_C (Family);
    begin
       return Font : Pango_Cairo_Font (Toy_Font) do
          Font.Toy_Face.Face :=

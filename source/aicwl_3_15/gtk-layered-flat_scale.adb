@@ -27,7 +27,7 @@
 
 with Ada.Numerics;                use Ada.Numerics;
 with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
-with GLib.Properties.Creation;    use GLib.Properties.Creation;
+with Glib.Properties.Creation;    use Glib.Properties.Creation;
 with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
 
 with Ada.Unchecked_Deallocation;
@@ -77,16 +77,16 @@ package body Gtk.Layered.Flat_Scale is
 
    procedure Add_Flat_Scale
              (  Under    : not null access Layer_Location'Class;
-                Step     : GDouble;
+                Step     : Gdouble;
                 First    : Tick_Number    := Tick_Number'Last;
                 Skipped  : Tick_Number    := Tick_Number'Last;
                 From     : Cairo_Tuple    := (0.0, 0.0);
-                Length   : GDouble        := 1.0;
-                Breadth  : GDouble        := 1.0;
-                Angle    : GDouble        := 0.0;
-                Width    : GDouble        := 1.0;
+                Length   : Gdouble        := 1.0;
+                Breadth  : Gdouble        := 1.0;
+                Angle    : Gdouble        := 0.0;
+                Width    : Gdouble        := 1.0;
                 Color    : Gdk_Color      := RGB (0.0, 0.0, 0.0);
-                Line_Cap : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+                Line_Cap : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                 Scaled   : Boolean        := False;
                 Widened  : Boolean        := False
              )  is
@@ -113,13 +113,13 @@ package body Gtk.Layered.Flat_Scale is
 
    function Add_Flat_Scale
             (  Under    : not null access Layer_Location'Class;
-               Step     : GDouble;
+               Step     : Gdouble;
                First    : Tick_Number    := Tick_Number'Last;
                Skipped  : Tick_Number    := Tick_Number'Last;
                From     : Cairo_Tuple    := (0.0, 0.0);
-               Length   : GDouble        := 1.0;
-               Breadth  : GDouble        := 1.0;
-               Angle    : GDouble        := 0.0;
+               Length   : Gdouble        := 1.0;
+               Breadth  : Gdouble        := 1.0;
+               Angle    : Gdouble        := 0.0;
                Width    : GDouble        := 1.0;
                Color    : Gdk_Color      := RGB (0.0, 0.0, 0.0);
                Line_Cap : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;

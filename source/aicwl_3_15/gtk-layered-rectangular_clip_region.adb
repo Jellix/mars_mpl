@@ -29,7 +29,7 @@ with Ada.IO_Exceptions;           use Ada.IO_Exceptions;
 with Ada.Numerics;                use Ada.Numerics;
 with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
 with Cairo.Transformations;       use Cairo.Transformations;
-with GLib.Properties.Creation;    use GLib.Properties.Creation;
+with Glib.Properties.Creation;    use Glib.Properties.Creation;
 with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
 
 with Ada.Unchecked_Deallocation;
@@ -95,11 +95,11 @@ package body Gtk.Layered.Rectangular_Clip_Region is
 
    procedure Add_Rectangular_Clip_Region
              (  Under          : not null access Layer_Location'Class;
-                Height         : GDouble     := 1.0;
-                Width          : GDouble     := 1.0;
+                Height         : Gdouble     := 1.0;
+                Width          : Gdouble     := 1.0;
                 Center         : Cairo_Tuple := (0.0, 0.0);
-                Rotation_Angle : GDouble     := 0.0;
-                Corner_Radius  : GDouble     := 0.0;
+                Rotation_Angle : Gdouble     := 0.0;
+                Corner_Radius  : Gdouble     := 0.0;
                 Scaled         : Boolean     := False
              )  is
       On_Ptr  : Rectangular_Clip_Region_On_Layer_Ptr :=
@@ -130,11 +130,11 @@ package body Gtk.Layered.Rectangular_Clip_Region is
 
    function Add_Rectangular_Clip_Region
             (  Under          : not null access Layer_Location'Class;
-               Height         : GDouble     := 1.0;
-               Width          : GDouble     := 1.0;
+               Height         : Gdouble     := 1.0;
+               Width          : Gdouble     := 1.0;
                Center         : Cairo_Tuple := (0.0, 0.0);
-               Rotation_Angle : GDouble     := 0.0;
-               Corner_Radius  : GDouble     := 0.0;
+               Rotation_Angle : Gdouble     := 0.0;
+               Corner_Radius  : Gdouble     := 0.0;
                Scaled         : Boolean     := False
             )  return not null access
                       Rectangular_Clip_Region_On_Layer is
@@ -170,8 +170,8 @@ package body Gtk.Layered.Rectangular_Clip_Region is
                 Context : Cairo_Context;
                 Area    : Gdk_Rectangle
              )  is
-      Half_Width  : GDouble := Layer.Width  / 2.0;
-      Half_Height : GDouble := Layer.Height / 2.0;
+      Half_Width  : Gdouble := Layer.Width  / 2.0;
+      Half_Height : Gdouble := Layer.Height / 2.0;
       Radius      : GDouble := Layer.Radius;
       T           : Translate_And_Rotate;
    begin

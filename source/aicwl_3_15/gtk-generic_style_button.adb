@@ -25,14 +25,14 @@
 --  executable file might be covered by the GNU Public License.       --
 --____________________________________________________________________--
 
-with GLib.Properties.Creation;     use GLib.Properties.Creation;
-with GLib.Properties.Icon_Size;    use GLib.Properties.Icon_Size;
-with GtkAda.Types;                 use GtkAda.Types;
+with Glib.Properties.Creation;     use Glib.Properties.Creation;
+with Glib.Properties.Icon_Size;    use Glib.Properties.Icon_Size;
+with Gtkada.Types;                 use Gtkada.Types;
 with Gtk.Widget.Styles;            use Gtk.Widget.Styles;
 with Gtk.Widget.Styles.Icon_Size;  use Gtk.Widget.Styles.Icon_Size;
 
-with GLib.Properties.Relief_Style;
-with GLib.Types;
+with Glib.Properties.Relief_Style;
+with Glib.Types;
 with Gtk.Widget.Styles.Relief_Style;
 
 package body Gtk.Generic_Style_Button is
@@ -62,7 +62,7 @@ package body Gtk.Generic_Style_Button is
          )
       then
          Install_Style_Property
-         (  GLib.Types.Class_Ref (Class_Record.The_Type),
+         (  Glib.Types.Class_Ref (Class_Record.The_Type),
             Gnew_Boolean
             (  Name    => "icon-left",
                Nick    => "Left",
@@ -70,7 +70,7 @@ package body Gtk.Generic_Style_Button is
                Default => Icon_Left
          )  );
          Install_Style_Property
-         (  GLib.Types.Class_Ref (Class_Record.The_Type),
+         (  Glib.Types.Class_Ref (Class_Record.The_Type),
             Gnew_String
             (  Name    => "icon-id",
                Nick    => "Icon",
@@ -78,15 +78,15 @@ package body Gtk.Generic_Style_Button is
                Default => Icon
          )  );
          Install_Style_Property
-         (  GLib.Types.Class_Ref (Class_Record.The_Type),
-            GLib.Properties.Icon_Size.Property.Gnew_Enum
+         (  Glib.Types.Class_Ref (Class_Record.The_Type),
+            Glib.Properties.Icon_Size.Property.Gnew_Enum
             (  Name    => "icon-size",
                Nick    => "Size",
                Blurb   => "Button icon size",
                Default => Gtk_Icon_Size_Enum'Val (Size)
          )  );
          Install_Style_Property
-         (  GLib.Types.Class_Ref (Class_Record.The_Type),
+         (  Glib.Types.Class_Ref (Class_Record.The_Type),
             Gnew_String
             (  Name    => "label",
                Nick    => "Label",
@@ -94,25 +94,25 @@ package body Gtk.Generic_Style_Button is
                Default => Label
          )  );
          Install_Style_Property
-         (  GLib.Types.Class_Ref (Class_Record.The_Type),
-            GLib.Properties.Relief_Style.Property.Gnew_Enum
+         (  Glib.Types.Class_Ref (Class_Record.The_Type),
+            Glib.Properties.Relief_Style.Property.Gnew_Enum
             (  Name    => "relief-style",
                Nick    => "Relief",
                Blurb   => "Button relief style",
                Default => Relief
          )  );
          Install_Style_Property
-         (  GLib.Types.Class_Ref (Class_Record.The_Type),
-            Gnew_UInt
+         (  Glib.Types.Class_Ref (Class_Record.The_Type),
+            Gnew_Uint
             (  Name    => "spacing",
                Nick    => "Spacing",
                Blurb   => "Spacing between icon and label",
                Minimum => 0,
-               Maximum => GUInt (GInt'Last),
+               Maximum => Guint (Gint'Last),
                Default => Spacing
          )  );
          Install_Style_Property
-         (  GLib.Types.Class_Ref (Class_Record.The_Type),
+         (  Glib.Types.Class_Ref (Class_Record.The_Type),
             Gnew_String
             (  Name    => "tip",
                Nick    => "Tip",
@@ -143,7 +143,7 @@ package body Gtk.Generic_Style_Button is
    begin
       G_New (Button, Get_Type);
       Gtk.Button.Initialize (Button, ""); -- Parent's initialization
-      Gtk_New_HBox (Button.Box, False, 0);
+      Gtk_New_Hbox (Button.Box, False, 0);
       Button.Box.Set_Border_Width (0);
       Button.Add (Button.Box);
       Style_Handlers.Connect
@@ -198,7 +198,7 @@ package body Gtk.Generic_Style_Button is
          Button.Box.Pack_Start (Button.Image, False, False);
       end if;
       Button.Box.Set_Spacing
-      (  GInt (GUInt'(Style_Get (Button, "spacing")))
+      (  Gint (Guint'(Style_Get (Button, "spacing")))
       );
       Button.Set_Tooltip_Text (Style_Get (Button, "tip"));
       Button.Box.Show_All;

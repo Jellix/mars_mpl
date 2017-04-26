@@ -25,7 +25,7 @@
 --  executable file might be covered by the GNU Public License.       --
 --____________________________________________________________________--
 
-package body GLib.Values.Handling is
+package body Glib.Values.Handling is
 
    function Copy (Src_Value : GValue) return GValue is
       procedure Internal
@@ -36,7 +36,7 @@ package body GLib.Values.Handling is
       Result : GValue;
       Temp   : aliased GValue := Src_Value;
    begin
-      Init (Result, Src_Value.G_Type);
+      Init (Result, Src_Value.g_type);
       Internal (Temp'Access, Result);
       return Result;
    end Copy;
@@ -49,16 +49,16 @@ package body GLib.Values.Handling is
       pragma Import (C, Internal, "g_value_copy");
       Temp : aliased GValue := Src_Value;
    begin
-      if Dest_Value.G_Type /= Src_Value.G_Type then
+      if Dest_Value.g_type /= Src_Value.g_type then
          Unset (Dest_Value);
-         Init (Dest_Value, Src_Value.G_Type);
+         Init (Dest_Value, Src_Value.g_type);
       end if;
       Internal (Temp'Access, Dest_Value);
    end Copy;
 
    function Get_Type (Value : GValue) return GType is
    begin
-      return Value.G_Type;
+      return Value.g_type;
    end Get_Type;
 
-end GLib.Values.Handling;
+end Glib.Values.Handling;

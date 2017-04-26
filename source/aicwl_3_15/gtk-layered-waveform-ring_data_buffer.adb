@@ -27,7 +27,7 @@
 
 with Ada.Exceptions;     use Ada.Exceptions;
 with Ada.IO_Exceptions;  use Ada.IO_Exceptions;
-with GLib.Messages;      use GLib.Messages;
+with Glib.Messages;      use Glib.Messages;
 
 with Ada.Unchecked_Deallocation;
 
@@ -442,7 +442,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
                          Gtk_Wavefrom_Ring_Data_Buffer_Record'Class
              )  is
    begin
-      GLib.Object.Initialize (Source);
+      Glib.Object.Initialize (Source);
    end Initialize;
 
    function Is_In

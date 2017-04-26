@@ -62,7 +62,7 @@ generic
    Icon       : UTF8_String      := "";
    Icon_Left  : Boolean          := True;
    Size       : Gtk_Icon_Size    := Icon_Size_Small_Toolbar;
-   Spacing    : GUInt            := 3;
+   Spacing    : Guint            := 3;
    Tip        : UTF8_String      := "";
    Relief     : Gtk_Relief_Style := Relief_Normal;
 package Gtk.Generic_Style_Button is

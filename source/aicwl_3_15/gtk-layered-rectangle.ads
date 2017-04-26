@@ -65,7 +65,7 @@ package Gtk.Layered.Rectangle is
              (  Under      : not null access Layer_Location'Class;
                 Box        : Cairo_Box;
                 Color      : Gdk_Color    := RGB (0.0, 0.0, 0.0);
-                Line_Width : GDouble      := 0.0;
+                Line_Width : Gdouble      := 0.0;
                 Opacity    : Fill_Opacity := 1.0;
                 Scaled     : Boolean      := False;
                 Widened    : Boolean      := False
@@ -74,7 +74,7 @@ package Gtk.Layered.Rectangle is
             (  Under      : not null access Layer_Location'Class;
                Box        : Cairo_Box;
                Color      : Gdk_Color    := RGB (0.0, 0.0, 0.0);
-               Line_Width : GDouble      := 0.0;
+               Line_Width : Gdouble      := 0.0;
                Opacity    : Fill_Opacity := 1.0;
                Scaled     : Boolean      := False;
                Widened    : Boolean      := False
@@ -108,7 +108,7 @@ package Gtk.Layered.Rectangle is
 --
 --    The line width
 --
-   function Get_Line_Width (Layer : Rectangle_Layer) return GDouble;
+   function Get_Line_Width (Layer : Rectangle_Layer) return Gdouble;
 --
 -- Get_Opacity -- The filling opacity
 --
@@ -136,7 +136,7 @@ package Gtk.Layered.Rectangle is
              (  Layer      : in out Rectangle_Layer;
                 Box        : Cairo_Box;
                 Color      : Gdk_Color;
-                Line_Width : GDouble;
+                Line_Width : Gdouble;
                 Opacity    : Fill_Opacity
              );
 
@@ -183,7 +183,7 @@ package Gtk.Layered.Rectangle is
    overriding
       procedure Scale
                 (  Layer  : in out Rectangle_Layer;
-                   Factor : GDouble
+                   Factor : Gdouble
                 );
    overriding
       procedure Set_Property_Value
@@ -212,7 +212,7 @@ private
    record
       Box     : Cairo_Box;
       Color   : Gdk_Color;
-      Width   : GDouble;
+      Width   : Gdouble;
       Opacity : Fill_Opacity;
       Widened : Boolean := False;
       Scaled  : Boolean := False;

@@ -27,7 +27,7 @@
 
 with System.Address_To_Access_Conversions;
 
-package body GLib.Object.Weak_References is
+package body Glib.Object.Weak_References is
 
    package Address_To_Access is
       new System.Address_To_Access_Conversions (Weak_Reference'Class);
@@ -111,4 +111,4 @@ package body GLib.Object.Weak_References is
       Reference.Object := Object.all'Access;
    end Set;
 
-end GLib.Object.Weak_References;
+end Glib.Object.Weak_References;

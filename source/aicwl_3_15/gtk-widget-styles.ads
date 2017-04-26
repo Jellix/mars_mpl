@@ -107,7 +107,7 @@
 --     thus deliver it back to the caller of Style_Get_Property.
 --
 with Gdk.Color;             use Gdk.Color;
-with GLib.Values;           use GLib.Values;
+with Glib.Values;           use Glib.Values;
 with Gtk.Widget;            use Gtk.Widget;
 with Interfaces.C.Strings;  use Interfaces.C.Strings;
 
@@ -124,9 +124,9 @@ package Gtk.Widget.Styles is
 --    Allocated_Len - The size of the memory allocated for (max length)
 --
    type GString is record
-      Str           : Chars_Ptr;
-      Len           : GSize;
-      Allocated_Len : GSize;
+      Str           : chars_ptr;
+      Len           : Gsize;
+      Allocated_Len : Gsize;
    end record;
    pragma Convention (C, GString);
 --
@@ -145,7 +145,7 @@ package Gtk.Widget.Styles is
         (  PSpec          : Param_Spec;
            RC_String      : GString;
            Property_Value : access GValue
-        )  return GBoolean;
+        )  return Gboolean;
    pragma Convention (C, Gtk_RC_Property_Parser);
 --
 -- Class_Install_Style_Property_Parser -- Add a custom style property
@@ -246,35 +246,35 @@ package Gtk.Widget.Styles is
    function Style_Get
             (  Widget        : not null access Gtk_Widget_Record'Class;
                Property_Name : UTF8_String
-            )  return GChar;
+            )  return Gchar;
    function Style_Get
             (  Widget        : not null access Gtk_Widget_Record'Class;
                Property_Name : UTF8_String
-            )  return GUChar;
+            )  return Guchar;
    function Style_Get
             (  Widget        : not null access Gtk_Widget_Record'Class;
                Property_Name : UTF8_String
-            )  return GInt;
+            )  return Gint;
    function Style_Get
             (  Widget        : not null access Gtk_Widget_Record'Class;
                Property_Name : UTF8_String
-            )  return GUInt;
+            )  return Guint;
    function Style_Get
             (  Widget        : not null access Gtk_Widget_Record'Class;
                Property_Name : UTF8_String
-            )  return GLong;
+            )  return Glong;
    function Style_Get
             (  Widget        : not null access Gtk_Widget_Record'Class;
                Property_Name : UTF8_String
-            )  return GULong;
+            )  return Gulong;
    function Style_Get
             (  Widget        : not null access Gtk_Widget_Record'Class;
                Property_Name : UTF8_String
-            )  return GFloat;
+            )  return Gfloat;
    function Style_Get
             (  Widget        : not null access Gtk_Widget_Record'Class;
                Property_Name : UTF8_String
-            )  return GDouble;
+            )  return Gdouble;
    function Style_Get
             (  Widget        : not null access Gtk_Widget_Record'Class;
                Property_Name : UTF8_String

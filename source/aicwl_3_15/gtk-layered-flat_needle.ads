@@ -76,14 +76,14 @@ package Gtk.Layered.Flat_Needle is
    procedure Add_Flat_Needle
              (  Under       : not null access Layer_Location'Class;
                 From        : Cairo_Tuple    := (0.0, 0.0);
-                Angle       : GDouble        := 0.0;
-                Length      : GDouble        := 1.0;
-                Tip_Length  : GDouble        := 20.0;
-                Tip_Width   : GDouble        := 2.0;
-                Tip_Cap     : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
-                Rear_Length : GDouble        := 3.0;
-                Rear_Width  : GDouble        := 3.0;
-                Rear_Cap    : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+                Angle       : Gdouble        := 0.0;
+                Length      : Gdouble        := 1.0;
+                Tip_Length  : Gdouble        := 20.0;
+                Tip_Width   : Gdouble        := 2.0;
+                Tip_Cap     : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
+                Rear_Length : Gdouble        := 3.0;
+                Rear_Width  : Gdouble        := 3.0;
+                Rear_Cap    : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                 Color       : Gdk_Color      := RGB (1.0, 0.0, 0.0);
                 Adjustment  : access Gtk_Adjustment_Record'Class :=
                                      null;
@@ -92,10 +92,10 @@ package Gtk.Layered.Flat_Needle is
    function Add_Flat_Needle
             (  Under       : not null access Layer_Location'Class;
                From        : Cairo_Tuple    := (0.0, 0.0);
-               Angle       : GDouble        := 0.0;
-               Length      : GDouble        := 1.0;
-               Tip_Length  : GDouble        := 20.0;
-               Tip_Width   : GDouble        := 2.0;
+               Angle       : Gdouble        := 0.0;
+               Length      : Gdouble        := 1.0;
+               Tip_Length  : Gdouble        := 20.0;
+               Tip_Width   : Gdouble        := 2.0;
                Tip_Cap     : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
                Rear_Length : GDouble        := 3.0;
                Rear_Width  : GDouble        := 3.0;

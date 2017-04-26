@@ -70,22 +70,22 @@ package Gtk.Layered.Arc is
    procedure Add_Arc
              (  Under    : not null access Layer_Location'Class;
                 Ellipse  : Ellipse_Parameters := Unit_Circle;
-                From     : GDouble            := 0.0;
-                Length   : GDouble            := 2.0 * Pi;
-                Width    : GDouble            := 1.0;
+                From     : Gdouble            := 0.0;
+                Length   : Gdouble            := 2.0 * Pi;
+                Width    : Gdouble            := 1.0;
                 Color    : Gdk_Color          := RGB (0.0, 0.0, 0.0);
-                Line_Cap : Cairo_Line_Cap     := CAIRO_LINE_CAP_BUTT;
+                Line_Cap : Cairo_Line_Cap     := Cairo_Line_Cap_Butt;
                 Scaled   : Boolean            := False;
                 Widened  : Boolean            := False
              );
    function Add_Arc
             (  Under    : not null access Layer_Location'Class;
                Ellipse  : Ellipse_Parameters := Unit_Circle;
-               From     : GDouble            := 0.0;
-               Length   : GDouble            := 2.0 * Pi;
-               Width    : GDouble            := 1.0;
+               From     : Gdouble            := 0.0;
+               Length   : Gdouble            := 2.0 * Pi;
+               Width    : Gdouble            := 1.0;
                Color    : Gdk_Color          := RGB (0.0, 0.0, 0.0);
-               Line_Cap : Cairo_Line_Cap     := CAIRO_LINE_CAP_BUTT;
+               Line_Cap : Cairo_Line_Cap     := Cairo_Line_Cap_Butt;
                Scaled   : Boolean            := False;
                Widened  : Boolean            := False
             )  return not null access Arc_Layer;
@@ -108,7 +108,7 @@ package Gtk.Layered.Arc is
 --
 --    The angle
 --
-   function Get_From (Layer : Arc_Layer) return GDouble;
+   function Get_From (Layer : Arc_Layer) return Gdouble;
 --
 -- Get_Length -- Angular length of the arc
 --
@@ -118,7 +118,7 @@ package Gtk.Layered.Arc is
 --
 --    The angle
 --
-   function Get_Length (Layer : Arc_Layer) return GDouble;
+   function Get_Length (Layer : Arc_Layer) return Gdouble;
 --
 -- Get_Line -- Arc's line parameters
 --
@@ -145,8 +145,8 @@ package Gtk.Layered.Arc is
    procedure Set
              (  Layer   : in out Arc_Layer;
                 Ellipse : Ellipse_Parameters;
-                From    : GDouble;
-                Length  : GDouble;
+                From    : Gdouble;
+                Length  : Gdouble;
                 Line    : Line_Parameters
              );
 
@@ -189,7 +189,7 @@ package Gtk.Layered.Arc is
    overriding
       procedure Scale
                 (  Layer  : in out Arc_Layer;
-                   Factor : GDouble
+                   Factor : Gdouble
                 );
    overriding
       procedure Set_Property_Value
@@ -216,8 +216,8 @@ private
       and Widened_Layer with
    record
       Ellipse : Ellipse_Parameters;
-      From    : GDouble;
-      Length  : GDouble;
+      From    : Gdouble;
+      Length  : Gdouble;
       Line    : Line_Parameters;
       Scaled  : Boolean := False;
       Widened : Boolean := False;
