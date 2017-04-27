@@ -43,7 +43,7 @@ package body Text_Edit is
       end loop;
       return Source (First..Last);
    end TrimCharacter;
-   
+
    function TrimSet
             (  Source : in String;
                Blanks : in Ada.Strings.Maps.Character_Set
@@ -169,7 +169,7 @@ package body Text_Edit is
          Pointer := Pointer + OutField;
       end if;
    end PutString;
-   
+
    procedure PutCharacter
              (  Destination : in out String;
                 Pointer     : in out Integer;

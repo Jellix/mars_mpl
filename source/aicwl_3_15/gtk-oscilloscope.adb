@@ -25,35 +25,36 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Ada.Exceptions;              use Ada.Exceptions;
-with Ada.IO_Exceptions;           use Ada.IO_Exceptions;
-with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
-with Cairo.Line_Cap_Property;     use Cairo.Line_Cap_Property;
-with Gdk.Color.IHLS;              use Gdk.Color.IHLS;
-with Gdk.Types;                   use Gdk.Types;
-with Gdk.Window;                  use Gdk.Window;
-with Glib.Messages;               use Glib.Messages;
-with Glib.Properties.Creation;    use Glib.Properties.Creation;
-with Gtkada.Types;                use Gtkada.Types;
-with Gtk.Enums;                   use Gtk.Enums;
-with Gtk.Image;                   use Gtk.Image;
-with Gtk.Separator_Menu_Item;     use Gtk.Separator_Menu_Item;
-with Gtk.Stock;                   use Gtk.Stock;
-with Gtk.Tree_Model;              use Gtk.Tree_Model;
-with Gtk.Widget.Styles;           use Gtk.Widget.Styles;
-with Strings_Edit.Integers;       use Strings_Edit.Integers;
-
+with Ada.Exceptions;
+with Ada.IO_Exceptions;
 with Ada.Unchecked_Conversion;
 with Ada.Unchecked_Deallocation;
+
+with Interfaces.C.Strings;
+
+with Cairo.Elementary_Functions;
+with Cairo.Line_Cap_Property;
 with Cairo.PDF;
 with Cairo.SVG;
+with Gdk.Color.IHLS;
+with Gdk.Types;
+with Glib.Messages;
 with Glib.Object.Checked_Destroy;
+with Glib.Properties.Creation;
+with Gtkada.Types;
+with Gtk.Adjustment;
+with Gtk.Enums;
+with Gtk.Image;
+with Gtk.Image_Menu_Item;
+with Gtk.Menu;
+with Gtk.Separator_Menu_Item;
+with Gtk.Stock;
+with Gtk.Tree_Model;
 with Gtk.Widget.Styles.Line_Cap_Property;
-with Interfaces.C.Strings;
+with Strings_Edit.Integers;
 with Strings_Edit.UTF8.Wildcards.Case_Insensitive;
 
 package body Gtk.Oscilloscope is
-   use Gtk.Widget.Styles.Line_Cap_Property;
 
    function "+" (Value : String_Ptr) return UTF8_String;
    function "+" (Value : String_Ptr) return UTF8_String is
@@ -65,20 +66,29 @@ package body Gtk.Oscilloscope is
       end if;
    end "+";
 
-   function Where (Name : String) return String;
-   function Where (Name : String) return String is
-   begin
-      return " in Gtk.Oscilloscope." & Name;
-   end Where;
+   procedure Free is
+     new Ada.Unchecked_Deallocation (Gtk.Layered.Line.Line_Layer,
+                                     Line_Layer_Ptr);
+   procedure Free is
+     new Ada.Unchecked_Deallocation (Gtk.Layered.Graph_Paper.Graph_Paper_Layer,
+                                     Graph_Paper_Layer_Ptr);
+   procedure Free is new Ada.Unchecked_Deallocation
+     (Gtk.Layered.Graph_Paper_Annotation.Graph_Paper_Annotation_Layer'Class,
+      Graph_Paper_Annotation_Layer_Ptr);
+   procedure Free is
+     new Ada.Unchecked_Deallocation (Group_List, Group_List_Ptr);
+   procedure Free is
+     new Ada.Unchecked_Deallocation (Do_Item'Class, Do_Item_Ptr);
+   procedure Free is
+     new Ada.Unchecked_Deallocation
+       (Gtk.Layered.Refresh_Engine.Layered_Refresh_Engine,
+        Layered_Refresh_Engine_Ptr);
+   procedure Free is
+     new Ada.Unchecked_Deallocation (Gtk.Layered.Rectangle.Rectangle_Layer,
+                                     Rectangle_Layer_Ptr);
+   procedure Free is
+     new Ada.Unchecked_Deallocation (Selection_State, Selection_State_Ptr);
 
-   Cycle            : constant := 6;
-   First_Color      : constant Gdk_IHLS_Color :=
-                                  To_IHLS (RGB (1.0, 0.0, 0.0));
-   -- Corner           : constant := 1.0 / 30.0;
-   Selection_Color  : constant Gdk_Color := RGB (1.0, 0.0, 0.0);
-   -- Background_Color : constant Gdk_Color := RGB (1.0, 1.0, 1.0);
-
-   Class_Record : aliased Ada_GObject_Class := Uninitialized_Class;
    Signal_Names : constant Gtkada.Types.Chars_Ptr_Array :=
                     (0  => Interfaces.C.Strings.New_String ("autoscaling-changed"),
                      1  => Interfaces.C.Strings.New_String ("raster-mode-changed"),
@@ -96,183 +106,45 @@ package body Gtk.Oscilloscope is
                      13 => Interfaces.C.Strings.New_String ("channel-deleted"),
                      14 => Interfaces.C.Strings.New_String ("snapshot-captured"),
                      15 => Interfaces.C.Strings.New_String ("extrapolation-changed"));
-   Signal_IDs : array (Signal_Names'Range) of Signal_Id :=
-                   (others => Invalid_Signal_Id);
+   Signal_IDs   : array (Signal_Names'Range) of Signal_Id :=
+                    (others => Invalid_Signal_Id);
 
---     procedure Dump_Stack (Head : String; Stack : Items_Stack) is
---        use Ada.Tags, Ada.Text_IO;
---        This : Do_Item_Ptr := Stack.Actions;
---     begin
---        Put_Line (Head & " ---------------->");
---        while This /= null loop
---           if This.First then
---              Put_Line ("   = " & Expanded_Name (This.all'Tag));
---           else
---              Put_Line ("     " & Expanded_Name (This.all'Tag));
---           end if;
---           This := This.Next;
---        end loop;
---        Put_Line ("<--------------- " & Head);
---     end Dump_Stack;
+   Class_Record : aliased Ada_GObject_Class := Uninitialized_Class;
 
-   procedure Free is
-      new Ada.Unchecked_Deallocation (Line_Layer, Line_Layer_Ptr);
-   procedure Free is
-     new Ada.Unchecked_Deallocation (Graph_Paper_Layer, Graph_Paper_Layer_Ptr);
-   procedure Free is new Ada.Unchecked_Deallocation
-     (Gtk.Layered.Graph_Paper_Annotation.Graph_Paper_Annotation_Layer'Class,
-      Graph_Paper_Annotation_Layer_Ptr);
-   procedure Free is
-     new Ada.Unchecked_Deallocation (Group_List, Group_List_Ptr);
-   procedure Free is
-      new Ada.Unchecked_Deallocation (Do_Item'Class, Do_Item_Ptr);
-   procedure Free is
-     new Ada.Unchecked_Deallocation (Layered_Refresh_Engine,
-                                     Layered_Refresh_Engine_Ptr);
-   procedure Free is
-      new Ada.Unchecked_Deallocation (Rectangle_Layer, Rectangle_Layer_Ptr);
-   procedure Free is
-      new Ada.Unchecked_Deallocation (Selection_State, Selection_State_Ptr);
+   Cycle           : constant := 6;
+   Selection_Color : constant Gdk.Color.Gdk_Color      := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+   First_Color     : constant Gdk.Color.IHLS.Gdk_IHLS_Color :=
+                       Gdk.Color.IHLS.To_IHLS (Gtk.Missed.RGB (1.0, 0.0, 0.0));
 
-   procedure Do_Init
-     (Widget         : not null access Gtk_Oscilloscope_Record'Class;
-      Lower_Sweeper  : access Gtk_Waveform_Sweeper_Record'Class;
-      Upper_Sweeper  : access Gtk_Waveform_Sweeper_Record'Class;
-      Refresh_Engine : access Layered_Refresh_Engine;
-      Refresh_Period : Duration;
-      Background     : Gdk_Color;
-      Buffer_Size    : Positive);
-   procedure Do_Init
-             (Widget         : not null access Gtk_Oscilloscope_Record'Class;
-              Lower_Sweeper  : access Gtk_Waveform_Sweeper_Record'Class;
-              Upper_Sweeper  : access Gtk_Waveform_Sweeper_Record'Class;
-              Refresh_Engine : access Layered_Refresh_Engine;
-              Refresh_Period : Duration;
-              Background     : Gdk_Color;
-              Buffer_Size    : Positive) is separate;
-   function On_Button_Press
-     (Object       : access GObject_Record'Class;
-      Event        : Gdk_Event;
-      Oscilloscope : Gtk_Oscilloscope) return Boolean is separate;
-
-   function On_Button_Release
-     (Object       : access GObject_Record'Class;
-      Event        : Gdk_Event;
-      Oscilloscope : Gtk_Oscilloscope) return Boolean is separate;
-
+   procedure Emit (Widget : not null access Gtk_Oscilloscope_Record'Class;
+                   Signal : Signal_Id;
+                   Value  : String);
+   procedure Emit (Widget  : not null access Gtk_Oscilloscope_Record'Class;
+                   Signal  : Signal_Id;
+                   Value_1 : Guint;
+                   Value_2 : Gdouble;
+                   Value_3 : Gdouble);
+   procedure Emit (Widget : not null access Gtk_Oscilloscope_Record'Class;
+                   Signal : Signal_Id;
+                   Value  : Guint);
    procedure EmitV (Params : System.Address;
                     Signal : Signal_Id;
                     Quark  : GQuark;
                     Result : System.Address);
    pragma Import (C, EmitV, "g_signal_emitv");
 
-   procedure Emit (Widget : not null access Gtk_Oscilloscope_Record'Class;
-                   Signal : Signal_Id;
-                   Value  : Guint);
-   procedure Emit (Widget : not null access Gtk_Oscilloscope_Record'Class;
-                   Signal : Signal_Id;
-                   Value  : Guint)
-   is
-      procedure Set_Object (Value  : in out GValue;
-                            Object : System.Address);
-      pragma Import (C, Set_Object, "g_value_set_object");
-      Params : GValue_Array (0 .. 1);
-      Result : GValue;
-   begin
-      if Class_Record /= Uninitialized_Class then
-         declare
-            This : constant GType := Get_Type;
-         begin
-            Init (Params (0), This);
-            Set_Object (Params (0),
-                        Gtk.Widget.Convert (Widget.all'Unchecked_Access));
-            Init (Params (1), GType_Uint);
-            Set_Uint (Params (1), Value);
-            EmitV (Params (0)'Address, Signal, 0, Result'Address);
-            Unset (Params (0));
-            Unset (Params (1));
-         end;
-      end if;
-   end Emit;
-
-   procedure Emit (Widget  : not null access Gtk_Oscilloscope_Record'Class;
-                   Signal  : Signal_Id;
-                   Value_1 : Guint;
-                   Value_2 : Gdouble;
-                   Value_3 : Gdouble);
-   procedure Emit (Widget  : not null access Gtk_Oscilloscope_Record'Class;
-                   Signal  : Signal_Id;
-                   Value_1 : Guint;
-                   Value_2 : Gdouble;
-                   Value_3 : Gdouble)
-   is
-      procedure Set_Object (Value  : in out GValue;
-                            Object : System.Address);
-      pragma Import (C, Set_Object, "g_value_set_object");
-      Params : GValue_Array (0 .. 3);
-      Result : GValue;
-   begin
-      if Class_Record /= Uninitialized_Class then
-         declare
-            This : constant GType := Get_Type;
-         begin
-            Init (Params (0), This);
-            Set_Object (Params (0),
-                        Gtk.Widget.Convert (Widget.all'Unchecked_Access));
-            Init (Params (1), GType_Uint);
-            Set_Uint (Params (1), Value_1);
-            Init (Params (2), GType_Double);
-            Set_Double (Params (2), Value_2);
-            Init (Params (3), GType_Double);
-            Set_Double (Params (3), Value_3);
-            EmitV (Params (0)'Address, Signal, 0, Result'Address);
-            Unset (Params (0));
-            Unset (Params (1));
-            Unset (Params (2));
-            Unset (Params (3));
-         end;
-      end if;
-   end Emit;
-
-   procedure Emit (Widget : not null access Gtk_Oscilloscope_Record'Class;
-                   Signal : Signal_Id;
-                   Value  : String);
-   procedure Emit (Widget : not null access Gtk_Oscilloscope_Record'Class;
-                   Signal : Signal_Id;
-                   Value  : String)
-   is
-      procedure Set_Object (Value  : in out GValue;
-                            Object : System.Address);
-      pragma Import (C, Set_Object, "g_value_set_object");
-      Params : GValue_Array (0 .. 1);
-      Result : GValue;
-   begin
-      if Class_Record /= Glib.Object.Uninitialized_Class then
-         declare
-            This : constant GType := Get_Type;
-         begin
-            Init (Params (0), This);
-            Set_Object (Params (0),
-                        Gtk.Widget.Convert (Widget.all'Unchecked_Access));
-            Init (Params (1), GType_String);
-            Set_String (Params (1), Value);
-            EmitV (Params (0)'Address, Signal, 0, Result'Address);
-            Unset (Params (0));
-            Unset (Params (1));
-         end;
-      end if;
-   end Emit;
+   function Where (Name : String) return String;
 
    function Add_Channel
      (Widget  : not null access Gtk_Oscilloscope_Record;
       Group   : Group_Number;
-      Color   : Gdk_Color;
-      Mode    : Interpolation_Mode := Linear;
+      Color   : Gdk.Color.Gdk_Color;
+      Mode    : Gtk.Layered.Interpolation_Mode := Gtk.Layered.Linear;
       Left    : Boolean := False;
       Right   : Boolean := False;
       Name    : String  := "";
       Sweeper : Sweeper_Type := Lower;
-      Buffer  : access Gtk_Wavefrom_Ring_Data_Buffer_Record'Class := null)
+      Buffer  : access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer_Record'Class := null)
       return Channel_Number is
    begin
       if Widget.all.Channels_Number >= Widget.all.Size then
@@ -283,25 +155,26 @@ package body Gtk.Oscilloscope is
          raise Constraint_Error with "Wrong group number";
       end if;
       return Index : constant Channel_Number :=
-                     Widget.all.Channels_Number + 1 do
+        Widget.all.Channels_Number + 1 do
          declare
             This : Channel_Data renames Widget.all.Channels (Index);
-            Row  : Gtk_Tree_Iter;
+            Row  : Gtk.Tree_Model.Gtk_Tree_Iter;
          begin
             This.Waveform :=
-               Add_Waveform (Under     => Widget.all.Layers,
-                             Box       => Widget.all.Get_Box,
-                             Width     => Widget.all.Width,
-                             Color     => Color,
-                             Line_Cap  => Widget.all.Line_Cap,
-                             Sweeper   => Widget.all.Time_Axis (Sweeper).Sweeper,
-                             Amplifier => Widget.all.Groups.all (Group).Amplifier,
-                             Mode      => Mode,
-                             Left      => Left,
-                             Right     => Right,
-                             Opacity   => Widget.all.Opacity,
-                             Scaled    => False,
-                             Widened   => Widget.all.Widened).all'Unchecked_Access;
+              Gtk.Layered.Waveform.Add_Waveform
+                (Under     => Widget.all.Layers,
+                 Box       => Widget.all.Get_Box,
+                 Width     => Widget.all.Width,
+                 Color     => Color,
+                 Line_Cap  => Widget.all.Line_Cap,
+                 Sweeper   => Widget.all.Time_Axis (Sweeper).Sweeper,
+                 Amplifier => Widget.all.Groups.all (Group).Amplifier,
+                 Mode      => Mode,
+                 Left      => Left,
+                 Right     => Right,
+                 Opacity   => Widget.all.Opacity,
+                 Scaled    => False,
+                 Widened   => Widget.all.Widened).all'Unchecked_Access;
             Widget.all.Channel_Names.all.Append (Row);
             if Name'Length = 0 then
                Widget.all.Channel_Names.all.Set
@@ -314,19 +187,20 @@ package body Gtk.Oscilloscope is
             Widget.all.Channel_Names.all.Set (Row, 1, Gint (Index));
             Widget.all.Channel_Names.all.Set (Row, 2, Gint (Group));
             Widget.all.Channel_Names.all.Set (Row, 3, True);
-            Widget.all.Channel_Names.all.Set (Row, 4, Interpolation_Mode'Pos (Mode));
+            Widget.all.Channel_Names.all.Set (Row, 4, Gtk.Layered.Interpolation_Mode'Pos (Mode));
             Widget.all.Channel_Names.all.Set (Row, 6, Left);
             Widget.all.Channel_Names.all.Set (Row, 7, Right);
             This.Group := Group;
             if Buffer = null then
-               Gtk_New (This.Source, Widget.all.Buffer_Size);
+               Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_New
+                 (This.Source, Widget.all.Buffer_Size);
             else
                This.Source := Buffer.all'Unchecked_Access;
                This.Source.all.Ref;
             end if;
             This.Waveform.all.Set_Source (This.Source.all);
             Widget.all.Time_Axis (Sweeper).Channels :=
-               Widget.all.Time_Axis (Sweeper).Channels + 1;
+              Widget.all.Time_Axis (Sweeper).Channels + 1;
          end;
          Widget.all.Channels_Number := Index;
          Emit (Widget, Signal_IDs (12), Guint (Index));
@@ -336,82 +210,87 @@ package body Gtk.Oscilloscope is
    function Add_Channel
      (Widget  : not null access Gtk_Oscilloscope_Record;
       Group   : Group_Number;
-      Mode    : Interpolation_Mode := Linear;
+      Mode    : Gtk.Layered.Interpolation_Mode := Gtk.Layered.Linear;
       Left    : Boolean := False;
       Right   : Boolean := False;
       Name    : String  := "";
       Sweeper : Sweeper_Type := Lower;
-      Buffer  : access Gtk_Wavefrom_Ring_Data_Buffer_Record'Class := null)
+      Buffer  : access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer_Record'Class := null)
       return Channel_Number is
    begin
       return
-         Add_Channel (Widget  => Widget,
-                      Group   => Group,
-                      Mode    => Mode,
-                      Left    => Left,
-                      Right   => Right,
-                      Name    => Name,
-                      Sweeper => Sweeper,
-                      Buffer  => Buffer,
-                      Color   =>
-                        To_RGB (Val (First_Color,
-                                     Natural (Widget.all.Channels_Number),
-                                     Cycle)));
+        Add_Channel (Widget  => Widget,
+                     Group   => Group,
+                     Mode    => Mode,
+                     Left    => Left,
+                     Right   => Right,
+                     Name    => Name,
+                     Sweeper => Sweeper,
+                     Buffer  => Buffer,
+                     Color   =>
+                       Gdk.Color.IHLS.To_RGB
+                         (Gdk.Color.IHLS.Val
+                              (First_Color,
+                               Natural (Widget.all.Channels_Number),
+                               Cycle)));
    end Add_Channel;
 
    function Add_Channel
      (Widget  : not null access Gtk_Oscilloscope_Record;
-      Color   : Gdk_Color;
-      Mode    : Interpolation_Mode := Linear;
+      Color   : Gdk.Color.Gdk_Color;
+      Mode    : Gtk.Layered.Interpolation_Mode := Gtk.Layered.Linear;
       Left    : Boolean := False;
       Right   : Boolean := False;
       Name    : String  := "";
       Sweeper : Sweeper_Type := Lower;
-      Buffer  : access Gtk_Wavefrom_Ring_Data_Buffer_Record'Class := null)
+      Buffer  : access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer_Record'Class := null)
       return Channel_Number is
    begin
       return
         Add_Channel
-         (Widget  => Widget,
-          Group   => Add_Group (Widget),
-          Color   => Color,
-          Mode    => Mode,
-          Left    => Left,
-          Right   => Right,
-          Name    => Name,
-          Buffer  => Buffer,
-          Sweeper => Sweeper);
+          (Widget  => Widget,
+           Group   => Add_Group (Widget),
+           Color   => Color,
+           Mode    => Mode,
+           Left    => Left,
+           Right   => Right,
+           Name    => Name,
+           Buffer  => Buffer,
+           Sweeper => Sweeper);
    end Add_Channel;
 
    function Add_Channel
      (Widget  : not null access Gtk_Oscilloscope_Record;
-      Mode    : Interpolation_Mode := Linear;
+      Mode    : Gtk.Layered.Interpolation_Mode := Gtk.Layered.Linear;
       Left    : Boolean := False;
       Right   : Boolean := False;
       Name    : String  := "";
       Sweeper : Sweeper_Type := Lower;
-      Buffer  : access Gtk_Wavefrom_Ring_Data_Buffer_Record'Class := null)
+      Buffer  : access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer_Record'Class := null)
       return Channel_Number is
    begin
       return
         Add_Channel
-         (Widget  => Widget,
-          Group   => Add_Group (Widget),
-          Mode    => Mode,
-          Left    => Left,
-          Right   => Right,
-          Name    => Name,
-          Sweeper => Sweeper,
-          Buffer  => Buffer,
-          Color   => To_RGB (Val (First_Color,
-                                  Natural (Widget.all.Channels_Number),
-                                  Cycle)));
+          (Widget  => Widget,
+           Group   => Add_Group (Widget),
+           Mode    => Mode,
+           Left    => Left,
+           Right   => Right,
+           Name    => Name,
+           Sweeper => Sweeper,
+           Buffer  => Buffer,
+           Color   =>
+             Gdk.Color.IHLS.To_RGB
+               (Gdk.Color.IHLS.Val
+                  (First_Color,
+                   Natural (Widget.all.Channels_Number),
+                   Cycle)));
    end Add_Channel;
 
    function Add_Deviation_Channel
      (Widget   : not null access Gtk_Oscilloscope_Record;
       Group    : Group_Number;
-      Color    : Gdk_Color;
+      Color    : Gdk.Color.Gdk_Color;
       Measured : Drawing_Measurement_Point := Refresh_Period;
       Name     : String := "";
       Sweeper  : Sweeper_Type := Lower) return Channel_Number is
@@ -424,34 +303,36 @@ package body Gtk.Oscilloscope is
          raise Constraint_Error with "Wrong group number";
       end if;
       return Index : constant Channel_Number :=
-                     Widget.all.Channels_Number + 1 do
+        Widget.all.Channels_Number + 1 do
          declare
+            use type Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer;
             This : Channel_Data renames Widget.all.Channels (Index);
-            Row  : Gtk_Tree_Iter;
+            Row  : Gtk.Tree_Model.Gtk_Tree_Iter;
          begin
             This.Waveform :=
-               Add_Waveform (Under     => Widget.all.Layers,
-                             Box       => Widget.all.Get_Box,
-                             Width     => Widget.all.Width,
-                             Color     => Color,
-                             Line_Cap  => Widget.all.Line_Cap,
-                             Sweeper   => Widget.all.Time_Axis (Sweeper).Sweeper,
-                             Amplifier => Widget.all.Groups.all (Group).Amplifier,
-                             Mode      => Left,
-                             Opacity   => Widget.all.Opacity,
-                             Scaled    => False,
-                             Widened   => Widget.all.Widened).all'Unchecked_Access;
+              Gtk.Layered.Waveform.Add_Waveform
+                (Under     => Widget.all.Layers,
+                 Box       => Widget.all.Get_Box,
+                 Width     => Widget.all.Width,
+                 Color     => Color,
+                 Line_Cap  => Widget.all.Line_Cap,
+                 Sweeper   => Widget.all.Time_Axis (Sweeper).Sweeper,
+                 Amplifier => Widget.all.Groups.all (Group).Amplifier,
+                 Mode      => Gtk.Layered.Left,
+                 Opacity   => Widget.all.Opacity,
+                 Scaled    => False,
+                 Widened   => Widget.all.Widened).all'Unchecked_Access;
             Widget.all.Channel_Names.all.Append (Row);
             if Name'Length = 0 then
                case Measured is
                   when Refresh_Period =>
                      Widget.all.Channel_Names.all.Set (Row,
-                                               0,
-                                               "Refresh period");
+                                                       0,
+                                                       "Refresh period");
                   when Drawing_Time =>
                      Widget.all.Channel_Names.all.Set (Row,
-                                               0,
-                                               "Drawing time");
+                                                       0,
+                                                       "Drawing time");
                end case;
             else
                Widget.all.Channel_Names.all.Set (Row, 0, Name);
@@ -459,20 +340,23 @@ package body Gtk.Oscilloscope is
             Widget.all.Channel_Names.all.Set (Row, 1, Gint (Index));
             Widget.all.Channel_Names.all.Set (Row, 2, Gint (Group));
             Widget.all.Channel_Names.all.Set (Row, 3, True);
-            Widget.all.Channel_Names.all.Set (Row, 4, Interpolation_Mode'Pos (Left));
+            Widget.all.Channel_Names.all.Set
+              (Row,
+               4,
+               Gtk.Layered.Interpolation_Mode'Pos (Gtk.Layered.Left));
             Widget.all.Channel_Names.all.Set (Row, 6, False);
             Widget.all.Channel_Names.all.Set (Row, 7, False);
             case Measured is
                when Refresh_Period =>
                   if Widget.all.Refresh_Period = null then
-                     Gtk_New (Widget.all.Refresh_Period,
-                              Widget.all.Buffer_Size);
+                     Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_New
+                       (Widget.all.Refresh_Period, Widget.all.Buffer_Size);
                   end if;
                   This.Source := Widget.all.Refresh_Period;
                when Drawing_Time =>
                   if Widget.all.Drawing_Time = null then
-                     Gtk_New (Widget.all.Drawing_Time,
-                              Widget.all.Buffer_Size);
+                     Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_New
+                       (Widget.all.Drawing_Time, Widget.all.Buffer_Size);
                   end if;
                   This.Source := Widget.all.Drawing_Time;
             end case;
@@ -499,20 +383,23 @@ package body Gtk.Oscilloscope is
            Measured => Measured,
            Name     => Name,
            Sweeper  => Sweeper,
-           Color    => To_RGB (Val (First_Color,
-                                    Natural (Widget.all.Channels_Number),
-                                    Cycle)));
+           Color    =>
+             Gdk.Color.IHLS.To_RGB
+               (Gdk.Color.IHLS.Val
+                  (First_Color,
+                   Natural (Widget.all.Channels_Number),
+                   Cycle)));
    end Add_Deviation_Channel;
 
    function Add_Deviation_Channel
-            (Widget   : not null access Gtk_Oscilloscope_Record;
-             Color    : Gdk_Color;
-             Measured : Drawing_Measurement_Point := Refresh_Period;
-             Name     : String := "";
-             Sweeper  : Sweeper_Type := Lower) return Channel_Number is
+     (Widget   : not null access Gtk_Oscilloscope_Record;
+      Color    : Gdk.Color.Gdk_Color;
+      Measured : Drawing_Measurement_Point := Refresh_Period;
+      Name     : String := "";
+      Sweeper  : Sweeper_Type := Lower) return Channel_Number is
    begin
       return
-         Add_Deviation_Channel
+        Add_Deviation_Channel
           (Widget   => Widget,
            Group    => Add_Group (Widget),
            Measured => Measured,
@@ -528,43 +415,47 @@ package body Gtk.Oscilloscope is
       Sweeper  : Sweeper_Type := Lower) return Channel_Number is
    begin
       return
-         Add_Deviation_Channel
+        Add_Deviation_Channel
           (Widget   => Widget,
            Group    => Add_Group (Widget),
            Measured => Measured,
            Sweeper  => Sweeper,
            Name     => Name,
-           Color    => To_RGB
-                        (Val (First_Color,
-                              Natural (Widget.all.Channels_Number),
-                              Cycle)));
+           Color    =>
+             Gdk.Color.IHLS.To_RGB
+               (Gdk.Color.IHLS.Val
+                  (First_Color,
+                   Natural (Widget.all.Channels_Number),
+                   Cycle)));
    end Add_Deviation_Channel;
 
    function Add_Group
      (Widget    : not null access Gtk_Oscilloscope_Record;
       Name      : String := "";
-      Amplifier : Gtk_Waveform_Amplifier := null) return Group_Number
+      Amplifier : Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier := null)
+      return Group_Number
    is
-      use Amplifier_Handlers;
-      Row : Gtk_Tree_Iter;
+      use type Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier;
+      Row : Gtk.Tree_Model.Gtk_Tree_Iter;
    begin
       if Widget.all.Groups_Number >= Widget.all.Groups'Last then
          raise Constraint_Error with
            ("More than" & Channel_Count'Image (Widget.all.Size) & " groups");
       end if;
       return Index : constant Group_Number :=
-                     Widget.all.Groups_Number + 1 do
+        Widget.all.Groups_Number + 1 do
          if Amplifier = null then
-            Gtk_New (Widget.all.Groups.all (Index).Amplifier);
+            Gtk.Layered.Waveform.Amplifier.Gtk_New
+              (Widget.all.Groups.all (Index).Amplifier);
          else
             Widget.all.Groups.all (Index).Amplifier := Amplifier;
          end if;
-         Connect
+         Amplifier_Handlers.Connect
            (Widget.all.Groups.all (Index).Amplifier,
             "autoscaling-changed",
             On_Autoscaling_Changed'Access,
             Widget.all'Unchecked_Access);
-         Connect
+         Amplifier_Handlers.Connect
            (Widget.all.Groups.all (Index).Amplifier,
             "raster-mode-changed",
             On_Raster_Mode_Changed'Access,
@@ -586,7 +477,7 @@ package body Gtk.Oscilloscope is
    function Add_Shadow_Channel
      (Widget  : not null access Gtk_Oscilloscope_Record;
       Channel : Channel_Number;
-      Color   : Gdk_Color;
+      Color   : Gdk.Color.Gdk_Color;
       Name    : String := "";
       Sweeper : Sweeper_Type := Upper) return Channel_Number is
    begin
@@ -597,14 +488,14 @@ package body Gtk.Oscilloscope is
          raise Constraint_Error with "Wrong channel number";
       end if;
       return Index : constant Channel_Number :=
-                     Widget.all.Channels_Number + 1 do
+        Widget.all.Channels_Number + 1 do
          declare
             That : Channel_Data renames Widget.all.Channels (Channel);
             This : Channel_Data renames Widget.all.Channels (Index);
-            Row  : Gtk_Tree_Iter;
+            Row  : Gtk.Tree_Model.Gtk_Tree_Iter;
          begin
             This.Waveform :=
-              Add_Waveform
+              Gtk.Layered.Waveform.Add_Waveform
                 (Under     => Widget.all.Layers,
                  Box       => Widget.all.Get_Box,
                  Width     => Widget.all.Width,
@@ -633,7 +524,7 @@ package body Gtk.Oscilloscope is
             Widget.all.Channel_Names.all.Set
               (Row,
                4,
-               Interpolation_Mode'Pos
+               Gtk.Layered.Interpolation_Mode'Pos
                  (That.Waveform.all.Get_Interpolation_Mode));
             Widget.all.Channel_Names.all.Set
               (Row,
@@ -648,7 +539,7 @@ package body Gtk.Oscilloscope is
             This.Source.all.Ref;
             This.Waveform.all.Set_Source (This.Source.all);
             Widget.all.Time_Axis (Sweeper).Channels :=
-               Widget.all.Time_Axis (Sweeper).Channels + 1;
+              Widget.all.Time_Axis (Sweeper).Channels + 1;
          end;
          Widget.all.Channels_Number := Index;
          Emit (Widget, Signal_IDs (12), Guint (Index));
@@ -662,16 +553,17 @@ package body Gtk.Oscilloscope is
       Sweeper : Sweeper_Type := Upper) return Channel_Number is
    begin
       return
-         Add_Shadow_Channel
+        Add_Shadow_Channel
           (Widget  => Widget,
            Channel => Channel,
            Sweeper => Sweeper,
            Name    => Name,
-           Color   => To_RGB
-                        (Val
-                          (First_Color,
-                           Natural (Widget.all.Channels_Number),
-                           Cycle)));
+           Color   =>
+             Gdk.Color.IHLS.To_RGB
+               (Gdk.Color.IHLS.Val
+                  (First_Color,
+                   Natural (Widget.all.Channels_Number),
+                   Cycle)));
    end Add_Shadow_Channel;
 
    procedure Box_Changed
@@ -679,7 +571,7 @@ package body Gtk.Oscilloscope is
    procedure Box_Changed
      (Widget : not null access Gtk_Oscilloscope_Record'Class)
    is
-      Box : constant Cairo_Box := Widget.all.Get_Box;
+      Box : constant Cairo.Ellipses.Cairo_Box := Widget.all.Get_Box;
    begin
       Widget.all.Background.all.Set
         (Box        => Box,
@@ -688,8 +580,8 @@ package body Gtk.Oscilloscope is
          Opacity    => Widget.all.Background.all.Get_Opacity);
       for Index in 1 .. Widget.all.Channels_Number loop
          declare
-            This : Waveform_Layer renames
-                   Widget.all.Channels (Index).Waveform.all;
+            This : Gtk.Layered.Waveform.Waveform_Layer renames
+                     Widget.all.Channels (Index).Waveform.all;
          begin
             This.Set
               (Box     => Box,
@@ -709,10 +601,10 @@ package body Gtk.Oscilloscope is
    end Box_Changed;
 
    procedure Capture_PDF
-             (Widget : not null access Gtk_Oscilloscope_Record;
-              File   : UTF8_String)
+     (Widget : not null access Gtk_Oscilloscope_Record;
+      File   : UTF8_String)
    is
-      Surface : Cairo_Surface;
+      Surface : Cairo.Cairo_Surface;
    begin
       Surface :=
         Cairo.PDF.Create
@@ -720,37 +612,38 @@ package body Gtk.Oscilloscope is
            Width_In_Points  => Gdouble (Widget.all.Get_Allocated_Width),
            Height_In_Points => Gdouble (Widget.all.Get_Allocated_Height));
       Widget.all.Layers.all.Snapshot (Surface);
-      Surface_Destroy (Surface);
+      Cairo.Surface_Destroy (Surface);
    exception
       when others =>
-         Surface_Destroy (Surface);
+         Cairo.Surface_Destroy (Surface);
          raise;
    end Capture_PDF;
 
    procedure Capture_SVG (Widget : not null access Gtk_Oscilloscope_Record;
                           File   : UTF8_String)
    is
-      Surface : Cairo_Surface;
+      Surface : Cairo.Cairo_Surface;
    begin
       Surface :=
-         Cairo.SVG.Create
+        Cairo.SVG.Create
           (Filename        => File,
            Width_In_Point  => Gdouble (Widget.all.Get_Allocated_Width),
            Height_In_Point => Gdouble (Widget.all.Get_Allocated_Height));
       Widget.all.Layers.all.Snapshot (Surface);
-      Surface_Destroy (Surface);
+      Cairo.Surface_Destroy (Surface);
    exception
       when others =>
-         Surface_Destroy (Surface);
+         Cairo.Surface_Destroy (Surface);
          raise;
    end Capture_SVG;
 
    procedure Change_Selection
      (Oscilloscope : not null access Gtk_Oscilloscope_Record;
-      Point        : Cairo_Tuple)
+      Point        : Cairo.Ellipses.Cairo_Tuple)
    is
-      Selected : Cairo_Box := Oscilloscope.all.Selection.all.Area.all.Get_Box;
-      Area     : constant Cairo_Box := Oscilloscope.all.Get_Box;
+      Selected : Cairo.Ellipses.Cairo_Box :=
+                   Oscilloscope.all.Selection.all.Area.all.Get_Box;
+      Area     : constant Cairo.Ellipses.Cairo_Box := Oscilloscope.all.Get_Box;
       X, Y     : Gdouble;
    begin
       if Point.X <= Area.X1 then
@@ -805,10 +698,9 @@ package body Gtk.Oscilloscope is
       Amplifier : Amplifier_Type)
       return not null access Gtk.Layered.Graph_Paper_Annotation.Graph_Paper_Annotation_Layer'Class
    is
-      use Gtk.Layered.Graph_Paper_Annotation;
       Data  : Values_Axis_Data renames Widget.all.Values_Axis (Amplifier);
-      Layer : Graph_Paper_Annotation_Layer renames
-              Add_Graph_Paper_Annotation
+      Layer : Gtk.Layered.Graph_Paper_Annotation.Graph_Paper_Annotation_Layer renames
+                Gtk.Layered.Graph_Paper_Annotation.Add_Graph_Paper_Annotation
                   (Under       => Data.Line.all.Atop,
                    Paper       => Data.Ticks,
                    Face        => Data.Face,
@@ -820,19 +712,23 @@ package body Gtk.Oscilloscope is
                    Justify_Y   => Data.Justify_Y,
                    Superscript => Widget.all.Superscript,
                    Background  =>
-                     Style_Get
+                     Gtk.Widget.Styles.Style_Get
                        (Widget,
                         "values-text-border-color",
-                        RGB (1.0, 1.0, 1.0)),
+                        Gtk.Missed.RGB (1.0, 1.0, 1.0)),
                    Border      =>
                      Gdouble
-                       (Guint'(Style_Get (Widget, "values-text-border"))),
+                       (Guint'
+                            (Gtk.Widget.Styles.Style_Get
+                                 (Widget, "values-text-border"))),
                    Overlap     =>
                      Gdouble
-                       (Gint'(Style_Get (Widget, "values-text-overlap"))),
+                       (Gint'
+                            (Gtk.Widget.Styles.Style_Get
+                                 (Widget, "values-text-overlap"))),
                    Opacity     =>
                      Gdouble'
-                       (Style_Get
+                       (Gtk.Widget.Styles.Style_Get
                             (Widget,
                              "values-text-border-opacity"))).all;
    begin
@@ -848,8 +744,8 @@ package body Gtk.Oscilloscope is
    begin
       if Data.Time_Mode then
          declare
-            Layer : Graph_Paper_Time_Annotation_Layer renames
-               Add_Graph_Paper_Time_Annotation
+            Layer : Gtk.Layered.Graph_Paper_Annotation.Graph_Paper_Time_Annotation_Layer renames
+                      Gtk.Layered.Graph_Paper_Annotation.Add_Graph_Paper_Time_Annotation
                         (Under      => Data.Line.all.Atop,
                          Paper      => Data.Ticks,
                          Face       => Data.Face,
@@ -860,34 +756,39 @@ package body Gtk.Oscilloscope is
                          Justify_X  => Data.Justify_X,
                          Justify_Y  => Data.Justify_Y,
                          Background =>
-                           Style_Get
+                           Gtk.Widget.Styles.Style_Get
                              (Widget,
                               "time-text-border-color",
-                              RGB (1.0, 1.0, 1.0)),
+                              Gtk.Missed.RGB (1.0, 1.0, 1.0)),
                          Border     =>
                            Gdouble
-                             (Guint'(Style_Get (Widget, "time-text-border"))),
+                             (Guint'
+                                  (Gtk.Widget.Styles.Style_Get
+                                       (Widget, "time-text-border"))),
                          Overlap    =>
                            Gdouble
-                             (Gint'(Style_Get (Widget, "time-text-overlap"))),
+                             (Gint'
+                                  (Gtk.Widget.Styles.Style_Get
+                                       (Widget, "time-text-overlap"))),
                          Opacity    =>
                            Gdouble'
-                             (Style_Get
+                             (Gtk.Widget.Styles.Style_Get
                                   (Widget, "time-text-border-opacity"))) .all;
          begin
             return Layer'Unchecked_Access;
          end;
       else
          declare
-            Layer : Graph_Paper_Annotation_Layer renames
-               Add_Graph_Paper_Annotation
+            Layer : Gtk.Layered.Graph_Paper_Annotation.Graph_Paper_Annotation_Layer renames
+                      Gtk.Layered.Graph_Paper_Annotation.Add_Graph_Paper_Annotation
                         (Under      => Data.Line.all.Atop,
                          Paper      => Data.Ticks,
-                         Location   => (Orientation => Horizontal,
-                                        Alignment   => Absolute,
-                                        Left        => -0.5,
-                                        Right       => -0.5,
-                                        Y_Position  =>  0.0),
+                         Location   =>
+                           (Orientation => Gtk.Layered.Graph_Paper_Annotation.Horizontal,
+                            Alignment   => Gtk.Layered.Graph_Paper_Annotation.Absolute,
+                            Left        => -0.5,
+                            Right       => -0.5,
+                            Y_Position  =>  0.0),
                          Face       => Data.Face,
                          Color      => Data.Color,
                          Height     => Data.Height,
@@ -896,19 +797,23 @@ package body Gtk.Oscilloscope is
                          Justify_X  => Data.Justify_X,
                          Justify_Y  => Data.Justify_Y,
                          Background =>
-                           Style_Get
+                           Gtk.Widget.Styles.Style_Get
                              (Widget,
                               "time-text-border-color",
-                              RGB (1.0, 1.0, 1.0)),
+                              Gtk.Missed.RGB (1.0, 1.0, 1.0)),
                          Border     =>
                            Gdouble
-                             (Guint'(Style_Get (Widget, "time-text-border"))),
+                             (Guint'
+                                  (Gtk.Widget.Styles.Style_Get
+                                       (Widget, "time-text-border"))),
                          Overlap    =>
                            Gdouble
-                             (Gint'(Style_Get (Widget, "time-text-overlap"))),
+                             (Gint'
+                                  (Gtk.Widget.Styles.Style_Get
+                                       (Widget, "time-text-overlap"))),
                          Opacity    =>
                            Gdouble'
-                             (Style_Get
+                             (Gtk.Widget.Styles.Style_Get
                                   (Widget,
                                    "time-text-border-opacity"))).all;
          begin
@@ -917,18 +822,28 @@ package body Gtk.Oscilloscope is
       end if;
    end Create_Annotation;
 
+   procedure Delete (List : in out Do_Item_Ptr) is
+      Next : Do_Item_Ptr;
+   begin
+      while List /= null loop
+         Next := List.all.Next;
+         Free (List);
+         List := Next;
+      end loop;
+   end Delete;
+
    procedure Delete_Channel (Widget  : not null access Gtk_Oscilloscope_Record;
                              Channel : Channel_Number)
    is
-      procedure Free is new Ada.Unchecked_Deallocation (Waveform_Layer,
-                                                        Waveform_Layer_Ptr);
-      This   : Channel_Data;
-      Remove : Boolean := False;
-      Row    : Gtk_Tree_Iter;
+      procedure Free is
+        new Ada.Unchecked_Deallocation (Gtk.Layered.Waveform.Waveform_Layer,
+                                        Waveform_Layer_Ptr);
+      This : Channel_Data;
+      Row  : Gtk.Tree_Model.Gtk_Tree_Iter;
    begin
       if Channel > Widget.all.Channels_Number then
          raise Constraint_Error with
-            "Wrong channel number" & Channel_Count'Image (Channel);
+           "Wrong channel number" & Channel_Count'Image (Channel);
       end if;
       This := Widget.all.Channels (Channel);
       Free (This.Tip_Prefix);
@@ -939,13 +854,13 @@ package body Gtk.Oscilloscope is
       end loop;
       if Channel < Widget.all.Channels_Number then
          Widget.all.Channel_Names.all.Move_After
-           (Iter =>
+           (Iter     =>
               Widget.all.Channel_Names.all.Nth_Child
-                (Null_Iter,
+                (Gtk.Tree_Model.Null_Iter,
                  Gint (Channel) - 1),
             Position =>
               Widget.all.Channel_Names.all.Nth_Child
-                (Null_Iter,
+                (Gtk.Tree_Model.Null_Iter,
                  Gint (Widget.all.Channels_Number) - 1));
          Widget.all.Fix_Numbers (Channel, Widget.all.Channels_Number - 1);
       end if;
@@ -954,12 +869,13 @@ package body Gtk.Oscilloscope is
       Widget.all.Channels (Widget.all.Channels_Number).Tip_Y_Suffix := null;
       Widget.all.Channels_Number := Widget.all.Channels_Number - 1;
       Row :=
-         Widget.all.Channel_Names.all.Nth_Child
-          (Null_Iter,
+        Widget.all.Channel_Names.all.Nth_Child
+          (Gtk.Tree_Model.Null_Iter,
            Gint (Widget.all.Channels_Number));
       Widget.all.Channel_Names.all.Remove (Row);
       for Index in Widget.all.Time_Axis'Range loop
          declare
+            use type Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper;
             Data : Time_Axis_Data renames Widget.all.Time_Axis (Index);
          begin
             if
@@ -976,25 +892,30 @@ package body Gtk.Oscilloscope is
       Emit (Widget, Signal_IDs (13), Guint (Channel));
    end Delete_Channel;
 
-   overriding
-   procedure Do_It
-     (Item         : Do_Auto_Amplifier;
-      First        : in out Boolean;
-      Oscilloscope : in out Gtk_Oscilloscope_Record'Class;
-      Inverse      : access Items_Stack := null) is
-   begin
-      if not Item.Amplifier.all.Get_Auto_Scaling then
-         Push_Amplifier_Zoom (Item.Amplifier, Inverse, First);
-         Item.Amplifier.all.Set_Auto_Scaling (True);
-      end if;
-   end Do_It;
+   procedure Do_Init
+     (Widget         : not null access Gtk_Oscilloscope_Record'Class;
+      Lower_Sweeper  : access Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record'Class;
+      Upper_Sweeper  : access Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record'Class;
+      Refresh_Engine : access Gtk.Layered.Refresh_Engine.Layered_Refresh_Engine;
+      Refresh_Period : Duration;
+      Background     : Gdk.Color.Gdk_Color;
+      Buffer_Size    : Positive);
+   procedure Do_Init
+     (Widget         : not null access Gtk_Oscilloscope_Record'Class;
+      Lower_Sweeper  : access Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record'Class;
+      Upper_Sweeper  : access Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record'Class;
+      Refresh_Engine : access Gtk.Layered.Refresh_Engine.Layered_Refresh_Engine;
+      Refresh_Period : Duration;
+      Background     : Gdk.Color.Gdk_Color;
+      Buffer_Size    : Positive) is separate;
 
-   overriding
-   procedure Do_It
+   overriding procedure Do_It
      (Item         : Do_Amplifier_Zoom;
       First        : in out Boolean;
       Oscilloscope : in out Gtk_Oscilloscope_Record'Class;
-      Inverse      : access Items_Stack := null) is
+      Inverse      : access Items_Stack := null)
+   is
+      pragma Unreferenced (Oscilloscope);
    begin
       if Item.Amplifier.all.Get_Auto_Scaling then
          Push_Auto_Amplifier (Item.Amplifier, Inverse, First);
@@ -1006,11 +927,26 @@ package body Gtk.Oscilloscope is
       Item.Amplifier.all.Set_Value (Item.Value);
    end Do_It;
 
-   overriding
-   procedure Do_It (Item         : Do_Release_Sweeper;
-                    First        : in out Boolean;
-                    Oscilloscope : in out Gtk_Oscilloscope_Record'Class;
-                    Inverse      : access Items_Stack := null) is
+   overriding procedure Do_It
+     (Item         : Do_Auto_Amplifier;
+      First        : in out Boolean;
+      Oscilloscope : in out Gtk_Oscilloscope_Record'Class;
+      Inverse      : access Items_Stack := null)
+   is
+      pragma Unreferenced (Oscilloscope);
+   begin
+      if not Item.Amplifier.all.Get_Auto_Scaling then
+         Push_Amplifier_Zoom (Item.Amplifier, Inverse, First);
+         Item.Amplifier.all.Set_Auto_Scaling (True);
+      end if;
+   end Do_It;
+
+   overriding procedure Do_It (Item         : Do_Release_Sweeper;
+                               First        : in out Boolean;
+                               Oscilloscope : in out Gtk_Oscilloscope_Record'Class;
+                               Inverse      : access Items_Stack := null)
+   is
+      pragma Unreferenced (Oscilloscope);
    begin
       if Item.Sweeper.all.Get_Frozen then
          Push_Sweeper_Zoom (Item.Sweeper, Inverse, First);
@@ -1018,11 +954,12 @@ package body Gtk.Oscilloscope is
       end if;
    end Do_It;
 
-   overriding
-   procedure Do_It (Item         : Do_Sweeper_Zoom;
-                    First        : in out Boolean;
-                    Oscilloscope : in out Gtk_Oscilloscope_Record'Class;
-                    Inverse      : access Items_Stack := null) is
+   overriding procedure Do_It (Item         : Do_Sweeper_Zoom;
+                               First        : in out Boolean;
+                               Oscilloscope : in out Gtk_Oscilloscope_Record'Class;
+                               Inverse      : access Items_Stack := null)
+   is
+      pragma Unreferenced (Oscilloscope);
    begin
       if Item.Sweeper.all.Get_Frozen then
          Push_Sweeper_Zoom (Item.Sweeper, Inverse, First);
@@ -1034,15 +971,102 @@ package body Gtk.Oscilloscope is
       Item.Sweeper.all.Set_Time (Item.Time);
    end Do_It;
 
-   overriding
-   procedure Do_It (Item         : Do_Stub;
-                    First        : in out Boolean;
-                    Oscilloscope : in out Gtk_Oscilloscope_Record'Class;
-                    Inverse      : access Items_Stack := null) is
+   overriding procedure Do_It (Item         : Do_Stub;
+                               First        : in out Boolean;
+                               Oscilloscope : in out Gtk_Oscilloscope_Record'Class;
+                               Inverse      : access Items_Stack := null)
+   is
+      pragma Unreferenced (First, Inverse, Oscilloscope);
    begin
       Item.Stack.all.Stubs := Item.Previous;
       --    Push_Stub (Item.Name, Inverse, First); -- Don't move it!
    end Do_It;
+
+   procedure Emit (Widget : not null access Gtk_Oscilloscope_Record'Class;
+                   Signal : Signal_Id;
+                   Value  : String)
+   is
+      procedure Set_Object (Value  : in out Glib.Values.GValue;
+                            Object : System.Address);
+      pragma Import (C, Set_Object, "g_value_set_object");
+      Params : Glib.Values.GValue_Array (0 .. 1);
+      Result : Glib.Values.GValue;
+   begin
+      if Class_Record /= Glib.Object.Uninitialized_Class then
+         declare
+            This : constant GType := Get_Type;
+         begin
+            Glib.Values.Init (Params (0), This);
+            Set_Object (Params (0),
+                        Gtk.Widget.Convert (Widget.all'Unchecked_Access));
+            Glib.Values.Init (Params (1), GType_String);
+            Glib.Values.Set_String (Params (1), Value);
+            EmitV (Params (0)'Address, Signal, 0, Result'Address);
+            Glib.Values.Unset (Params (0));
+            Glib.Values.Unset (Params (1));
+         end;
+      end if;
+   end Emit;
+
+   procedure Emit (Widget  : not null access Gtk_Oscilloscope_Record'Class;
+                   Signal  : Signal_Id;
+                   Value_1 : Guint;
+                   Value_2 : Gdouble;
+                   Value_3 : Gdouble)
+   is
+      procedure Set_Object (Value  : in out Glib.Values.GValue;
+                            Object : System.Address);
+      pragma Import (C, Set_Object, "g_value_set_object");
+      Params : Glib.Values.GValue_Array (0 .. 3);
+      Result : Glib.Values.GValue;
+   begin
+      if Class_Record /= Uninitialized_Class then
+         declare
+            This : constant GType := Get_Type;
+         begin
+            Glib.Values.Init (Params (0), This);
+            Set_Object (Params (0),
+                        Gtk.Widget.Convert (Widget.all'Unchecked_Access));
+            Glib.Values.Init (Params (1), GType_Uint);
+            Glib.Values.Set_Uint (Params (1), Value_1);
+            Glib.Values.Init (Params (2), GType_Double);
+            Glib.Values.Set_Double (Params (2), Value_2);
+            Glib.Values.Init (Params (3), GType_Double);
+            Glib.Values.Set_Double (Params (3), Value_3);
+            EmitV (Params (0)'Address, Signal, 0, Result'Address);
+            Glib.Values.Unset (Params (0));
+            Glib.Values.Unset (Params (1));
+            Glib.Values.Unset (Params (2));
+            Glib.Values.Unset (Params (3));
+         end;
+      end if;
+   end Emit;
+
+   procedure Emit (Widget : not null access Gtk_Oscilloscope_Record'Class;
+                   Signal : Signal_Id;
+                   Value  : Guint)
+   is
+      procedure Set_Object (Value  : in out Glib.Values.GValue;
+                            Object : System.Address);
+      pragma Import (C, Set_Object, "g_value_set_object");
+      Params : Glib.Values.GValue_Array (0 .. 1);
+      Result : Glib.Values.GValue;
+   begin
+      if Class_Record /= Uninitialized_Class then
+         declare
+            This : constant GType := Get_Type;
+         begin
+            Glib.Values.Init (Params (0), This);
+            Set_Object (Params (0),
+                        Gtk.Widget.Convert (Widget.all'Unchecked_Access));
+            Glib.Values.Init (Params (1), GType_Uint);
+            Glib.Values.Set_Uint (Params (1), Value);
+            EmitV (Params (0)'Address, Signal, 0, Result'Address);
+            Glib.Values.Unset (Params (0));
+            Glib.Values.Unset (Params (1));
+         end;
+      end if;
+   end Emit;
 
    procedure Erase_Redo_Stack
      (Widget : not null access Gtk_Oscilloscope_Record) is
@@ -1058,45 +1082,18 @@ package body Gtk.Oscilloscope is
       Widget.all.Undo_Stack.Stubs := null;
    end Erase_Undo_Stack;
 
-   overriding
-   procedure Finalize (Item : in out Do_Auto_Amplifier) is
-   begin
-      Item.Amplifier.all.Unref;
-   end Finalize;
-
-   overriding
-   procedure Finalize (Item : in out Do_Release_Sweeper) is
-   begin
-      Item.Sweeper.all.Unref;
-   end Finalize;
-
-   procedure Fix_Numbers (Widget : not null access Gtk_Oscilloscope_Record;
-                          Start  : Channel_Number;
-                          Stop   : Channel_Number)
-   is
-      Row  : Gtk_Tree_Iter;
-      From : constant Gint := Gint (Start) - 1;
-      To   : constant Gint := Gint (Stop)  - 1;
-   begin
-      Row := Widget.all.Channel_Names.all.Nth_Child (Null_Iter, From);
-      for Index in From .. To loop
-         Widget.all.Channel_Names.all.Set (Row, 1, Index + 1);
-         Widget.all.Channel_Names.all.Next (Row);
-      end loop;
-   end Fix_Numbers;
-
    procedure Feed (Widget  : not null access Gtk_Oscilloscope_Record;
                    Channel : Channel_Number;
-                   T       : Time;
+                   T       : Ada.Real_Time.Time;
                    V       : Gdouble) is
    begin
       if Channel > Widget.all.Channels_Number then
          raise Constraint_Error with
-            "Wrong channel number" & Channel_Count'Image (Channel);
+           "Wrong channel number" & Channel_Count'Image (Channel);
       end if;
       Widget.all.Channels (Channel).Source.all.Put
-        (T => X_Axis (To_Double (T)),
-         V => Y_Axis (V));
+        (T => Gtk.Layered.Waveform.X_Axis (Gtk.Layered.Waveform.To_Double (T)),
+         V => Gtk.Layered.Waveform.Y_Axis (V));
    end Feed;
 
    procedure Feed (Widget  : not null access Gtk_Oscilloscope_Record;
@@ -1106,11 +1103,11 @@ package body Gtk.Oscilloscope is
    begin
       if Channel > Widget.all.Channels_Number then
          raise Constraint_Error with
-            "Wrong channel number" & Channel_Count'Image (Channel);
+           "Wrong channel number" & Channel_Count'Image (Channel);
       end if;
       Widget.all.Channels (Channel).Source.all.Put
-        (T => X_Axis (To_Double (T)),
-         V => Y_Axis (V));
+        (T => Gtk.Layered.Waveform.X_Axis (Gtk.Layered.Waveform.To_Double (T)),
+         V => Gtk.Layered.Waveform.Y_Axis (V));
    end Feed;
 
    procedure Feed (Widget  : not null access Gtk_Oscilloscope_Record;
@@ -1119,11 +1116,13 @@ package body Gtk.Oscilloscope is
    begin
       if Channel > Widget.all.Channels_Number then
          raise Constraint_Error with
-            "Wrong channel number" & Channel_Count'Image (Channel);
+           "Wrong channel number" & Channel_Count'Image (Channel);
       end if;
       Widget.all.Channels (Channel).Source.all.Put
-        (T => X_Axis (To_Double (Clock)),
-         V => Y_Axis (V));
+        (T =>
+           Gtk.Layered.Waveform.X_Axis
+             (Gtk.Layered.Waveform.To_Double (Ada.Real_Time.Clock)),
+         V => Gtk.Layered.Waveform.Y_Axis (V));
    end Feed;
 
    procedure Feed (Widget  : not null access Gtk_Oscilloscope_Record;
@@ -1133,47 +1132,73 @@ package body Gtk.Oscilloscope is
    begin
       if Channel > Widget.all.Channels_Number then
          raise Constraint_Error with
-            "Wrong channel number" & Channel_Count'Image (Channel);
+           "Wrong channel number" & Channel_Count'Image (Channel);
       end if;
       Widget.all.Channels (Channel).Source.all.Put
-        (T => X_Axis (T),
-         V => Y_Axis (V));
+        (T => Gtk.Layered.Waveform.X_Axis (T),
+         V => Gtk.Layered.Waveform.Y_Axis (V));
    end Feed;
+
+   overriding procedure Finalize (Item : in out Do_Auto_Amplifier) is
+   begin
+      Item.Amplifier.all.Unref;
+   end Finalize;
+
+   overriding procedure Finalize (Item : in out Do_Release_Sweeper) is
+   begin
+      Item.Sweeper.all.Unref;
+   end Finalize;
+
+   procedure Fix_Numbers (Widget : not null access Gtk_Oscilloscope_Record;
+                          Start  : Channel_Number;
+                          Stop   : Channel_Number)
+   is
+      Row  : Gtk.Tree_Model.Gtk_Tree_Iter;
+      From : constant Gint := Gint (Start) - 1;
+      To   : constant Gint := Gint (Stop)  - 1;
+   begin
+      Row := Widget.all.Channel_Names.all.Nth_Child (Gtk.Tree_Model.Null_Iter,
+                                                     From);
+      for Index in From .. To loop
+         Widget.all.Channel_Names.all.Set (Row, 1, Index + 1);
+         Widget.all.Channel_Names.all.Next (Row);
+      end loop;
+   end Fix_Numbers;
 
    function Get_Amplifier
      (Widget    : not null access constant Gtk_Oscilloscope_Record;
       Amplifier : Amplifier_Type)
-      return not null access Gtk_Waveform_Amplifier_Record'Class
+      return not null access Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier_Record'Class
    is
       Group : constant Group_Count :=
-              Widget.all.Values_Axis (Amplifier).Group;
+                Widget.all.Values_Axis (Amplifier).Group;
    begin
       if Group > 0 then
          return Widget.all.Groups.all (Group).Amplifier;
       else
          raise Constraint_Error with
-            "No group is assigned to the axis";
+           "No group is assigned to the axis";
       end if;
    end Get_Amplifier;
 
    function Get_Amplifier
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
       Channel : Channel_Number)
-      return not null access Gtk_Waveform_Amplifier_Record'Class is
+      return not null access Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier_Record'Class is
    begin
       if Channel <= Widget.all.Channels_Number then
          return
-            Widget.all.Groups.all (Widget.all.Channels (Channel).Group).Amplifier;
+           Widget.all.Groups.all (Widget.all.Channels (Channel).Group).Amplifier;
       else
          raise Constraint_Error with
-            "Wrong channel number" & Channel_Count'Image (Channel);
+           "Wrong channel number" & Channel_Count'Image (Channel);
       end if;
    end Get_Amplifier;
 
    function Get_Amplifier
      (Widget : not null access constant Gtk_Oscilloscope_Record;
       Group  : Group_Number)
-      return not null access Gtk_Waveform_Amplifier_Record'Class is
+      return not null access Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier_Record'Class is
    begin
       if Group > Widget.all.Groups_Number then
          raise Constraint_Error with "Wrong channel group number";
@@ -1182,16 +1207,42 @@ package body Gtk.Oscilloscope is
       end if;
    end Get_Amplifier;
 
+   function Get_Annotation_Height
+     (Widget  : not null access constant Gtk_Oscilloscope_Record;
+      Sweeper : Sweeper_Type) return Gint
+   is
+      Data : Time_Axis_Data renames Widget.all.Time_Axis (Sweeper);
+   begin
+      if Data.On then
+         return Gint (Data.Width);
+      else
+         return 0;
+      end if;
+   end Get_Annotation_Height;
+
+   function Get_Annotation_Width
+     (Widget    : not null access constant Gtk_Oscilloscope_Record;
+      Amplifier : Amplifier_Type) return Gint
+   is
+      Data : Values_Axis_Data renames Widget.all.Values_Axis (Amplifier);
+   begin
+      if Data.On then
+         return Gint (Data.Width);
+      else
+         return 0;
+      end if;
+   end Get_Annotation_Width;
+
    function Get_Auto_Scaling
      (Widget    : not null access constant Gtk_Oscilloscope_Record;
       Amplifier : Amplifier_Type) return Boolean is
    begin
       if Widget.all.Values_Axis (Amplifier).Group = 0 then
          raise Constraint_Error with
-            "No group assigned to the amplifier";
+           "No group assigned to the amplifier";
       else
          return
-            Widget.all.Get_Auto_Scaling
+           Widget.all.Get_Auto_Scaling
              (Widget.all.Values_Axis (Amplifier).Group);
       end if;
    end Get_Auto_Scaling;
@@ -1208,12 +1259,12 @@ package body Gtk.Oscilloscope is
    end Get_Auto_Scaling;
 
    function Get_Box (Widget : not null access constant Gtk_Oscilloscope_Record)
-                     return Cairo_Box
+                     return Cairo.Ellipses.Cairo_Box
    is
       Width  : constant Gdouble :=
-               Gdouble (Widget.all.Layers.all.Get_Allocated_Width);
+                 Gdouble (Widget.all.Layers.all.Get_Allocated_Width);
       Height : constant Gdouble :=
-               Gdouble (Widget.all.Layers.all.Get_Allocated_Height);
+                 Gdouble (Widget.all.Layers.all.Get_Allocated_Height);
       X1     : Gdouble := Widget.all.Values_Axis (Left).Offset;
       X2     : Gdouble := Width - Widget.all.Values_Axis (Right).Offset;
       Y1     : Gdouble := Widget.all.Time_Axis (Upper).Offset;
@@ -1237,19 +1288,19 @@ package body Gtk.Oscilloscope is
    function Get_Buffer
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
       Channel : Channel_Number)
-      return not null access Gtk_Wavefrom_Ring_Data_Buffer_Record'Class is
+      return not null access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer_Record'Class is
    begin
       if Channel <= Widget.all.Channels_Number then
          return Widget.all.Channels (Channel).Source.all'Unchecked_Access;
       else
          raise Constraint_Error with
-            "Wrong channel number" & Channel_Count'Image (Channel);
+           "Wrong channel number" & Channel_Count'Image (Channel);
       end if;
    end Get_Buffer;
 
    function Get_Channel_List
      (Widget : not null access constant Gtk_Oscilloscope_Record)
-      return Gtk_List_Store is
+      return Gtk.List_Store.Gtk_List_Store is
    begin
       return Widget.all.Channel_Names;
    end Get_Channel_List;
@@ -1263,19 +1314,19 @@ package body Gtk.Oscilloscope is
 
    function Get_Color
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
-      Channel : Channel_Number)  return Gdk_Color is
+      Channel : Channel_Number)  return Gdk.Color.Gdk_Color is
    begin
       if Channel <= Widget.all.Channels_Number then
          return Widget.all.Channels (Channel).Waveform.all.Get_Line.Color;
       else
          raise Constraint_Error with
-            "Wrong channel number" & Channel_Count'Image (Channel);
+           "Wrong channel number" & Channel_Count'Image (Channel);
       end if;
    end Get_Color;
 
    function Get_Default_Face
      (Widget : not null access constant Gtk_Oscilloscope_Record)
-      return Pango_Cairo_Font is
+      return Pango.Cairo.Fonts.Pango_Cairo_Font is
    begin
       return Widget.all.Default_Face;
    end Get_Default_Face;
@@ -1289,7 +1340,7 @@ package body Gtk.Oscilloscope is
 
    function Get_From
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
-      Sweeper : Sweeper_Type := Lower) return Time is
+      Sweeper : Sweeper_Type := Lower) return Ada.Real_Time.Time is
    begin
       return Widget.all.Time_Axis (Sweeper).Sweeper.all.Get_From;
    end Get_From;
@@ -1310,8 +1361,8 @@ package body Gtk.Oscilloscope is
 
    procedure Get_Grid_Colors
      (Widget      : not null access constant Gtk_Oscilloscope_Record;
-      Major_Color : out Gdk_Color;
-      Minor_Color : out Gdk_Color) is
+      Major_Color : out Gdk.Color.Gdk_Color;
+      Minor_Color : out Gdk.Color.Gdk_Color) is
    begin
       Major_Color := Widget.all.Major_Color;
       Minor_Color := Widget.all.Minor_Color;
@@ -1322,7 +1373,7 @@ package body Gtk.Oscilloscope is
       Amplifier : Amplifier_Type) return Group_Number
    is
       Result : constant Group_Count :=
-               Widget.all.Values_Axis (Amplifier).Group;
+                 Widget.all.Values_Axis (Amplifier).Group;
    begin
       if Result > 0 then
          return Result;
@@ -1339,13 +1390,13 @@ package body Gtk.Oscilloscope is
          return Widget.all.Channels (Channel).Group;
       else
          raise Constraint_Error with
-            "Wrong channel number" & Channel_Count'Image (Channel);
+           "Wrong channel number" & Channel_Count'Image (Channel);
       end if;
    end Get_Group;
 
    function Get_Group_List
      (Widget : not null access constant Gtk_Oscilloscope_Record)
-      return Gtk_List_Store is
+      return Gtk.List_Store.Gtk_List_Store is
    begin
       return Widget.all.Group_Names;
    end Get_Group_List;
@@ -1359,14 +1410,14 @@ package body Gtk.Oscilloscope is
 
    function Get_Interpolation_Mode
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
-      Channel : Channel_Number) return Interpolation_Mode is
+      Channel : Channel_Number) return Gtk.Layered.Interpolation_Mode is
    begin
       if Channel <= Widget.all.Channels_Number then
          return Widget.all.Channels (Channel).Waveform.all.
-                Get_Interpolation_Mode;
+           Get_Interpolation_Mode;
       else
          raise Constraint_Error with
-            "Wrong channel number" & Channel_Count'Image (Channel);
+           "Wrong channel number" & Channel_Count'Image (Channel);
       end if;
    end Get_Interpolation_Mode;
 
@@ -1376,10 +1427,10 @@ package body Gtk.Oscilloscope is
    begin
       if Channel <= Widget.all.Channels_Number then
          return Widget.all.Channels (Channel).Waveform.all.
-                Get_Left_Extrapolation_Mode;
+           Get_Left_Extrapolation_Mode;
       else
          raise Constraint_Error with
-            "Wrong channel number" & Channel_Count'Image (Channel);
+           "Wrong channel number" & Channel_Count'Image (Channel);
       end if;
    end Get_Left_Extrapolation_Mode;
 
@@ -1398,12 +1449,12 @@ package body Gtk.Oscilloscope is
          return
            Widget.all.Channel_Names.all.Get_String
              (Widget.all.Channel_Names.all.Nth_Child
-                (Null_Iter,
+                (Gtk.Tree_Model.Null_Iter,
                  Gint (Channel) - 1),
               0);
       else
          raise Constraint_Error with
-            "Wrong channel number" & Channel_Count'Image (Channel);
+           "Wrong channel number" & Channel_Count'Image (Channel);
       end if;
    end Get_Name;
 
@@ -1417,7 +1468,7 @@ package body Gtk.Oscilloscope is
          return
            Widget.all.Group_Names.all.Get_String
              (Widget.all.Group_Names.all.Nth_Child
-                (Null_Iter,
+                (Gtk.Tree_Model.Null_Iter,
                  Gint (Group) - 1),
               0);
       end if;
@@ -1457,10 +1508,10 @@ package body Gtk.Oscilloscope is
    begin
       if Channel <= Widget.all.Channels_Number then
          return Widget.all.Channels (Channel).Waveform.all.
-                Get_Right_Extrapolation_Mode;
+           Get_Right_Extrapolation_Mode;
       else
          raise Constraint_Error with
-            "Wrong channel number" & Channel_Count'Image (Channel);
+           "Wrong channel number" & Channel_Count'Image (Channel);
       end if;
    end Get_Right_Extrapolation_Mode;
 
@@ -1504,7 +1555,7 @@ package body Gtk.Oscilloscope is
          end if;
          This := This.all.Next;
       end loop;
-      raise End_Error with "No such stub";
+      raise Ada.IO_Exceptions.End_Error with "No such stub";
    end Get_Stub;
 
    function Get_Superscript
@@ -1517,19 +1568,21 @@ package body Gtk.Oscilloscope is
    function Get_Sweeper
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
       Sweeper : Sweeper_Type)
-      return not null access Gtk_Waveform_Sweeper_Record'Class is
+      return not null access Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record'Class is
    begin
       return Widget.all.Time_Axis (Sweeper).Sweeper.all'Unchecked_Access;
    end Get_Sweeper;
 
    function Get_Sweeper
      (Widget  : not null access Gtk_Oscilloscope_Record;
-      Channel : Channel_Number) return Sweeper_Type is
+      Channel : Channel_Number) return Sweeper_Type
+   is
+      use type Gtk.Adjustment.Gtk_Adjustment;
    begin
       if Channel <= Widget.all.Channels_Number then
          for Index in Widget.all.Time_Axis'Range loop
             if Widget.all.Channels (Channel).Waveform.all.Get_Sweeper =
-               Gtk_Adjustment_Record'Class
+              Gtk.Adjustment.Gtk_Adjustment_Record'Class
                 (Widget.all.Time_Axis (Index).Sweeper.all)'Access
             then
                return Index;
@@ -1537,12 +1590,12 @@ package body Gtk.Oscilloscope is
          end loop;
       end if;
       raise Constraint_Error with
-         "Wrong channel number" & Channel_Count'Image (Channel);
+        "Wrong channel number" & Channel_Count'Image (Channel);
    end Get_Sweeper;
 
    function Get_Time
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
-      Sweeper : Sweeper_Type) return Time is
+      Sweeper : Sweeper_Type) return Ada.Real_Time.Time is
    begin
       return Widget.all.Time_Axis (Sweeper).Sweeper.all.Get_Time;
    end Get_Time;
@@ -1550,21 +1603,21 @@ package body Gtk.Oscilloscope is
    function Get_Time
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
       Sweeper : Sweeper_Type;
-      X       : Gint) return Time
+      X       : Gint) return Ada.Real_Time.Time
    is
-      Adjustment : constant Gtk_Waveform_Sweeper :=
-                   Widget.all.Time_Axis (Sweeper).Sweeper;
-      Box   : constant Cairo_Box := Widget.all.Get_Box;
-      Lower : constant Gdouble := Get_Value (Adjustment);
-      Page  : constant Gdouble := Get_Page_Size (Adjustment);
+      Adjustment : constant Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper :=
+                     Widget.all.Time_Axis (Sweeper).Sweeper;
+      Box        : constant Cairo.Ellipses.Cairo_Box := Widget.all.Get_Box;
+      Lower      : constant Gdouble := Gtk.Layered.Waveform.Sweeper.Get_Value (Adjustment);
+      Page       : constant Gdouble := Gtk.Layered.Waveform.Sweeper.Get_Page_Size (Adjustment);
    begin
       if Box.X1 >= Gdouble (X) then
-         return To_Time (Lower);
+         return Gtk.Layered.Waveform.To_Time (Lower);
       elsif Box.X2 <= Gdouble (X) then
-         return To_Time (Lower + Page);
+         return Gtk.Layered.Waveform.To_Time (Lower + Page);
       else
          return
-           To_Time (Lower + Page * (Gdouble (X) - Box.X1) / (Box.X2 - Box.X1));
+           Gtk.Layered.Waveform.To_Time (Lower + Page * (Gdouble (X) - Box.X1) / (Box.X2 - Box.X1));
       end if;
    end Get_Time;
 
@@ -1580,19 +1633,20 @@ package body Gtk.Oscilloscope is
       Sweeper : Sweeper_Type;
       X       : Gint) return Ada.Calendar.Time
    is
-      Adjustment : constant Gtk_Waveform_Sweeper :=
-                   Widget.all.Time_Axis (Sweeper).Sweeper;
-      Box   : constant Cairo_Box := Widget.all.Get_Box;
-      Lower : constant Gdouble := Get_Value (Adjustment);
-      Page  : constant Gdouble := Get_Page_Size (Adjustment);
+      Adjustment : constant Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper :=
+                     Widget.all.Time_Axis (Sweeper).Sweeper;
+      Box        : constant Cairo.Ellipses.Cairo_Box := Widget.all.Get_Box;
+      Lower      : constant Gdouble := Gtk.Layered.Waveform.Sweeper.Get_Value (Adjustment);
+      Page       : constant Gdouble := Gtk.Layered.Waveform.Sweeper.Get_Page_Size (Adjustment);
    begin
       if Box.X1 >= Gdouble (X) then
-         return To_Time (Lower);
+         return Gtk.Layered.Waveform.To_Time (Lower);
       elsif Box.X2 <= Gdouble (X) then
-         return To_Time (Lower + Page);
+         return Gtk.Layered.Waveform.To_Time (Lower + Page);
       else
          return
-           To_Time (Lower + Page * (Gdouble (X) - Box.X1) / (Box.X2 - Box.X1));
+           Gtk.Layered.Waveform.To_Time
+             (Lower + Page * (Gdouble (X) - Box.X1) / (Box.X2 - Box.X1));
       end if;
    end Get_Time;
 
@@ -1605,7 +1659,8 @@ package body Gtk.Oscilloscope is
 
    function Get_Time_Axis_Annotation
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
-      Sweeper : Sweeper_Type) return access Graph_Paper_Annotation_Layer'Class
+      Sweeper : Sweeper_Type)
+      return access Gtk.Layered.Graph_Paper_Annotation.Graph_Paper_Annotation_Layer'Class
    is
    begin
       return Widget.all.Time_Axis (Sweeper).Texts;
@@ -1648,14 +1703,14 @@ package body Gtk.Oscilloscope is
 
    function Get_Time_Text_Color
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
-      Sweeper : Sweeper_Type) return Gdk_Color is
+      Sweeper : Sweeper_Type) return Gdk.Color.Gdk_Color is
    begin
       return Widget.all.Time_Axis (Sweeper).Color;
    end Get_Time_Text_Color;
 
    function Get_Time_Text_Face
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
-      Sweeper : Sweeper_Type) return Pango_Cairo_Font is
+      Sweeper : Sweeper_Type) return Pango.Cairo.Fonts.Pango_Cairo_Font is
    begin
       return Widget.all.Time_Axis (Sweeper).Face;
    end Get_Time_Text_Face;
@@ -1669,7 +1724,7 @@ package body Gtk.Oscilloscope is
 
    function Get_Time_Text_Horizontal_Alignment
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
-      Sweeper : Sweeper_Type) return Alignment is
+      Sweeper : Sweeper_Type) return Ada.Strings.Alignment is
    begin
       return Widget.all.Time_Axis (Sweeper).Justify_X;
    end Get_Time_Text_Horizontal_Alignment;
@@ -1683,7 +1738,7 @@ package body Gtk.Oscilloscope is
 
    function Get_Time_Text_Vertical_Alignment
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
-      Sweeper : Sweeper_Type) return Vertical_Alignment is
+      Sweeper : Sweeper_Type) return Gtk.Layered.Vertical_Alignment is
    begin
       return Widget.all.Time_Axis (Sweeper).Justify_Y;
    end Get_Time_Text_Vertical_Alignment;
@@ -1703,13 +1758,13 @@ package body Gtk.Oscilloscope is
          return +Widget.all.Channels (Channel).Tip_X_Suffix;
       else
          raise Constraint_Error with
-            "Wrong channel number" & Channel_Count'Image (Channel);
+           "Wrong channel number" & Channel_Count'Image (Channel);
       end if;
    end Get_Time_Tooltip_Suffix;
 
    function Get_To
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
-      Sweeper : Sweeper_Type) return Time is
+      Sweeper : Sweeper_Type) return Ada.Real_Time.Time is
    begin
       return Widget.all.Time_Axis (Sweeper).Sweeper.all.Get_To;
    end Get_To;
@@ -1729,7 +1784,7 @@ package body Gtk.Oscilloscope is
          return +Widget.all.Channels (Channel).Tip_Prefix;
       else
          raise Constraint_Error with
-            "Wrong channel number" & Channel_Count'Image (Channel);
+           "Wrong channel number" & Channel_Count'Image (Channel);
       end if;
    end Get_Tooltip_Annotation;
 
@@ -1751,11 +1806,11 @@ package body Gtk.Oscilloscope is
          raise Constraint_Error with "Wrong group number";
       else
          declare
-            Adjustment : constant Gtk_Waveform_Amplifier :=
-                         Widget.all.Groups.all (Group).Amplifier;
-            Box   : constant Cairo_Box := Widget.all.Get_Box;
-            Value : constant Gdouble := Get_Value (Adjustment);
-            Page  : constant Gdouble := Get_Page_Size (Adjustment);
+            Adjustment : constant Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier :=
+                           Widget.all.Groups.all (Group).Amplifier;
+            Box        : constant Cairo.Ellipses.Cairo_Box := Widget.all.Get_Box;
+            Value      : constant Gdouble := Gtk.Layered.Waveform.Amplifier.Get_Value (Adjustment);
+            Page       : constant Gdouble := Gtk.Layered.Waveform.Amplifier.Get_Page_Size (Adjustment);
          begin
             if Box.Y1 >= Gdouble (Y) then
                return Value + Page;
@@ -1775,7 +1830,7 @@ package body Gtk.Oscilloscope is
       Y         : Gint) return Gdouble
    is
       Group : constant Group_Count :=
-              Widget.all.Values_Axis (Amplifier).Group;
+                Widget.all.Values_Axis (Amplifier).Group;
    begin
       if Group > 0 then
          return Get_Value (Widget, Group, Y);
@@ -1793,17 +1848,10 @@ package body Gtk.Oscilloscope is
          Widget.all.Values_Axis (Amplifier).On);
    end Get_Values_Axis;
 
-   function Get_Values_Horizontal_Alignment
-     (Widget    : not null access constant Gtk_Oscilloscope_Record;
-      Amplifier : Amplifier_Type) return Alignment is
-   begin
-      return Widget.all.Values_Axis (Amplifier).Justify_X;
-   end Get_Values_Horizontal_Alignment;
-
    function Get_Values_Axis_Annotation
      (Widget    : not null access constant Gtk_Oscilloscope_Record;
       Amplifier : Amplifier_Type)
-      return access Graph_Paper_Annotation_Layer'Class is
+      return access Gtk.Layered.Graph_Paper_Annotation.Graph_Paper_Annotation_Layer'Class is
    begin
       return Widget.all.Values_Axis (Amplifier).Texts;
    end Get_Values_Axis_Annotation;
@@ -1824,6 +1872,13 @@ package body Gtk.Oscilloscope is
          Widget.all.Values_Axis (Amplifier).Grid);
    end Get_Values_Grid;
 
+   function Get_Values_Horizontal_Alignment
+     (Widget    : not null access constant Gtk_Oscilloscope_Record;
+      Amplifier : Amplifier_Type) return Ada.Strings.Alignment is
+   begin
+      return Widget.all.Values_Axis (Amplifier).Justify_X;
+   end Get_Values_Horizontal_Alignment;
+
    function Get_Values_Scale
      (Widget    : not null access constant Gtk_Oscilloscope_Record;
       Amplifier : Amplifier_Type) return Boolean is
@@ -1840,14 +1895,14 @@ package body Gtk.Oscilloscope is
 
    function Get_Values_Text_Color
      (Widget    : not null access constant Gtk_Oscilloscope_Record;
-      Amplifier : Amplifier_Type) return Gdk_Color is
+      Amplifier : Amplifier_Type) return Gdk.Color.Gdk_Color is
    begin
       return Widget.all.Values_Axis (Amplifier).Color;
    end Get_Values_Text_Color;
 
    function Get_Values_Text_Face
      (Widget    : not null access constant Gtk_Oscilloscope_Record;
-      Amplifier : Amplifier_Type) return Pango_Cairo_Font is
+      Amplifier : Amplifier_Type) return Pango.Cairo.Fonts.Pango_Cairo_Font is
    begin
       return Widget.all.Values_Axis (Amplifier).Face;
    end Get_Values_Text_Face;
@@ -1874,47 +1929,22 @@ package body Gtk.Oscilloscope is
          return +Widget.all.Channels (Channel).Tip_Y_Suffix;
       else
          raise Constraint_Error with
-            "Wrong channel number" & Channel_Count'Image (Channel);
+           "Wrong channel number" & Channel_Count'Image (Channel);
       end if;
    end Get_Values_Tooltip_Suffix;
 
    function Get_Waveform
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
-      Channel : Channel_Number) return not null access Waveform_Layer is
+      Channel : Channel_Number)
+      return not null access Gtk.Layered.Waveform.Waveform_Layer is
    begin
       if Channel <= Widget.all.Channels_Number then
          return Widget.all.Channels (Channel).Waveform;
       else
          raise Constraint_Error with
-            "Wrong channel number" & Channel_Count'Image (Channel);
+           "Wrong channel number" & Channel_Count'Image (Channel);
       end if;
    end Get_Waveform;
-
-   function Get_Annotation_Height
-     (Widget  : not null access constant Gtk_Oscilloscope_Record;
-      Sweeper : Sweeper_Type) return Gint
-   is
-      Data : Time_Axis_Data renames Widget.all.Time_Axis (Sweeper);
-   begin
-      if Data.On then
-         return Gint (Data.Width);
-      else
-         return 0;
-      end if;
-   end Get_Annotation_Height;
-
-   function Get_Annotation_Width
-     (Widget    : not null access constant Gtk_Oscilloscope_Record;
-      Amplifier : Amplifier_Type) return Gint
-   is
-      Data : Values_Axis_Data renames Widget.all.Values_Axis (Amplifier);
-   begin
-      if Data.On then
-         return Gint (Data.Width);
-      else
-         return 0;
-      end if;
-   end Get_Annotation_Width;
 
    function Get_X
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
@@ -1922,23 +1952,25 @@ package body Gtk.Oscilloscope is
       Stamp   : Gdouble;
       Crop    : Boolean) return Gint
    is
-      Adjustment : constant Gtk_Waveform_Sweeper :=
-                   Widget.all.Time_Axis (Sweeper).Sweeper;
-      Box   : constant Cairo_Box := Widget.all.Get_Box;
-      Lower : constant Gdouble := Get_Value (Adjustment);
-      Page  : constant Gdouble := Get_Page_Size (Adjustment);
+      Adjustment : constant Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper :=
+                     Widget.all.Time_Axis (Sweeper).Sweeper;
+      Box        : constant Cairo.Ellipses.Cairo_Box := Widget.all.Get_Box;
+      Lower      : constant Gdouble := Gtk.Layered.Waveform.Sweeper.Get_Value (Adjustment);
+      Page       : constant Gdouble := Gtk.Layered.Waveform.Sweeper.Get_Page_Size (Adjustment);
    begin
       if Stamp > Lower + Page then
          if Crop then
             return Gint (Box.X2);
          else
-            raise Layout_Error with "Time right of the waveform box";
+            raise Ada.IO_Exceptions.Layout_Error with
+              "Time right of the waveform box";
          end if;
       elsif Stamp < Lower then
          if Crop then
             return Gint (Box.X1);
          else
-            raise Layout_Error with "Time left of the waveform box";
+            raise Ada.IO_Exceptions.Layout_Error with
+              "Time left of the waveform box";
          end if;
       else
          return Gint (Box.X1 + (Stamp - Lower) * (Box.X2 - Box.X1) / Page);
@@ -1948,10 +1980,13 @@ package body Gtk.Oscilloscope is
    function Get_X
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
       Sweeper : Sweeper_Type;
-      Stamp   : Time;
+      Stamp   : Ada.Real_Time.Time;
       Crop    : Boolean := False) return Gint is
    begin
-      return Get_X (Widget, Sweeper, To_Double (Stamp), Crop);
+      return Get_X (Widget,
+                    Sweeper,
+                    Gtk.Layered.Waveform.To_Double (Stamp),
+                    Crop);
    end Get_X;
 
    function Get_X
@@ -1960,7 +1995,10 @@ package body Gtk.Oscilloscope is
       Stamp   : Ada.Calendar.Time;
       Crop    : Boolean := False) return Gint is
    begin
-      return Get_X (Widget, Sweeper, To_Double (Stamp), Crop);
+      return Get_X (Widget,
+                    Sweeper,
+                    Gtk.Layered.Waveform.To_Double (Stamp),
+                    Crop);
    end Get_X;
 
    function Get_Y
@@ -1973,25 +2011,25 @@ package body Gtk.Oscilloscope is
          raise Constraint_Error with "Wrong channel group number";
       else
          declare
-            Adjustment : constant Gtk_Waveform_Amplifier :=
-                         Widget.all.Groups.all (Group).Amplifier;
-            Box   : constant Cairo_Box := Widget.all.Get_Box;
-            Lower : constant Gdouble := Get_Value (Adjustment);
-            Page  : constant Gdouble := Get_Page_Size (Adjustment);
+            Adjustment : constant Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier :=
+                           Widget.all.Groups.all (Group).Amplifier;
+            Box        : constant Cairo.Ellipses.Cairo_Box := Widget.all.Get_Box;
+            Lower      : constant Gdouble := Gtk.Layered.Waveform.Amplifier.Get_Value (Adjustment);
+            Page       : constant Gdouble := Gtk.Layered.Waveform.Amplifier.Get_Page_Size (Adjustment);
          begin
             if Value < Lower then
                if Crop then
                   return Gint (Box.Y2);
                else
-                  raise Layout_Error with
-                     "Value below the waveform box";
+                  raise Ada.IO_Exceptions.Layout_Error with
+                    "Value below the waveform box";
                end if;
             elsif Value > Lower + Page then
                if Crop then
                   return Gint (Box.Y1);
                else
-                  raise Layout_Error with
-                     "Value above the waveform box";
+                  raise Ada.IO_Exceptions.Layout_Error with
+                    "Value above the waveform box";
                end if;
             else
                return
@@ -2008,7 +2046,7 @@ package body Gtk.Oscilloscope is
       Crop      : Boolean := False) return Gint
    is
       Group : constant Group_Count :=
-              Widget.all.Values_Axis (Amplifier).Group;
+                Widget.all.Values_Axis (Amplifier).Group;
    begin
       if Group > 0 then
          return Get_Y (Widget, Group, Value, Crop);
@@ -2019,10 +2057,10 @@ package body Gtk.Oscilloscope is
 
    procedure Gtk_New
      (Widget         : out Gtk_Oscilloscope;
-      Lower_Sweeper  : access Gtk_Waveform_Sweeper_Record'Class := null;
-      Upper_Sweeper  : access Gtk_Waveform_Sweeper_Record'Class := null;
-      Refresh_Engine : not null access Layered_Refresh_Engine;
-      Background     : Gdk_Color := RGB (1.0, 1.0, 1.0);
+      Lower_Sweeper  : access Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record'Class := null;
+      Upper_Sweeper  : access Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record'Class := null;
+      Refresh_Engine : not null access Gtk.Layered.Refresh_Engine.Layered_Refresh_Engine;
+      Background     : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 1.0, 1.0);
       Buffer_Size    : Positive  := 1024 * 60;
       Max_Channels   : Channel_Number := 64) is
    begin
@@ -2044,10 +2082,10 @@ package body Gtk.Oscilloscope is
 
    procedure Gtk_New
      (Widget         : out Gtk_Oscilloscope;
-      Lower_Sweeper  : access Gtk_Waveform_Sweeper_Record'Class := null;
-      Upper_Sweeper  : access Gtk_Waveform_Sweeper_Record'Class := null;
+      Lower_Sweeper  : access Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record'Class := null;
+      Upper_Sweeper  : access Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record'Class := null;
       Refresh_Period : Duration  := 0.02;
-      Background     : Gdk_Color := RGB (1.0, 1.0, 1.0);
+      Background     : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 1.0, 1.0);
       Buffer_Size    : Positive  := 1024 * 60;
       Max_Channels   : Channel_Number := 64) is
    begin
@@ -2076,10 +2114,10 @@ package body Gtk.Oscilloscope is
 
    procedure Initialize
      (Widget         : not null access Gtk_Oscilloscope_Record'Class;
-      Lower_Sweeper  : access Gtk_Waveform_Sweeper_Record'Class;
-      Upper_Sweeper  : access Gtk_Waveform_Sweeper_Record'Class;
-      Refresh_Engine : not null access Layered_Refresh_Engine;
-      Background     : Gdk_Color;
+      Lower_Sweeper  : access Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record'Class;
+      Upper_Sweeper  : access Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record'Class;
+      Refresh_Engine : not null access Gtk.Layered.Refresh_Engine.Layered_Refresh_Engine;
+      Background     : Gdk.Color.Gdk_Color;
       Buffer_Size    : Positive) is
    begin
       Do_Init
@@ -2094,10 +2132,10 @@ package body Gtk.Oscilloscope is
 
    procedure Initialize
      (Widget         : not null access Gtk_Oscilloscope_Record'Class;
-      Lower_Sweeper  : access Gtk_Waveform_Sweeper_Record'Class;
-      Upper_Sweeper  : access Gtk_Waveform_Sweeper_Record'Class;
+      Lower_Sweeper  : access Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record'Class;
+      Upper_Sweeper  : access Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record'Class;
       Refresh_Period : Duration := 0.2;
-      Background     : Gdk_Color;
+      Background     : Gdk.Color.Gdk_Color;
       Buffer_Size    : Positive) is
    begin
       Do_Init
@@ -2123,65 +2161,68 @@ package body Gtk.Oscilloscope is
 
    function Mouse_Event
      (Oscilloscope : not null access Gtk_Oscilloscope_Record;
-      Event        : Gdk_Event;
-      Hint         : Boolean) return Cairo_Tuple is
+      Event        : Gdk.Event.Gdk_Event;
+      Hint         : Boolean) return Cairo.Ellipses.Cairo_Tuple
+   is
+      pragma Unreferenced (Oscilloscope);
    begin
-      return Result : Cairo_Tuple do
+      return Result : Cairo.Ellipses.Cairo_Tuple do
          if Hint then
---              declare
---                 use Gdk.Device_Manager;
---                 Mask   : Gdk.Types.Gdk_Modifier_Type;
---                 Area   : Gdk_Rectangle;
---                 Window : Gdk.Gdk_Window := Oscilloscope.Get_Window;
---              begin
---                 Gdk.Window.Get_Device_Position
---                 (  Window,
---                    Get_Device_Manager
---                    (  Get_Display (Window)
---                    ) .Get_Client_Pointer,
---                    GInt (Result.X),
---                    GInt (Result.Y),
---                    Mask,
---                    Window
---                 );
---                 Oscilloscope.Get_Allocation (Area);
---                 Result.X := Result.X - GDouble (Area.X);
---                 Result.Y := Result.Y - GDouble (Area.Y);
---              end;
-            Get_Coords (Event, Result.X, Result.Y);
+            --              declare
+            --                 use Gdk.Device_Manager;
+            --                 Mask   : Gdk.Types.Gdk_Modifier_Type;
+            --                 Area   : Gdk_Rectangle;
+            --                 Window : Gdk.Gdk_Window := Oscilloscope.Get_Window;
+            --              begin
+            --                 Gdk.Window.Get_Device_Position
+            --                 (  Window,
+            --                    Get_Device_Manager
+            --                    (  Get_Display (Window)
+            --                    ) .Get_Client_Pointer,
+            --                    GInt (Result.X),
+            --                    GInt (Result.Y),
+            --                    Mask,
+            --                    Window
+            --                 );
+            --                 Oscilloscope.Get_Allocation (Area);
+            --                 Result.X := Result.X - GDouble (Area.X);
+            --                 Result.Y := Result.Y - GDouble (Area.Y);
+            --              end;
+            Gdk.Event.Get_Coords (Event, Result.X, Result.Y);
          else
-            Get_Axis (Event, Axis_X, Result.X);
-            Get_Axis (Event, Axis_Y, Result.Y);
+            Gdk.Event.Get_Axis (Event, Gdk.Types.Axis_X, Result.X);
+            Gdk.Event.Get_Axis (Event, Gdk.Types.Axis_Y, Result.Y);
          end if;
       end return;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) & Where ("Mouse_Event"));
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
+              Where ("Mouse_Event"));
          return (0.0, 0.0);
    end Mouse_Event;
 
---     procedure Move (From, To : in out Do_Item_Ptr) is
---        This : Do_Item_Ptr := From;
---        List : Do_Item_Ptr;
---     begin
---        while This /= null loop
---           From := This.Next;
---           This.Next := List;
---           List := This;
---           exit when This.First;
---           This := From;
---        end loop;
---        List := This;
---        while This /= null loop
---           List := This.Next;
---           This.Next := To;
---           To := This;
---           This := List;
---        end loop;
---     end Move;
+   --     procedure Move (From, To : in out Do_Item_Ptr) is
+   --        This : Do_Item_Ptr := From;
+   --        List : Do_Item_Ptr;
+   --     begin
+   --        while This /= null loop
+   --           From := This.Next;
+   --           This.Next := List;
+   --           List := This;
+   --           exit when This.First;
+   --           This := From;
+   --        end loop;
+   --        List := This;
+   --        while This /= null loop
+   --           List := This.Next;
+   --           This.Next := To;
+   --           To := This;
+   --           This := List;
+   --        end loop;
+   --     end Move;
 
    procedure Move_Channel
      (Widget     : not null access Gtk_Oscilloscope_Record;
@@ -2192,10 +2233,10 @@ package body Gtk.Oscilloscope is
    begin
       if Old_Number > Widget.all.Channels_Number then
          raise Constraint_Error with
-            "Wrong channel number" & Channel_Count'Image (Old_Number);
+           "Wrong channel number" & Channel_Count'Image (Old_Number);
       elsif New_Number > Widget.all.Channels_Number then
          raise Constraint_Error with
-            "Wrong channel number" & Channel_Count'Image (New_Number);
+           "Wrong channel number" & Channel_Count'Image (New_Number);
       end if;
       if Old_Number /= New_Number then
          This := Widget.all.Channels (Old_Number);
@@ -2211,23 +2252,23 @@ package body Gtk.Oscilloscope is
          Widget.all.Channels (New_Number) := This;
          if New_Number > 1 then
             Widget.all.Channel_Names.all.Move_After
-              (Iter =>
+              (Iter     =>
                  Widget.all.Channel_Names.all.Nth_Child
-                   (Null_Iter,
+                   (Gtk.Tree_Model.Null_Iter,
                     Gint (Old_Number) - 1),
                Position =>
                  Widget.all.Channel_Names.all.Nth_Child
-                   (Null_Iter,
+                   (Gtk.Tree_Model.Null_Iter,
                     Gint (New_Number) - 2));
          else
             Widget.all.Channel_Names.all.Move_Before
-              (Iter =>
+              (Iter     =>
                  Widget.all.Channel_Names.all.Nth_Child
-                   (Null_Iter,
+                   (Gtk.Tree_Model.Null_Iter,
                     Gint (Old_Number) - 1),
                Position =>
                  Widget.all.Channel_Names.all.Nth_Child
-                   (Null_Iter,
+                   (Gtk.Tree_Model.Null_Iter,
                     Gint (New_Number) - 1));
          end if;
          if Old_Number < New_Number then
@@ -2239,13 +2280,13 @@ package body Gtk.Oscilloscope is
    end Move_Channel;
 
    procedure On_Autoscaling_Changed
-     (Amplifier : access Gtk_Waveform_Amplifier_Record'Class;
+     (Amplifier    : access Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier_Record'Class;
       Oscilloscope : Gtk_Oscilloscope) is
    begin
       for Index in Oscilloscope.all.Values_Axis'Range loop
          declare
             This  : Values_Axis_Data renames
-                    Oscilloscope.all.Values_Axis (Index);
+                      Oscilloscope.all.Values_Axis (Index);
             Group : constant Group_Count := This.Group;
          begin
             if
@@ -2261,18 +2302,30 @@ package body Gtk.Oscilloscope is
       end loop;
    end On_Autoscaling_Changed;
 
+   function On_Button_Press
+     (Object       : access GObject_Record'Class;
+      Event        : Gdk.Event.Gdk_Event;
+      Oscilloscope : Gtk_Oscilloscope) return Boolean is separate;
+
+   function On_Button_Release
+     (Object       : access GObject_Record'Class;
+      Event        : Gdk.Event.Gdk_Event;
+      Oscilloscope : Gtk_Oscilloscope) return Boolean is separate;
+
    procedure On_Cancel_Selection
      (Menu         : access GObject_Record'Class;
-      Oscilloscope : Gtk_Oscilloscope) is
+      Oscilloscope : Gtk_Oscilloscope)
+   is
+      pragma Unreferenced (Menu);
    begin
       Oscilloscope.all.Restore_State;
       Free (Oscilloscope.all.Selection.all.Area);
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " &  Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " &  Ada.Exceptions.Exception_Information (Error) &
               Where ("On_Cancel_Selection"));
    end On_Cancel_Selection;
 
@@ -2280,7 +2333,8 @@ package body Gtk.Oscilloscope is
      (Menu         : access GObject_Record'Class;
       Oscilloscope : Gtk_Oscilloscope)
    is
-      Y : constant Gdouble := Oscilloscope.all.Selection.all.Area.all.Get_Box.Y2;
+      pragma Unreferenced (Menu);
+      Y      : constant Gdouble := Oscilloscope.all.Selection.all.Area.all.Get_Box.Y2;
       Got_It : Boolean;
    begin
       for Index in 1 .. Oscilloscope.all.Channels_Number loop
@@ -2300,26 +2354,21 @@ package body Gtk.Oscilloscope is
       Free (Oscilloscope.all.Selection.all.Area);
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
               Where ("On_Copy_Selection"));
    end On_Copy_Selection;
 
-   procedure Delete (List : in out Do_Item_Ptr) is
-      Next : Do_Item_Ptr;
-   begin
-      while List /= null loop
-         Next := List.all.Next;
-         Free (List);
-         List := Next;
-      end loop;
-   end Delete;
-
    procedure On_Destroy
      (Object       : access GObject_Record'Class;
-      Oscilloscope : Gtk_Oscilloscope) is
+      Oscilloscope : Gtk_Oscilloscope)
+   is
+      use type Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier;
+      use type Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer;
+      use type Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper;
+      pragma Unreferenced (Object);
    begin
       if Oscilloscope.all.Refresh_Engine /= null then
          Oscilloscope.all.Refresh_Engine.all.Delete (Oscilloscope.all.Layers);
@@ -2367,6 +2416,7 @@ package body Gtk.Oscilloscope is
      (Menu         : access GObject_Record'Class;
       Oscilloscope : Gtk_Oscilloscope)
    is
+      pragma Unreferenced (Menu);
       Y : constant Gdouble := Oscilloscope.all.Selection.all.Area.all.Get_Box.Y2;
    begin
       for Index in 1 .. Oscilloscope.all.Channels_Number loop
@@ -2391,25 +2441,26 @@ package body Gtk.Oscilloscope is
       Free (Oscilloscope.all.Selection.all.Area);
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
               Where ("On_Difference_Selection"));
    end On_Difference_Selection;
 
    procedure On_Format_Time
-     (Scale     : not null access Gtk_Scale_Record'Class;
-      Arguments : GValue_Array;
-      Result    : in out GValue;
+     (Scale     : not null access Gtk.Scale.Gtk_Scale_Record'Class;
+      Arguments : Glib.Values.GValue_Array;
+      Result    : in out Glib.Values.GValue;
       Data      : Time_Axis_Data_Ptr)
    is
+      pragma Unreferenced (Arguments, Scale);
       use type Ada.Calendar.Time;
       Page  : constant Duration := Data.all.Sweeper.all.Get_Page_Span / 2;
       Right : constant Ada.Calendar.Time := Data.all.Sweeper.all.Get_Time;
    begin
       if Data.all.Time_Mode then
-         Set_String
+         Glib.Values.Set_String
            (Result,
             (Gtk.Layered.Graph_Paper_Annotation.Image (Right - Page)
              &  " "
@@ -2419,23 +2470,26 @@ package body Gtk.Oscilloscope is
              &  "s"));
       else
          if Data.all.Texts /= null then
-            Set_String
+            Glib.Values.Set_String
               (Result,
-               Data.all.Texts.all.Image (To_Double (Right - Page)));
+               Data.all.Texts.all.Image
+                 (Gtk.Layered.Waveform.To_Double (Right - Page)));
          end if;
       end if;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " &  Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
               Where ("On_Format_Time"));
    end On_Format_Time;
 
    procedure On_Freezing_Changed
-     (Sweeper      : access Gtk_Waveform_Sweeper_Record'Class;
-      Oscilloscope : Gtk_Oscilloscope) is
+     (Sweeper      : access Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record'Class;
+      Oscilloscope : Gtk_Oscilloscope)
+   is
+      use type Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper;
    begin
       for Index in Oscilloscope.all.Time_Axis'Range loop
          if Oscilloscope.all.Time_Axis (Index).Sweeper = Sweeper then
@@ -2450,46 +2504,54 @@ package body Gtk.Oscilloscope is
 
    procedure On_Latest
      (Menu         : access GObject_Record'Class;
-      Oscilloscope : Gtk_Oscilloscope) is
+      Oscilloscope : Gtk_Oscilloscope)
+   is
+      pragma Unreferenced (Menu);
    begin
       for Sweeper in Sweeper_Type'Range loop
          Oscilloscope.all.Set_Time
            (Sweeper,
-            Time'
-              (To_Time
-                (Oscilloscope.all.Time_Axis (Sweeper).Sweeper.all.Get_Upper)));
+            Ada.Real_Time.Time'
+              (Gtk.Layered.Waveform.To_Time
+                   (Oscilloscope.all.Time_Axis (Sweeper).Sweeper.all.Get_Upper)));
       end loop;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) & Where ("On_Latest"));
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
+              Where ("On_Latest"));
    end On_Latest;
 
    function On_Leave
      (Object       : access GObject_Record'Class;
-      Event        : Gdk_Event;
-      Oscilloscope : Gtk_Oscilloscope) return Boolean is
+      Event        : Gdk.Event.Gdk_Event;
+      Oscilloscope : Gtk_Oscilloscope) return Boolean
+   is
+      pragma Unreferenced (Event, Object, Oscilloscope);
    begin
       return False;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) & Where ("On_Leave"));
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
+              Where ("On_Leave"));
          return False;
    end On_Leave;
 
    function On_Motion
      (Object       : access GObject_Record'Class;
-      Event        : Gdk_Event;
+      Event        : Gdk.Event.Gdk_Event;
       Oscilloscope : Gtk_Oscilloscope) return Boolean is separate;
 
    procedure On_Offset_Changed
-     (Sweeper      : access Gtk_Waveform_Sweeper_Record'Class;
-      Oscilloscope : Gtk_Oscilloscope) is
+     (Sweeper      : access Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record'Class;
+      Oscilloscope : Gtk_Oscilloscope)
+   is
+      use type Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper;
    begin
       for Index in Oscilloscope.all.Time_Axis'Range loop
          if Oscilloscope.all.Time_Axis (Index).Sweeper = Sweeper then
@@ -2504,23 +2566,27 @@ package body Gtk.Oscilloscope is
 
    procedure On_Pause
      (Menu         : access GObject_Record'Class;
-      Oscilloscope : Gtk_Oscilloscope) is
+      Oscilloscope : Gtk_Oscilloscope)
+   is
+      pragma Unreferenced (Menu);
    begin
       for Sweeper in Sweeper_Type'Range loop
          Oscilloscope.all.Set_Frozen (Sweeper, True);
       end loop;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) & Where ("On_Pause"));
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
+              Where ("On_Pause"));
    end On_Pause;
 
    procedure On_Range_Selection
      (Menu         : access GObject_Record'Class;
       Oscilloscope : Gtk_Oscilloscope)
    is
+      pragma Unreferenced (Menu);
       Y1 : constant Gdouble := Oscilloscope.all.Selection.all.Area.all.Get_Box.Y1;
       Y2 : constant Gdouble := Oscilloscope.all.Selection.all.Area.all.Get_Box.Y2;
    begin
@@ -2547,16 +2613,18 @@ package body Gtk.Oscilloscope is
       Free (Oscilloscope.all.Selection.all.Area);
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
               Where ("On_Range_Selection"));
    end On_Range_Selection;
 
    procedure On_Raster_Mode_Changed
-     (Amplifier : access Gtk_Waveform_Amplifier_Record'Class;
-      Oscilloscope : Gtk_Oscilloscope) is
+     (Amplifier    : access Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier_Record'Class;
+      Oscilloscope : Gtk_Oscilloscope)
+   is
+      use type Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier;
    begin
       for Index in Oscilloscope.all.Values_Axis'Range loop
          if
@@ -2576,46 +2644,52 @@ package body Gtk.Oscilloscope is
 
    procedure On_Redo
      (Menu         : access GObject_Record'Class;
-      Oscilloscope : Gtk_Oscilloscope) is
+      Oscilloscope : Gtk_Oscilloscope)
+   is
+      pragma Unreferenced (Menu);
    begin
       Oscilloscope.all.Redo;
    end On_Redo;
 
    procedure On_Release
      (Menu         : access GObject_Record'Class;
-      Oscilloscope : Gtk_Oscilloscope) is
+      Oscilloscope : Gtk_Oscilloscope)
+   is
+      pragma Unreferenced (Menu);
    begin
       for Sweeper in Sweeper_Type'Range loop
          Oscilloscope.all.Set_Frozen (Sweeper, False);
          if Oscilloscope.all.Jump_On_Thaw then
             Oscilloscope.all.Set_Time
               (Sweeper,
-               Time'
-                 (To_Time
+               Ada.Real_Time.Time'
+                 (Gtk.Layered.Waveform.To_Time
                       (Oscilloscope.all.Time_Axis
                            (Sweeper).Sweeper.all.Get_Upper)));
          end if;
       end loop;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) & Where ("On_Release"));
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
+              Where ("On_Release"));
    end On_Release;
 
    procedure On_Snapshot
      (Menu         : access GObject_Record'Class;
       Oscilloscope : Gtk_Oscilloscope)
    is
-      Surface : Cairo_Surface;
+      pragma Unreferenced (Menu);
+      Surface : Cairo.Cairo_Surface;
    begin
       case Oscilloscope.all.Format is
          when No_Snapshot =>
             return;
          when PDF_Snapshot =>
             Surface :=
-               Cairo.PDF.Create
+              Cairo.PDF.Create
                 (Filename         => Oscilloscope.all.File.all,
                  Width_In_Points  =>
                     Gdouble (Oscilloscope.all.Get_Allocated_Width),
@@ -2623,7 +2697,7 @@ package body Gtk.Oscilloscope is
                     Gdouble (Oscilloscope.all.Get_Allocated_Height));
          when SVG_Snapshot =>
             Surface :=
-               Cairo.SVG.Create
+              Cairo.SVG.Create
                 (Filename        => Oscilloscope.all.File.all,
                  Width_In_Point  =>
                     Gdouble (Oscilloscope.all.Get_Allocated_Width),
@@ -2632,33 +2706,39 @@ package body Gtk.Oscilloscope is
       end case;
       Oscilloscope.all.Layers.all.Snapshot (Surface);
       Emit (Oscilloscope, Signal_IDs (14), Oscilloscope.all.File.all);
-      Surface_Destroy (Surface);
+      Cairo.Surface_Destroy (Surface);
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) & Where ("On_Snapshot"));
-         Surface_Destroy (Surface);
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
+              Where ("On_Snapshot"));
+         Cairo.Surface_Destroy (Surface);
    end On_Snapshot;
 
    procedure On_Style_Updated
      (Object       : access GObject_Record'Class;
-      Oscilloscope : Gtk_Oscilloscope) is
+      Oscilloscope : Gtk_Oscilloscope)
+   is
+      pragma Unreferenced (Object);
    begin
       Oscilloscope.all.Line_Cap :=
-         Style_Get (Oscilloscope, "waveform-line-cap");
+        Gtk.Widget.Styles.Line_Cap_Property.Style_Get
+          (Oscilloscope, "waveform-line-cap");
       Oscilloscope.all.Background.all.Set
         (Box        => Oscilloscope.all.Background.all.Get_Box,
          Color      =>
-           Style_Get
+           Gtk.Widget.Styles.Style_Get
              (Oscilloscope,
               "background-color",
               Oscilloscope.all.Background.all.Get_Color),
          Line_Width => 0.0,
          Opacity    =>
-           Fill_Opacity
-             (Gdouble'(Style_Get (Oscilloscope, "background-opacity"))));
+           Gtk.Layered.Fill_Opacity
+             (Gdouble'
+                  (Gtk.Widget.Styles.Style_Get
+                     (Oscilloscope, "background-opacity"))));
 
       for Sweeper in Sweeper_Type'Range loop
          Style_Changed_Time_Axis (Oscilloscope, Sweeper);
@@ -2667,14 +2747,16 @@ package body Gtk.Oscilloscope is
          Style_Changed_Values_Axis (Oscilloscope, Amplifier);
       end loop;
       Oscilloscope.all.Proximity :=
-         Gdouble
-          (Guint'(Style_Get (Oscilloscope, "waveform-proximity")));
+        Gdouble
+          (Guint'
+             (Gtk.Widget.Styles.Style_Get
+                (Oscilloscope, "waveform-proximity")));
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
               Where ("On_Style_Updated"));
    end On_Style_Updated;
 
@@ -2682,6 +2764,7 @@ package body Gtk.Oscilloscope is
      (Menu         : access GObject_Record'Class;
       Oscilloscope : Gtk_Oscilloscope)
    is
+      pragma Unreferenced (Menu);
       On      : Boolean;
       Defined : Boolean := False;
    begin
@@ -2705,42 +2788,46 @@ package body Gtk.Oscilloscope is
       end loop;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
               Where ("On_Toggle_Grid"));
    end On_Toggle_Grid;
 
    procedure On_Toggle_Interpolation
      (Menu         : access GObject_Record'Class;
-      Oscilloscope : Gtk_Oscilloscope) is
+      Oscilloscope : Gtk_Oscilloscope)
+   is
+      pragma Unreferenced (Menu);
    begin
       for Index in 1 .. Oscilloscope.all.Channels_Number loop
          declare
-            Waveform : Waveform_Layer renames
-                       Oscilloscope.all.Channels (Index).Waveform.all;
+            Waveform : Gtk.Layered.Waveform.Waveform_Layer renames
+                         Oscilloscope.all.Channels (Index).Waveform.all;
          begin
-            case Waveform.Get_Interpolation_Mode is
-               when Left =>
-                  Waveform.Set_Interpolation_Mode (Linear);
-               when Linear =>
-                  Waveform.Set_Interpolation_Mode (Left);
+            case Gtk.Layered.Waveform.Get_Interpolation_Mode (Waveform) is
+               when Gtk.Layered.Left =>
+                  Waveform.Set_Interpolation_Mode (Gtk.Layered.Linear);
+               when Gtk.Layered.Linear =>
+                  Waveform.Set_Interpolation_Mode (Gtk.Layered.Left);
             end case;
          end;
       end loop;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
               Where ("On_Toggle_Interpolation"));
    end On_Toggle_Interpolation;
 
    procedure On_Undo
      (Menu         : access GObject_Record'Class;
-      Oscilloscope : Gtk_Oscilloscope) is
+      Oscilloscope : Gtk_Oscilloscope)
+   is
+      pragma Unreferenced (Menu);
    begin
       Oscilloscope.all.Undo;
    end On_Undo;
@@ -2749,7 +2836,8 @@ package body Gtk.Oscilloscope is
      (Menu         : access GObject_Record'Class;
       Oscilloscope : Gtk_Oscilloscope)
    is
-      Box : constant Cairo_Box := Oscilloscope.all.Selection.all.Area.all.Get_Box;
+      pragma Unreferenced (Menu);
+      Box : constant Cairo.Ellipses.Cairo_Box := Oscilloscope.all.Selection.all.Area.all.Get_Box;
    begin
       Oscilloscope.all.Restore_State;
       Oscilloscope.all.Erase_Redo_Stack;
@@ -2770,17 +2858,19 @@ package body Gtk.Oscilloscope is
       Oscilloscope.all.Selection.all.Saved := False;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) & Where ("On_Zoom_In"));
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
+              Where ("On_Zoom_In"));
    end On_Zoom_In;
 
    procedure On_Zoom_In_T
      (Menu         : access GObject_Record'Class;
       Oscilloscope : Gtk_Oscilloscope)
    is
-      Box : constant Cairo_Box := Oscilloscope.all.Selection.all.Area.all.Get_Box;
+      pragma Unreferenced (Menu);
+      Box : constant Cairo.Ellipses.Cairo_Box := Oscilloscope.all.Selection.all.Area.all.Get_Box;
    begin
       Oscilloscope.all.Restore_State;
       Oscilloscope.all.Erase_Redo_Stack;
@@ -2795,17 +2885,19 @@ package body Gtk.Oscilloscope is
       Oscilloscope.all.Selection.all.Saved := False;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) & Where ("On_Zoom_In_T"));
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
+              Where ("On_Zoom_In_T"));
    end On_Zoom_In_T;
 
    procedure On_Zoom_In_V
      (Menu         : access GObject_Record'Class;
       Oscilloscope : Gtk_Oscilloscope)
    is
-      Box : constant Cairo_Box := Oscilloscope.all.Selection.all.Area.all.Get_Box;
+      pragma Unreferenced (Menu);
+      Box : constant Cairo.Ellipses.Cairo_Box := Oscilloscope.all.Selection.all.Area.all.Get_Box;
    begin
       Oscilloscope.all.Restore_State;
       Oscilloscope.all.Erase_Redo_Stack;
@@ -2820,17 +2912,19 @@ package body Gtk.Oscilloscope is
       Oscilloscope.all.Selection.all.Saved := False;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) & Where ("On_Zoom_In_V"));
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
+              Where ("On_Zoom_In_V"));
    end On_Zoom_In_V;
 
    procedure On_Zoom_Out
      (Menu         : access GObject_Record'Class;
       Oscilloscope : Gtk_Oscilloscope)
    is
-      Box : constant Cairo_Box := Oscilloscope.all.Selection.all.Area.all.Get_Box;
+      pragma Unreferenced (Menu);
+      Box : constant Cairo.Ellipses.Cairo_Box := Oscilloscope.all.Selection.all.Area.all.Get_Box;
    begin
       Oscilloscope.all.Restore_State;
       Oscilloscope.all.Erase_Redo_Stack;
@@ -2851,17 +2945,19 @@ package body Gtk.Oscilloscope is
       Oscilloscope.all.Selection.all.Saved := False;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) & Where ("On_Zoom_Out"));
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
+              Where ("On_Zoom_Out"));
    end On_Zoom_Out;
 
    procedure On_Zoom_Out_T
      (Menu         : access GObject_Record'Class;
       Oscilloscope : Gtk_Oscilloscope)
    is
-      Box : constant Cairo_Box := Oscilloscope.all.Selection.all.Area.all.Get_Box;
+      pragma Unreferenced (Menu);
+      Box : constant Cairo.Ellipses.Cairo_Box := Oscilloscope.all.Selection.all.Area.all.Get_Box;
    begin
       Oscilloscope.all.Restore_State;
       Oscilloscope.all.Erase_Redo_Stack;
@@ -2876,10 +2972,10 @@ package body Gtk.Oscilloscope is
       Oscilloscope.all.Selection.all.Saved := False;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
               Where ("On_Zoom_Out_T"));
    end On_Zoom_Out_T;
 
@@ -2887,7 +2983,8 @@ package body Gtk.Oscilloscope is
      (Menu         : access GObject_Record'Class;
       Oscilloscope : Gtk_Oscilloscope)
    is
-      Box : constant Cairo_Box := Oscilloscope.all.Selection.all.Area.all.Get_Box;
+      pragma Unreferenced (Menu);
+      Box : constant Cairo.Ellipses.Cairo_Box := Oscilloscope.all.Selection.all.Area.all.Get_Box;
    begin
       Oscilloscope.all.Restore_State;
       Oscilloscope.all.Erase_Redo_Stack;
@@ -2902,20 +2999,21 @@ package body Gtk.Oscilloscope is
       Oscilloscope.all.Selection.all.Saved := False;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
               Where ("On_Zoom_Out_V"));
    end On_Zoom_Out_V;
 
-   procedure Push_Amplifier_Zoom (Amplifier : Gtk_Waveform_Amplifier;
-                                  List      : access Items_Stack;
-                                  First     : in out Boolean) is
+   procedure Push_Amplifier_Zoom
+     (Amplifier : Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier;
+      List      : access Items_Stack;
+      First     : in out Boolean) is
    begin
       if List /= null then
          List.all.Actions :=
-            new Do_Amplifier_Zoom'
+           new Do_Amplifier_Zoom'
              (Ada.Finalization.Limited_Controlled with
               First     => First,
               Next      => List.all.Actions,
@@ -2927,13 +3025,14 @@ package body Gtk.Oscilloscope is
       end if;
    end Push_Amplifier_Zoom;
 
-   procedure Push_Auto_Amplifier (Amplifier : Gtk_Waveform_Amplifier;
-                                  List      : access Items_Stack;
-                                  First     : in out Boolean) is
+   procedure Push_Auto_Amplifier
+     (Amplifier : Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier;
+      List      : access Items_Stack;
+      First     : in out Boolean) is
    begin
       if List /= null then
          List.all.Actions :=
-            new Do_Auto_Amplifier'
+           new Do_Auto_Amplifier'
              (Ada.Finalization.Limited_Controlled
               with
               First     => First,
@@ -2944,9 +3043,10 @@ package body Gtk.Oscilloscope is
       end if;
    end Push_Auto_Amplifier;
 
-   procedure Push_Release_Sweeper (Sweeper : Gtk_Waveform_Sweeper;
-                                   List    : access Items_Stack;
-                                   First   : in out Boolean) is
+   procedure Push_Release_Sweeper
+     (Sweeper : Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper;
+      List    : access Items_Stack;
+      First   : in out Boolean) is
    begin
       if List /= null then
          List.all.Actions :=
@@ -2960,37 +3060,20 @@ package body Gtk.Oscilloscope is
       end if;
    end Push_Release_Sweeper;
 
-   procedure Push_Sweeper_Zoom (Sweeper : Gtk_Waveform_Sweeper;
-                                List    : access Items_Stack;
-                                First   : in out Boolean) is
-   begin
-      if List /= null then
-         List.all.Actions :=
-            new Do_Sweeper_Zoom'
-             (Ada.Finalization.Limited_Controlled
-              with
-              First   => First,
-              Next    => List.all.Actions,
-              Sweeper => Sweeper,
-              Time    => Sweeper.all.Get_Time,
-              Page    => Sweeper.all.Get_Page_Span);
-         Sweeper.all.Ref;
-         First := False;
-      end if;
-   end Push_Sweeper_Zoom;
-
    procedure Push_Stub (Widget : not null access Gtk_Oscilloscope_Record;
                         Name   : UTF8_String)
    is
       First : Boolean := True;
    begin
       Push_Stub (Name, Widget.all.Undo_Stack'Access, First);
+      pragma Unreferenced (First);
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) & Where ("Push_Stub"));
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
+              Where ("Push_Stub"));
    end Push_Stub;
 
    procedure Push_Stub (Name  : String;
@@ -2999,7 +3082,7 @@ package body Gtk.Oscilloscope is
    begin
       if List /= null then
          List.all.Actions :=
-            new Do_Stub'
+           new Do_Stub'
              (Ada.Finalization.Limited_Controlled
               with
               First    => First,
@@ -3012,6 +3095,26 @@ package body Gtk.Oscilloscope is
          First := False;
       end if;
    end Push_Stub;
+
+   procedure Push_Sweeper_Zoom
+     (Sweeper : Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper;
+      List    : access Items_Stack;
+      First   : in out Boolean) is
+   begin
+      if List /= null then
+         List.all.Actions :=
+           new Do_Sweeper_Zoom'
+             (Ada.Finalization.Limited_Controlled
+              with
+              First   => First,
+              Next    => List.all.Actions,
+              Sweeper => Sweeper,
+              Time    => Sweeper.all.Get_Time,
+              Page    => Sweeper.all.Get_Page_Span);
+         Sweeper.all.Ref;
+         First := False;
+      end if;
+   end Push_Sweeper_Zoom;
 
    procedure Push_Undo
      (Widget : not null access Gtk_Oscilloscope_Record;
@@ -3036,7 +3139,6 @@ package body Gtk.Oscilloscope is
       Till   : UTF8_String := "";
       Stub   : UTF8_String := "")
    is
-      use Strings_Edit.UTF8.Wildcards.Case_Insensitive;
       This  : Do_Item_Ptr := Widget.all.Redo_Stack.Actions;
       First : Boolean := True;
       Done  : Boolean := False;
@@ -3049,7 +3151,8 @@ package body Gtk.Oscilloscope is
          if Till'Length > 0 then
             if This.all in Do_Stub'Class then
                Done :=
-                 Match_Insensitive (Do_Stub'Class (This.all).Name, Till, True);
+                 Strings_Edit.UTF8.Wildcards.Case_Insensitive.Match_Insensitive
+                   (Do_Stub'Class (This.all).Name, Till, True);
             else
                Done := False; -- Never stop
             end if;
@@ -3062,37 +3165,49 @@ package body Gtk.Oscilloscope is
       end loop;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) & Where ("Redo"));
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
+              Where ("Redo"));
    end Redo;
 
-   overriding
-   procedure Refresh (Widget  : not null access Gtk_Graphs_Record;
-                      Context : Cairo_Context) is
+   overriding procedure Refresh (Widget  : not null access Gtk_Graphs_Record;
+                                 Context : Cairo.Cairo_Context)
+   is
+      use type Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer;
    begin
-      Gtk_Layered_Record (Widget.all).Refresh (Context);
+      Gtk.Layered.Gtk_Layered_Record (Widget.all).Refresh (Context);
       if
         Widget.all.Oscilloscope.all.Refresh_Period /= null or else
         Widget.all.Oscilloscope.all.Drawing_Time /= null
       then
          declare
-            T1 : constant Time := Widget.all.Get_Drawing_Time;
-            T2 : constant Time := Clock;
+            use type Ada.Real_Time.Time;
+            T1 : constant Ada.Real_Time.Time := Widget.all.Get_Drawing_Time;
+            T2 : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
          begin
             if Widget.all.Oscilloscope.all.Refresh_Period /= null then
-               if Widget.all.Last_Time /= Time_First then
+               if Widget.all.Last_Time /= Ada.Real_Time.Time_First then
                   Widget.all.Oscilloscope.all.Refresh_Period.all.Put
-                    (T => X_Axis (To_Double (T2)),
-                     V => Y_Axis (To_Duration (T1 - Widget.all.Last_Time)));
+                    (T =>
+                       Gtk.Layered.Waveform.X_Axis
+                         (Gtk.Layered.Waveform.To_Double (T2)),
+                     V =>
+                       Gtk.Layered.Waveform.Y_Axis
+                         (Ada.Real_Time.To_Duration
+                              (T1 - Widget.all.Last_Time)));
                end if;
                Widget.all.Last_Time := T1;
             end if;
             if Widget.all.Oscilloscope.all.Drawing_Time /= null then
                Widget.all.Oscilloscope.all.Drawing_Time.all.Put
-                 (T => X_Axis (To_Double (T2)),
-                  V => Y_Axis (To_Duration (T2 - T1)));
+                 (T =>
+                    Gtk.Layered.Waveform.X_Axis
+                      (Gtk.Layered.Waveform.To_Double (T2)),
+                  V =>
+                    Gtk.Layered.Waveform.Y_Axis
+                      (Ada.Real_Time.To_Duration (T2 - T1)));
             end if;
          end;
       end if;
@@ -3101,7 +3216,7 @@ package body Gtk.Oscilloscope is
    overriding
    procedure Resized
      (Widget     : not null access Gtk_Graphs_Record;
-      Allocation : Gtk_Allocation)
+      Allocation : Gtk.Widget.Gtk_Allocation)
    is
       Width  : constant Gdouble := Gdouble (Allocation.Width);
       Height : constant Gdouble := Gdouble (Allocation.Height);
@@ -3128,10 +3243,10 @@ package body Gtk.Oscilloscope is
       end loop;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
               Where ("Restore_State"));
    end Restore_State;
 
@@ -3143,8 +3258,8 @@ package body Gtk.Oscilloscope is
       if Widget.all.Groups /= null and then Group in Widget.all.Groups'Range
       then
          declare
-            This : constant Gtk_Waveform_Amplifier :=
-                   Widget.all.Groups.all (Group).Amplifier;
+            This : constant Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier :=
+                     Widget.all.Groups.all (Group).Amplifier;
          begin
             if This.all.Get_Auto_Scaling then
                Push_Auto_Amplifier
@@ -3161,10 +3276,10 @@ package body Gtk.Oscilloscope is
       end if;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
               Where ("Save_Amplifier"));
    end Save_Amplifier;
 
@@ -3173,8 +3288,8 @@ package body Gtk.Oscilloscope is
       Sweeper : Sweeper_Type;
       First   : in out Boolean)
    is
-      This : constant Gtk_Waveform_Sweeper :=
-             Widget.all.Time_Axis (Sweeper).Sweeper;
+      This : constant Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper :=
+               Widget.all.Time_Axis (Sweeper).Sweeper;
    begin
       if This.all.Get_Frozen then
          Push_Sweeper_Zoom (This, Widget.all.Undo_Stack'Access, First);
@@ -3183,10 +3298,11 @@ package body Gtk.Oscilloscope is
       end if;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) & Where ("Save_Sweeper"));
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
+              Where ("Save_Sweeper"));
    end Save_Sweeper;
 
    procedure Set_Auto_Scaling
@@ -3199,7 +3315,7 @@ package body Gtk.Oscilloscope is
    begin
       if Group = 0 then
          raise Constraint_Error with
-            "No group assigned to the amplifier";
+           "No group assigned to the amplifier";
       else
          Widget.all.Groups.all (Group).Amplifier.all.Set_Auto_Scaling (Auto);
       end if;
@@ -3219,7 +3335,7 @@ package body Gtk.Oscilloscope is
 
    procedure Set_Default_Face
      (Widget : not null access Gtk_Oscilloscope_Record;
-      Face   : Pango_Cairo_Font) is
+      Face   : Pango.Cairo.Fonts.Pango_Cairo_Font) is
    begin
       Widget.all.Default_Face := Face;
    end Set_Default_Face;
@@ -3237,23 +3353,24 @@ package body Gtk.Oscilloscope is
       Left    : Boolean;
       Right   : Boolean)
    is
-      Row : Gtk_Tree_Iter;
+      Row : Gtk.Tree_Model.Gtk_Tree_Iter;
    begin
       if Channel > Widget.all.Channels_Number then
          raise Constraint_Error with "Wrong channel number";
       else
          declare
-            Waveform : Waveform_Layer renames
-                       Widget.all.Channels (Channel).Waveform.all;
+            Waveform : Gtk.Layered.Waveform.Waveform_Layer renames
+                         Widget.all.Channels (Channel).Waveform.all;
          begin
             if
-              Left /= Waveform.Get_Left_Extrapolation_Mode or else
-              Right /= Waveform.Get_Right_Extrapolation_Mode
+              Left /= Gtk.Layered.Waveform.Get_Left_Extrapolation_Mode (Waveform) or else
+              Right /= Gtk.Layered.Waveform.Get_Right_Extrapolation_Mode (Waveform)
             then
-               Waveform.Set_Extrapolation_Mode (Left, Right);
+               Gtk.Layered.Waveform.Set_Extrapolation_Mode
+                 (Waveform, Left, Right);
                Row :=
                  Widget.all.Channel_Names.all.Nth_Child
-                   (Null_Iter, Gint (Channel) - 1);
+                   (Gtk.Tree_Model.Null_Iter, Gint (Channel) - 1);
                Widget.all.Channel_Names.all.Set (Row, 6, Left);
                Widget.all.Channel_Names.all.Set (Row, 7, Right);
                Emit (Widget, Signal_IDs (15), Guint (Channel));
@@ -3267,7 +3384,7 @@ package body Gtk.Oscilloscope is
       Sweeper : Sweeper_Type;
       Frames  : Gdouble)
    is
-      Box : constant Cairo_Box := Widget.all.Get_Box;
+      Box : constant Cairo.Ellipses.Cairo_Box := Widget.all.Get_Box;
    begin
       Set_Page_Span
         (Widget,
@@ -3280,39 +3397,40 @@ package body Gtk.Oscilloscope is
       Sweeper : Sweeper_Type;
       Frozen  : Boolean)
    is
+      use type Gtk.Scale.Gtk_Scale;
       This : Time_Axis_Data renames Widget.all.Time_Axis (Sweeper);
    begin
       if Frozen and then not This.No_Scale then
          if This.Scale = null and then not Widget.all.Selection.all.Engaged then
-            Gtk_New_Hbox (This.Box);
-            Gtk_New (This.Left_Fill);
+            Gtk.Box.Gtk_New_Hbox (This.Box);
+            Gtk.Fixed.Gtk_New (This.Left_Fill);
             This.Left_Fill.all.Set_Size_Request
               (Width  => Widget.all.Get_Annotation_Width (Left),
                Height => 1);
             This.Box.all.Pack_Start (This.Left_Fill, False, False);
-            Gtk_New_Hscale
+            Gtk.Scale.Gtk_New_Hscale
               (This.Scale, This.Sweeper.all'Unchecked_Access);
             This.Scale.all.Set_Hexpand (True);
             This.Scale.all.Set_Vexpand (False);
             This.Box.all.Pack_Start (This.Scale);
-            Gtk_New (This.Right_Fill);
+            Gtk.Fixed.Gtk_New (This.Right_Fill);
             This.Right_Fill.all.Set_Size_Request
               (Width  => Widget.all.Get_Annotation_Width (Right),
                Height => 1);
             This.Box.all.Pack_Start (This.Right_Fill, False, False);
             case Sweeper is
                when Upper =>
-                  This.Scale.all.Set_Value_Pos (Pos_Top);
+                  This.Scale.all.Set_Value_Pos (Gtk.Enums.Pos_Top);
                   Widget.all.Attach_Next_To
                     (This.Box,
                      Widget.all.Layers,
-                     Pos_Top);
+                     Gtk.Enums.Pos_Top);
                when Lower =>
-                  This.Scale.all.Set_Value_Pos (Pos_Bottom);
+                  This.Scale.all.Set_Value_Pos (Gtk.Enums.Pos_Bottom);
                   Widget.all.Attach_Next_To
                     (This.Box,
                      Widget.all.Layers,
-                     Pos_Bottom);
+                     Gtk.Enums.Pos_Bottom);
             end case;
             This.Box.all.Show;
             This.Left_Fill.all.Show;
@@ -3339,13 +3457,16 @@ package body Gtk.Oscilloscope is
 
    procedure Set_Grid_Colors
      (Widget      : not null access Gtk_Oscilloscope_Record;
-      Major_Color : Gdk_Color;
-      Minor_Color : Gdk_Color)
+      Major_Color : Gdk.Color.Gdk_Color;
+      Minor_Color : Gdk.Color.Gdk_Color)
    is
-      procedure Set_Grid (Paper : in out Graph_Paper_Layer);
-      procedure Set_Grid (Paper : in out Graph_Paper_Layer) is
-         Major : Line_Parameters := Paper.Get_Major_Line;
-         Minor : Line_Parameters := Paper.Get_Minor_Line;
+      procedure Set_Grid
+        (Paper : in out Gtk.Layered.Graph_Paper.Graph_Paper_Layer);
+      procedure Set_Grid
+        (Paper : in out Gtk.Layered.Graph_Paper.Graph_Paper_Layer)
+      is
+         Major : Gtk.Layered.Line_Parameters := Paper.Get_Major_Line;
+         Minor : Gtk.Layered.Line_Parameters := Paper.Get_Minor_Line;
       begin
          Major.Color := Major_Color;
          Minor.Color := Minor_Color;
@@ -3384,6 +3505,7 @@ package body Gtk.Oscilloscope is
       Amplifier : Amplifier_Type;
       Group     : Group_Number)
    is
+      use type Gtk.Scale.Gtk_Scale;
       Data : Values_Axis_Data renames Widget.all.Values_Axis (Amplifier);
    begin
       if Group > Widget.all.Groups_Number then
@@ -3410,16 +3532,19 @@ package body Gtk.Oscilloscope is
       end if;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) & Where ("Set_Group"));
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
+              Where ("Set_Group"));
    end Set_Group;
 
    procedure Set_Interpolation_Mode
      (Widget  : not null access Gtk_Oscilloscope_Record;
       Channel : Channel_Number;
-      Mode    : Interpolation_Mode) is
+      Mode    : Gtk.Layered.Interpolation_Mode)
+   is
+      use type Gtk.Layered.Interpolation_Mode;
    begin
       if Channel > Widget.all.Channels_Number then
          raise Constraint_Error with "Wrong channel number";
@@ -3427,12 +3552,12 @@ package body Gtk.Oscilloscope is
         Widget.all.Channels (Channel).Waveform.all.Get_Interpolation_Mode /= Mode
       then
          Widget.all.Channels (Channel).Waveform.all.
-            Set_Interpolation_Mode (Mode);
+           Set_Interpolation_Mode (Mode);
          Widget.all.Channel_Names.all.Set
            (Widget.all.Channel_Names.all.Nth_Child
-              (Null_Iter, Gint (Channel) - 1),
+              (Gtk.Tree_Model.Null_Iter, Gint (Channel) - 1),
             3,
-            Interpolation_Mode'Pos (Mode));
+            Gtk.Layered.Interpolation_Mode'Pos (Mode));
          Emit (Widget, Signal_IDs (10), Guint (Channel));
       end if;
    end Set_Interpolation_Mode;
@@ -3449,12 +3574,13 @@ package body Gtk.Oscilloscope is
       Sweeper   : Sweeper_Type;
       Page_Span : Duration)
    is
-      Adjustment : constant Gtk_Waveform_Sweeper :=
-                   Widget.all.Time_Axis (Sweeper).Sweeper;
+      Adjustment : constant Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper :=
+                     Widget.all.Time_Axis (Sweeper).Sweeper;
    begin
       if Adjustment.all.Get_Frozen then
          declare
-            Old : constant Time := Adjustment.all.Get_Time;
+            use type Ada.Real_Time.Time;
+            Old : constant Ada.Real_Time.Time := Adjustment.all.Get_Time;
          begin
             Adjustment.all.Set_Page_Span (Page_Span);
             if Old /= Adjustment.all.Get_Time then
@@ -3481,7 +3607,7 @@ package body Gtk.Oscilloscope is
 
    procedure Set_Preferred_Method
      (Widget : not null access Gtk_Oscilloscope_Record;
-      Method : Waveform_Drawing_Method) is
+      Method : Gtk.Layered.Waveform_Drawing_Method) is
    begin
       for Index in 1 .. Widget.all.Channels_Number loop
          Widget.all.Channels (Index).Waveform.all.Set_Preferred_Method (Method);
@@ -3525,7 +3651,7 @@ package body Gtk.Oscilloscope is
       for Amplifier in Widget.all.Values_Axis'Range loop
          declare
             Data : Values_Axis_Data renames
-                   Widget.all.Values_Axis (Amplifier);
+                     Widget.all.Values_Axis (Amplifier);
          begin
             if Data.Texts /= null then
                Data.Texts.all.Set
@@ -3569,24 +3695,25 @@ package body Gtk.Oscilloscope is
       end loop;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
               Where ("Set_Superscript"));
    end Set_Superscript;
 
    procedure Set_Time
      (Widget  : not null access Gtk_Oscilloscope_Record;
       Sweeper : Sweeper_Type;
-      Stamp   : Time)
+      Stamp   : Ada.Real_Time.Time)
    is
-      Adjustment : constant Gtk_Waveform_Sweeper :=
-                   Widget.all.Time_Axis (Sweeper).Sweeper;
+      Adjustment : constant Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper :=
+                     Widget.all.Time_Axis (Sweeper).Sweeper;
    begin
       if Adjustment.all.Get_Frozen then
          declare
-            Old : constant Time := Adjustment.all.Get_Time;
+            use type Ada.Real_Time.Time;
+            Old : constant Ada.Real_Time.Time := Adjustment.all.Get_Time;
          begin
             Adjustment.all.Set_Time (Stamp);
             if Old /= Adjustment.all.Get_Time then
@@ -3616,12 +3743,13 @@ package body Gtk.Oscilloscope is
       Sweeper : Sweeper_Type;
       Stamp   : Ada.Calendar.Time)
    is
-      Adjustment : constant Gtk_Waveform_Sweeper :=
-                   Widget.all.Time_Axis (Sweeper).Sweeper;
+      Adjustment : constant Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper :=
+                     Widget.all.Time_Axis (Sweeper).Sweeper;
    begin
       if Adjustment.all.Get_Frozen then
          declare
-            Old : constant Time := Adjustment.all.Get_Time;
+            use type Ada.Real_Time.Time;
+            Old : constant Ada.Real_Time.Time := Adjustment.all.Get_Time;
          begin
             Adjustment.all.Set_Time (Stamp);
             if Old /= Adjustment.all.Get_Time then
@@ -3652,6 +3780,8 @@ package body Gtk.Oscilloscope is
       Visible : Boolean;
       As_Time : Boolean := True)
    is
+      use type Pango.Cairo.Fonts.Font_Type;
+      use type Gtk.Scale.Gtk_Scale;
       Data : Time_Axis_Data renames Widget.all.Time_Axis (Sweeper);
    begin
       if (Visible xor Data.On) or else (As_Time xor Data.Time_Mode) then
@@ -3663,26 +3793,27 @@ package body Gtk.Oscilloscope is
             end if;
             if not Data.Width_Set then
                Data.Width :=
-                  Guint'(Style_Get (Widget, "time-axis-height"));
+                 Guint'
+                   (Gtk.Widget.Styles.Style_Get (Widget, "time-axis-height"));
             end if;
             Data.Offset := Gdouble (Data.Width);
             Data.Line :=
-              Add_Line
+              Gtk.Layered.Line.Add_Line
                 (Under => Widget.all.Background.all.Atop,
                  Angle => 0.0).all'Unchecked_Access;
             if not Data.Grid then
                Data.Ticks :=
-                 Add_Graph_Paper
+                 Gtk.Layered.Graph_Paper.Add_Graph_Paper
                    (Under  => Data.Line,
                     Box    => (-0.5, -0.5, 0.5, 0.5),
                     X_Axis => Data.Sweeper).all'Unchecked_Access;
             end if;
-            if Get_Type (Data.Face) = Null_Font then
+            if Pango.Cairo.Fonts.Get_Type (Data.Face) = Pango.Cairo.Fonts.Null_Font then
                Data.Face := Widget.all.Default_Face;
             end if;
             Data.Texts :=
-               Gtk_Oscilloscope_Record'Class (Widget.all).
-                  Create_Annotation (Sweeper).all'Unchecked_Access;
+              Gtk_Oscilloscope_Record'Class (Widget.all).
+              Create_Annotation (Sweeper).all'Unchecked_Access;
          else
             Data.Offset := 0.0;
             Data.Time_Mode := As_Time;
@@ -3701,10 +3832,10 @@ package body Gtk.Oscilloscope is
       end if;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
               Where ("Set_Time_Axis"));
    end Set_Time_Axis;
 
@@ -3713,6 +3844,7 @@ package body Gtk.Oscilloscope is
       Sweeper : Sweeper_Type;
       Height  : Natural)
    is
+      use type Gtk.Scale.Gtk_Scale;
       Data : Time_Axis_Data renames Widget.all.Time_Axis (Sweeper);
    begin
       Data.Width_Set := True;
@@ -3727,7 +3859,7 @@ package body Gtk.Oscilloscope is
                when Left | Right =>
                   declare
                      This : Values_Axis_Data renames
-                            Widget.all.Values_Axis (Amplifier);
+                              Widget.all.Values_Axis (Amplifier);
                   begin
                      if This.Scale /= null then
                         case Sweeper is
@@ -3751,10 +3883,10 @@ package body Gtk.Oscilloscope is
       end if;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
               Where ("Set_Time_Axis_Height"));
    end Set_Time_Axis_Height;
 
@@ -3769,7 +3901,7 @@ package body Gtk.Oscilloscope is
          if Visible then
             if not Data.On then
                Data.Ticks :=
-                 Add_Graph_Paper
+                 Gtk.Layered.Graph_Paper.Add_Graph_Paper
                    (Under       => Widget.all.Background.all.Atop,
                     Box         => (-0.5, -0.5, 0.5, 0.5),
                     X_Axis      => Data.Sweeper,
@@ -3789,10 +3921,10 @@ package body Gtk.Oscilloscope is
       end if;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
               Where ("Set_Time_Grid"));
    end Set_Time_Grid;
 
@@ -3809,18 +3941,18 @@ package body Gtk.Oscilloscope is
       end if;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
               Where ("Set_Time_Scale"));
    end Set_Time_Scale;
 
    procedure Set_Time_Text_Alignment
      (Widget     : not null access Gtk_Oscilloscope_Record;
       Sweeper    : Sweeper_Type;
-      Horizontal : Alignment;
-      Vertical   : Vertical_Alignment)
+      Horizontal : Ada.Strings.Alignment;
+      Vertical   : Gtk.Layered.Vertical_Alignment)
    is
       Data : Time_Axis_Data renames Widget.all.Time_Axis (Sweeper);
    begin
@@ -3844,20 +3976,20 @@ package body Gtk.Oscilloscope is
       end if;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
               Where ("Set_Time_Text_Alignment"));
    end Set_Time_Text_Alignment;
 
    procedure Set_Time_Text_Font
      (Widget  : not null access Gtk_Oscilloscope_Record;
       Sweeper : Sweeper_Type;
-      Face    : Pango_Cairo_Font;
+      Face    : Pango.Cairo.Fonts.Pango_Cairo_Font;
       Height  : Gdouble;
       Stretch : Gdouble   := 1.0;
-      Color   : Gdk_Color := RGB (0.0, 0.0, 0.0);
+      Color   : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Angle   : Gdouble   := 0.0)
    is
       Data : Time_Axis_Data renames Widget.all.Time_Axis (Sweeper);
@@ -3890,10 +4022,10 @@ package body Gtk.Oscilloscope is
       end if;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
               Where ("Set_Time_Text_Font"));
    end Set_Time_Text_Font;
 
@@ -3914,7 +4046,7 @@ package body Gtk.Oscilloscope is
          Widget.all.Channels (Channel).Tip_X_Suffix := new String'(Suffix);
       else
          raise Constraint_Error with
-            "Wrong channel number" & Channel_Count'Image (Channel);
+           "Wrong channel number" & Channel_Count'Image (Channel);
       end if;
    end Set_Time_Tooltip_Suffix;
 
@@ -3928,16 +4060,18 @@ package body Gtk.Oscilloscope is
          Widget.all.Channels (Channel).Tip_Prefix := new String'(Text);
       else
          raise Constraint_Error with
-            "Wrong channel number" & Channel_Count'Image (Channel);
+           "Wrong channel number" & Channel_Count'Image (Channel);
       end if;
    end Set_Tooltip_Annotation;
 
    procedure Set_Values_Alignment
      (Widget     : not null access Gtk_Oscilloscope_Record;
       Amplifier  : Amplifier_Type;
-      Horizontal : Alignment;
-      Vertical   : Vertical_Alignment)
+      Horizontal : Ada.Strings.Alignment;
+      Vertical   : Gtk.Layered.Vertical_Alignment)
    is
+      use type Ada.Strings.Alignment;
+      use type Gtk.Layered.Vertical_Alignment;
       Data : Values_Axis_Data renames Widget.all.Values_Axis (Amplifier);
    begin
       if
@@ -3965,10 +4099,10 @@ package body Gtk.Oscilloscope is
       end if;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
               Where ("Set_Values_Alignment"));
    end Set_Values_Alignment;
 
@@ -3977,6 +4111,7 @@ package body Gtk.Oscilloscope is
       Amplifier : Amplifier_Type;
       Visible   : Boolean)
    is
+      use type Pango.Cairo.Fonts.Font_Type;
       Data : Values_Axis_Data renames Widget.all.Values_Axis (Amplifier);
    begin
       if Data.Group = 0 then
@@ -3986,7 +4121,8 @@ package body Gtk.Oscilloscope is
          if Visible then
             if not Data.Width_Set then
                Data.Width :=
-                  Guint'(Style_Get (Widget, "values-axis-width"));
+                 Guint'
+                   (Gtk.Widget.Styles.Style_Get (Widget, "values-axis-width"));
             end if;
             case Amplifier is
                when Left | Right =>
@@ -3995,25 +4131,25 @@ package body Gtk.Oscilloscope is
                   null;
             end case;
             Data.Line :=
-               Add_Line
+              Gtk.Layered.Line.Add_Line
                 (Under => Widget.all.Background.all.Atop,
                  Angle => 0.0).all'Unchecked_Access;
             if not Data.Grid then
                Data.Ticks :=
-                 Add_Graph_Paper
+                 Gtk.Layered.Graph_Paper.Add_Graph_Paper
                    (Under   => Data.Line,
-                     Box    => (-0.5, -0.5, 0.5, 0.5),
-                     Y_Axis =>
+                    Box     => (-0.5, -0.5, 0.5, 0.5),
+                    Y_Axis  =>
                       Widget.all.Groups.all
                         (Widget.all.Values_Axis
                            (Amplifier).Group).Amplifier).all'Unchecked_Access;
             end if;
-            if Get_Type (Data.Face) = Null_Font then
+            if Pango.Cairo.Fonts.Get_Type (Data.Face) = Pango.Cairo.Fonts.Null_Font then
                Data.Face := Widget.all.Default_Face;
             end if;
             Data.Texts :=
-               Gtk_Oscilloscope_Record'Class (Widget.all).
-                  Create_Annotation (Amplifier).all'Unchecked_Access;
+              Gtk_Oscilloscope_Record'Class (Widget.all).
+              Create_Annotation (Amplifier).all'Unchecked_Access;
          else
             case Amplifier is
                when Left | Right =>
@@ -4036,10 +4172,10 @@ package body Gtk.Oscilloscope is
       end if;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
               Where ("Set_Values_Axis"));
    end Set_Values_Axis;
 
@@ -4059,6 +4195,7 @@ package body Gtk.Oscilloscope is
          end if;
          for Sweeper in Widget.all.Time_Axis'Range loop
             declare
+               use type Gtk.Scale.Gtk_Scale;
                This : Time_Axis_Data renames Widget.all.Time_Axis (Sweeper);
             begin
                if This.Scale /= null then
@@ -4082,10 +4219,10 @@ package body Gtk.Oscilloscope is
       end if;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
               Where ("Set_Values_Axis_Width"));
    end Set_Values_Axis_Width;
 
@@ -4103,7 +4240,7 @@ package body Gtk.Oscilloscope is
          if Visible then
             if not Data.On and then Data.Group > 0 then
                Data.Ticks :=
-                  Add_Graph_Paper
+                 Gtk.Layered.Graph_Paper.Add_Graph_Paper
                    (Under       => Widget.all.Background.all.Atop,
                     Box         => (-0.5, -0.5, 0.5, 0.5),
                     Y_Axis      => Widget.all.Groups.all (Data.Group).Amplifier,
@@ -4126,10 +4263,10 @@ package body Gtk.Oscilloscope is
       end if;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
               Where ("Set_Values_Grid"));
    end Set_Values_Grid;
 
@@ -4146,20 +4283,20 @@ package body Gtk.Oscilloscope is
       end if;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
               Where ("Set_Values_Scale"));
    end Set_Values_Scale;
 
    procedure Set_Values_Text_Font
      (Widget    : not null access Gtk_Oscilloscope_Record;
       Amplifier : Amplifier_Type;
-      Face      : Pango_Cairo_Font;
+      Face      : Pango.Cairo.Fonts.Pango_Cairo_Font;
       Height    : Gdouble;
       Stretch   : Gdouble   := 1.0;
-      Color     : Gdk_Color := RGB (0.0, 0.0, 0.0);
+      Color     : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Angle     : Gdouble   := 0.0)
    is
       Data : Values_Axis_Data renames Widget.all.Values_Axis (Amplifier);
@@ -4192,10 +4329,10 @@ package body Gtk.Oscilloscope is
       end if;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
               Where ("Set_Values_Text_Font"));
    end Set_Values_Text_Font;
 
@@ -4209,7 +4346,7 @@ package body Gtk.Oscilloscope is
          Widget.all.Channels (Channel).Tip_Y_Suffix := new String'(Suffix);
       else
          raise Constraint_Error with
-            "Wrong channel number" & Channel_Count'Image (Channel);
+           "Wrong channel number" & Channel_Count'Image (Channel);
       end if;
    end Set_Values_Tooltip_Suffix;
 
@@ -4225,7 +4362,7 @@ package body Gtk.Oscilloscope is
          Widget.all.Channels (Channel).Waveform.all.Set_Visible (Visible);
          Widget.all.Channel_Names.all.Set
            (Widget.all.Channel_Names.all.Nth_Child
-              (Null_Iter, Gint (Channel) - 1),
+              (Gtk.Tree_Model.Null_Iter, Gint (Channel) - 1),
             3,
             Visible);
          Emit (Widget, Signal_IDs (9), Guint (Channel));
@@ -4236,23 +4373,31 @@ package body Gtk.Oscilloscope is
      (Widget  : not null access Gtk_Oscilloscope_Record;
       Sweeper : Sweeper_Type)
    is
-      Box    : constant Cairo_Box := Widget.all.Get_Box;
+      Box    : constant Cairo.Ellipses.Cairo_Box := Widget.all.Get_Box;
       Height : Gdouble;
       Data   : Time_Axis_Data renames Widget.all.Time_Axis (Sweeper);
    begin
       if Data.On then
          Height :=
-            Gdouble (Guint'(Style_Get (Widget, "time-tick-height")));
+           Gdouble
+             (Guint'
+                (Gtk.Widget.Styles.Style_Get
+                   (Widget, "time-tick-height")));
          declare -- Setting style of the line
-            Line : Line_Parameters;
+            Line : Gtk.Layered.Line_Parameters;
             Y    : Gdouble;
          begin
             Line := Data.Line.all.Get_Line;
             Line.Color :=
-               Style_Get (Widget, "time-line-color", Line.Color);
+              Gtk.Widget.Styles.Style_Get
+                (Widget, "time-line-color", Line.Color);
             Line.Width :=
-               Gdouble (Guint'(Style_Get (Widget, "time-line-width")));
-            Line.Line_Cap := Style_Get (Widget, "time-line-cap");
+              Gdouble
+                (Guint'
+                   (Gtk.Widget.Styles.Style_Get (Widget, "time-line-width")));
+            Line.Line_Cap :=
+              Gtk.Widget.Styles.Line_Cap_Property.Style_Get
+                (Widget, "time-line-cap");
             case Sweeper is
                when Lower =>
                   Y := Gdouble'Floor (Box.Y2) + 0.5;
@@ -4265,7 +4410,8 @@ package body Gtk.Oscilloscope is
                Line => Line);
          end;
          declare -- Setting the time annotation
-            Location : Axis_Location := Data.Texts.all.Get_Location;
+            Location : Gtk.Layered.Graph_Paper_Annotation.Axis_Location :=
+                         Data.Texts.all.Get_Location;
          begin
             Location.Left  := Box.X1;
             Location.Right := Box.X2;
@@ -4290,25 +4436,30 @@ package body Gtk.Oscilloscope is
                Justify_Y   => Data.Justify_Y,
                Superscript => Widget.all.Get_Superscript,
                Background  =>
-                 Style_Get
+                 Gtk.Widget.Styles.Style_Get
                    (Widget,
                     "time-text-border-color",
                     Data.Texts.all.Get_Background_Color),
                Border      =>
                  Gdouble
-                   (Guint'(Style_Get (Widget, "time-text-border"))),
+                   (Guint'
+                        (Gtk.Widget.Styles.Style_Get
+                           (Widget, "time-text-border"))),
                Overlap     =>
                  Gdouble
-                   (Gint'(Style_Get (Widget, "time-text-overlap"))),
+                   (Gint'
+                        (Gtk.Widget.Styles.Style_Get
+                           (Widget, "time-text-overlap"))),
                Opacity     =>
                  Gdouble'
-                   (Style_Get (Widget, "time-text-border-opacity")));
+                   (Gtk.Widget.Styles.Style_Get
+                        (Widget, "time-text-border-opacity")));
          end;
       end if;
       if Data.Grid or else Data.On then
          declare -- Setting the time ticks
-            Major_Line : Line_Parameters;
-            Minor_Line : Line_Parameters;
+            Major_Line : Gtk.Layered.Line_Parameters;
+            Minor_Line : Gtk.Layered.Line_Parameters;
             Y1, Y2     : Gdouble;
          begin
             case Sweeper is
@@ -4337,44 +4488,53 @@ package body Gtk.Oscilloscope is
             end case;
             Major_Line := Data.Ticks.all.Get_Major_Line;
             Major_Line.Color :=
-               Style_Get
+              Gtk.Widget.Styles.Style_Get
                 (Widget,
                  "time-major-tick-color",
                  Major_Line.Color);
             Major_Line.Width :=
-               Gdouble
-                (Guint'(Style_Get (Widget, "time-major-tick-width")));
+              Gdouble
+                (Guint'
+                   (Gtk.Widget.Styles.Style_Get
+                      (Widget, "time-major-tick-width")));
             Major_Line.Line_Cap :=
-               Style_Get (Widget, "time-major-tick-cap");
+              Gtk.Widget.Styles.Line_Cap_Property.Style_Get
+                (Widget, "time-major-tick-cap");
             Minor_Line := Data.Ticks.all.Get_Minor_Line;
             Minor_Line.Color :=
-               Style_Get
+              Gtk.Widget.Styles.Style_Get
                 (Widget,
                  "time-minor-tick-color",
                  Minor_Line.Color);
             Minor_Line.Width :=
-               Gdouble
-                (Guint'(Style_Get (Widget, "time-minor-tick-width")));
+              Gdouble
+                (Guint'
+                   (Gtk.Widget.Styles.Style_Get
+                      (Widget, "time-minor-tick-width")));
             Minor_Line.Line_Cap :=
-               Style_Get (Widget, "time-minor-tick-cap");
+              Gtk.Widget.Styles.Line_Cap_Property.Style_Get
+                (Widget, "time-minor-tick-cap");
             Data.Ticks.all.Set
               (Box           => (X1 => Box.X1,
                                  X2 => Box.X2,
                                  Y1 => Y1,
                                  Y2 => Y2),
                X_Tick_Length =>
-                 Positive (Guint'(Style_Get (Widget, "time-tick-step"))),
+                 Positive
+                   (Guint'
+                        (Gtk.Widget.Styles.Style_Get
+                           (Widget, "time-tick-step"))),
                Y_Tick_Length => 50,
-               Major_Line => Major_Line,
-               Minor_Line => Minor_Line);
+               Major_Line    => Major_Line,
+               Minor_Line    => Minor_Line);
          end;
       end if;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
               Where ("Style_Changed_Time_Axis"));
    end Style_Changed_Time_Axis;
 
@@ -4382,23 +4542,30 @@ package body Gtk.Oscilloscope is
      (Widget    : not null access Gtk_Oscilloscope_Record;
       Amplifier : Amplifier_Type)
    is
-      Box   : constant Cairo_Box := Widget.all.Get_Box;
+      Box   : constant Cairo.Ellipses.Cairo_Box := Widget.all.Get_Box;
       Width : Gdouble;
       Data  : Values_Axis_Data renames Widget.all.Values_Axis (Amplifier);
    begin
       if Data.On then
          Width :=
-            Gdouble (Guint'(Style_Get (Widget, "values-tick-width")));
+           Gdouble
+             (Guint'
+                (Gtk.Widget.Styles.Style_Get (Widget, "values-tick-width")));
          declare -- Setting style of the line
-            Line : Line_Parameters;
+            Line : Gtk.Layered.Line_Parameters;
             X    : Gdouble;
          begin
             Line := Data.Line.all.Get_Line;
             Line.Color :=
-               Style_Get (Widget, "values-line-color", Line.Color);
+              Gtk.Widget.Styles.Style_Get
+                (Widget, "values-line-color", Line.Color);
             Line.Width :=
-               Gdouble (Guint'(Style_Get (Widget, "values-line-width")));
-            Line.Line_Cap := Style_Get (Widget, "values-line-cap");
+              Gdouble
+                (Guint'
+                   (Gtk.Widget.Styles.Style_Get (Widget, "values-line-width")));
+            Line.Line_Cap :=
+              Gtk.Widget.Styles.Line_Cap_Property.Style_Get
+                (Widget, "values-line-cap");
             case Amplifier is
                when Left =>
                   X := Gdouble'Floor (Box.X1) + 0.5;
@@ -4413,7 +4580,8 @@ package body Gtk.Oscilloscope is
                Line => Line);
          end;
          declare -- Setting the time annotation
-            Location : Axis_Location := Data.Texts.all.Get_Location;
+            Location : Gtk.Layered.Graph_Paper_Annotation.Axis_Location :=
+                         Data.Texts.all.Get_Location;
          begin
             Location.Top := Box.Y1;
             Location.Bottom := Box.Y2;
@@ -4422,7 +4590,7 @@ package body Gtk.Oscilloscope is
                   Location.X_Position := Box.X1 - Width;
                when Middle =>
                   Location.X_Position :=
-                     (Box.X1 + Box.X2) / 2.0 + Width;
+                    (Box.X1 + Box.X2) / 2.0 + Width;
                when Right =>
                   Location.X_Position := Box.X2 + Width;
             end case;
@@ -4437,22 +4605,30 @@ package body Gtk.Oscilloscope is
                Justify_Y   => Data.Justify_Y,
                Superscript => Widget.all.Superscript,
                Background  =>
-                 Style_Get
+                 Gtk.Widget.Styles.Style_Get
                    (Widget,
                     "values-text-border-color",
                     Data.Texts.all.Get_Background_Color),
                Border      =>
-                 Gdouble (Guint'(Style_Get (Widget, "values-text-border"))),
+                 Gdouble
+                   (Guint'
+                        (Gtk.Widget.Styles.Style_Get
+                           (Widget, "values-text-border"))),
                Overlap     =>
-                 Gdouble (Gint'(Style_Get (Widget, "values-text-overlap"))),
+                 Gdouble
+                   (Gint'
+                        (Gtk.Widget.Styles.Style_Get
+                           (Widget, "values-text-overlap"))),
                Opacity     =>
-                 Gdouble'(Style_Get (Widget, "values-text-border-opacity")));
+                 Gdouble'
+                   (Gtk.Widget.Styles.Style_Get
+                        (Widget, "values-text-border-opacity")));
          end;
       end if;
       if Data.Grid or else Data.On then
          declare -- Setting the time ticks
-            Major_Line : Line_Parameters;
-            Minor_Line : Line_Parameters;
+            Major_Line : Gtk.Layered.Line_Parameters;
+            Minor_Line : Gtk.Layered.Line_Parameters;
             X1, X2     : Gdouble;
          begin
             case Amplifier is
@@ -4489,26 +4665,32 @@ package body Gtk.Oscilloscope is
             end case;
             Major_Line := Data.Ticks.all.Get_Major_Line;
             Major_Line.Color :=
-               Style_Get
+              Gtk.Widget.Styles.Style_Get
                 (Widget,
                  "values-major-tick-color",
                  Major_Line.Color);
             Major_Line.Width :=
-               Gdouble
-                (Guint'(Style_Get (Widget, "values-major-tick-width")));
+              Gdouble
+                (Guint'
+                   (Gtk.Widget.Styles.Style_Get
+                      (Widget, "values-major-tick-width")));
             Major_Line.Line_Cap :=
-               Style_Get (Widget, "values-major-tick-cap");
+              Gtk.Widget.Styles.Line_Cap_Property.Style_Get
+                (Widget, "values-major-tick-cap");
             Minor_Line := Data.Ticks.all.Get_Minor_Line;
             Minor_Line.Color :=
-               Style_Get
+              Gtk.Widget.Styles.Style_Get
                 (Widget,
                  "values-minor-tick-color",
                  Minor_Line.Color);
             Minor_Line.Width :=
-               Gdouble
-                (Guint'(Style_Get (Widget, "values-minor-tick-width")));
+              Gdouble
+                (Guint'
+                   (Gtk.Widget.Styles.Style_Get
+                      (Widget, "values-minor-tick-width")));
             Minor_Line.Line_Cap :=
-               Style_Get (Widget, "values-minor-tick-cap");
+              Gtk.Widget.Styles.Line_Cap_Property.Style_Get
+                (Widget, "values-minor-tick-cap");
             Data.Ticks.all.Set
               (Box           => (X1 => X1,
                                  X2 => X2,
@@ -4516,7 +4698,9 @@ package body Gtk.Oscilloscope is
                                  Y2 => Box.Y2),
                X_Tick_Length =>
                  Positive
-                   (Guint'(Style_Get (Widget, "values-tick-width"))),
+                   (Guint'
+                        (Gtk.Widget.Styles.Style_Get
+                           (Widget, "values-tick-width"))),
                Y_Tick_Length => 50,
                Major_Line    => Major_Line,
                Minor_Line    => Minor_Line);
@@ -4524,10 +4708,10 @@ package body Gtk.Oscilloscope is
       end if;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) &
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
               Where ("Style_Changed_Values_Axis"));
    end Style_Changed_Values_Axis;
 
@@ -4536,7 +4720,6 @@ package body Gtk.Oscilloscope is
       Till   : UTF8_String := "";
       Stub   : UTF8_String := "")
    is
-      use Strings_Edit.UTF8.Wildcards.Case_Insensitive;
       This  : Do_Item_Ptr := Widget.all.Undo_Stack.Actions;
       First : Boolean := True;
       Done  : Boolean := False;
@@ -4549,7 +4732,8 @@ package body Gtk.Oscilloscope is
          if Till'Length > 0 then
             if This.all in Do_Stub'Class then
                Done :=
-                 Match_Insensitive (Do_Stub'Class (This.all).Name, Till, True);
+                 Strings_Edit.UTF8.Wildcards.Case_Insensitive.Match_Insensitive
+                   (Do_Stub'Class (This.all).Name, Till, True);
             else
                Done := False; -- Never stop
             end if;
@@ -4562,16 +4746,18 @@ package body Gtk.Oscilloscope is
       end loop;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) & Where ("Undo"));
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
+              Where ("Undo"));
    end Undo;
 
    procedure Update_Amplifier
      (Widget    : not null access Gtk_Oscilloscope_Record;
       Amplifier : Amplifier_Type)
    is
+      use type Gtk.Scale.Gtk_Scale;
       Data  : Values_Axis_Data renames Widget.all.Values_Axis (Amplifier);
       Group : constant Group_Count := Data.Group;
    begin
@@ -4580,8 +4766,8 @@ package body Gtk.Oscilloscope is
            Widget.all.Groups.all (Group).Amplifier.all.Get_Auto_Scaling or else
            Data.No_Scale
          then
-            Set (Data.Settings_Changed);
-            Set (Data.Value_Changed);
+            Gtk.Handlers.References.Set (Data.Settings_Changed);
+            Gtk.Handlers.References.Set (Data.Value_Changed);
             if Data.Scale /= null then
                Widget.all.Remove (Data.Box);
                Data.Scale      := null;
@@ -4596,22 +4782,22 @@ package body Gtk.Oscilloscope is
               not Widget.all.Selection.all.Engaged and then
               Amplifier /= Middle
             then
-               Gtk_New_Vbox (Data.Box);
+               Gtk.Box.Gtk_New_Vbox (Data.Box);
                Data.Box.all.Set_Spacing (0);
-               Gtk_New (Data.Upper_Fill);
+               Gtk.Fixed.Gtk_New (Data.Upper_Fill);
                Data.Upper_Fill.all.Set_App_Paintable (True);
                Data.Box.all.Pack_Start (Data.Upper_Fill, False, False);
                Data.Upper_Fill.all.Set_Size_Request
                  (Width  => 1,
                   Height => Widget.all.Get_Annotation_Height (Upper));
-               Gtk_New_Vscale
+               Gtk.Scale.Gtk_New_Vscale
                  (Data.Scale,
                   Widget.all.Groups.all (Group).Amplifier.all'Unchecked_Access);
                Data.Box.all.Pack_Start (Data.Scale);
                Data.Scale.all.Set_Hexpand (False);
                Data.Scale.all.Set_Vexpand (True);
                Data.Scale.all.Set_Draw_Value (False);
-               Gtk_New (Data.Lower_Fill);
+               Gtk.Fixed.Gtk_New (Data.Lower_Fill);
                Data.Lower_Fill.all.Set_App_Paintable (True);
                Data.Box.all.Pack_Start (Data.Lower_Fill, False, False);
                Data.Lower_Fill.all.Set_Size_Request
@@ -4619,17 +4805,17 @@ package body Gtk.Oscilloscope is
                   Height => Widget.all.Get_Annotation_Height (Lower));
                case Amplifier is
                   when Left =>
-                     Data.Scale.all.Set_Value_Pos (Pos_Left);
+                     Data.Scale.all.Set_Value_Pos (Gtk.Enums.Pos_Left);
                      Widget.all.Attach_Next_To
                        (Data.Box,
                         Widget.all.Layers,
-                        Pos_Left);
+                        Gtk.Enums.Pos_Left);
                   when Right =>
-                     Data.Scale.all.Set_Value_Pos (Pos_Right);
+                     Data.Scale.all.Set_Value_Pos (Gtk.Enums.Pos_Right);
                      Widget.all.Attach_Next_To
                        (Data.Box,
                         Widget.all.Layers,
-                        Pos_Right);
+                        Gtk.Enums.Pos_Right);
                   when others =>
                      null;
                end case;
@@ -4642,11 +4828,13 @@ package body Gtk.Oscilloscope is
    procedure Update_Value (Widget : not null access Gtk_Oscilloscope_Record)
    is
       use type Ada.Calendar.Time;
-      Row    : Gtk_Tree_Iter := Widget.all.Channel_Names.all.Get_Iter_First;
+      Row    : Gtk.Tree_Model.Gtk_Tree_Iter :=
+                 Widget.all.Channel_Names.all.Get_Iter_First;
       T1, T2 : Ada.Calendar.Time;
    begin
       for Index in 1 .. Widget.all.Channels_Number loop
          declare
+            use type Gtk.Layered.Waveform.Y_Axis;
             Data : Channel_Data renames Widget.all.Channels (Index);
          begin
             case Data.Status is
@@ -4656,12 +4844,12 @@ package body Gtk.Oscilloscope is
                   Widget.all.Channel_Names.all.Set
                     (Row,
                      5,
-                     Edit.Image (Gdouble (Data.Value_1), RelSmall => 6));
+                     Gtk.Layered.Waveform.Edit.Image (Gdouble (Data.Value_1), RelSmall => 6));
                when Difference =>
                   Widget.all.Channel_Names.all.Set
                     (Row,
                      5,
-                     Edit.Image
+                     Gtk.Layered.Waveform.Edit.Image
                        (Gdouble (Data.Value_1 - Data.Value_2),
                         RelSmall => 6));
             end case;
@@ -4682,24 +4870,30 @@ package body Gtk.Oscilloscope is
            (Widget,
             Signal_IDs (11),
             Sweeper_Type'Pos (Sweeper),
-            To_Double (T1),
+            Gtk.Layered.Waveform.To_Double (T1),
             Gdouble (T2 - T1));
       end loop;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) & Where ("Update_Value"));
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: " & Ada.Exceptions.Exception_Information (Error) &
+              Where ("Update_Value"));
    end Update_Value;
+
+   function Where (Name : String) return String is
+   begin
+      return " in Gtk.Oscilloscope." & Name;
+   end Where;
 
    procedure Zoom_In
      (Widget  : not null access Gtk_Oscilloscope_Record;
       Sweeper : Sweeper_Type;
       T1, T2  : Ada.Calendar.Time)
    is
-      use Ada.Calendar;
-      T : Ada.Calendar.Time := Widget.Get_Time (Sweeper);
+      use type Ada.Calendar.Time;
+      -- T : Ada.Calendar.Time := Widget.Get_Time (Sweeper);
    begin
       Widget.all.Set_Page_Span (Sweeper, T2 - T1);
       Widget.all.Set_Time (Sweeper, T2);
@@ -4707,24 +4901,26 @@ package body Gtk.Oscilloscope is
 
    procedure Zoom_In
      (Widget    : not null access Gtk_Oscilloscope_Record;
-      Amplifier : Gtk_Waveform_Amplifier;
-      V1, V2    : Gdouble) is
+      Amplifier : Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier;
+      V1, V2    : Gdouble)
+   is
+      pragma Unreferenced (Widget);
    begin
       Amplifier.all.Set_Page_Size (V2 - V1);
       Amplifier.all.Set_Value (V1);
    end Zoom_In;
---
--- Zooming out:                    L' = a L + b      L = a X1 + b
---                                 U' = a U + b      U = a X2 + b
---       L    X1     X2    U
---       |<---|///////|--->|       a = (U - L) / (X2 - X1)
---       |\               /|       b = U - X2 (U - L) / (X2 - X1) =
---       | \             / |         = (L X2 - U X1) / (X2 - X1)
---       |  \           /  |
---       |   \         /   |       U' - L' = a (U - L)
---       |<---|-------|--->|
---       L'   L       U    U'
---
+   --
+   -- Zooming out:                    L' = a L + b      L = a X1 + b
+   --                                 U' = a U + b      U = a X2 + b
+   --       L    X1     X2    U
+   --       |<---|///////|--->|       a = (U - L) / (X2 - X1)
+   --       |\               /|       b = U - X2 (U - L) / (X2 - X1) =
+   --       | \             / |         = (L X2 - U X1) / (X2 - X1)
+   --       |  \           /  |
+   --       |   \         /   |       U' - L' = a (U - L)
+   --       |<---|-------|--->|
+   --       L'   L       U    U'
+   --
    procedure Zoom_Out
      (Widget  : not null access Gtk_Oscilloscope_Record;
       Sweeper : Sweeper_Type;
@@ -4732,22 +4928,25 @@ package body Gtk.Oscilloscope is
    is
       use type Ada.Calendar.Time;
       Page : constant Gdouble :=
-                Gdouble (Widget.all.Get_Page_Span (Sweeper));
+               Gdouble (Widget.all.Get_Page_Span (Sweeper));
       T    : constant Gdouble :=
-                To_Double
+               Gtk.Layered.Waveform.To_Double
                  (Ada.Calendar.Time'(Widget.Get_Time (Sweeper)));
       A    : constant Gdouble := Page / Gdouble (T2 - T1);
-      B    : constant Gdouble := T - A * To_Double (T2);
+      B    : constant Gdouble := T - A * Gtk.Layered.Waveform.To_Double (T2);
    begin
       Widget.all.Set_Page_Span (Sweeper, Duration (Page * A));
-      Widget.all.Set_Time (Sweeper, Time'(To_Time (A * T + B)));
+      Widget.all.Set_Time
+        (Sweeper,
+         Ada.Real_Time.Time'(Gtk.Layered.Waveform.To_Time (A * T + B)));
    end Zoom_Out;
 
    procedure Zoom_Out
      (Widget    : not null access Gtk_Oscilloscope_Record;
-      Amplifier : Gtk_Waveform_Amplifier;
+      Amplifier : Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier;
       V1, V2    : Gdouble)
    is
+      pragma Unreferenced (Widget);
       Page  : constant Gdouble := Amplifier.all.Get_Page_Size;
       Value : constant Gdouble := Amplifier.all.Get_Value;
       A     : constant Gdouble := Page / (V2 - V1);

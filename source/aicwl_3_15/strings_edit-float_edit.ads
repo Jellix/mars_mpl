@@ -27,10 +27,10 @@
 --
 --  This generic package provides  I/O  for  floating-point  types  (the
 --  generic  parameter  Number).  There  is  also  a non-generic version
---  Strings_Edit.Floats. 
+--  Strings_Edit.Floats.
 --
 generic
-   type Number is digits <>; 
+   type Number is digits <>;
 package Strings_Edit.Float_Edit is
    subtype Number_Of is Number;
 --
@@ -54,14 +54,14 @@ package Strings_Edit.Float_Edit is
 -- the mantissa and the exponent part as well as in  the  exponent  part
 -- around the exponent sign. If Base has the value 15 or 16 the exponent
 -- part  shall  be  separated  by  at least one space character from the
--- mantissa. 
--- 
+-- mantissa.
+--
 -- Exceptions:
 --
 --      Constraint_Error - The number is not in First..Last
 --      Data_Error       - Syntax error in the number
 --      End_Error        - There is no any number
---      Layout_Error     - Pointer not in Source'First..Source'Last + 1 
+--      Layout_Error     - Pointer not in Source'First..Source'Last + 1
 --
    procedure Get
              (  Source   : in String;
@@ -86,7 +86,7 @@ package Strings_Edit.Float_Edit is
 -- This  function  gets  a floating-point number from the string Source.
 -- The number can be surrounded by spaces and  tabs.  The  whole  string
 -- Source  should  be  matched.  Otherwise  the  exception Data_Error is
--- propagated. 
+-- propagated.
 --
 -- Returns :
 --
@@ -126,16 +126,16 @@ package Strings_Edit.Float_Edit is
 -- base used for the output. Base itself does not appear in the  output.
 -- The  exponent  part  (if  used)  is always decimal. PutPlus indicates
 -- whether the plus sign should be placed if  the  number  is  positive.
--- There are two ways to specify the output precision. 
+-- There are two ways to specify the output precision.
 --
 -- (o)  The parameter RelSmall determines the number of the  right  Base
 --      places of the mantissa. For instance, with RelSmall = 3 and Base
---      = 10, the number 1.234567e+01 is represented as 12.3. 
---               
+--      = 10, the number 1.234567e+01 is represented as 12.3.
+--
 -- (o)  The parameter AbsSmall determines the rightmost correct digit of
 --      the mantissa. For example, with AbsSmall = 0,  Base  =  10,  the
 --      number 1.234567e+01 is represented as 12 (i.e. 12.34567  rounded
---      to 10**0). 
+--      to 10**0).
 --
 -- From two parameters RelSmall and AbsSmall, the procedure chooses one,
 -- that  specifies  the  minimal  number of mantissa digits, but no more
@@ -149,18 +149,18 @@ package Strings_Edit.Float_Edit is
 -- part  is  separated  from  the mantissa by space (to avoid ambiguity:
 -- F.Ee+2  is F.EE + 2 or F.E * 16**2?). The parameter Field defines the
 -- output size. If it has the value zero, then the output field is equal
--- to the output length. 
+-- to the output length.
 --
 -- When the parameter Field is not zero then Justify specifies alignment
 -- and Fill is the character used for filling.  When  Field  is  greater
 -- than Destination'Last - Pointer + 1,  the  latter  is  used  instead.
 -- After  successful  completion  Pointer  is  advanced  to  the   first
--- character following the output or to Destination'Last + 1. 
+-- character following the output or to Destination'Last + 1.
 --
 -- Exceptions:
 --
 --      Layout_Error -- Pointer  is not in Destination'Range or there is
---                      no room for the output. 
+--                      no room for the output.
 --
    procedure Put
              (  Destination : in out String;
@@ -187,7 +187,7 @@ package Strings_Edit.Float_Edit is
 -- Base  indicates the number base used for the output. Base itself does
 -- not appear in the output. The  exponent  part  (if  used)  is  always
 -- decimal. PutPlus indicates whether the plus sign should be placed  if
--- the number is positive. For precision parameters see Put. 
+-- the number is positive. For precision parameters see Put.
 --
 -- Returns :
 --

@@ -64,14 +64,14 @@ package Strings_Edit.Generic_Scale is
 -- Count major ticks. Zero Count is treated as 1. The major tick  length
 -- on  the value scale is chosen to be L={1|2|5}*10**n. The locations of
 -- major  ticks  are  selected  at  m*L.  The  minor  ticks are selected
--- depending on L: 
+-- depending on L:
 --
 --     L=1*10**n  | . | . | . | . | . | (1 minor tick)
 --     L=2*10**n  | . | . | . | . | . | (1 minor tick)
 --     L=5*10**n  | . . . . | . . . . | (4 minor ticks)
 --
 -- The  field  Small  can  be  used  for  resonable output of the values
--- associated with the major ticks. 
+-- associated with the major ticks.
 --
 -- Exceptions :
 --

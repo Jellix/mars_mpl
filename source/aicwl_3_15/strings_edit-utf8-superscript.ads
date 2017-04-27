@@ -34,11 +34,11 @@ private
 --    Source  - The source string
 --    Pointer - The source string position
 --    Digit   - The result
---    
+--
 -- This procedure takes one decimal superscript figure from  the  string
 -- Source. The  process  starts  from  Source  (Pointer).  If  sucessful
 -- Pointer  will  point  to  the  first  character  following the input.
--- Otherwise Pointer is untouched and the result is greater than 9. 
+-- Otherwise Pointer is untouched and the result is greater than 9.
 --
    procedure Get_Digit
              (  Source  : String;
@@ -51,11 +51,11 @@ private
 --    Source  - The source string
 --    Pointer - The source string position
 --    Sign    - The result
---    
+--
 -- This procedure takes sign from the string Source. The process  starts
 -- from  Source  (Pointer). If sucessful Pointer will point to the first
 -- character   following   the  input  and  all  consequent  spaces  and
--- tabulators. Otherwise Pointer is untouched. 
+-- tabulators. Otherwise Pointer is untouched.
 --
    procedure Get_Sign
              (  Source  : String;
@@ -71,7 +71,7 @@ private
 --
 -- The digit is placed in the positions of Destination (..Pointer). Then
 -- Pointer is  moved  back  to  the  first  position  before  the  first
--- character of the output. 
+-- character of the output.
 --
 -- Exceptions :
 --
@@ -91,7 +91,7 @@ private
 --
 -- The digit is placed in the positions of Destination (..Pointer). Then
 -- Pointer is  moved  back  to  the  first  position  before  the  first
--- character of the output. 
+-- character of the output.
 --
 -- Exceptions :
 --

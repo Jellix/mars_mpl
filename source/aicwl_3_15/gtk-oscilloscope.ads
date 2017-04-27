@@ -31,48 +31,35 @@
 --  is controlled by the same amplifier, so that the coresponding graphs
 --  are shown in the same scale.
 --
-with Ada.Real_Time;                 use Ada.Real_Time;
-with Ada.Strings;                   use Ada.Strings;
-with Cairo;                         use Cairo;
-with Cairo.Ellipses;                use Cairo.Ellipses;
-with Gdk.Color;                     use Gdk.Color;
-with Gdk.Event;                     use Gdk.Event;
-with Gdk.Rectangle;                 use Gdk.Rectangle;
-with Glib.Values;                   use Glib.Values;
-with Gtk.Adjustment;                use Gtk.Adjustment;
-with Gtk.Box;                       use Gtk.Box;
-with Gtk.Fixed;                     use Gtk.Fixed;
-with Gtk.Grid;                      use Gtk.Grid;
-with Gtk.Handlers.References;       use Gtk.Handlers.References;
-with Gtk.Image_Menu_Item;           use Gtk.Image_Menu_Item;
-with Gtk.Layered.Graph_Paper;       use Gtk.Layered.Graph_Paper;
-with Gtk.Layered.Line;              use Gtk.Layered.Line;
-with Gtk.Layered.Rectangle;         use Gtk.Layered.Rectangle;
-with Gtk.Layered.Refresh_Engine;    use Gtk.Layered.Refresh_Engine;
-with Gtk.Layered.Waveform.Sweeper;  use Gtk.Layered.Waveform.Sweeper;
-with Gtk.Layered.Waveform;          use Gtk.Layered.Waveform;
-with Gtk.Layered;                   use Gtk.Layered;
-with Gtk.List_Store;                use Gtk.List_Store;
-with Gtk.Menu;                      use Gtk.Menu;
-with Gtk.Missed;                    use Gtk.Missed;
-with Gtk.Page_Setup;                use Gtk.Page_Setup;
-with Gtk.Scale;                     use Gtk.Scale;
-with Gtk.Widget;                    use Gtk.Widget;
-with Interfaces.C;                  use Interfaces.C;
-with Pango.Cairo.Fonts;             use Pango.Cairo.Fonts;
 
 with Ada.Calendar;
 with Ada.Finalization;
+with Ada.Real_Time;
+with Ada.Strings;
+with Cairo.Ellipses;
+with Gdk.Color;
+with Gdk.Event;
+with Glib.Values;
+with Gtk.Box;
+with Gtk.Fixed;
+with Gtk.Grid;
 with Gtk.Handlers.Generic_Callback;
+with Gtk.Handlers.References;
+with Gtk.Layered.Graph_Paper;
 with Gtk.Layered.Graph_Paper_Annotation;
+with Gtk.Layered.Line;
+with Gtk.Layered.Rectangle;
+with Gtk.Layered.Refresh_Engine;
 with Gtk.Layered.Waveform.Amplifier;
 with Gtk.Layered.Waveform.Ring_Data_Buffer;
+with Gtk.Layered.Waveform.Sweeper;
+with Gtk.List_Store;
+with Gtk.Missed;
+with Gtk.Scale;
+with Gtk.Widget;
+with Pango.Cairo.Fonts;
 
 package Gtk.Oscilloscope is
-
-   use Gtk.Layered.Graph_Paper_Annotation;
-   use Gtk.Layered.Waveform.Amplifier;
-   use Gtk.Layered.Waveform.Ring_Data_Buffer;
 
    --
    -- Selection_Action -- What to do when user selects a square area of
@@ -152,7 +139,7 @@ package Gtk.Oscilloscope is
    -- Gtk_Oscilloscope -- Oscilloscope
    --
    type Gtk_Oscilloscope_Record (<>) is
-     new Gtk_Widget_Record with private;
+     new Gtk.Widget.Gtk_Widget_Record with private;
    type Gtk_Oscilloscope is access all Gtk_Oscilloscope_Record'Class;
 
    --
@@ -183,45 +170,45 @@ package Gtk.Oscilloscope is
    function Add_Channel
      (Widget  : not null access Gtk_Oscilloscope_Record;
       Group   : Group_Number;
-      Color   : Gdk_Color;
-      Mode    : Interpolation_Mode := Linear;
+      Color   : Gdk.Color.Gdk_Color;
+      Mode    : Gtk.Layered.Interpolation_Mode := Gtk.Layered.Linear;
       Left    : Boolean := False;
       Right   : Boolean := False;
       Name    : String  := "";
       Sweeper : Sweeper_Type := Lower;
-      Buffer  : access Gtk_Wavefrom_Ring_Data_Buffer_Record'Class := null)
+      Buffer  : access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer_Record'Class := null)
       return Channel_Number;
 
    function Add_Channel
      (Widget  : not null access Gtk_Oscilloscope_Record;
       Group   : Group_Number;
-      Mode    : Interpolation_Mode := Linear;
+      Mode    : Gtk.Layered.Interpolation_Mode := Gtk.Layered.Linear;
       Left    : Boolean := False;
       Right   : Boolean := False;
       Name    : String  := "";
       Sweeper : Sweeper_Type := Lower;
-      Buffer  : access Gtk_Wavefrom_Ring_Data_Buffer_Record'Class := null)
+      Buffer  : access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer_Record'Class := null)
       return Channel_Number;
 
    function Add_Channel
      (Widget  : not null access Gtk_Oscilloscope_Record;
-      Color   : Gdk_Color;
-      Mode    : Interpolation_Mode := Linear;
+      Color   : Gdk.Color.Gdk_Color;
+      Mode    : Gtk.Layered.Interpolation_Mode := Gtk.Layered.Linear;
       Left    : Boolean := False;
       Right   : Boolean := False;
       Name    : String  := "";
       Sweeper : Sweeper_Type := Lower;
-      Buffer  : access Gtk_Wavefrom_Ring_Data_Buffer_Record'Class := null)
+      Buffer  : access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer_Record'Class := null)
       return Channel_Number;
 
    function Add_Channel
      (Widget  : not null access Gtk_Oscilloscope_Record;
-      Mode    : Interpolation_Mode := Linear;
+      Mode    : Gtk.Layered.Interpolation_Mode := Gtk.Layered.Linear;
       Left    : Boolean := False;
       Right   : Boolean := False;
       Name    : String  := "";
       Sweeper : Sweeper_Type := Lower;
-      Buffer  : access Gtk_Wavefrom_Ring_Data_Buffer_Record'Class := null)
+      Buffer  : access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer_Record'Class := null)
       return Channel_Number;
 
    --
@@ -258,7 +245,7 @@ package Gtk.Oscilloscope is
    function Add_Deviation_Channel
      (Widget   : not null access Gtk_Oscilloscope_Record;
       Group    : Group_Number;
-      Color    : Gdk_Color;
+      Color    : Gdk.Color.Gdk_Color;
       Measured : Drawing_Measurement_Point := Refresh_Period;
       Name     : String := "";
       Sweeper  : Sweeper_Type := Lower) return Channel_Number;
@@ -272,7 +259,7 @@ package Gtk.Oscilloscope is
 
    function Add_Deviation_Channel
      (Widget   : not null access Gtk_Oscilloscope_Record;
-      Color    : Gdk_Color;
+      Color    : Gdk.Color.Gdk_Color;
       Measured : Drawing_Measurement_Point := Refresh_Period;
       Name     : String := "";
       Sweeper  : Sweeper_Type := Lower) return Channel_Number;
@@ -304,7 +291,8 @@ package Gtk.Oscilloscope is
    function Add_Group
      (Widget    : not null access Gtk_Oscilloscope_Record;
       Name      : String := "";
-      Amplifier : Gtk_Waveform_Amplifier := null) return Group_Number;
+      Amplifier : Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier := null)
+      return Group_Number;
 
    --
    -- Add_Shadow_Channel -- Create a new shadow channel
@@ -333,7 +321,7 @@ package Gtk.Oscilloscope is
    function Add_Shadow_Channel
      (Widget  : not null access Gtk_Oscilloscope_Record;
       Channel : Channel_Number;
-      Color   : Gdk_Color;
+      Color   : Gdk.Color.Gdk_Color;
       Name    : String := "";
       Sweeper : Sweeper_Type := Upper) return Channel_Number;
 
@@ -374,12 +362,12 @@ package Gtk.Oscilloscope is
    function Create_Annotation
      (Widget    : not null access Gtk_Oscilloscope_Record;
       Amplifier : Amplifier_Type)
-      return not null access Graph_Paper_Annotation_Layer'Class;
+      return not null access Gtk.Layered.Graph_Paper_Annotation.Graph_Paper_Annotation_Layer'Class;
 
    function Create_Annotation
      (Widget  : not null access Gtk_Oscilloscope_Record;
       Sweeper : Sweeper_Type)
-      return not null access Graph_Paper_Annotation_Layer'Class;
+      return not null access Gtk.Layered.Graph_Paper_Annotation.Graph_Paper_Annotation_Layer'Class;
 
    --
    -- Delete_Channel -- Delete a channel
@@ -433,7 +421,7 @@ package Gtk.Oscilloscope is
    procedure Feed
      (Widget  : not null access Gtk_Oscilloscope_Record;
       Channel : Channel_Number;
-      T       : Time;
+      T       : Ada.Real_Time.Time;
       V       : Gdouble);
 
    procedure Feed
@@ -471,17 +459,17 @@ package Gtk.Oscilloscope is
    function Get_Amplifier
      (Widget    : not null access constant Gtk_Oscilloscope_Record;
       Amplifier : Amplifier_Type)
-      return not null access Gtk_Waveform_Amplifier_Record'Class;
+      return not null access Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier_Record'Class;
 
    function Get_Amplifier
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
       Channel : Channel_Number)
-      return not null access Gtk_Waveform_Amplifier_Record'Class;
+      return not null access Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier_Record'Class;
 
    function Get_Amplifier
      (Widget : not null access constant Gtk_Oscilloscope_Record;
       Group  : Group_Number)
-      return not null access Gtk_Waveform_Amplifier_Record'Class;
+      return not null access Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier_Record'Class;
 
    --
    -- Get_Auto_Scaling -- Get scaling mode of an amplifier
@@ -516,7 +504,7 @@ package Gtk.Oscilloscope is
    --
    function Get_Box
      (Widget : not null access constant Gtk_Oscilloscope_Record)
-      return Cairo_Box;
+      return Cairo.Ellipses.Cairo_Box;
 
    --
    -- Get_Buffer -- Get the waveform buffer
@@ -535,7 +523,7 @@ package Gtk.Oscilloscope is
    function Get_Buffer
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
       Channel : Channel_Number)
-      return not null access Gtk_Wavefrom_Ring_Data_Buffer_Record'Class;
+      return not null access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer_Record'Class;
 
    --
    -- Get_Channel_List -- Get the list store containing channel names
@@ -548,7 +536,7 @@ package Gtk.Oscilloscope is
    --
    function Get_Channel_List
      (Widget : not null access constant Gtk_Oscilloscope_Record)
-      return Gtk_List_Store;
+      return Gtk.List_Store.Gtk_List_Store;
 
    --
    -- Get_Channels_Number -- The number of channels
@@ -579,7 +567,7 @@ package Gtk.Oscilloscope is
    --
    function Get_Color
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
-      Channel : Channel_Number) return Gdk_Color;
+      Channel : Channel_Number) return Gdk.Color.Gdk_Color;
 
    --
    -- Get_Default_Face -- The default font face to use for axis
@@ -592,7 +580,7 @@ package Gtk.Oscilloscope is
    --
    function Get_Default_Face
      (Widget : not null access constant Gtk_Oscilloscope_Record)
-      return Pango_Cairo_Font;
+      return Pango.Cairo.Fonts.Pango_Cairo_Font;
 
    --
    -- Get_Enabled_Dropdown_Items -- Get currently enabled menu items
@@ -621,7 +609,7 @@ package Gtk.Oscilloscope is
    --
    function Get_From
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
-      Sweeper : Sweeper_Type := Lower) return Time;
+      Sweeper : Sweeper_Type := Lower) return Ada.Real_Time.Time;
 
    function Get_From
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
@@ -650,8 +638,8 @@ package Gtk.Oscilloscope is
    --
    procedure Get_Grid_Colors
      (Widget      : not null access constant Gtk_Oscilloscope_Record;
-      Major_Color : out Gdk_Color;
-      Minor_Color : out Gdk_Color);
+      Major_Color : out Gdk.Color.Gdk_Color;
+      Minor_Color : out Gdk.Color.Gdk_Color);
 
    --
    -- Get_Group -- Get the group associated with an amplifier
@@ -686,7 +674,7 @@ package Gtk.Oscilloscope is
    --
    function Get_Group_List
      (Widget : not null access constant Gtk_Oscilloscope_Record)
-      return Gtk_List_Store;
+      return Gtk.List_Store.Gtk_List_Store;
 
    --
    -- Get_Groups_Number -- The number of channel groups
@@ -717,7 +705,7 @@ package Gtk.Oscilloscope is
    --
    function Get_Interpolation_Mode
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
-      Channel : Channel_Number) return Interpolation_Mode;
+      Channel : Channel_Number) return Gtk.Layered.Interpolation_Mode;
 
    --
    -- Get_Left_Extrapolation_Mode -- Get extrapolation mode to the left
@@ -925,7 +913,7 @@ package Gtk.Oscilloscope is
    function Get_Sweeper
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
       Sweeper : Sweeper_Type)
-      return not null access Gtk_Waveform_Sweeper_Record'Class;
+      return not null access Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record'Class;
 
    --
    -- Get_Sweeper -- Get a oscilloscope's sweeper
@@ -960,12 +948,12 @@ package Gtk.Oscilloscope is
    --
    function Get_Time
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
-      Sweeper : Sweeper_Type) return Time;
+      Sweeper : Sweeper_Type) return Ada.Real_Time.Time;
 
    function Get_Time
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
       Sweeper : Sweeper_Type;
-      X       : Gint) return Time;
+      X       : Gint) return Ada.Real_Time.Time;
 
    function Get_Time
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
@@ -1003,7 +991,7 @@ package Gtk.Oscilloscope is
    function Get_Time_Axis_Annotation
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
       Sweeper : Sweeper_Type)
-      return access Graph_Paper_Annotation_Layer'Class;
+      return access Gtk.Layered.Graph_Paper_Annotation.Graph_Paper_Annotation_Layer'Class;
 
    --
    -- Get_Time_Axis_As_Time -- Get time axis rendering mode
@@ -1090,7 +1078,7 @@ package Gtk.Oscilloscope is
    --
    function Get_Time_Text_Color
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
-      Sweeper : Sweeper_Type) return Gdk_Color;
+      Sweeper : Sweeper_Type) return Gdk.Color.Gdk_Color;
 
    --
    -- Get_Time_Text_Face -- Get time axis text font face
@@ -1104,7 +1092,7 @@ package Gtk.Oscilloscope is
    --
    function Get_Time_Text_Face
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
-      Sweeper : Sweeper_Type) return Pango_Cairo_Font;
+      Sweeper : Sweeper_Type) return Pango.Cairo.Fonts.Pango_Cairo_Font;
 
    --
    -- Get_Time_Text_Height -- Get time axis text height
@@ -1132,7 +1120,7 @@ package Gtk.Oscilloscope is
    --
    function Get_Time_Text_Horizontal_Alignment
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
-      Sweeper : Sweeper_Type) return Alignment;
+      Sweeper : Sweeper_Type) return Ada.Strings.Alignment;
 
    --
    -- Get_Time_Text_Stretch -- Get time axis text stretch
@@ -1160,7 +1148,7 @@ package Gtk.Oscilloscope is
    --
    function Get_Time_Text_Vertical_Alignment
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
-      Sweeper : Sweeper_Type) return Vertical_Alignment;
+      Sweeper : Sweeper_Type) return Gtk.Layered.Vertical_Alignment;
 
    --
    -- Get_Time_Tooltip_Suffix -- Get the suffix of the value in the tooltip
@@ -1206,7 +1194,7 @@ package Gtk.Oscilloscope is
    --
    function Get_To
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
-      Sweeper : Sweeper_Type) return Time;
+      Sweeper : Sweeper_Type) return Ada.Real_Time.Time;
 
    function Get_To
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
@@ -1309,7 +1297,7 @@ package Gtk.Oscilloscope is
    function Get_Values_Axis_Annotation
      (Widget    : not null access constant Gtk_Oscilloscope_Record;
       Amplifier : Amplifier_Type)
-      return access Graph_Paper_Annotation_Layer'Class;
+      return access Gtk.Layered.Graph_Paper_Annotation.Graph_Paper_Annotation_Layer'Class;
 
    --
    -- Get_Values_Axis_Width -- Get vertical axis width
@@ -1337,7 +1325,7 @@ package Gtk.Oscilloscope is
    --
    function Get_Values_Horizontal_Alignment
      (Widget    : not null access constant Gtk_Oscilloscope_Record;
-      Amplifier : Amplifier_Type) return Alignment;
+      Amplifier : Amplifier_Type) return Ada.Strings.Alignment;
 
    --
    -- Get_Values_Grid -- Get vertical axis grid
@@ -1396,7 +1384,7 @@ package Gtk.Oscilloscope is
    --
    function Get_Values_Text_Color
      (Widget    : not null access constant Gtk_Oscilloscope_Record;
-      Amplifier : Amplifier_Type) return Gdk_Color;
+      Amplifier : Amplifier_Type) return Gdk.Color.Gdk_Color;
 
    --
    -- Get_Values_Text_Face -- Get vertical axis text font face
@@ -1410,7 +1398,7 @@ package Gtk.Oscilloscope is
    --
    function Get_Values_Text_Face
      (Widget    : not null access constant Gtk_Oscilloscope_Record;
-      Amplifier : Amplifier_Type) return Pango_Cairo_Font;
+      Amplifier : Amplifier_Type) return Pango.Cairo.Fonts.Pango_Cairo_Font;
 
    --
    -- Get_Values_Text_Height -- Get vertical axis text height
@@ -1474,7 +1462,8 @@ package Gtk.Oscilloscope is
    --
    function Get_Waveform
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
-      Channel : Channel_Number) return not null access Waveform_Layer;
+      Channel : Channel_Number)
+      return not null access Gtk.Layered.Waveform.Waveform_Layer;
 
    --
    -- Get_X -- Get horizontal coordinate from time
@@ -1495,7 +1484,7 @@ package Gtk.Oscilloscope is
    function Get_X
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
       Sweeper : Sweeper_Type;
-      Stamp   : Time;
+      Stamp   : Ada.Real_Time.Time;
       Crop    : Boolean := False) return Gint;
 
    function Get_X
@@ -1549,19 +1538,19 @@ package Gtk.Oscilloscope is
    --
    procedure Gtk_New
      (Widget         : out Gtk_Oscilloscope;
-      Lower_Sweeper  : access Gtk_Waveform_Sweeper_Record'Class := null;
-      Upper_Sweeper  : access Gtk_Waveform_Sweeper_Record'Class := null;
-      Refresh_Engine : not null access Layered_Refresh_Engine;
-      Background     : Gdk_Color := RGB (1.0, 1.0, 1.0);
+      Lower_Sweeper  : access Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record'Class := null;
+      Upper_Sweeper  : access Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record'Class := null;
+      Refresh_Engine : not null access Gtk.Layered.Refresh_Engine.Layered_Refresh_Engine;
+      Background     : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 1.0, 1.0);
       Buffer_Size    : Positive  := 1024 * 60;
       Max_Channels   : Channel_Number := 64);
 
    procedure Gtk_New
      (Widget         : out Gtk_Oscilloscope;
-      Lower_Sweeper  : access Gtk_Waveform_Sweeper_Record'Class := null;
-      Upper_Sweeper  : access Gtk_Waveform_Sweeper_Record'Class := null;
+      Lower_Sweeper  : access Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record'Class := null;
+      Upper_Sweeper  : access Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record'Class := null;
       Refresh_Period : Duration  := 0.02;
-      Background     : Gdk_Color := RGB (1.0, 1.0, 1.0);
+      Background     : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 1.0, 1.0);
       Buffer_Size    : Positive  := 1024 * 60;
       Max_Channels   : Channel_Number := 64);
 
@@ -1591,18 +1580,18 @@ package Gtk.Oscilloscope is
    --
    procedure Initialize
      (Widget         : not null access Gtk_Oscilloscope_Record'Class;
-      Lower_Sweeper  : access Gtk_Waveform_Sweeper_Record'Class;
-      Upper_Sweeper  : access Gtk_Waveform_Sweeper_Record'Class;
-      Refresh_Engine : not null access Layered_Refresh_Engine;
-      Background     : Gdk_Color;
+      Lower_Sweeper  : access Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record'Class;
+      Upper_Sweeper  : access Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record'Class;
+      Refresh_Engine : not null access Gtk.Layered.Refresh_Engine.Layered_Refresh_Engine;
+      Background     : Gdk.Color.Gdk_Color;
       Buffer_Size    : Positive);
 
    procedure Initialize
      (Widget         : not null access Gtk_Oscilloscope_Record'Class;
-      Lower_Sweeper  : access Gtk_Waveform_Sweeper_Record'Class;
-      Upper_Sweeper  : access Gtk_Waveform_Sweeper_Record'Class;
+      Lower_Sweeper  : access Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record'Class;
+      Upper_Sweeper  : access Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record'Class;
       Refresh_Period : Duration := 0.2;
-      Background     : Gdk_Color;
+      Background     : Gdk.Color.Gdk_Color;
       Buffer_Size    : Positive);
 
    --
@@ -1651,7 +1640,7 @@ package Gtk.Oscilloscope is
    --
    procedure On_Selection
      (Widget   : not null access Gtk_Oscilloscope_Record;
-      Selected : Cairo_Box) is null;
+      Selected : Cairo.Ellipses.Cairo_Box) is null;
 
    --
    -- Push_Stub -- Push stack stub
@@ -1732,7 +1721,7 @@ package Gtk.Oscilloscope is
    --
    procedure Set_Default_Face
      (Widget : not null access Gtk_Oscilloscope_Record;
-      Face   : Pango_Cairo_Font);
+      Face   : Pango.Cairo.Fonts.Pango_Cairo_Font);
 
    --
    -- Set_Enabled_Dropdown_Items -- Set enabled menu items
@@ -1801,8 +1790,8 @@ package Gtk.Oscilloscope is
    --
    procedure Set_Grid_Colors
      (Widget      : not null access Gtk_Oscilloscope_Record;
-      Major_Color : Gdk_Color;
-      Minor_Color : Gdk_Color);
+      Major_Color : Gdk.Color.Gdk_Color;
+      Minor_Color : Gdk.Color.Gdk_Color);
 
    --
    -- Set_Group -- Change the group assigned to a vertical axis
@@ -1834,7 +1823,7 @@ package Gtk.Oscilloscope is
    procedure Set_Interpolation_Mode
      (Widget  : not null access Gtk_Oscilloscope_Record;
       Channel : Channel_Number;
-      Mode    : Interpolation_Mode);
+      Mode    : Gtk.Layered.Interpolation_Mode);
 
    --
    -- Set_Manual_Sweep -- Allow user to toggle sweepers
@@ -1872,7 +1861,7 @@ package Gtk.Oscilloscope is
    --
    procedure Set_Preferred_Method
      (Widget : not null access Gtk_Oscilloscope_Record;
-      Method : Waveform_Drawing_Method);
+      Method : Gtk.Layered.Waveform_Drawing_Method);
 
    --
    -- Set_Release_To_Latest -- Allow user to toggle sweepers
@@ -1932,7 +1921,7 @@ package Gtk.Oscilloscope is
    procedure Set_Time
      (Widget  : not null access Gtk_Oscilloscope_Record;
       Sweeper : Sweeper_Type;
-      Stamp   : Time);
+      Stamp   : Ada.Real_Time.Time);
 
    procedure Set_Time
      (Widget  : not null access Gtk_Oscilloscope_Record;
@@ -2008,8 +1997,8 @@ package Gtk.Oscilloscope is
    procedure Set_Time_Text_Alignment
      (Widget     : not null access Gtk_Oscilloscope_Record;
       Sweeper    : Sweeper_Type;
-      Horizontal : Alignment;
-      Vertical   : Vertical_Alignment);
+      Horizontal : Ada.Strings.Alignment;
+      Vertical   : Gtk.Layered.Vertical_Alignment);
 
    --
    -- Set_Time_Text_Font -- Set font used for the time axis annotation
@@ -2029,10 +2018,10 @@ package Gtk.Oscilloscope is
    procedure Set_Time_Text_Font
      (Widget  : not null access Gtk_Oscilloscope_Record;
       Sweeper : Sweeper_Type;
-      Face    : Pango_Cairo_Font;
+      Face    : Pango.Cairo.Fonts.Pango_Cairo_Font;
       Height  : Gdouble;
       Stretch : Gdouble   := 1.0;
-      Color   : Gdk_Color := RGB (0.0, 0.0, 0.0);
+      Color   : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Angle   : Gdouble   := 0.0);
 
    --
@@ -2091,8 +2080,8 @@ package Gtk.Oscilloscope is
    procedure Set_Values_Alignment
      (Widget     : not null access Gtk_Oscilloscope_Record;
       Amplifier  : Amplifier_Type;
-      Horizontal : Alignment;
-      Vertical   : Vertical_Alignment);
+      Horizontal : Ada.Strings.Alignment;
+      Vertical   : Gtk.Layered.Vertical_Alignment);
 
    --
    -- Set_Values_Axis -- Make visible values axis
@@ -2173,10 +2162,10 @@ package Gtk.Oscilloscope is
    procedure Set_Values_Text_Font
      (Widget    : not null access Gtk_Oscilloscope_Record;
       Amplifier : Amplifier_Type;
-      Face      : Pango_Cairo_Font;
+      Face      : Pango.Cairo.Fonts.Pango_Cairo_Font;
       Height    : Gdouble;
       Stretch   : Gdouble   := 1.0;
-      Color     : Gdk_Color := RGB (0.0, 0.0, 0.0);
+      Color     : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Angle     : Gdouble   := 0.0);
 
    --
@@ -2269,61 +2258,63 @@ private
    pragma Inline (Get_To);
    pragma Inline (Is_Visible);
 
-   type Layered_Refresh_Engine_Ptr is access Layered_Refresh_Engine;
+   type Layered_Refresh_Engine_Ptr is
+     access Gtk.Layered.Refresh_Engine.Layered_Refresh_Engine;
 
    type Channel_Value is (Undefined, Absolute, Difference);
-   type Waveform_Layer_Ptr is access all Waveform_Layer;
+   type Waveform_Layer_Ptr is access all Gtk.Layered.Waveform.Waveform_Layer;
    type Channel_Data is record
       Waveform     : Waveform_Layer_Ptr;
-      Source       : Gtk_Wavefrom_Ring_Data_Buffer;
+      Source       : Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer;
       Status       : Channel_Value := Undefined;
       Group        : Group_Number;
       Tip_Prefix   : String_Ptr;
       Tip_X_Suffix : String_Ptr;
       Tip_Y_Suffix : String_Ptr;
-      Value_1      : Y_Axis;
-      Value_2      : Y_Axis;
+      Value_1      : Gtk.Layered.Waveform.Y_Axis;
+      Value_2      : Gtk.Layered.Waveform.Y_Axis;
    end record;
    type Channel_List is
      array (Channel_Number range <>) of aliased Channel_Data;
 
    type Group is record
-      Amplifier : Gtk_Waveform_Amplifier;
+      Amplifier : Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier;
    end record;
    type Group_List is array (Group_Number range <>) of Group;
    type Group_List_Ptr is access Group_List;
 
-   type Line_Layer_Ptr is access all Line_Layer;
-   type Rectangle_Layer_Ptr is access all Rectangle_Layer;
-   type Graph_Paper_Layer_Ptr is access all Graph_Paper_Layer;
+   type Line_Layer_Ptr is access all Gtk.Layered.Line.Line_Layer;
+   type Rectangle_Layer_Ptr is access all Gtk.Layered.Rectangle.Rectangle_Layer;
+   type Graph_Paper_Layer_Ptr is
+     access all Gtk.Layered.Graph_Paper.Graph_Paper_Layer;
 
    type Graph_Paper_Annotation_Layer_Ptr is
      access all Gtk.Layered.Graph_Paper_Annotation.
        Graph_Paper_Annotation_Layer'Class;
 
    type Time_Axis_Data is record
-      On         : Boolean := False;
-      Grid       : Boolean := False;
-      No_Scale   : Boolean := False;
-      Width_Set  : Boolean := False;
-      Time_Mode  : Boolean := True;
-      Sweeper    : Gtk_Waveform_Sweeper;
-      Face       : Pango_Cairo_Font;
-      Color      : Gdk_Color := RGB (0.0, 0.0, 0.0);
-      Angle      : Gdouble   := 0.0;
-      Height     : Gdouble   := 9.0;
-      Stretch    : Gdouble   := 1.0;
-      Offset     : Gdouble   := 0.0;
-      Width      : Guint     := 24;
-      Channels   : Natural   := 0;
-      Justify_X  : Alignment := Center;
-      Justify_Y  : Vertical_Alignment := Center;
+      On         : Boolean                        := False;
+      Grid       : Boolean                        := False;
+      No_Scale   : Boolean                        := False;
+      Width_Set  : Boolean                        := False;
+      Time_Mode  : Boolean                        := True;
+      Sweeper    : Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper;
+      Face       : Pango.Cairo.Fonts.Pango_Cairo_Font;
+      Color      : Gdk.Color.Gdk_Color            := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Angle      : Gdouble                        := 0.0;
+      Height     : Gdouble                        := 9.0;
+      Stretch    : Gdouble                        := 1.0;
+      Offset     : Gdouble                        := 0.0;
+      Width      : Guint                          := 24;
+      Channels   : Natural                        := 0;
+      Justify_X  : Ada.Strings.Alignment          := Ada.Strings.Center;
+      Justify_Y  : Gtk.Layered.Vertical_Alignment := Gtk.Layered.Center;
       Line       : Line_Layer_Ptr;
       Ticks      : Graph_Paper_Layer_Ptr;
-      Box        : Gtk_Hbox;
-      Left_Fill  : Gtk_Fixed;
-      Right_Fill : Gtk_Fixed;
-      Scale      : Gtk_Hscale;
+      Box        : Gtk.Box.Gtk_Hbox;
+      Left_Fill  : Gtk.Fixed.Gtk_Fixed;
+      Right_Fill : Gtk.Fixed.Gtk_Fixed;
+      Scale      : Gtk.Scale.Gtk_Hscale;
       Texts      : Graph_Paper_Annotation_Layer_Ptr;
    end record;
    type Time_Axis_Data_Ptr is access all Time_Axis_Data;
@@ -2331,29 +2322,29 @@ private
    type Sweeper_List is array (Sweeper_Type) of aliased Time_Axis_Data;
 
    type Values_Axis_Data is record
-      On               : Boolean := False;
-      Grid             : Boolean := False;
-      No_Scale         : Boolean := False;
-      Width_Set        : Boolean := False;
-      Group            : Group_Count := 0;
-      Face             : Pango_Cairo_Font;
-      Color            : Gdk_Color := RGB (0.0, 0.0, 0.0);
-      Angle            : Gdouble   := 0.0;
-      Height           : Gdouble   := 9.0;
-      Stretch          : Gdouble   := 1.0;
-      Offset           : Gdouble   := 0.0;
-      Width            : Guint     := 50;
-      Justify_X        : Alignment := Center;
-      Justify_Y        : Vertical_Alignment := Center;
+      On               : Boolean                        := False;
+      Grid             : Boolean                        := False;
+      No_Scale         : Boolean                        := False;
+      Width_Set        : Boolean                        := False;
+      Group            : Group_Count                    := 0;
+      Face             : Pango.Cairo.Fonts.Pango_Cairo_Font;
+      Color            : Gdk.Color.Gdk_Color            := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Angle            : Gdouble                        := 0.0;
+      Height           : Gdouble                        := 9.0;
+      Stretch          : Gdouble                        := 1.0;
+      Offset           : Gdouble                        := 0.0;
+      Width            : Guint                          := 50;
+      Justify_X        : Ada.Strings.Alignment          := Ada.Strings.Center;
+      Justify_Y        : Gtk.Layered.Vertical_Alignment := Gtk.Layered.Center;
       Line             : Line_Layer_Ptr;
       Ticks            : Graph_Paper_Layer_Ptr;
       Texts            : Graph_Paper_Annotation_Layer_Ptr;
-      Scale            : Gtk_Vscale;
-      Box              : Gtk_Vbox;
-      Upper_Fill       : Gtk_Fixed;
-      Lower_Fill       : Gtk_Fixed;
-      Settings_Changed : Handler_Reference;
-      Value_Changed    : Handler_Reference;
+      Scale            : Gtk.Scale.Gtk_Vscale;
+      Box              : Gtk.Box.Gtk_Vbox;
+      Upper_Fill       : Gtk.Fixed.Gtk_Fixed;
+      Lower_Fill       : Gtk.Fixed.Gtk_Fixed;
+      Settings_Changed : Gtk.Handlers.References.Handler_Reference;
+      Value_Changed    : Gtk.Handlers.References.Handler_Reference;
    end record;
    type Amplifier_List is array (Amplifier_Type) of Values_Axis_Data;
 
@@ -2377,20 +2368,18 @@ private
    end record;
    type Selection_State_Ptr is access Selection_State;
 
-   type Gtk_Graphs_Record is new Gtk_Layered_Record with record
+   type Gtk_Graphs_Record is new Gtk.Layered.Gtk_Layered_Record with record
       Oscilloscope : Gtk_Oscilloscope;
-      Last_Time    : Time := Time_First;
+      Last_Time    : Ada.Real_Time.Time := Ada.Real_Time.Time_First;
    end record;
 
-   overriding
-   procedure Refresh
+   overriding procedure Refresh
      (Widget  : not null access Gtk_Graphs_Record;
-      Context : Cairo_Context);
+      Context : Cairo.Cairo_Context);
 
-   overriding
-   procedure Resized
+   overriding procedure Resized
      (Widget     : not null access Gtk_Graphs_Record;
-      Allocation : Gtk_Allocation);
+      Allocation : Gtk.Widget.Gtk_Allocation);
 
    type Do_Item is
      abstract new Ada.Finalization.Limited_Controlled with
@@ -2417,11 +2406,11 @@ private
    -- Do_Auto_Amplifier -- Set auto scaling mode
    --
    type Do_Auto_Amplifier is new Do_Item with record
-      Amplifier : Gtk_Waveform_Amplifier;
+      Amplifier : Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier;
    end record;
 
    procedure Push_Auto_Amplifier
-     (Amplifier : Gtk_Waveform_Amplifier;
+     (Amplifier : Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier;
       List      : access Items_Stack;
       First     : in out Boolean);
 
@@ -2442,7 +2431,7 @@ private
       Page_Size : Gdouble;
    end record;
    procedure Push_Amplifier_Zoom
-     (Amplifier : Gtk_Waveform_Amplifier;
+     (Amplifier : Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier;
       List      : access Items_Stack;
       First     : in out Boolean);
 
@@ -2457,11 +2446,11 @@ private
    -- Do_Release_Sweeper -- Set release mode
    --
    type Do_Release_Sweeper is new Do_Item with record
-      Sweeper : Gtk_Waveform_Sweeper;
+      Sweeper : Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper;
    end record;
 
    procedure Push_Release_Sweeper
-     (Sweeper : Gtk_Waveform_Sweeper;
+     (Sweeper : Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper;
       List    : access Items_Stack;
       First   : in out Boolean);
 
@@ -2483,7 +2472,7 @@ private
    end record;
 
    procedure Push_Sweeper_Zoom
-     (Sweeper : Gtk_Waveform_Sweeper;
+     (Sweeper : Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper;
       List    : access Items_Stack;
       First   : in out Boolean);
 
@@ -2516,13 +2505,13 @@ private
       Inverse      : access Items_Stack := null);
 
    type Gtk_Oscilloscope_Record (Size : Channel_Number) is
-     new Gtk_Grid_Record with
+     new Gtk.Grid.Gtk_Grid_Record with
       record
          Refresh_Engine  : Layered_Refresh_Engine_Ptr;
-         Background      : access Rectangle_Layer;
-         Proximity       : Gdouble          := 15.0;
-         Selection_Mode  : Selection_Action := Interactive;
-         Menu_Enabled    : Dropdown_Items   := Dropdown_Items'Last;
+         Background      : access Gtk.Layered.Rectangle.Rectangle_Layer;
+         Proximity       : Gdouble                           := 15.0;
+         Selection_Mode  : Selection_Action                  := Interactive;
+         Menu_Enabled    : Dropdown_Items                    := Dropdown_Items'Last;
          -- Components
          Layers          : not null access Gtk_Graphs_Record :=
                              new Gtk_Graphs_Record;
@@ -2530,26 +2519,26 @@ private
          Time_Axis       : Sweeper_List;
          Values_Axis     : Amplifier_List;
          -- Shared properties of waveforms
-         Buffer_Size     : Positive       := 1024 * 40;
-         Line_Cap        : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
-         Width           : Gdouble        := 1.0;
-         Opacity         : Fill_Opacity   := 0.0;
-         Widened         : Boolean        := False;
-         Show_Time       : Boolean        := True;
-         Manual_Sweep    : Boolean        := False;
-         Jump_On_Thaw    : Boolean        := False;
-         Superscript     : Boolean        := True;
+         Buffer_Size     : Positive                          := 1024 * 40;
+         Line_Cap        : Cairo.Cairo_Line_Cap              := Cairo.Cairo_Line_Cap_Butt;
+         Width           : Gdouble                           := 1.0;
+         Opacity         : Gtk.Layered.Fill_Opacity          := 0.0;
+         Widened         : Boolean                           := False;
+         Show_Time       : Boolean                           := True;
+         Manual_Sweep    : Boolean                           := False;
+         Jump_On_Thaw    : Boolean                           := False;
+         Superscript     : Boolean                           := True;
          -- List stores
-         Channel_Names   : Gtk_List_Store;
-         Group_Names     : Gtk_List_Store;
+         Channel_Names   : Gtk.List_Store.Gtk_List_Store;
+         Group_Names     : Gtk.List_Store.Gtk_List_Store;
          -- Default font
-         Default_Face    : Pango_Cairo_Font :=
-                             Create_Pango ("arial unicode ms");
+         Default_Face    : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+                             Pango.Cairo.Fonts.Create_Pango ("arial unicode ms");
          -- Channels and groups
-         Channels_Number : Channel_Count := 0;
-         Groups_Number   : Group_Count   := 0;
-         Refresh_Period  : Gtk_Wavefrom_Ring_Data_Buffer;
-         Drawing_Time    : Gtk_Wavefrom_Ring_Data_Buffer;
+         Channels_Number : Channel_Count                     := 0;
+         Groups_Number   : Group_Count                       := 0;
+         Refresh_Period  : Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer;
+         Drawing_Time    : Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer;
          Channels        : Channel_List (1 .. Size);
          Groups          : Group_List_Ptr;
          Selection       : Selection_State_Ptr;
@@ -2558,10 +2547,10 @@ private
          Undo_Stack      : aliased Items_Stack;
          Redo_Stack      : aliased Items_Stack;
          -- Grid parameters
-         Major_Color     : Gdk_Color := RGB (0.0, 0.0, 0.0);
-         Minor_Color     : Gdk_Color := RGB (0.5, 0.5, 0.5);
+         Major_Color     : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+         Minor_Color     : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.5, 0.5, 0.5);
          -- Snapshots
-         Format          : Snapshot_Format := No_Snapshot;
+         Format          : Snapshot_Format                   := No_Snapshot;
          File            : String_Ptr;
       end record;
 
@@ -2586,25 +2575,25 @@ private
 
    procedure Change_Selection
      (Oscilloscope : not null access Gtk_Oscilloscope_Record;
-      Point        : Cairo_Tuple);
+      Point        : Cairo.Ellipses.Cairo_Tuple);
 
    function Mouse_Event
      (Oscilloscope : not null access Gtk_Oscilloscope_Record;
-      Event        : Gdk_Event;
-      Hint         : Boolean) return Cairo_Tuple;
+      Event        : Gdk.Event.Gdk_Event;
+      Hint         : Boolean) return Cairo.Ellipses.Cairo_Tuple;
 
    procedure On_Autoscaling_Changed
-     (Amplifier  : access Gtk_Waveform_Amplifier_Record'Class;
+     (Amplifier    : access Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier_Record'Class;
       Oscilloscope : Gtk_Oscilloscope);
 
    function On_Button_Press
      (Object       : access GObject_Record'Class;
-      Event        : Gdk_Event;
+      Event        : Gdk.Event.Gdk_Event;
       Oscilloscope : Gtk_Oscilloscope) return Boolean;
 
    function On_Button_Release
      (Object       : access GObject_Record'Class;
-      Event        : Gdk_Event;
+      Event        : Gdk.Event.Gdk_Event;
       Oscilloscope : Gtk_Oscilloscope) return Boolean;
 
    procedure On_Cancel_Selection
@@ -2624,13 +2613,13 @@ private
       Oscilloscope : Gtk_Oscilloscope);
 
    procedure On_Format_Time
-     (Scale     : not null access Gtk_Scale_Record'Class;
-      Arguments : GValue_Array;
-      Result    : in out GValue;
+     (Scale     : not null access Gtk.Scale.Gtk_Scale_Record'Class;
+      Arguments : Glib.Values.GValue_Array;
+      Result    : in out Glib.Values.GValue;
       Data      : Time_Axis_Data_Ptr);
 
    procedure On_Freezing_Changed
-     (Sweeper      : access Gtk_Waveform_Sweeper_Record'Class;
+     (Sweeper      : access Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record'Class;
       Oscilloscope : Gtk_Oscilloscope);
 
    procedure On_Latest
@@ -2639,12 +2628,12 @@ private
 
    function On_Leave
      (Object       : access GObject_Record'Class;
-      Event        : Gdk_Event;
+      Event        : Gdk.Event.Gdk_Event;
       Oscilloscope : Gtk_Oscilloscope) return Boolean;
 
    function On_Motion
      (Object       : access GObject_Record'Class;
-      Event        : Gdk_Event;
+      Event        : Gdk.Event.Gdk_Event;
       Oscilloscope : Gtk_Oscilloscope) return Boolean;
 
    procedure On_Pause
@@ -2708,11 +2697,11 @@ private
       Oscilloscope : Gtk_Oscilloscope);
 
    procedure On_Offset_Changed
-     (Sweeper      : access Gtk_Waveform_Sweeper_Record'Class;
+     (Sweeper      : access Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record'Class;
       Oscilloscope : Gtk_Oscilloscope);
 
    procedure On_Raster_Mode_Changed
-     (Amplifier  : access Gtk_Waveform_Amplifier_Record'Class;
+     (Amplifier    : access Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier_Record'Class;
       Oscilloscope : Gtk_Oscilloscope);
 
    procedure Restore_State
@@ -2750,7 +2739,7 @@ private
 
    procedure Zoom_In
      (Widget    : not null access Gtk_Oscilloscope_Record;
-      Amplifier : Gtk_Waveform_Amplifier;
+      Amplifier : Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier;
       V1, V2    : Gdouble);
 
    procedure Zoom_Out
@@ -2760,7 +2749,7 @@ private
 
    procedure Zoom_Out
      (Widget    : not null access Gtk_Oscilloscope_Record;
-      Amplifier : Gtk_Waveform_Amplifier;
+      Amplifier : Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier;
       V1, V2    : Gdouble);
 
    package Menu_Handlers is
@@ -2772,15 +2761,17 @@ private
                                             Gtk_Oscilloscope);
 
    package Amplifier_Handlers is
-     new Gtk.Handlers.User_Callback (Gtk_Waveform_Amplifier_Record,
-                                     Gtk_Oscilloscope);
+     new Gtk.Handlers.User_Callback
+       (Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier_Record,
+        Gtk_Oscilloscope);
 
    package Format_Handlers is
-     new Gtk.Handlers.Generic_Callback (Gtk_Scale_Record,
+     new Gtk.Handlers.Generic_Callback (Gtk.Scale.Gtk_Scale_Record,
                                         Time_Axis_Data_Ptr);
 
    package Sweeper_Handlers is
-     new Gtk.Handlers.User_Callback (Gtk_Waveform_Sweeper_Record,
-                                     Gtk_Oscilloscope);
+     new Gtk.Handlers.User_Callback
+       (Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record,
+        Gtk_Oscilloscope);
 
 end Gtk.Oscilloscope;

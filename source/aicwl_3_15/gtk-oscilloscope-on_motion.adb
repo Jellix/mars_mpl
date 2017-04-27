@@ -27,9 +27,10 @@
 
 separate (Gtk.Oscilloscope)
 function On_Motion (Object       : access GObject_Record'Class;
-                    Event        : Gdk_Event;
+                    Event        : Gdk.Event.Gdk_Event;
                     Oscilloscope : Gtk_Oscilloscope) return Boolean
 is
+   pragma Unreferenced (Object);
    procedure Put (Destination : in out String;
                   Pointer     : in out Integer;
                   X1, X2      : Gint;
@@ -40,7 +41,8 @@ is
                   V1, V2, V   : Gdouble)
    is
       use Strings_Edit;
-      use Edit;
+      use Gtk.Layered.Waveform.Edit;
+      use Cairo.Elementary_Functions;
    begin
       if X2 <= X1 or else V2 <= V1 or else V = 0.0 then
          Put (Destination, Pointer, V);
@@ -66,7 +68,7 @@ is
                Put (Destination, Pointer, Character'Val (16#C2#));
                Put (Destination, Pointer, Character'Val (16#B7#));
                Put (Destination, Pointer, "10<sup>");
-               Put
+               Strings_Edit.Integers.Put
                  (Destination => Destination,
                   Pointer     => Pointer,
                   Value       => Power);
@@ -75,8 +77,8 @@ is
          end;
       end if;
    end Put;
-   Box     : constant Cairo_Box := Oscilloscope.all.Get_Box;
-   Point   : constant Cairo_Tuple :=
+   Box     : constant Cairo.Ellipses.Cairo_Box := Oscilloscope.all.Get_Box;
+   Point   : constant Cairo.Ellipses.Cairo_Tuple :=
              Oscilloscope.all.Mouse_Event (Event, True);
    Pointer : Integer := 1;
 begin
@@ -88,12 +90,12 @@ begin
          declare
             use Strings_Edit;
             use Strings_Edit.Integers;
-            Waveform : Waveform_Layer renames
+            Waveform : Gtk.Layered.Waveform.Waveform_Layer renames
                        Oscilloscope.all.Channels (Index).Waveform.all;
-            T        : X_Axis;
-            V        : Y_Axis;
+            T        : Gtk.Layered.Waveform.X_Axis;
+            V        : Gtk.Layered.Waveform.Y_Axis;
             Y        : Gdouble;
-            Color    : Gdk_Color;
+            Color    : Gdk.Color.Gdk_Color;
             Got_It   : Boolean;
             Position : Integer;
          begin
@@ -116,32 +118,29 @@ begin
                      "<span background='#"
                   );
                   Put
-                  (Destination => Oscilloscope.all.Tip_Text,
+                    (Destination => Oscilloscope.all.Tip_Text,
                      Pointer     => Position,
-                     Value       => Integer (Red (Color) / 256),
+                     Value       => Integer (Gdk.Color.Red (Color) / 256),
                      Base        => 16,
                      Field       => 2,
                      Fill        => '0',
-                     Justify     => Right
-                  );
+                     Justify     => Ada.Strings.Right);
                   Put
-                  (Destination => Oscilloscope.all.Tip_Text,
+                    (Destination => Oscilloscope.all.Tip_Text,
                      Pointer     => Position,
-                     Value       => Integer (Green (Color) / 256),
+                     Value       => Integer (Gdk.Color.Green (Color) / 256),
                      Base        => 16,
                      Field       => 2,
                      Fill        => '0',
-                     Justify     => Right
-                  );
+                     Justify     => Ada.Strings.Right);
                   Put
-                  (Destination => Oscilloscope.all.Tip_Text,
+                    (Destination => Oscilloscope.all.Tip_Text,
                      Pointer     => Position,
-                     Value       => Integer (Blue (Color) / 256),
+                     Value       => Integer (Gdk.Color.Blue (Color) / 256),
                      Base        => 16,
                      Field       => 2,
                      Fill        => '0',
-                     Justify     => Right
-                  );
+                     Justify     => Ada.Strings.Right);
                   Put (Oscilloscope.all.Tip_Text, Position, "'>  </span> ");
                   Put
                   (Destination => Oscilloscope.all.Tip_Text,
@@ -174,7 +173,7 @@ begin
                              (Oscilloscope.all.Tip_Text,
                               Position,
                               Gtk.Layered.Graph_Paper_Annotation.Image
-                                (To_Time (Gdouble (T))));
+                                (Gtk.Layered.Waveform.To_Time (Gdouble (T))));
                         else
                            Put
                              (Destination => Oscilloscope.all.Tip_Text,
@@ -206,9 +205,10 @@ begin
    return True;
 exception
    when Error : others =>
-      Log
-        (GtkAda_Contributions_Domain,
-         Log_Level_Critical,
-         "Fault: " & Exception_Information (Error) & Where ("On_Motion"));
+      Glib.Messages.Log
+        (Gtk.Missed.GtkAda_Contributions_Domain,
+         Glib.Messages.Log_Level_Critical,
+         "Fault: " & Ada.Exceptions.Exception_Information (Error) &
+           Where ("On_Motion"));
       return True;
 end On_Motion;

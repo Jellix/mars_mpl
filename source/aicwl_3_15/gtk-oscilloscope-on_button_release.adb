@@ -23,27 +23,27 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 separate (Gtk.Oscilloscope)
-   function On_Button_Release
-            (  Object       : access GObject_Record'Class;
-               Event        : Gdk_Event;
-               Oscilloscope : Gtk_Oscilloscope
-            )  return Boolean is
+function On_Button_Release
+  (Object       : access GObject_Record'Class;
+   Event        : Gdk.Event.Gdk_Event;
+   Oscilloscope : Gtk_Oscilloscope) return Boolean
+is
+   pragma Unreferenced (Object);
    use Menu_Handlers;
-   Menu      : Gtk_Menu;
-   Item      : Gtk_Image_Menu_Item;
-   Separator : Gtk_Separator_Menu_Item;
-   Icon      : Gtk_Image;
-   Box       : Cairo_Box;
+   Menu      : Gtk.Menu.Gtk_Menu;
+   Item      : Gtk.Image_Menu_Item.Gtk_Image_Menu_Item;
+   Separator : Gtk.Separator_Menu_Item.Gtk_Separator_Menu_Item;
+   Icon      : Gtk.Image.Gtk_Image;
+   Box       : Cairo.Ellipses.Cairo_Box;
 begin
-   case Get_Button (Event) is
+   case Gdk.Event.Get_Button (Event) is
       when 1 =>
          if Oscilloscope.all.Selection.all.Area /= null then
             Oscilloscope.all.Change_Selection
-            (  Oscilloscope.all.Mouse_Event (Event, False)
-            );
+              (Oscilloscope.all.Mouse_Event (Event, False));
             Box := Oscilloscope.all.Selection.all.Area.all.Get_Box;
             if Box.X2 - Box.X1 < 2.0 or else Box.Y2 - Box.Y1 < 2.0 then
                Oscilloscope.all.Restore_State;
@@ -51,152 +51,148 @@ begin
             else
                case Oscilloscope.all.Selection_Mode is
                   when Interactive =>
-                     Gtk_New (Menu);
-                        -- Zoom in
-                     Gtk_New
-                     (  Item,
-                        Style_Get (Oscilloscope, "menu-zoom-in")
-                     );
-                     Gtk_New (Icon, Stock_Zoom_In, Icon_Size_Menu);
-                     Set_Image (Item, Icon);
-                     Append (Menu, Item);
+                     Gtk.Menu.Gtk_New (Menu);
+                     -- Zoom in
+                     Gtk.Image_Menu_Item.Gtk_New
+                       (Item,
+                        Gtk.Widget.Styles.Style_Get
+                          (Oscilloscope, "menu-zoom-in"));
+                     Gtk.Image.Gtk_New
+                       (Icon,
+                        Gtk.Stock.Stock_Zoom_In,
+                        Gtk.Enums.Icon_Size_Menu);
+                     Gtk.Image_Menu_Item.Set_Image (Item, Icon);
+                     Gtk.Menu.Append (Menu, Item);
                      Connect
-                     (  Item,
+                       (Item,
                         "activate",
                         On_Zoom_In'Access,
-                        Oscilloscope
-                     );
-                     Gtk_New
-                     (  Item,
-                        Style_Get (Oscilloscope, "menu-zoom-in-t")
-                     );
-                     Append (Menu, Item);
+                        Oscilloscope);
+                     Gtk.Image_Menu_Item.Gtk_New
+                       (Item,
+                        Gtk.Widget.Styles.Style_Get
+                          (Oscilloscope, "menu-zoom-in-t"));
+                     Gtk.Menu.Append (Menu, Item);
                      Connect
-                     (  Item,
+                       (Item,
                         "activate",
                         On_Zoom_In_T'Access,
-                        Oscilloscope
-                     );
-                     Gtk_New
-                     (  Item,
-                        Style_Get (Oscilloscope, "menu-zoom-in-v")
-                     );
-                     Append (Menu, Item);
+                        Oscilloscope);
+                     Gtk.Image_Menu_Item.Gtk_New
+                       (Item,
+                        Gtk.Widget.Styles.Style_Get
+                          (Oscilloscope, "menu-zoom-in-v"));
+                     Gtk.Menu.Append (Menu, Item);
                      Connect
-                     (  Item,
+                       (Item,
                         "activate",
                         On_Zoom_In_V'Access,
-                        Oscilloscope
-                     );
-                        -- Zoom out
-                     Gtk_New
-                     (  Item,
-                        Style_Get (Oscilloscope, "menu-zoom-out")
-                     );
-                     Gtk_New (Icon, Stock_Zoom_Out, Icon_Size_Menu);
-                     Set_Image (Item, Icon);
-                     Append (Menu, Item);
+                        Oscilloscope);
+                     -- Zoom out
+                     Gtk.Image_Menu_Item.Gtk_New
+                       (Item,
+                        Gtk.Widget.Styles.Style_Get
+                          (Oscilloscope, "menu-zoom-out"));
+                     Gtk.Image.Gtk_New
+                       (Icon,
+                        Gtk.Stock.Stock_Zoom_Out,
+                        Gtk.Enums.Icon_Size_Menu);
+                     Gtk.Image_Menu_Item.Set_Image (Item, Icon);
+                     Gtk.Menu.Append (Menu, Item);
                      Connect
-                     (  Item,
+                       (Item,
                         "activate",
                         On_Zoom_Out'Access,
-                        Oscilloscope
-                     );
-                     Gtk_New
-                     (  Item,
-                        Style_Get (Oscilloscope, "menu-zoom-out-t")
-                     );
-                     Append (Menu, Item);
+                        Oscilloscope);
+                     Gtk.Image_Menu_Item.Gtk_New
+                       (Item,
+                        Gtk.Widget.Styles.Style_Get
+                          (Oscilloscope, "menu-zoom-out-t"));
+                     Gtk.Menu.Append (Menu, Item);
                      Connect
-                     (  Item,
+                       (Item,
                         "activate",
                         On_Zoom_Out_T'Access,
-                        Oscilloscope
-                     );
-                     Gtk_New
-                     (  Item,
-                        Style_Get (Oscilloscope, "menu-zoom-out-v")
-                     );
-                     Append (Menu, Item);
+                        Oscilloscope);
+                     Gtk.Image_Menu_Item.Gtk_New
+                       (Item,
+                        Gtk.Widget.Styles.Style_Get
+                          (Oscilloscope, "menu-zoom-out-v"));
+                     Gtk.Menu.Append (Menu, Item);
                      Connect
-                     (  Item,
+                       (Item,
                         "activate",
                         On_Zoom_Out_V'Access,
-                        Oscilloscope
-                     );
-                        -- Copy values
-                     Gtk_New
-                     (  Item,
-                        Style_Get (Oscilloscope, "menu-copy-values")
-                     );
-                     Gtk_New (Icon, Stock_Copy, Icon_Size_Menu);
-                     Set_Image (Item, Icon);
-                     Append (Menu, Item);
+                        Oscilloscope);
+                     -- Copy values
+                     Gtk.Image_Menu_Item.Gtk_New
+                       (Item,
+                        Gtk.Widget.Styles.Style_Get
+                          (Oscilloscope, "menu-copy-values"));
+                     Gtk.Image.Gtk_New
+                       (Icon, Gtk.Stock.Stock_Copy, Gtk.Enums.Icon_Size_Menu);
+                     Gtk.Image_Menu_Item.Set_Image (Item, Icon);
+                     Gtk.Menu.Append (Menu, Item);
                      Connect
-                     (  Item,
+                       (Item,
                         "activate",
                         On_Copy_Selection'Access,
-                        Oscilloscope
-                     );
-                        -- Copy differences
-                     Gtk_New
-                     (  Item,
-                        Style_Get
-                        (  Oscilloscope,
-                           "menu-copy-differences"
-                     )  );
-                     Gtk_New (Icon, Stock_Remove, Icon_Size_Menu);
-                     Set_Image (Item, Icon);
-                     Append (Menu, Item);
+                        Oscilloscope);
+                     -- Copy differences
+                     Gtk.Image_Menu_Item.Gtk_New
+                       (Item,
+                        Gtk.Widget.Styles.Style_Get
+                          (Oscilloscope, "menu-copy-differences"));
+                     Gtk.Image.Gtk_New
+                       (Icon, Gtk.Stock.Stock_Remove, Gtk.Enums.Icon_Size_Menu);
+                     Gtk.Image_Menu_Item.Set_Image (Item, Icon);
+                     Gtk.Menu.Append (Menu, Item);
                      Connect
-                     (  Item,
+                       (Item,
                         "activate",
                         On_Difference_Selection'Access,
-                        Oscilloscope
-                     );
-                        -- Copy range
-                     Gtk_New
-                     (  Item,
-                        Style_Get (Oscilloscope, "menu-copy-range")
-                     );
-                     Gtk_New (Icon, Stock_Paste, Icon_Size_Menu);
-                     Set_Image (Item, Icon);
-                     Append (Menu, Item);
+                        Oscilloscope);
+                     -- Copy range
+                     Gtk.Image_Menu_Item.Gtk_New
+                       (Item,
+                        Gtk.Widget.Styles.Style_Get
+                          (Oscilloscope, "menu-copy-range"));
+                     Gtk.Image.Gtk_New
+                       (Icon, Gtk.Stock.Stock_Paste, Gtk.Enums.Icon_Size_Menu);
+                     Gtk.Image_Menu_Item.Set_Image (Item, Icon);
+                     Gtk.Menu.Append (Menu, Item);
                      Connect
-                     (  Item,
+                       (Item,
                         "activate",
                         On_Range_Selection'Access,
-                        Oscilloscope
-                     );
-                        -- Separator
-                     Gtk_New (Separator);
-                     Append (Menu, Separator);
-                        -- Delete selection
-                     Gtk_New
-                     (  Item,
-                        Style_Get (Oscilloscope, "menu-cancel")
-                     );
-                     Gtk_New (Icon, Stock_Cancel, Icon_Size_Menu);
-                     Set_Image (Item, Icon);
-                     Append (Menu, Item);
+                        Oscilloscope);
+                     -- Separator
+                     Gtk.Separator_Menu_Item.Gtk_New (Separator);
+                     Gtk.Menu.Append (Menu, Separator);
+                     -- Delete selection
+                     Gtk.Image_Menu_Item.Gtk_New
+                       (Item,
+                        Gtk.Widget.Styles.Style_Get
+                          (Oscilloscope, "menu-cancel"));
+                     Gtk.Image.Gtk_New
+                       (Icon, Gtk.Stock.Stock_Cancel, Gtk.Enums.Icon_Size_Menu);
+                     Gtk.Image_Menu_Item.Set_Image (Item, Icon);
+                     Gtk.Menu.Append (Menu, Item);
                      Connect
-                     (  Item,
+                       (Item,
                         "activate",
                         On_Cancel_Selection'Access,
-                        Oscilloscope
-                     );
+                        Oscilloscope);
                      Connect
-                     (  Menu,
+                       (Menu,
                         "destroy",
                         On_Cancel_Selection'Access,
-                        Oscilloscope
-                     );
-                     Show_All (Menu);
-                     Popup
-                     (  Menu,
-                        Button => Gdk.Event.Get_Button (Event),
-                        Activate_Time => Gdk.Event.Get_Time (Event)
-                     );
+                        Oscilloscope);
+                     Gtk.Menu.Show_All (Menu);
+                     Gtk.Menu.Popup
+                       (Menu,
+                        Button        => Gdk.Event.Get_Button (Event),
+                        Activate_Time => Gdk.Event.Get_Time (Event));
                   when Zoom_In =>
                      On_Zoom_In (Oscilloscope, Oscilloscope);
                   when Zoom_In_Time =>
@@ -215,13 +211,12 @@ begin
                      On_Copy_Selection (Oscilloscope, Oscilloscope);
                   when Copy_Differences =>
                      On_Difference_Selection
-                     (  Oscilloscope,
-                        Oscilloscope
-                     );
+                       (Oscilloscope,
+                        Oscilloscope);
                   when User_Action =>
                      declare
-                        Box : constant Cairo_Box :=
-                              Oscilloscope.all.Selection.all.Area.all.Get_Box;
+                        Box : constant Cairo.Ellipses.Cairo_Box :=
+                                Oscilloscope.all.Selection.all.Area.all.Get_Box;
                      begin
                         Free (Oscilloscope.all.Selection.all.Area);
                         Oscilloscope.all.Restore_State;
@@ -239,12 +234,10 @@ begin
    return True;
 exception
    when Error : others =>
-      Log
-      (  GtkAda_Contributions_Domain,
-         Log_Level_Critical,
-         (  "Fault: "
-         &  Exception_Information (Error)
-         &  Where ("On_Button_Release")
-      )  );
+      Glib.Messages.Log
+        (Gtk.Missed.GtkAda_Contributions_Domain,
+         Glib.Messages.Log_Level_Critical,
+         "Fault: " & Ada.Exceptions.Exception_Information (Error) &
+           Where ("On_Button_Release"));
       return True;
 end On_Button_Release;

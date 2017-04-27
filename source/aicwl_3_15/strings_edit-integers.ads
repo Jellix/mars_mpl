@@ -29,4 +29,3 @@ with Strings_Edit.Integer_Edit;
 
 package Strings_Edit.Integers is
    new Strings_Edit.Integer_Edit (Integer);
-

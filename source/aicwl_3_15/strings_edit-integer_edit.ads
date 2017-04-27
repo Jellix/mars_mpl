@@ -27,7 +27,7 @@
 --
 --  This generic package provides I/O for  integer  types  (the  generic
 --  parameter   Number).   There   is   also   a   non-generic   version
---  Strings_Edit.Integers. 
+--  Strings_Edit.Integers.
 --
 generic
    type Number is range <>;
@@ -47,7 +47,7 @@ package Strings_Edit.Integer_Edit is
 --
 -- This  procedure  gets  an  integer number from the string Source. The
 -- process starts from Source (Pointer). The  parameter  Base  indicates
--- the base of the expected number. 
+-- the base of the expected number.
 --
 -- Exceptions:
 --
@@ -78,7 +78,7 @@ package Strings_Edit.Integer_Edit is
 --
 -- This function gets an integer number  from  the  string  Source.  The
 -- number  can be surrounded by spaces and tabs. The whole string Source
--- should be matched. Otherwise the exception Data_Error is propagated. 
+-- should be matched. Otherwise the exception Data_Error is propagated.
 --
 -- Returns :
 --
@@ -115,12 +115,12 @@ package Strings_Edit.Integer_Edit is
 -- from  Destination  (Pointer). The parameter Base indicates the number
 -- base used for the output. The base itself  does  not  appear  in  the
 -- output.  The parameter PutPlus indicates whether the plus sign should
--- be placed if the number is positive. 
+-- be placed if the number is positive.
 --
 -- Exceptions:
 --
 --      Layout_Error - Pointer is not in Destination'Range or  there  is
---                     no room for the output. 
+--                     no room for the output.
 --
 -- Example :
 --
@@ -151,7 +151,7 @@ package Strings_Edit.Integer_Edit is
 -- This  function converts Value to string. The parameter Base indicates
 -- the number base used for the output. The base itself does not  appear
 -- in the output. The parameter PutPlus indicates whether the plus  sign
--- should be placed if the number is positive. 
+-- should be placed if the number is positive.
 --
 -- Returns :
 --

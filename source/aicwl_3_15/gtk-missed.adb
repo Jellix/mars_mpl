@@ -263,10 +263,10 @@ package body Gtk.Missed is
             )  return UTF8_String is
       function Internal (Args : chars_ptr_array) return chars_ptr;
       pragma Import (C, Internal, "g_build_filenamev");
-      First  : aliased Char_Array := To_C (First_Element);
-      Second : aliased Char_Array := To_C (Second_Element);
-      Third  : aliased Char_Array := To_C (Third_Element);
-      Ptr    : constant Chars_Ptr :=
+      First  : aliased char_array := To_C (First_Element);
+      Second : aliased char_array := To_C (Second_Element);
+      Third  : aliased char_array := To_C (Third_Element);
+      Ptr    : constant chars_ptr :=
                   Internal
                   (  (  0 => To_Chars_Ptr (First'Unchecked_Access),
                         1 => To_Chars_Ptr (Second'Unchecked_Access),
@@ -285,13 +285,13 @@ package body Gtk.Missed is
                Third_Element  : UTF8_String;
                Fourth_Element : UTF8_String
             )  return UTF8_String is
-      function Internal (Args : Chars_Ptr_Array) return Chars_Ptr;
+      function Internal (Args : chars_ptr_array) return chars_ptr;
       pragma Import (C, Internal, "g_build_filenamev");
-      First  : aliased Char_Array := To_C (First_Element);
-      Second : aliased Char_Array := To_C (Second_Element);
-      Third  : aliased Char_Array := To_C (Third_Element);
-      Fourth : aliased Char_Array := To_C (Fourth_Element);
-      Ptr    : constant Chars_Ptr :=
+      First  : aliased char_array := To_C (First_Element);
+      Second : aliased char_array := To_C (Second_Element);
+      Third  : aliased char_array := To_C (Third_Element);
+      Fourth : aliased char_array := To_C (Fourth_Element);
+      Ptr    : constant chars_ptr :=
                   Internal
                   (  (  0 => To_Chars_Ptr (First'Unchecked_Access),
                         1 => To_Chars_Ptr (Second'Unchecked_Access),
@@ -312,14 +312,14 @@ package body Gtk.Missed is
                Fourth_Element : UTF8_String;
                Fifth_Element  : UTF8_String
             )  return UTF8_String is
-      function Internal (Args : Chars_Ptr_Array) return Chars_Ptr;
+      function Internal (Args : chars_ptr_array) return chars_ptr;
       pragma Import (C, Internal, "g_build_filenamev");
-      First  : aliased Char_Array := To_C (First_Element);
-      Second : aliased Char_Array := To_C (Second_Element);
-      Third  : aliased Char_Array := To_C (Third_Element);
-      Fourth : aliased Char_Array := To_C (Fourth_Element);
-      Fifth  : aliased Char_Array := To_C (Fifth_Element);
-      Ptr    : constant Chars_Ptr :=
+      First  : aliased char_array := To_C (First_Element);
+      Second : aliased char_array := To_C (Second_Element);
+      Third  : aliased char_array := To_C (Third_Element);
+      Fourth : aliased char_array := To_C (Fourth_Element);
+      Fifth  : aliased char_array := To_C (Fifth_Element);
+      Ptr    : constant chars_ptr :=
                   Internal
                   (  (  0 => To_Chars_Ptr (First'Unchecked_Access),
                         1 => To_Chars_Ptr (Second'Unchecked_Access),
@@ -338,7 +338,7 @@ package body Gtk.Missed is
       Error : Cairo_Status;
    begin
       Error := Status (Context);
-      if Error /= CAIRO_STATUS_SUCCESS then
+      if Error /= Cairo_Status_Success then
          raise Status_Error with To_String (Error);
       end if;
    end Check;
@@ -368,9 +368,9 @@ package body Gtk.Missed is
             return After;
          else
             case Compare (A, B) is
-               when GInt'First..-1 => return Before;
+               when Gint'First..-1 => return Before;
                when 0              => return Equal;
-               when 1..GInt'Last   => return After;
+               when 1..Gint'Last   => return After;
             end case;
          end if;
       end if;
@@ -483,8 +483,8 @@ package body Gtk.Missed is
    end From_RGBA;
 
    function G_Dir_Open
-            (  Path  : Char_Array;
-               Flags : GUInt;
+            (  Path  : char_array;
+               Flags : Guint;
                Error : access GError
             )  return GDir;
    pragma Import (C, G_Dir_Open, "g_dir_open_utf8");
@@ -504,11 +504,11 @@ package body Gtk.Missed is
       end if;
    end Dir_Open;
 
-   function G_Dir_Read_Name (Dir : GDir) return Chars_Ptr;
+   function G_Dir_Read_Name (Dir : GDir) return chars_ptr;
    pragma Import (C, G_Dir_Read_Name, "g_dir_read_name_utf8");
 
    function Dir_Read_Name (Dir : GDir) return UTF8_String is
-      Ptr : constant Chars_Ptr := G_Dir_Read_Name (Dir);
+      Ptr : constant chars_ptr := G_Dir_Read_Name (Dir);
    begin
       if Ptr = Null_Ptr then
          raise End_Error;
@@ -521,8 +521,8 @@ package body Gtk.Missed is
              (  Container : not null access Gtk_Container_Record'Class
              )  is
       use Gtk.Widget.Widget_List;
-      List : GList := Get_Children (Container);
-      This : GList := First (List);
+      List : Glist := Get_Children (Container);
+      This : Glist := First (List);
    begin
       while This /= Null_List loop
          Remove (Container, Get_Data (This));
@@ -534,7 +534,7 @@ package body Gtk.Missed is
    function Get
             (  Store  : not null access Gtk_List_Store_Record'Class;
                Row    : Gtk_Tree_Iter;
-               Column : GInt
+               Column : Gint
             )  return String is
       Data : GValue;
    begin
@@ -553,7 +553,7 @@ package body Gtk.Missed is
    function Get
             (  Store  : Gtk_Tree_Model;
                Row    : Gtk_Tree_Iter;
-               Column : GInt
+               Column : Gint
             )  return String is
       Data : GValue;
    begin
@@ -572,7 +572,7 @@ package body Gtk.Missed is
    function Get
             (  Store  : not null access Gtk_Tree_Store_Record'Class;
                Row    : Gtk_Tree_Iter;
-               Column : GInt
+               Column : Gint
             )  return String is
       Data : GValue;
    begin
@@ -588,8 +588,8 @@ package body Gtk.Missed is
          return "";
    end Get;
 
-   function G_Find_Program_In_Path_UTF8 (Program : Char_Array)
-      return Chars_Ptr;
+   function G_Find_Program_In_Path_UTF8 (Program : char_array)
+      return chars_ptr;
    pragma Import
           (  C,
              G_Find_Program_In_Path_UTF8,
@@ -598,7 +598,7 @@ package body Gtk.Missed is
 
    function Find_Program_In_Path (Program : UTF8_String)
       return UTF8_String is
-      Ptr : Chars_Ptr;
+      Ptr : chars_ptr;
    begin
       Ptr := G_Find_Program_In_Path_UTF8 (To_C (Program));
       if Ptr = Null_Ptr then
@@ -614,9 +614,9 @@ package body Gtk.Missed is
    end Find_Program_In_Path;
 
    function G_File_Test
-            (  File_Name : Char_Array;
+            (  File_Name : char_array;
                Test      : GFileTest
-            )  return GBoolean;
+            )  return Gboolean;
    pragma Import (C, G_File_Test, "g_file_test_utf8");
 
    function File_Test
@@ -628,7 +628,7 @@ package body Gtk.Missed is
    end File_Test;
 
    function File_Test (File_Name : UTF8_String) return GFileTest is
-      Name : constant Char_Array := To_C (File_Name);
+      Name : constant char_array := To_C (File_Name);
    begin
       if 0 = G_File_Test (Name, File_Test_Exists) then
          return 0;
@@ -665,7 +665,7 @@ package body Gtk.Missed is
             )  return Param_Spec is
       function Internal
                (  Class : GObject_Class;
-                  Name  : Char_Array
+                  Name  : char_array
                )  return Param_Spec;
       pragma Import (C, Internal, "g_object_class_find_property");
    begin
@@ -696,7 +696,7 @@ package body Gtk.Missed is
    end Freeze_Notify;
 
    function Get_Application_Name return UTF8_String is
-      function Internal return Interfaces.C.Strings.Chars_Ptr;
+      function Internal return Interfaces.C.Strings.chars_ptr;
       pragma Import (C, Internal, "g_get_application_name");
    begin
       return Interfaces.C.Strings.Value (Internal);

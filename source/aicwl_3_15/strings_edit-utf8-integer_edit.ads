@@ -26,7 +26,7 @@
 --____________________________________________________________________--
 --
 --  This  generic  package  is  the parent for integer I/O packages (the
---  generic parameter Number). 
+--  generic parameter Number).
 --
 generic
    type Number is range <>;
@@ -64,7 +64,7 @@ package Strings_Edit.UTF8.Integer_Edit is
 --    ToLast  - Force value to Last instead of exception
 --
 -- This procedure gets a decimal integer number from the string  Source.
--- The process starts from Source (Pointer). 
+-- The process starts from Source (Pointer).
 --
 -- Exceptions:
 --
@@ -96,7 +96,7 @@ package Strings_Edit.UTF8.Integer_Edit is
 -- This  function  gets a decimal integer number from the string Source.
 -- The number can be surrounded by spaces and  tabs.  The  whole  string
 -- Source  should  be  matched.  Otherwise  the  exception Data_Error is
--- propagated. 
+-- propagated.
 --
 -- Returns :
 --
@@ -129,12 +129,12 @@ package Strings_Edit.UTF8.Integer_Edit is
 -- into the output string Destination. UTF-8 characters are used for the
 -- output. The string is written starting  from  Destination  (Pointer).
 -- The parameter PutPlus indicates  whether  the  plus  sign  should  be
--- placed if the number is positive. 
+-- placed if the number is positive.
 --
 -- Exceptions:
 --
 --    Layout_Error - Pointer is not in Destination'Range or there is  no
---                   room for the output. 
+--                   room for the output.
 --
    procedure Put
              (  Destination : in out String;
@@ -152,7 +152,7 @@ package Strings_Edit.UTF8.Integer_Edit is
 --
 -- This  function  converts  Value  to  string.  The  parameter  PutPlus
 -- indicates whether the plus sign should be placed  if  the  number  is
--- positive. 
+-- positive.
 --
 -- Returns :
 --

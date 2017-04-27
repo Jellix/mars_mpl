@@ -70,7 +70,7 @@ package body Strings_Edit.Generic_Scale is
       Major := Value'Ceiling (Low / Result.Minor);
       Result.Low_Value := Major * Result.Minor;
       declare
-         No : constant Integer := 
+         No : constant Integer :=
                  Integer
                  (  Value'Rounding
                     (  Value'Remainder
