@@ -23,9 +23,10 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Gtk.Widget;  use Gtk.Widget;
+with Gtk.Widget;
+
 --
 -- Checked_Destroy -- A safe variant of Destroy
 --
@@ -36,5 +37,4 @@ with Gtk.Widget;  use Gtk.Widget;
 -- Object is not bound to any C object.
 --
 procedure Glib.Object.Checked_Destroy
-          (  Object : not null access Gtk_Widget_Record'Class
-          );
+  (Object : not null access Gtk.Widget.Gtk_Widget_Record'Class);

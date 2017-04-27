@@ -25,35 +25,37 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with System;  use System;
+with System;
 
 procedure Glib.Object.Checked_Destroy
-          (  Object : not null access Gtk_Widget_Record'Class
-          )  is
-   procedure Gtk_Widget_Destroy (Object : Address);
+  (Object : not null access Gtk.Widget.Gtk_Widget_Record'Class)
+is
+   procedure Gtk_Widget_Destroy (Object : System.Address);
    pragma Import (C, Gtk_Widget_Destroy, "gtk_widget_destroy");
 
-   procedure G_Object_Ref (Object : Address);
+   procedure G_Object_Ref (Object : System.Address);
    pragma Import (C, G_Object_Ref, "g_object_ref");
 
-   procedure G_Object_Ref_Sink (Object : Address);
+   procedure G_Object_Ref_Sink (Object : System.Address);
    pragma Import (C, G_Object_Ref_Sink, "g_object_ref_sink");
 
-   procedure G_Object_Unref (Object : Address);
+   procedure G_Object_Unref (Object : System.Address);
    pragma Import (C, G_Object_Unref, "g_object_unref");
 
-   function G_Object_Is_Floating (Object : Address) return Gboolean;
+   function G_Object_Is_Floating (Object : System.Address) return Gboolean;
    pragma Import (C, G_Object_Is_Floating, "g_object_is_floating");
 
-   This : constant Address := Get_Object (Object);
+   This : constant System.Address := Get_Object (Object);
+
+   use type System.Address;
 begin
-   if This /= Null_Address then
+   if This /= System.Null_Address then
       G_Object_Ref (This);
       if 0 /= G_Object_Is_Floating (This) then
          G_Object_Ref_Sink (This);
       end if;
       Gtk_Widget_Destroy (This);
-      Set_Object (Object, Null_Address);
+      Set_Object (Object, System.Null_Address);
       G_Object_Unref (This);
    end if;
 end Glib.Object.Checked_Destroy;
