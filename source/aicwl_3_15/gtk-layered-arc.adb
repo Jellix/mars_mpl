@@ -23,7 +23,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 with Glib.Properties.Creation;  use Glib.Properties.Creation;
 with Gtk.Layered.Stream_IO;     use Gtk.Layered.Stream_IO;
@@ -35,27 +35,27 @@ package body Gtk.Layered.Arc is
    type Arc_Ptr is access all Arc_Layer;
 
    type Layer_Property is
-        (  Property_Scaled,
-           Property_Widened,
-           Property_Center_X,
-           Property_Center_Y,
-           Property_Curvature,
-           Property_Radius,
-           Property_Angle,
-           Property_From,
-           Property_Length,
-           Property_Line_Width,
-           Property_Line_Color,
-           Property_Line_Cap
-        );
+     (Property_Scaled,
+      Property_Widened,
+      Property_Center_X,
+      Property_Center_Y,
+      Property_Curvature,
+      Property_Radius,
+      Property_Angle,
+      Property_From,
+      Property_Length,
+      Property_Line_Width,
+      Property_Line_Color,
+      Property_Line_Cap);
 
    procedure Free is
       new Ada.Unchecked_Deallocation (Arc_Layer, Arc_Ptr);
 
-   function Add
-            (  Under  : not null access Layer_Location'Class;
-               Stream : not null access Root_Stream_Type'Class
-            )  return not null access Arc_Layer is
+   overriding function Add
+     (Under  : not null access Layer_Location'Class;
+      Stream : not null access Ada.Streams.Root_Stream_Type'Class)
+      return not null access Arc_Layer
+   is
       Ptr : Arc_Ptr := new Arc_Layer;
    begin
       Restore (Stream.all, Ptr.all);
@@ -68,16 +68,16 @@ package body Gtk.Layered.Arc is
    end Add;
 
    procedure Add_Arc
-             (  Under    : not null access Layer_Location'Class;
-                Ellipse  : Ellipse_Parameters := Unit_Circle;
-                From     : Gdouble            := 0.0;
-                Length   : Gdouble            := 2.0 * Pi;
-                Width    : Gdouble            := 1.0;
-                Color    : Gdk_Color          := RGB (0.0, 0.0, 0.0);
-                Line_Cap : Cairo_Line_Cap     := Cairo_Line_Cap_Butt;
-                Scaled   : Boolean            := False;
-                Widened  : Boolean            := False
-             )  is
+     (Under    : not null access Layer_Location'Class;
+      Ellipse  : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle;
+      From     : Gdouble                           := 0.0;
+      Length   : Gdouble                           := 2.0 * Pi;
+      Width    : Gdouble                           := 1.0;
+      Color    : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Line_Cap : Cairo.Cairo_Line_Cap              := Cairo.Cairo_Line_Cap_Butt;
+      Scaled   : Boolean                           := False;
+      Widened  : Boolean                           := False)
+   is
       Ptr   : Arc_Ptr := new Arc_Layer;
       Layer : Arc_Layer renames Ptr.all;
    begin
@@ -85,12 +85,11 @@ package body Gtk.Layered.Arc is
       Layer.Widened := Widened;
       Add (Ptr, Under);
       Set
-      (  Layer   => Layer,
+        (Layer   => Layer,
          Ellipse => Ellipse,
          From    => From,
          Length  => Length,
-         Line    => (Width, Color, Line_Cap)
-      );
+         Line    => (Width, Color, Line_Cap));
    exception
       when others =>
          Free (Ptr);
@@ -98,16 +97,17 @@ package body Gtk.Layered.Arc is
    end Add_Arc;
 
    function Add_Arc
-            (  Under    : not null access Layer_Location'Class;
-               Ellipse  : Ellipse_Parameters := Unit_Circle;
-               From     : Gdouble            := 0.0;
-               Length   : Gdouble            := 2.0 * Pi;
-               Width    : Gdouble            := 1.0;
-               Color    : Gdk_Color          := RGB (0.0, 0.0, 0.0);
-               Line_Cap : Cairo_Line_Cap     := Cairo_Line_Cap_Butt;
-               Scaled   : Boolean            := False;
-               Widened  : Boolean            := False
-            )  return not null access Arc_Layer is
+     (Under    : not null access Layer_Location'Class;
+      Ellipse  : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle;
+      From     : Gdouble                           := 0.0;
+      Length   : Gdouble                           := 2.0 * Pi;
+      Width    : Gdouble                           := 1.0;
+      Color    : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Line_Cap : Cairo.Cairo_Line_Cap              := Cairo.Cairo_Line_Cap_Butt;
+      Scaled   : Boolean                           := False;
+      Widened  : Boolean                           := False)
+      return not null access Arc_Layer
+   is
       Ptr   : Arc_Ptr := new Arc_Layer;
       Layer : Arc_Layer renames Ptr.all;
    begin
@@ -115,12 +115,11 @@ package body Gtk.Layered.Arc is
       Layer.Widened := Widened;
       Add (Ptr, Under);
       Set
-      (  Layer   => Layer,
+        (Layer   => Layer,
          Ellipse => Ellipse,
          From    => From,
          Length  => Length,
-         Line    => (Width, Color, Line_Cap)
-      );
+         Line    => (Width, Color, Line_Cap));
       return Layer'Unchecked_Access;
    exception
       when others =>
@@ -128,50 +127,48 @@ package body Gtk.Layered.Arc is
          raise;
    end Add_Arc;
 
-   procedure Draw
-             (  Layer   : in out Arc_Layer;
-                Context : Cairo_Context;
-                Area    : Gdk_Rectangle
-             )  is
+   overriding procedure Draw
+     (Layer   : in out Arc_Layer;
+      Context : Cairo.Cairo_Context;
+      Area    : Gdk_Rectangle)
+   is
+      pragma Unreferenced (Area);
+      use type Cairo.Ellipses.Ellipse_Parameters;
    begin
-      New_Path (Context);
+      Cairo.New_Path (Context);
       if Layer.Widened then
-         Set_Line_Width
-         (  Context,
-            Layer.Line.Width * Layer.Widget.Get_Size
-         );
+         Cairo.Set_Line_Width
+           (Context,
+            Layer.Line.Width * Layer.Widget.all.Get_Size);
       else
-         Set_Line_Width (Context, Layer.Line.Width);
+         Cairo.Set_Line_Width (Context, Layer.Line.Width);
       end if;
-      Set_Source_Rgb
-      (  Context,
-         Gdouble (Red   (Layer.Line.Color)) / Gdouble (Guint16'Last),
-         Gdouble (Green (Layer.Line.Color)) / Gdouble (Guint16'Last),
-         Gdouble (Blue  (Layer.Line.Color)) / Gdouble (Guint16'Last)
-      );
-      Set_Line_Cap (Context, Layer.Line.Line_Cap);
+      Cairo.Set_Source_Rgb
+        (Context,
+         Gdouble (Gdk.Color.Red   (Layer.Line.Color)) / Gdouble (Guint16'Last),
+         Gdouble (Gdk.Color.Green (Layer.Line.Color)) / Gdouble (Guint16'Last),
+         Gdouble (Gdk.Color.Blue  (Layer.Line.Color)) / Gdouble (Guint16'Last));
+      Cairo.Set_Line_Cap (Context, Layer.Line.Line_Cap);
       if Layer.Scaled then
-         Elliptic_Arc_Abs
-         (  Context,
-            (  Layer.Ellipse * Layer.Widget.Get_Size
-            +  Layer.Widget.Get_Center
-            ),
+         Cairo.Ellipses.Elliptic_Arc_Abs
+           (Context,
+            Layer.Ellipse * Layer.Widget.all.Get_Size +
+              Layer.Widget.all.Get_Center,
             Layer.From,
-            Layer.Length
-         );
+            Layer.Length);
       else
-         Elliptic_Arc_Abs
-         (  Context,
+         Cairo.Ellipses.Elliptic_Arc_Abs
+           (Context,
             Layer.Ellipse,
             Layer.From,
-            Layer.Length
-         );
+            Layer.Length);
       end if;
-      Stroke  (Context);
+      Cairo.Stroke  (Context);
       Layer.Updated := False;
    end Draw;
 
-   function Get_Ellipse (Layer : Arc_Layer) return Ellipse_Parameters is
+   function Get_Ellipse
+     (Layer : Arc_Layer) return Cairo.Ellipses.Ellipse_Parameters is
    begin
       return Layer.Ellipse;
    end Get_Ellipse;
@@ -191,19 +188,19 @@ package body Gtk.Layered.Arc is
       return Layer.Line;
    end Get_Line;
 
-   function Get_Properties_Number (Layer : Arc_Layer) return Natural is
+   overriding function Get_Properties_Number (Layer : Arc_Layer) return Natural
+   is
+      pragma Unreferenced (Layer);
    begin
       return
-      (  Layer_Property'Pos (Layer_Property'Last)
-      -  Layer_Property'Pos (Layer_Property'First)
-      +  1
-      );
+        (Layer_Property'Pos (Layer_Property'Last)
+         -  Layer_Property'Pos (Layer_Property'First)
+         +  1);
    end Get_Properties_Number;
 
-   function Get_Property_Specification
-            (  Layer    : Arc_Layer;
-               Property : Positive
-            )  return Param_Spec is
+   overriding function Get_Property_Specification
+     (Layer    : Arc_Layer;
+      Property : Positive) return Param_Spec is
    begin
       if Property > Get_Properties_Number (Layer) then
          raise Constraint_Error;
@@ -212,216 +209,195 @@ package body Gtk.Layered.Arc is
             when Property_Center_X =>
                return
                   Gnew_Double
-                  (  Name    => "x",
-                     Nick    => "x",
-                     Minimum => Gdouble'First,
-                     Maximum => Gdouble'Last,
-                     Default => 0.0,
-                     Blurb =>
-                        "The x-coordinate of the arc's ellipse center"
-                  );
+                   (Name    => "x",
+                    Nick    => "x",
+                    Minimum => Gdouble'First,
+                    Maximum => Gdouble'Last,
+                    Default => 0.0,
+                    Blurb   => "The x-coordinate of the arc's ellipse center");
             when Property_Center_Y =>
                return
                   Gnew_Double
-                  (  Name    => "y",
-                     Nick    => "y",
-                     Minimum => Gdouble'First,
-                     Maximum => Gdouble'Last,
-                     Default => 0.0,
-                     Blurb =>
-                        "The y-coordinate of the arc's ellipse center"
-                  );
+                   (Name    => "y",
+                    Nick    => "y",
+                    Minimum => Gdouble'First,
+                    Maximum => Gdouble'Last,
+                    Default => 0.0,
+                    Blurb   => "The y-coordinate of the arc's ellipse center");
             when Property_Curvature =>
                return
                   Gnew_Double
-                  (  Name    => "k",
-                     Nick    => "k",
-                     Minimum => 0.0,
-                     Maximum => Gdouble'Last,
-                     Default => 0.0,
-                     Blurb =>
-                        "The curvature of the arc's ellipse major axis"
-                  );
+                   (Name    => "k",
+                    Nick    => "k",
+                    Minimum => 0.0,
+                    Maximum => Gdouble'Last,
+                    Default => 0.0,
+                    Blurb   => "The curvature of the arc's ellipse major axis");
             when Property_Radius =>
                return
                   Gnew_Double
-                  (  Name    => "r",
-                     Nick    => "r",
-                     Minimum => 1.0E-6,
-                     Maximum => Gdouble'Last,
-                     Default => 0.5,
-                     Blurb =>
-                        "The radius of the arc's ellipse minor axis"
-                  );
+                   (Name    => "r",
+                    Nick    => "r",
+                    Minimum => 1.0E-6,
+                    Maximum => Gdouble'Last,
+                    Default => 0.5,
+                    Blurb   => "The radius of the arc's ellipse minor axis");
             when Property_Angle =>
                return
                   Gnew_Double
-                  (  Name    => "angle",
-                     Nick    => "angle",
-                     Minimum =>-2.0 * Pi,
-                     Maximum => 2.0 * Pi,
-                     Default => 0.0,
-                     Blurb =>
-                        "The angle of the major ellipse axis of the arc"
-                  );
+                   (Name    => "angle",
+                    Nick    => "angle",
+                    Minimum => -2.0 * Pi,
+                    Maximum => 2.0 * Pi,
+                    Default => 0.0,
+                    Blurb   =>
+                       "The angle of the major ellipse axis of the arc");
             when Property_From =>
                return
                   Gnew_Double
-                  (  Name    => "from",
-                     Nick    => "from",
-                     Minimum =>-2.0 * Pi,
-                     Maximum => 2.0 * Pi,
-                     Default => 0.0,
-                     Blurb   => "The angle of the arc beginning"
-                  );
+                   (Name    => "from",
+                    Nick    => "from",
+                    Minimum => -2.0 * Pi,
+                    Maximum => 2.0 * Pi,
+                    Default => 0.0,
+                    Blurb   => "The angle of the arc beginning");
             when Property_Length =>
                return
                   Gnew_Double
-                  (  Name    => "length",
-                     Nick    => "length",
-                     Minimum =>-2.0 * Pi,
-                     Maximum => 2.0 * Pi,
-                     Default => 0.0,
-                     Blurb   => "The angular length of the arc"
-                  );
+                   (Name    => "length",
+                    Nick    => "length",
+                    Minimum => -2.0 * Pi,
+                    Maximum => 2.0 * Pi,
+                    Default => 0.0,
+                    Blurb   => "The angular length of the arc");
             when Property_Line_Width =>
                return
                   Gnew_Double
-                  (  Name    => "width",
-                     Nick    => "width",
-                     Minimum => 0.0,
-                     Maximum => Gdouble'Last,
-                     Default => 1.0,
-                     Blurb   => "The arc line width"
-                  );
+                   (Name    => "width",
+                    Nick    => "width",
+                    Minimum => 0.0,
+                    Maximum => Gdouble'Last,
+                    Default => 1.0,
+                    Blurb   => "The arc line width");
             when Property_Line_Color =>
                return
                   Gnew_Boxed
-                  (  Name       => "color",
-                     Boxed_Type => Gdk_Color_Type,
-                     Nick       => "color",
-                     Blurb      => "The arc's line color"
-                  );
+                   (Name       => "color",
+                    Boxed_Type => Gdk.Color.Gdk_Color_Type,
+                    Nick       => "color",
+                    Blurb      => "The arc's line color");
             when Property_Line_Cap =>
                return
                   Cairo.Line_Cap_Property.Gnew_Enum
-                  (  Name    => "line-cap",
-                     Nick    => "line cap",
-                     Default => Cairo_Line_Cap_Butt,
-                     Blurb   => "The cap style of the arc's line"
-                  );
+                   (Name    => "line-cap",
+                    Nick    => "line cap",
+                    Default => Cairo.Cairo_Line_Cap_Butt,
+                    Blurb   => "The cap style of the arc's line");
             when Property_Scaled =>
                return
                   Gnew_Boolean
-                  (  Name    => "scaled",
-                     Nick    => "scaled",
-                     Default => False,
-                     Blurb   => "The arc size is changed when " &
-                                "the widget is resized"
-                  );
+                   (Name    => "scaled",
+                    Nick    => "scaled",
+                    Default => False,
+                    Blurb   =>
+                       "The arc size is changed when " &
+                       "the widget is resized");
             when Property_Widened =>
                return
                   Gnew_Boolean
-                  (  Name    => "widened",
-                     Nick    => "widened",
-                     Default => False,
-                     Blurb   => "The arc's line width is changed " &
-                                "when the widget is resized"
-                  );
+                   (Name    => "widened",
+                    Nick    => "widened",
+                    Default => False,
+                    Blurb   =>
+                       "The arc's line width is changed " &
+                       "when the widget is resized");
          end case;
       end if;
    end Get_Property_Specification;
 
-   function Get_Property_Value
-            (  Layer    : Arc_Layer;
-               Property : Positive
-            )  return GValue is
+   overriding function Get_Property_Value
+     (Layer    : Arc_Layer;
+      Property : Positive) return Glib.Values.GValue is
    begin
       if Property > Get_Properties_Number (Layer) then
          raise Constraint_Error;
       else
          declare
-            Value : GValue;
+            Value : Glib.Values.GValue;
          begin
             case Layer_Property'Val (Property - 1) is
                when Property_Center_X =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Ellipse.Center.X);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Ellipse.Center.X);
                when Property_Center_Y =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Ellipse.Center.Y);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Ellipse.Center.Y);
                when Property_Curvature =>
-                  Init (Value, GType_Double);
-                  Set_Double
-                  (  Value,
-                     Layer.Ellipse.Major_Curvature
-                  );
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Ellipse.Major_Curvature);
                when Property_Radius =>
-                  Init (Value, GType_Double);
-                  Set_Double
-                  (  Value,
-                     Layer.Ellipse.Minor_Radius
-                  );
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Ellipse.Minor_Radius);
                when Property_Angle =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Ellipse.Angle);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Ellipse.Angle);
                when Property_From =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.From);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.From);
                when Property_Length =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Length);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Length);
                when Property_Line_Width =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Line.Width);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Line.Width);
                when Property_Line_Color =>
-                  Set_Value (Value, Layer.Line.Color);
+                  Gdk.Color.Set_Value (Value, Layer.Line.Color);
                when Property_Line_Cap =>
                   Cairo.Line_Cap_Property.Set_Enum
-                  (  Value,
-                     Layer.Line.Line_Cap
-                  );
+                    (Value,
+                     Layer.Line.Line_Cap);
                when Property_Scaled =>
-                  Init (Value, GType_Boolean);
-                  Set_Boolean (Value, Layer.Scaled);
+                  Glib.Values.Init (Value, GType_Boolean);
+                  Glib.Values.Set_Boolean (Value, Layer.Scaled);
                when Property_Widened =>
-                  Init (Value, GType_Boolean);
-                  Set_Boolean (Value, Layer.Widened);
+                  Glib.Values.Init (Value, GType_Boolean);
+                  Glib.Values.Set_Boolean (Value, Layer.Widened);
             end case;
             return Value;
          end;
       end if;
    end Get_Property_Value;
 
-   function Get_Scaled (Layer : Arc_Layer) return Boolean is
+   overriding function Get_Scaled (Layer : Arc_Layer) return Boolean is
    begin
       return Layer.Scaled;
    end Get_Scaled;
 
-   function Get_Widened (Layer : Arc_Layer) return Boolean is
+   overriding function Get_Widened (Layer : Arc_Layer) return Boolean is
    begin
       return Layer.Widened;
    end Get_Widened;
 
-   function Is_Updated (Layer : Arc_Layer) return Boolean is
+   overriding function Is_Updated (Layer : Arc_Layer) return Boolean is
    begin
       return Layer.Updated;
    end Is_Updated;
 
-   procedure Move
-             (  Layer  : in out Arc_Layer;
-                Offset : Cairo_Tuple
-             )  is
+   overriding procedure Move
+     (Layer  : in out Arc_Layer;
+      Offset : Cairo.Ellipses.Cairo_Tuple)
+   is
+      use type Cairo.Ellipses.Ellipse_Parameters;
    begin
       Layer.Ellipse := Layer.Ellipse + Offset;
       Layer.Updated := True;
    end Move;
 
-   procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Layer  : in out Arc_Layer
-             )  is
-      Ellipse : Ellipse_Parameters;
+   overriding procedure Restore
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Layer  : in out Arc_Layer)
+   is
+      Ellipse : Cairo.Ellipses.Ellipse_Parameters;
       From    : Gdouble;
       Length  : Gdouble;
       Line    : Line_Parameters;
@@ -432,35 +408,33 @@ package body Gtk.Layered.Arc is
       Restore (Stream, Line);
       Restore (Stream, Layer.Scaled, Layer.Widened);
       Set
-      (  Layer   => Layer,
+        (Layer   => Layer,
          Ellipse => Ellipse,
          From    => From,
          Length  => Length,
-         Line    => Line
-      );
+         Line    => Line);
    end Restore;
 
-   procedure Scale
-             (  Layer  : in out Arc_Layer;
-                Factor : Gdouble
-             )  is
+   overriding procedure Scale
+     (Layer  : in out Arc_Layer;
+      Factor : Gdouble)
+   is
+      use type Cairo.Ellipses.Ellipse_Parameters;
    begin
       Set
-      (  Layer   => Layer,
+        (Layer   => Layer,
          Ellipse => Layer.Ellipse * Factor,
          From    => Layer.From,
          Length  => Layer.Length,
-         Line    => Layer.Line
-      );
+         Line    => Layer.Line);
    end Scale;
 
    procedure Set
-             (  Layer   : in out Arc_Layer;
-                Ellipse : Ellipse_Parameters;
-                From    : Gdouble;
-                Length  : Gdouble;
-                Line    : Line_Parameters
-             )  is
+     (Layer   : in out Arc_Layer;
+      Ellipse : Cairo.Ellipses.Ellipse_Parameters;
+      From    : Gdouble;
+      Length  : Gdouble;
+      Line    : Line_Parameters) is
    begin
       if Ellipse.Minor_Radius <= 0.0 then
          raise Constraint_Error with "Non-positive ellipse radius";
@@ -476,88 +450,84 @@ package body Gtk.Layered.Arc is
       Layer.Updated := True;
    end Set;
 
-   procedure Set_Property_Value
-             (  Layer    : in out Arc_Layer;
-                Property : Positive;
-                Value    : GValue
-             )  is
+   overriding procedure Set_Property_Value
+     (Layer    : in out Arc_Layer;
+      Property : Positive;
+      Value    : Glib.Values.GValue) is
    begin
       if Property > Get_Properties_Number (Layer) then
          raise Constraint_Error;
       else
          case Layer_Property'Val (Property - 1) is
             when Property_Center_X =>
-               Layer.Ellipse.Center.X := Get_Double (Value);
+               Layer.Ellipse.Center.X := Glib.Values.Get_Double (Value);
             when Property_Center_Y =>
-               Layer.Ellipse.Center.Y := Get_Double (Value);
+               Layer.Ellipse.Center.Y := Glib.Values.Get_Double (Value);
             when Property_Curvature =>
-               Layer.Ellipse.Major_Curvature := Get_Double (Value);
+               Layer.Ellipse.Major_Curvature := Glib.Values.Get_Double (Value);
                if Layer.Ellipse.Major_Curvature < 0.0 then
                   Layer.Ellipse.Major_Curvature := 0.0;
                end if;
             when Property_Radius =>
-               Layer.Ellipse.Minor_Radius := Get_Double (Value);
+               Layer.Ellipse.Minor_Radius := Glib.Values.Get_Double (Value);
                if Layer.Ellipse.Minor_Radius < 1.0E-6 then
                   Layer.Ellipse.Minor_Radius := 1.0E-6;
                end if;
             when Property_Angle =>
-               Layer.Ellipse.Angle := Get_Double (Value);
-               if Layer.Ellipse.Angle not in -2.0 * Pi..2.0 * Pi then
+               Layer.Ellipse.Angle := Glib.Values.Get_Double (Value);
+               if Layer.Ellipse.Angle not in -2.0 * Pi .. 2.0 * Pi then
                   Layer.Ellipse.Angle :=
                      Gdouble'Remainder (Layer.Ellipse.Angle, 2.0 * Pi);
                end if;
             when Property_From =>
-               Layer.From := Get_Double (Value);
-               if Layer.From not in -2.0 * Pi..2.0 * Pi then
+               Layer.From := Glib.Values.Get_Double (Value);
+               if Layer.From not in -2.0 * Pi .. 2.0 * Pi then
                   Layer.From := Gdouble'Remainder (Layer.From, 2.0 * Pi);
                end if;
             when Property_Length =>
-               Layer.Length := Get_Double (Value);
-               if Layer.Length not in -2.0 * Pi..2.0 * Pi then
+               Layer.Length := Glib.Values.Get_Double (Value);
+               if Layer.Length not in -2.0 * Pi .. 2.0 * Pi then
                   Layer.Length :=
                      Gdouble'Remainder (Layer.Length, 2.0 * Pi);
                end if;
             when Property_Line_Width =>
-               Layer.Line.Width := Get_Double (Value);
+               Layer.Line.Width := Glib.Values.Get_Double (Value);
                if Layer.Line.Width < 0.0 then
                   Layer.Line.Width := 0.0;
                end if;
             when Property_Line_Color =>
-               Layer.Line.Color := Get_Value (Value);
+               Layer.Line.Color := Gdk.Color.Get_Value (Value);
             when Property_Line_Cap =>
                Layer.Line.Line_Cap :=
                   Cairo.Line_Cap_Property.Get_Enum (Value);
             when Property_Scaled =>
-               Layer.Scaled := Get_Boolean (Value);
+               Layer.Scaled := Glib.Values.Get_Boolean (Value);
             when Property_Widened =>
-               Layer.Widened := Get_Boolean (Value);
+               Layer.Widened := Glib.Values.Get_Boolean (Value);
          end case;
       end if;
       Layer.Updated := True;
    end Set_Property_Value;
 
-   procedure Set_Scaled
-             (  Layer  : in out Arc_Layer;
-                Scaled : Boolean
-             )  is
+   overriding procedure Set_Scaled
+     (Layer  : in out Arc_Layer;
+      Scaled : Boolean) is
    begin
       Layer.Scaled  := Scaled;
       Layer.Updated := True;
    end Set_Scaled;
 
-   procedure Set_Widened
-             (  Layer   : in out Arc_Layer;
-                Widened : Boolean
-             )  is
+   overriding procedure Set_Widened
+     (Layer   : in out Arc_Layer;
+      Widened : Boolean) is
    begin
       Layer.Widened := Widened;
       Layer.Updated := True;
    end Set_Widened;
 
-   procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Layer  : Arc_Layer
-             )  is
+   overriding procedure Store
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Layer  : Arc_Layer) is
    begin
       Store (Stream, Layer.Ellipse);
       Store (Stream, Layer.From);

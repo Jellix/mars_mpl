@@ -23,12 +23,13 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 with Ada.IO_Exceptions;           use Ada.IO_Exceptions;
 with Ada.Tags;                    use Ada.Tags;
 with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
-with Interfaces;                  use Interfaces;
+with Cairo.Font_Face;
+with Interfaces.C;                use Interfaces;
 
 with Gtk.Layered.Arc;
 with Gtk.Layered.Bar;
@@ -54,9 +55,9 @@ package body Gtk.Layered.Stream_IO is
    package body Generic_Modular_IO is
 
       procedure Restore
-                (  Stream : in out Root_Stream_Type'Class;
-                   Value  : out Modular
-                )  is
+        (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+         Value  : out Modular)
+      is
          Factor : Modular := 1;
          Octet  : Character;
       begin
@@ -71,22 +72,20 @@ package body Gtk.Layered.Stream_IO is
       end Restore;
 
       procedure Store
-                (  Stream : in out Root_Stream_Type'Class;
-                   Value  : Modular
-                )  is
+        (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+         Value  : Modular)
+      is
          Data : Modular := Value;
       begin
          while Data > 127 loop
             Character'Write
-            (  Stream'Unchecked_Access,
-               Character'Val ((Data and 16#7F#) or 16#80#)
-            );
+              (Stream'Unchecked_Access,
+               Character'Val ((Data and 16#7F#) or 16#80#));
             Data := Data / 2**7;
          end loop;
          Character'Write
-         (  Stream'Unchecked_Access,
-            Character'Val (Data)
-         );
+           (Stream'Unchecked_Access,
+            Character'Val (Data));
       end Store;
 
    end Generic_Modular_IO;
@@ -103,7 +102,7 @@ package body Gtk.Layered.Stream_IO is
    begin
       for Index in reverse Name'Range loop
          if Name (Index) = '.' then
-            return Layer_Type'Value (Name (Index + 1..Name'Last));
+            return Layer_Type'Value (Name (Index + 1 .. Name'Last));
          end if;
       end loop;
       return Layer_Type'Value (Name);
@@ -114,77 +113,88 @@ package body Gtk.Layered.Stream_IO is
    end Get_Type;
 
    procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Widget : not null access Gtk_Layered_Record'Class
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Widget : not null access Gtk_Layered_Record'Class)
+   is
       Under : access Layer_Location'Class := Widget;
       Ratio : Gdouble;
       This  : Layer_Type;
    begin
       Restore (Stream, Ratio);
-      Widget.Set_Aspect_Ratio (Ratio);
+      Widget.all.Set_Aspect_Ratio (Ratio);
       loop
          Restore (Stream, This);
          case This is
             when None =>
                exit;
             when Arc_Layer =>
-               Under := Gtk.Layered.Arc.
-                        Add (Under, Stream'Access).Above;
+               Under :=
+                 Gtk.Layered.Arc.Add (Under, Stream'Access).all.Above;
             when Bar_Layer =>
-               Under := Gtk.Layered.Bar.
-                        Add (Under, Stream'Access).Above;
+               Under :=
+                 Gtk.Layered.Bar.Add (Under, Stream'Access).all.Above;
             when Cache_Layer =>
-               Under := Gtk.Layered.Cache.
-                        Add (Under, Stream'Access).Above;
+               Under :=
+                 Gtk.Layered.Cache.Add (Under, Stream'Access).all.Above;
             when Cap_Layer =>
-               Under := Gtk.Layered.Cap.
-                        Add (Under, Stream'Access).Above;
+               Under :=
+                 Gtk.Layered.Cap.Add (Under, Stream'Access).all.Above;
             when Clock_Hand_Layer =>
-               Under := Gtk.Layered.Clock_Hand.
-                        Add (Under, Stream'Access).Above;
+               Under :=
+                 Gtk.Layered.Clock_Hand.Add (Under, Stream'Access).all.Above;
             when Elliptic_Annotation_Layer =>
-               Under := Gtk.Layered.Elliptic_Annotation.
-                        Add (Under, Stream'Access).Above;
+               Under :=
+                 Gtk.Layered.Elliptic_Annotation.
+                   Add (Under, Stream'Access).all.Above;
             when Elliptic_Background_Layer =>
-               Under := Gtk.Layered.Elliptic_Background.
-                        Add (Under, Stream'Access).Above;
+               Under :=
+                 Gtk.Layered.Elliptic_Background.
+                   Add (Under, Stream'Access).all.Above;
             when Elliptic_Bar_Layer =>
-               Under := Gtk.Layered.Elliptic_Bar.
-                        Add (Under, Stream'Access).Above;
+               Under :=
+                 Gtk.Layered.Elliptic_Bar.
+                   Add (Under, Stream'Access).all.Above;
             when Elliptic_Scale_Layer =>
-               Under := Gtk.Layered.Elliptic_Scale.
-                        Add (Under, Stream'Access).Above;
+               Under :=
+                 Gtk.Layered.Elliptic_Scale.
+                   Add (Under, Stream'Access).all.Above;
             when Flat_Annotation_Layer =>
-               Under := Gtk.Layered.Flat_Annotation.
-                        Add (Under, Stream'Access).Above;
+               Under :=
+                 Gtk.Layered.Flat_Annotation.
+                   Add (Under, Stream'Access).all.Above;
             when Flat_Needle_Layer =>
-               Under := Gtk.Layered.Flat_Needle.
-                        Add (Under, Stream'Access).Above;
+               Under :=
+                 Gtk.Layered.Flat_Needle.
+                   Add (Under, Stream'Access).all.Above;
             when Flat_Scale_Layer =>
-               Under := Gtk.Layered.Flat_Scale.
-                        Add (Under, Stream'Access).Above;
+               Under :=
+                 Gtk.Layered.Flat_Scale.
+                   Add (Under, Stream'Access).all.Above;
             when Label_Layer =>
-               Under := Gtk.Layered.Label.
-                        Add (Under, Stream'Access).Above;
+               Under :=
+                 Gtk.Layered.Label.
+                   Add (Under, Stream'Access).all.Above;
             when Needle_Layer =>
-               Under := Gtk.Layered.Needle.
-                        Add (Under, Stream'Access).Above;
+               Under :=
+                 Gtk.Layered.Needle.
+                   Add (Under, Stream'Access).all.Above;
             when Rectangular_Background_Layer =>
-               Under := Gtk.Layered.Rectangular_Background.
-                        Add (Under, Stream'Access).Above;
+               Under :=
+                 Gtk.Layered.Rectangular_Background.
+                   Add (Under, Stream'Access).all.Above;
             when Rectangular_Clip_Region_On_Layer =>
                declare
                   This : Gtk.Layered.Rectangular_Clip_Region.
-                         Rectangular_Clip_Region_On_Layer renames
-                            Gtk.Layered.Rectangular_Clip_Region.
-                            Add (Under, Stream'Access).all;
+                    Rectangular_Clip_Region_On_Layer renames
+                      Gtk.Layered.Rectangular_Clip_Region.
+                        Add (Under, Stream'Access).all;
                begin
                   Under := This.Above;
                end;
             when Sector_Needle_Layer =>
-               Under := Gtk.Layered.Sector_Needle.
-                        Add (Under, Stream'Access).Above;
+               Under :=
+                 Gtk.Layered.Sector_Needle.
+                   Add (Under, Stream'Access).all.Above;
             when Foreground_Layer | Rectangular_Clip_Region_Off_Layer =>
                if Under.all in Abstract_Layer'Class then
                   Under := Abstract_Layer'Class (Under.all).Above;
@@ -194,9 +204,9 @@ package body Gtk.Layered.Stream_IO is
    end Restore;
 
    procedure Restore
-             (  Stream     : in out Root_Stream_Type'Class;
-                Adjustment : out Gtk_Adjustment
-             )  is
+     (Stream     : in out Ada.Streams.Root_Stream_Type'Class;
+      Adjustment : out Gtk_Adjustment)
+   is
       Value          : Gdouble;
       Lower          : Gdouble;
       Upper          : Gdouble;
@@ -209,19 +219,18 @@ package body Gtk.Layered.Stream_IO is
       Restore (Stream, Gdouble (Step_Increment));
       Restore (Stream, Gdouble (Page_Increment));
       Gtk_New
-      (  Adjustment,
+        (Adjustment,
          Value,
          Lower,
          Upper,
          Step_Increment,
-         Page_Increment
-      );
+         Page_Increment);
    end Restore;
 
    procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : out Alignment
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : out Alignment)
+   is
       Position : Guint16;
    begin
       Restore (Stream, Position);
@@ -232,9 +241,9 @@ package body Gtk.Layered.Stream_IO is
    end Restore;
 
    procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : out Boolean
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : out Boolean)
+   is
       Data : Guint16;
    begin
       Restore (Stream, Data);
@@ -242,10 +251,10 @@ package body Gtk.Layered.Stream_IO is
    end Restore;
 
    procedure Restore
-             (  Stream  : in out Root_Stream_Type'Class;
-                Value_1 : out Boolean;
-                Value_2 : out Boolean
-             )  is
+     (Stream  : in out Ada.Streams.Root_Stream_Type'Class;
+      Value_1 : out Boolean;
+      Value_2 : out Boolean)
+   is
       Value : Guint16;
    begin
       Restore (Stream, Value);
@@ -254,11 +263,11 @@ package body Gtk.Layered.Stream_IO is
    end Restore;
 
    procedure Restore
-             (  Stream  : in out Root_Stream_Type'Class;
-                Value_1 : out Boolean;
-                Value_2 : out Boolean;
-                Value_3 : out Boolean
-             )  is
+     (Stream  : in out Ada.Streams.Root_Stream_Type'Class;
+      Value_1 : out Boolean;
+      Value_2 : out Boolean;
+      Value_3 : out Boolean)
+   is
       Value : Guint16;
    begin
       Restore (Stream, Value);
@@ -268,12 +277,12 @@ package body Gtk.Layered.Stream_IO is
    end Restore;
 
    procedure Restore
-             (  Stream  : in out Root_Stream_Type'Class;
-                Value_1 : out Boolean;
-                Value_2 : out Boolean;
-                Value_3 : out Boolean;
-                Value_4 : out Boolean
-             )  is
+     (Stream  : in out Ada.Streams.Root_Stream_Type'Class;
+      Value_1 : out Boolean;
+      Value_2 : out Boolean;
+      Value_3 : out Boolean;
+      Value_4 : out Boolean)
+   is
       Value : Guint16;
    begin
       Restore (Stream, Value);
@@ -284,13 +293,13 @@ package body Gtk.Layered.Stream_IO is
    end Restore;
 
    procedure Restore
-             (  Stream  : in out Root_Stream_Type'Class;
-                Value_1 : out Boolean;
-                Value_2 : out Boolean;
-                Value_3 : out Boolean;
-                Value_4 : out Boolean;
-                Value_5 : out Boolean
-             )  is
+     (Stream  : in out Ada.Streams.Root_Stream_Type'Class;
+      Value_1 : out Boolean;
+      Value_2 : out Boolean;
+      Value_3 : out Boolean;
+      Value_4 : out Boolean;
+      Value_5 : out Boolean)
+   is
       Value : Guint16;
    begin
       Restore (Stream, Value);
@@ -302,14 +311,14 @@ package body Gtk.Layered.Stream_IO is
    end Restore;
 
    procedure Restore
-             (  Stream  : in out Root_Stream_Type'Class;
-                Value_1 : out Boolean;
-                Value_2 : out Boolean;
-                Value_3 : out Boolean;
-                Value_4 : out Boolean;
-                Value_5 : out Boolean;
-                Value_6 : out Boolean
-             )  is
+     (Stream  : in out Ada.Streams.Root_Stream_Type'Class;
+      Value_1 : out Boolean;
+      Value_2 : out Boolean;
+      Value_3 : out Boolean;
+      Value_4 : out Boolean;
+      Value_5 : out Boolean;
+      Value_6 : out Boolean)
+   is
       Value : Guint16;
    begin
       Restore (Stream, Value);
@@ -322,15 +331,15 @@ package body Gtk.Layered.Stream_IO is
    end Restore;
 
    procedure Restore
-             (  Stream  : in out Root_Stream_Type'Class;
-                Value_1 : out Boolean;
-                Value_2 : out Boolean;
-                Value_3 : out Boolean;
-                Value_4 : out Boolean;
-                Value_5 : out Boolean;
-                Value_6 : out Boolean;
-                Value_7 : out Boolean
-             )  is
+     (Stream  : in out Ada.Streams.Root_Stream_Type'Class;
+      Value_1 : out Boolean;
+      Value_2 : out Boolean;
+      Value_3 : out Boolean;
+      Value_4 : out Boolean;
+      Value_5 : out Boolean;
+      Value_6 : out Boolean;
+      Value_7 : out Boolean)
+   is
       Value : Guint16;
    begin
       Restore (Stream, Value);
@@ -344,16 +353,16 @@ package body Gtk.Layered.Stream_IO is
    end Restore;
 
    procedure Restore
-             (  Stream  : in out Root_Stream_Type'Class;
-                Value_1 : out Boolean;
-                Value_2 : out Boolean;
-                Value_3 : out Boolean;
-                Value_4 : out Boolean;
-                Value_5 : out Boolean;
-                Value_6 : out Boolean;
-                Value_7 : out Boolean;
-                Value_8 : out Boolean
-             )  is
+     (Stream  : in out Ada.Streams.Root_Stream_Type'Class;
+      Value_1 : out Boolean;
+      Value_2 : out Boolean;
+      Value_3 : out Boolean;
+      Value_4 : out Boolean;
+      Value_5 : out Boolean;
+      Value_6 : out Boolean;
+      Value_7 : out Boolean;
+      Value_8 : out Boolean)
+   is
       Value : Guint16;
    begin
       Restore (Stream, Value);
@@ -368,91 +377,89 @@ package body Gtk.Layered.Stream_IO is
    end Restore;
 
    procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : out Cairo_Font_Face
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : out Cairo.Cairo_Font_Face)
+   is
       use Interfaces.C.Strings;
-      Family : aliased char_array :=
-                  To_C (UTF8_String'(Restore (Stream'Access)));
-      Slant  : Cairo_Font_Slant;
-      Weight : Cairo_Font_Weight;
+      Family : aliased Interfaces.C.char_array :=
+                  Interfaces.C.To_C (UTF8_String'(Restore (Stream'Access)));
+      Slant  : Cairo.Cairo_Font_Slant;
+      Weight : Cairo.Cairo_Font_Weight;
    begin
       Restore (Stream, Slant);
       Restore (Stream, Weight);
       Value :=
-         Toy_Font_Face_Create
-         (  To_Chars_Ptr (Family'Unchecked_Access),
-            Slant,
-            Weight
-         );
+        Cairo.Font_Face.Toy_Font_Face_Create
+          (To_Chars_Ptr (Family'Unchecked_Access),
+           Slant,
+           Weight);
    end Restore;
 
    procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : out Cairo_Font_Slant
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : out Cairo.Cairo_Font_Slant)
+   is
       Position : Guint16;
    begin
       Restore (Stream, Position);
-      Value := Cairo_Font_Slant'Val (Position);
+      Value := Cairo.Cairo_Font_Slant'Val (Position);
    exception
       when Constraint_Error =>
          raise Data_Error with "Cairo_Font_Slant out of range";
    end Restore;
 
    procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : out Cairo_Font_Weight
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : out Cairo.Cairo_Font_Weight)
+   is
       Position : Guint16;
    begin
       Restore (Stream, Position);
-      Value := Cairo_Font_Weight'Val (Position);
+      Value := Cairo.Cairo_Font_Weight'Val (Position);
    exception
       when Constraint_Error =>
          raise Data_Error with "Cairo_Font_Weight out of range";
    end Restore;
 
    procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : out Cairo_Line_Cap
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : out Cairo.Cairo_Line_Cap)
+   is
       Position : Guint16;
    begin
       Restore (Stream, Position);
-      Value := Cairo_Line_Cap'Val (Position);
+      Value := Cairo.Cairo_Line_Cap'Val (Position);
    exception
       when Constraint_Error =>
          raise Data_Error with "Cairo_Line_Cap out of range";
    end Restore;
 
    procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : out Cairo_Tuple
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : out Cairo.Ellipses.Cairo_Tuple) is
    begin
       Restore (Stream, Value.X);
       Restore (Stream, Value.Y);
    end Restore;
 
    procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : out Elliptic_Arc_Closure
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : out Elliptic_Arc_Closure)
+   is
       Shape : Elliptic_Shape_Type;
    begin
       Restore (Stream, Shape);
       case Shape is
          when Sector =>
             declare
-               Center : Cairo_Tuple;
+               Center : Cairo.Ellipses.Cairo_Tuple;
             begin
                Restore (Stream, Center);
                Value := (Sector, Center);
             end;
          when Bagel =>
             declare
-               Arc : Ellipse_Parameters;
+               Arc : Cairo.Ellipses.Ellipse_Parameters;
             begin
                Restore (Stream, Arc);
                Value := (Bagel, Arc);
@@ -463,9 +470,9 @@ package body Gtk.Layered.Stream_IO is
    end Restore;
 
    procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : out Elliptic_Shape_Type
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : out Elliptic_Shape_Type)
+   is
       Position : Guint16;
    begin
       Restore (Stream, Position);
@@ -476,9 +483,8 @@ package body Gtk.Layered.Stream_IO is
    end Restore;
 
    procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : out End_Parameters
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : out End_Parameters) is
    begin
       Restore (Stream, Value.Length);
       Restore (Stream, Value.Width);
@@ -486,21 +492,21 @@ package body Gtk.Layered.Stream_IO is
    end Restore;
 
    procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : out Gdk_Color
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : out Gdk.Color.Gdk_Color)
+   is
       R, G, B : Guint16;
    begin
       Restore (Stream, R);
       Restore (Stream, G);
       Restore (Stream, B);
-      Set_Rgb (Value, R, G, B);
+      Gdk.Color.Set_Rgb (Value, R, G, B);
    end Restore;
 
    procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : out Gtk_Shadow_Type
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : out Gtk_Shadow_Type)
+   is
       Position : Guint16;
    begin
       Restore (Stream, Position);
@@ -511,9 +517,9 @@ package body Gtk.Layered.Stream_IO is
    end Restore;
 
    procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : out Interpolation_Mode
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : out Interpolation_Mode)
+   is
       Position : Guint16;
    begin
       Restore (Stream, Position);
@@ -524,9 +530,9 @@ package body Gtk.Layered.Stream_IO is
    end Restore;
 
    procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : out Gdouble
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : out Gdouble)
+   is
       Fraction : Unsigned_32;
       Exponent : Unsigned_32;
    begin
@@ -544,9 +550,8 @@ package body Gtk.Layered.Stream_IO is
    end Restore;
 
    procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : out Ellipse_Parameters
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : out Cairo.Ellipses.Ellipse_Parameters) is
    begin
       Restore (Stream, Value.Center);
       Restore (Stream, Value.Major_Curvature);
@@ -555,19 +560,17 @@ package body Gtk.Layered.Stream_IO is
    end Restore;
 
    procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : out Guint
-             )  renames GUInt_IO.Restore;
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : out Guint) renames GUInt_IO.Restore;
 
    procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : out Guint16
-             )  renames GUInt16_IO.Restore;
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : out Guint16) renames GUInt16_IO.Restore;
 
    procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : out Layer_Type
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : out Layer_Type)
+   is
       Position : Guint16;
    begin
       Restore (Stream, Position);
@@ -578,9 +581,8 @@ package body Gtk.Layered.Stream_IO is
    end Restore;
 
    procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : out Line_Parameters
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : out Line_Parameters) is
    begin
       Restore (Stream, Value.Width);
       Restore (Stream, Value.Color);
@@ -588,9 +590,8 @@ package body Gtk.Layered.Stream_IO is
    end Restore;
 
    procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : out Tick_Parameters
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : out Tick_Parameters) is
    begin
       Restore (Stream, Value.Step);
       Restore (Stream, Unsigned_64 (Value.First));
@@ -598,14 +599,15 @@ package body Gtk.Layered.Stream_IO is
    end Restore;
 
    function Restore
-            (  Stream : not null access Root_Stream_Type'Class
-            )  return Bit_Array is
+     (Stream : not null access Ada.Streams.Root_Stream_Type'Class)
+      return Bit_Array
+   is
       Count : Natural;
       Octet : Unsigned_8;
       Mask  : Unsigned_8 := 1;
    begin
       Restore (Stream.all, Unsigned_32 (Count));
-      return Result : Bit_Array (1..Count) do
+      return Result : Bit_Array (1 .. Count) do
          for Index in Result'Range loop
             if Mask = 1 then
                Unsigned_8'Read (Stream, Octet);
@@ -621,20 +623,21 @@ package body Gtk.Layered.Stream_IO is
    end Restore;
 
    function Restore
-            (  Stream : not null access Root_Stream_Type'Class
-            )  return UTF8_String is
+     (Stream : not null access Ada.Streams.Root_Stream_Type'Class)
+      return UTF8_String
+   is
       Count : Natural;
    begin
       Restore (Stream.all, Unsigned_32 (Count));
-      return Text : String (1..Count) do
+      return Text : String (1 .. Count) do
          String'Read (Stream, Text);
       end return;
    end Restore;
 
    procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : out Text_Transformation
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : out Text_Transformation)
+   is
       Position : Guint16;
    begin
       Restore (Stream, Position);
@@ -645,9 +648,9 @@ package body Gtk.Layered.Stream_IO is
    end Restore;
 
    procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : out Vertical_Alignment
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : out Vertical_Alignment)
+   is
       Position : Guint16;
    begin
       Restore (Stream, Position);
@@ -658,9 +661,9 @@ package body Gtk.Layered.Stream_IO is
    end Restore;
 
    procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : out Waveform_Drawing_Method
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : out Waveform_Drawing_Method)
+   is
       Position : Guint16;
    begin
       Restore (Stream, Position);
@@ -671,28 +674,26 @@ package body Gtk.Layered.Stream_IO is
    end Restore;
 
    procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Widget : not null access constant
-                         Gtk_Layered_Record'Class
-             )  is
-      This : Abstract_Layer_Ptr := Widget.Bottom;
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Widget : not null access constant Gtk_Layered_Record'Class)
+   is
+      This : Abstract_Layer_Ptr := Widget.all.Bottom;
    begin
       if This /= null then
-         Store (Stream, Widget.Get_Aspect_Ratio);
+         Store (Stream, Widget.all.Get_Aspect_Ratio);
          loop
             Store (Stream, Get_Type (This.all));
             Store (Stream, This.all);
-            exit when This.Next = Widget.Bottom;
-            This := This.Next;
+            exit when This.all.Next = Widget.all.Bottom;
+            This := This.all.Next;
          end loop;
       end if;
       Store (Stream, None);
    end Store;
 
    procedure Store
-             (  Stream     : in out Root_Stream_Type'Class;
-                Adjustment : Gtk_Adjustment
-             )  is
+     (Stream     : in out Ada.Streams.Root_Stream_Type'Class;
+      Adjustment : Gtk_Adjustment) is
    begin
       Store (Stream, Get_Value (Adjustment));
       Store (Stream, Get_Lower (Adjustment));
@@ -702,17 +703,16 @@ package body Gtk.Layered.Stream_IO is
    end Store;
 
    procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : Alignment
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : Alignment) is
    begin
       Store (Stream, Guint16 (Alignment'Pos (Value)));
    end Store;
 
    procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : Boolean
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : Boolean)
+   is
       Data : Guint16 := 0;
    begin
       if Value then
@@ -722,10 +722,10 @@ package body Gtk.Layered.Stream_IO is
    end Store;
 
    procedure Store
-             (  Stream  : in out Root_Stream_Type'Class;
-                Value_1 : Boolean;
-                Value_2 : Boolean
-             )  is
+     (Stream  : in out Ada.Streams.Root_Stream_Type'Class;
+      Value_1 : Boolean;
+      Value_2 : Boolean)
+   is
       Value : Guint16 := 0;
    begin
       if Value_1 then
@@ -738,11 +738,11 @@ package body Gtk.Layered.Stream_IO is
    end Store;
 
    procedure Store
-             (  Stream  : in out Root_Stream_Type'Class;
-                Value_1 : Boolean;
-                Value_2 : Boolean;
-                Value_3 : Boolean
-             )  is
+     (Stream  : in out Ada.Streams.Root_Stream_Type'Class;
+      Value_1 : Boolean;
+      Value_2 : Boolean;
+      Value_3 : Boolean)
+   is
       Value : Guint16 := 0;
    begin
       if Value_1 then
@@ -758,12 +758,12 @@ package body Gtk.Layered.Stream_IO is
    end Store;
 
    procedure Store
-             (  Stream  : in out Root_Stream_Type'Class;
-                Value_1 : Boolean;
-                Value_2 : Boolean;
-                Value_3 : Boolean;
-                Value_4 : Boolean
-             )  is
+     (Stream  : in out Ada.Streams.Root_Stream_Type'Class;
+      Value_1 : Boolean;
+      Value_2 : Boolean;
+      Value_3 : Boolean;
+      Value_4 : Boolean)
+   is
       Value : Guint16 := 0;
    begin
       if Value_1 then
@@ -782,13 +782,13 @@ package body Gtk.Layered.Stream_IO is
    end Store;
 
    procedure Store
-             (  Stream  : in out Root_Stream_Type'Class;
-                Value_1 : Boolean;
-                Value_2 : Boolean;
-                Value_3 : Boolean;
-                Value_4 : Boolean;
-                Value_5 : Boolean
-             )  is
+     (Stream  : in out Ada.Streams.Root_Stream_Type'Class;
+      Value_1 : Boolean;
+      Value_2 : Boolean;
+      Value_3 : Boolean;
+      Value_4 : Boolean;
+      Value_5 : Boolean)
+   is
       Value : Guint16 := 0;
    begin
       if Value_1 then
@@ -810,14 +810,14 @@ package body Gtk.Layered.Stream_IO is
    end Store;
 
    procedure Store
-             (  Stream  : in out Root_Stream_Type'Class;
-                Value_1 : Boolean;
-                Value_2 : Boolean;
-                Value_3 : Boolean;
-                Value_4 : Boolean;
-                Value_5 : Boolean;
-                Value_6 : Boolean
-             )  is
+     (Stream  : in out Ada.Streams.Root_Stream_Type'Class;
+      Value_1 : Boolean;
+      Value_2 : Boolean;
+      Value_3 : Boolean;
+      Value_4 : Boolean;
+      Value_5 : Boolean;
+      Value_6 : Boolean)
+   is
       Value : Guint16 := 0;
    begin
       if Value_1 then
@@ -842,15 +842,15 @@ package body Gtk.Layered.Stream_IO is
    end Store;
 
    procedure Store
-             (  Stream  : in out Root_Stream_Type'Class;
-                Value_1 : Boolean;
-                Value_2 : Boolean;
-                Value_3 : Boolean;
-                Value_4 : Boolean;
-                Value_5 : Boolean;
-                Value_6 : Boolean;
-                Value_7 : Boolean
-             )  is
+     (Stream  : in out Ada.Streams.Root_Stream_Type'Class;
+      Value_1 : Boolean;
+      Value_2 : Boolean;
+      Value_3 : Boolean;
+      Value_4 : Boolean;
+      Value_5 : Boolean;
+      Value_6 : Boolean;
+      Value_7 : Boolean)
+   is
       Value : Guint16 := 0;
    begin
       if Value_1 then
@@ -878,16 +878,16 @@ package body Gtk.Layered.Stream_IO is
    end Store;
 
    procedure Store
-             (  Stream  : in out Root_Stream_Type'Class;
-                Value_1 : Boolean;
-                Value_2 : Boolean;
-                Value_3 : Boolean;
-                Value_4 : Boolean;
-                Value_5 : Boolean;
-                Value_6 : Boolean;
-                Value_7 : Boolean;
-                Value_8 : Boolean
-             )  is
+     (Stream  : in out Ada.Streams.Root_Stream_Type'Class;
+      Value_1 : Boolean;
+      Value_2 : Boolean;
+      Value_3 : Boolean;
+      Value_4 : Boolean;
+      Value_5 : Boolean;
+      Value_6 : Boolean;
+      Value_7 : Boolean;
+      Value_8 : Boolean)
+   is
       Value : Guint16 := 0;
    begin
       if Value_1 then
@@ -918,56 +918,50 @@ package body Gtk.Layered.Stream_IO is
    end Store;
 
    procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : Cairo_Font_Face
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : Cairo.Cairo_Font_Face)
+   is
       use Cairo.Font_Face;
    begin
       Store
-      (  Stream,
-         Interfaces.C.Strings.Value (Toy_Font_Face_Get_Family (Value))
-      );
+        (Stream,
+         Interfaces.C.Strings.Value (Toy_Font_Face_Get_Family (Value)));
       Store (Stream, Toy_Font_Face_Get_Slant  (Value));
       Store (Stream, Toy_Font_Face_Get_Weight (Value));
    end Store;
 
    procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : Cairo_Font_Slant
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : Cairo.Cairo_Font_Slant) is
    begin
-      Store (Stream, Guint16 (Cairo_Font_Slant'Pos (Value)));
+      Store (Stream, Guint16 (Cairo.Cairo_Font_Slant'Pos (Value)));
    end Store;
 
    procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : Cairo_Font_Weight
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : Cairo.Cairo_Font_Weight) is
    begin
-      Store (Stream, Guint16 (Cairo_Font_Weight'Pos (Value)));
+      Store (Stream, Guint16 (Cairo.Cairo_Font_Weight'Pos (Value)));
    end Store;
 
    procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : Cairo_Line_Cap
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : Cairo.Cairo_Line_Cap) is
    begin
-      Store (Stream, Guint16 (Cairo_Line_Cap'Pos (Value)));
+      Store (Stream, Guint16 (Cairo.Cairo_Line_Cap'Pos (Value)));
    end Store;
 
    procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : Cairo_Tuple
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : Cairo.Ellipses.Cairo_Tuple) is
    begin
       Store (Stream, Value.X);
       Store (Stream, Value.Y);
    end Store;
 
    procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : Elliptic_Arc_Closure
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : Elliptic_Arc_Closure) is
    begin
       Store (Stream, Value.Shape);
       case Value.Shape is
@@ -978,17 +972,15 @@ package body Gtk.Layered.Stream_IO is
    end Store;
 
    procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : Elliptic_Shape_Type
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : Elliptic_Shape_Type) is
    begin
       Store (Stream, Guint16 (Elliptic_Shape_Type'Pos (Value)));
    end Store;
 
    procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : End_Parameters
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : End_Parameters) is
    begin
       Store (Stream, Value.Length);
       Store (Stream, Value.Width);
@@ -996,29 +988,26 @@ package body Gtk.Layered.Stream_IO is
    end Store;
 
    procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : Gdk_Color
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : Gdk.Color.Gdk_Color) is
    begin
-      Store (Stream, Red   (Value));
-      Store (Stream, Green (Value));
-      Store (Stream, Blue  (Value));
+      Store (Stream, Gdk.Color.Red   (Value));
+      Store (Stream, Gdk.Color.Green (Value));
+      Store (Stream, Gdk.Color.Blue  (Value));
    end Store;
 
    procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : Guint
-             )  renames GUInt_IO.Store;
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : Guint) renames GUInt_IO.Store;
 
    procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : Guint16
-             )  renames GUInt16_IO.Store;
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : Guint16) renames GUInt16_IO.Store;
 
    procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : Gdouble
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : Gdouble)
+   is
       Fraction : Gdouble  := abs Value;
       Exponent : Integer := 0;
    begin
@@ -1043,9 +1032,8 @@ package body Gtk.Layered.Stream_IO is
    end Store;
 
    procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : Ellipse_Parameters
-             ) is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : Cairo.Ellipses.Ellipse_Parameters) is
    begin
       Store (Stream, Value.Center);
       Store (Stream, Value.Major_Curvature);
@@ -1054,33 +1042,29 @@ package body Gtk.Layered.Stream_IO is
    end Store;
 
    procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : Gtk_Shadow_Type
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : Gtk_Shadow_Type) is
    begin
       Store (Stream, Guint16'(Gtk_Shadow_Type'Pos (Value)));
    end Store;
 
    procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : Interpolation_Mode
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : Interpolation_Mode) is
    begin
       Store (Stream, Guint16'(Interpolation_Mode'Pos (Value)));
    end Store;
 
    procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : Layer_Type
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : Layer_Type) is
    begin
       Store (Stream, Guint16 (Layer_Type'Pos (Value)));
    end Store;
 
    procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : Line_Parameters
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : Line_Parameters) is
    begin
       Store (Stream, Value.Width);
       Store (Stream, Value.Color);
@@ -1088,9 +1072,9 @@ package body Gtk.Layered.Stream_IO is
    end Store;
 
    procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : Bit_Array
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : Bit_Array)
+   is
       Mask  : Unsigned_8 := 1;
       Octet : Unsigned_8 := 0;
    begin
@@ -1113,26 +1097,23 @@ package body Gtk.Layered.Stream_IO is
    end Store;
 
    procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : UTF8_String
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : UTF8_String) is
    begin
       Store (Stream, Unsigned_32 (Value'Length));
       String'Write (Stream'Access, Value);
    end Store;
 
    procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : Text_Transformation
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : Text_Transformation) is
    begin
       Store (Stream, Guint16'(Text_Transformation'Pos (Value)));
    end Store;
 
    procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : Tick_Parameters
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : Tick_Parameters) is
    begin
       Store (Stream, Value.Step);
       Store (Stream, Unsigned_64 (Value.First));
@@ -1140,17 +1121,15 @@ package body Gtk.Layered.Stream_IO is
    end Store;
 
    procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : Vertical_Alignment
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : Vertical_Alignment) is
    begin
       Store (Stream, Guint16 (Vertical_Alignment'Pos (Value)));
    end Store;
 
    procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Value  : Waveform_Drawing_Method
-             )  is
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Value  : Waveform_Drawing_Method) is
    begin
       Store (Stream, Guint16'(Waveform_Drawing_Method'Pos (Value)));
    end Store;

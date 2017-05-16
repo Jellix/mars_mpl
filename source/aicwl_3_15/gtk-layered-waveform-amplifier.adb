@@ -23,177 +23,173 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
-
-with Glib.Types;            use Glib.Types;
-with Glib.Values.Handling;  use Glib.Values.Handling;
+-- __________________________________________________________________ --
 
 with Gtkada.Types;
 with Interfaces.C.Strings;
 
 package body Gtk.Layered.Waveform.Amplifier is
 
-   Class_Record : Ada_GObject_Class := Uninitialized_Class;
-   Signal_Names : constant Gtkada.Types.Chars_Ptr_Array :=
-      (  0 => Interfaces.C.Strings.New_String ("autoscaling-changed"),
-         1 => Interfaces.C.Strings.New_String ("raster-mode-changed")
-      );
+   Class_Record           : Ada_GObject_Class := Uninitialized_Class;
+   Signal_Names           : constant Gtkada.Types.Chars_Ptr_Array :=
+                              (  0 => Interfaces.C.Strings.New_String ("autoscaling-changed"),
+                                 1 => Interfaces.C.Strings.New_String ("raster-mode-changed")
+                                );
    Autoscaling_Changed_ID : Signal_Id := Invalid_Signal_Id;
    Raster_Mode_Changed_ID : Signal_Id := Invalid_Signal_Id;
 
    procedure EmitV
-             (  Params : System.Address;
-                Signal : Signal_Id;
-                Quark  : GQuark;
-                Result : System.Address
-             );
+     (  Params : System.Address;
+        Signal : Signal_Id;
+        Quark  : GQuark;
+        Result : System.Address
+       );
    pragma Import (C, EmitV, "g_signal_emitv");
 
    procedure Emit
-             (  Amplifier : not null access
-                            Gtk_Waveform_Amplifier_Record'Class;
-                Signal    : Signal_Id
-             )  is
+     (Amplifier : not null access Gtk_Waveform_Amplifier_Record'Class;
+      Signal    : Signal_Id)
+   is
       procedure Set_Object
-                (  Value  : in out GValue;
-                   Object : System.Address
-                );
+        (Value  : in out Glib.Values.GValue;
+         Object : System.Address);
+
       pragma Import (C, Set_Object, "g_value_set_object");
-      Params : GValue_Array (0..0);
-      Result : GValue;
+      Params : Glib.Values.GValue_Array (0 .. 0);
+      Result : Glib.Values.GValue;
    begin
       if Class_Record /= Uninitialized_Class then
          declare
             This : constant GType := Get_Type;
          begin
-            Init (Params (0), This);
-            Set_Object (Params (0), Amplifier);
+            Glib.Values.Init (Params (0), This);
+            Glib.Values.Set_Object (Params (0), Amplifier);
             EmitV (Params (0)'Address, Signal, 0, Result'Address);
-            Unset (Params (0));
+            Glib.Values.Unset (Params (0));
          end;
       end if;
    end Emit;
 
-   procedure Add_Range
-             (  Amplifier    : not null access
-                               Gtk_Waveform_Amplifier_Record;
-                Layer        : Waveform_Layer'Class;
-                From,  To    : X_Axis;
-                Lower, Upper : Y_Axis
-             )  is
+   overriding procedure Add_Range
+     (  Amplifier    : not null access
+          Gtk_Waveform_Amplifier_Record;
+        Layer        : Waveform_Layer'Class;
+        From,  To    : X_Axis;
+        Lower, Upper : Y_Axis
+       )  is
    begin
-      if Amplifier.Setting then
+      if Amplifier.all.Setting then
          if 0 /= (Tracing_Mode and Trace_Amplifier) then ---------------
             Trace_Line
-            (  Amplifier'Address,
-               (  "Set to "
-               &  Edit.Image (Gdouble (Amplifier.Y1))
-               &  ".."
-               &  Edit.Image (Gdouble (Amplifier.Y2))
-               &  " to "
-               &  Edit.Image (Gdouble (Lower))
-               &  ".."
-               &  Edit.Image (Gdouble (Upper))
-            )  );
+              (  Amplifier'Address,
+                 (  "Set to "
+                  &  Edit.Image (Gdouble (Amplifier.all.Y1))
+                  &  ".."
+                  &  Edit.Image (Gdouble (Amplifier.all.Y2))
+                  &  " to "
+                  &  Edit.Image (Gdouble (Lower))
+                  &  ".."
+                  &  Edit.Image (Gdouble (Upper))
+                 )  );
          end if; -------------------------------------------------------
-         Amplifier.Y1 := Y_Axis'Min (Amplifier.Y1, Lower);
-         Amplifier.Y2 := Y_Axis'Max (Amplifier.Y2, Upper);
+         Amplifier.all.Y1 := Y_Axis'Min (Amplifier.all.Y1, Lower);
+         Amplifier.all.Y2 := Y_Axis'Max (Amplifier.all.Y2, Upper);
       else
-         Amplifier.Y1 := Lower;
-         Amplifier.Y2 := Upper;
-         Amplifier.Setting := True;
+         Amplifier.all.Y1 := Lower;
+         Amplifier.all.Y2 := Upper;
+         Amplifier.all.Setting := True;
          if 0 /= (Tracing_Mode and Trace_Amplifier) then ---------------
             Trace_Line
-            (  Amplifier'Address,
-               (  "Reset to "
-               &  Edit.Image (Gdouble (Lower))
-               &  ".."
-               &  Edit.Image (Gdouble (Upper))
-            )  );
+              (  Amplifier'Address,
+                 (  "Reset to "
+                  &  Edit.Image (Gdouble (Lower))
+                  &  ".."
+                  &  Edit.Image (Gdouble (Upper))
+                 )  );
          end if; -------------------------------------------------------
       end if;
       if Layer.Scaled then
-         Amplifier.Width :=
-            (  Gdouble (Layer.Widget.Get_Allocated_Height)
-            *  (Layer.Box.Y2 - Layer.Box.Y1)
-            );
+         Amplifier.all.Width :=
+           (  Gdouble (Layer.Widget.all.Get_Allocated_Height)
+              *  (Layer.Box.Y2 - Layer.Box.Y1)
+             );
       else
-         Amplifier.Width := Layer.Box.Y2 - Layer.Box.Y1;
+         Amplifier.all.Width := Layer.Box.Y2 - Layer.Box.Y1;
       end if;
    end Add_Range;
 
    function Get_Auto_Scaling
-            (  Amplifier : not null access constant
-                           Gtk_Waveform_Amplifier_Record
-            )  return Boolean is
+     (  Amplifier : not null access constant
+          Gtk_Waveform_Amplifier_Record
+       )  return Boolean is
    begin
-      return Amplifier.Auto;
+      return Amplifier.all.Auto;
    end Get_Auto_Scaling;
 
-   function Get_Lower
-            (  Amplifier : access Gtk_Waveform_Amplifier_Record
-            )  return Gdouble is
+   overriding function Get_Lower
+     (  Amplifier : access Gtk_Waveform_Amplifier_Record
+       )  return Gdouble is
    begin
       Set_Range (Amplifier.all);
       return Gtk_Adjustment_Record (Amplifier.all).Get_Lower;
    end Get_Lower;
 
-   function Get_Page_Size
-            (  Amplifier : access Gtk_Waveform_Amplifier_Record
-            )  return Gdouble is
+   overriding function Get_Page_Size
+     (  Amplifier : access Gtk_Waveform_Amplifier_Record
+       )  return Gdouble is
    begin
       Set_Range (Amplifier.all);
       return Gtk_Adjustment_Record (Amplifier.all).Get_Page_Size;
    end Get_Page_Size;
 
    function Get_Raster_Scaling
-            (  Amplifier : not null access constant
-                           Gtk_Waveform_Amplifier_Record
-            )  return Boolean is
+     (  Amplifier : not null access constant
+          Gtk_Waveform_Amplifier_Record
+       )  return Boolean is
    begin
-      return Amplifier.Raster;
+      return Amplifier.all.Raster;
    end Get_Raster_Scaling;
 
    function Get_Scaling
-            (  Amplifier : not null access constant
-                           Gtk_Waveform_Amplifier_Record
-            )  return Waveform_Scaling is
+     (  Amplifier : not null access constant
+          Gtk_Waveform_Amplifier_Record
+       )  return Waveform_Scaling is
    begin
-      return Amplifier.Scaling;
+      return Amplifier.all.Scaling;
    end Get_Scaling;
 
    function Get_Tick_Length
-            (  Amplifier : not null access constant
-                           Gtk_Waveform_Amplifier_Record
-            )  return Positive is
+     (  Amplifier : not null access constant
+          Gtk_Waveform_Amplifier_Record
+       )  return Positive is
    begin
-      return Amplifier.Tick;
+      return Amplifier.all.Tick;
    end Get_Tick_Length;
 
    function Get_Type return GType is
    begin
       Initialize_Class_Record
-      (  Ancestor     => Gtk.Adjustment.Get_Type,
-         Signals      => Signal_Names,
-         Class_Record => Class_Record,
-         Type_Name    => Class_Name,
-         Parameters   => (  0 => (0 => GType_None),
-                            1 => (0 => GType_None)
-      )                  );
+        (  Ancestor     => Gtk.Adjustment.Get_Type,
+           Signals      => Signal_Names,
+           Class_Record => Class_Record,
+           Type_Name    => Class_Name,
+           Parameters   => (  0 => (0 => GType_None),
+                              1 => (0 => GType_None)
+                             )                  );
       return Class_Record.The_Type;
    end Get_Type;
 
-   function Get_Upper
-            (  Amplifier : access Gtk_Waveform_Amplifier_Record
-            )  return Gdouble is
+   overriding function Get_Upper
+     (  Amplifier : access Gtk_Waveform_Amplifier_Record
+       )  return Gdouble is
    begin
       Set_Range (Amplifier.all);
       return Gtk_Adjustment_Record (Amplifier.all).Get_Upper;
    end Get_Upper;
 
    function Get_Value
-            (  Amplifier : access Gtk_Waveform_Amplifier_Record
-            )  return Gdouble is
+     (  Amplifier : access Gtk_Waveform_Amplifier_Record
+       )  return Gdouble is
    begin
       Set_Range (Amplifier.all);
       return Gtk_Adjustment_Record (Amplifier.all).Get_Value;
@@ -206,40 +202,40 @@ package body Gtk.Layered.Waveform.Amplifier is
    end Gtk_New;
 
    procedure Initialize
-             (  Amplifier : not null access
-                            Gtk_Waveform_Amplifier_Record'Class
-             )  is
+     (  Amplifier : not null access
+          Gtk_Waveform_Amplifier_Record'Class
+       )  is
    begin
       G_New (Amplifier, Get_Type);
       Gtk.Adjustment.Initialize
-      (  Adjustment     => Amplifier,
-         Value          => 0.0,
-         Lower          => 0.0,
-         Upper          => 1.0,
-         Step_Increment => 0.1,
-         Page_Increment => 1.0,
-         Page_Size      => 1.0
-      );
+        (  Adjustment     => Amplifier,
+           Value          => 0.0,
+           Lower          => 0.0,
+           Upper          => 1.0,
+           Step_Increment => 0.1,
+           Page_Increment => 1.0,
+           Page_Size      => 1.0
+          );
       --***
       -- This is a bug in GTK, which manifests itself as not setting all
       -- adjustment parameters upon Inilialize (gtk_adjustment_new). The
       -- workaround is to call Configure yet again in order to force the
       -- parameters. Normally Configure would be not necessary
       --
-      Amplifier.Configure
-      (  Value          => 0.0,
-         Lower          => 0.0,
-         Upper          => 1.0,
-         Step_Increment => 0.1,
-         Page_Increment => 1.0,
-         Page_Size      => 1.0
-      );
+      Amplifier.all.Configure
+        (  Value          => 0.0,
+           Lower          => 0.0,
+           Upper          => 1.0,
+           Step_Increment => 0.1,
+           Page_Increment => 1.0,
+           Page_Size      => 1.0
+          );
       if Autoscaling_Changed_ID = Invalid_Signal_Id then
          declare
             Widget_Type : constant GType := Get_Type (Amplifier);
          begin
             Autoscaling_Changed_ID :=
-               Lookup (Widget_Type, "autoscaling-changed");
+              Lookup (Widget_Type, "autoscaling-changed");
          end;
       end if;
       if Raster_Mode_Changed_ID = Invalid_Signal_Id then
@@ -247,26 +243,26 @@ package body Gtk.Layered.Waveform.Amplifier is
             Widget_Type : constant GType := Get_Type (Amplifier);
          begin
             Raster_Mode_Changed_ID :=
-               Lookup (Widget_Type, "raster-mode-changed");
+              Lookup (Widget_Type, "raster-mode-changed");
          end;
       end if;
    end Initialize;
 
    procedure Set_Auto_Scaling
-             (  Amplifier : not null access
-                            Gtk_Waveform_Amplifier_Record;
-                Auto      : Boolean
-             )  is
+     (  Amplifier : not null access
+          Gtk_Waveform_Amplifier_Record;
+        Auto      : Boolean
+       )  is
    begin
-      if Amplifier.Auto /= Auto then
-         Amplifier.Auto := Auto;
+      if Amplifier.all.Auto /= Auto then
+         Amplifier.all.Auto := Auto;
          Emit (Amplifier, Autoscaling_Changed_ID);
       end if;
    end Set_Auto_Scaling;
 
    procedure Set_Range
-             (  Amplifier : in out Gtk_Waveform_Amplifier_Record
-             )  is
+     (  Amplifier : in out Gtk_Waveform_Amplifier_Record
+       )  is
       function Get_Count return Positive is
          Length : Gdouble := Amplifier.Width;
       begin
@@ -285,23 +281,23 @@ package body Gtk.Layered.Waveform.Amplifier is
       end if;
       if Amplifier.Auto then
          declare
-            type Adjustment_Type is mod 2**7;
-            Undeflow_V1 : constant Adjustment_Type := 2**0;
-            Overflow_V1 : constant Adjustment_Type := 2**1;
-            Undeflow_V2 : constant Adjustment_Type := 2**2;
-            Overflow_V2 : constant Adjustment_Type := 2**3;
-            Raster_V1   : constant Adjustment_Type := 2**4;
-            Raster_V2   : constant Adjustment_Type := 2**5;
-            Empty       : constant Adjustment_Type := 2**6;
+            type Adjustment_Type is mod 2 ** 7;
+            Undeflow_V1 : constant Adjustment_Type := 2 ** 0;
+            Overflow_V1 : constant Adjustment_Type := 2 ** 1;
+            Undeflow_V2 : constant Adjustment_Type := 2 ** 2;
+            Overflow_V2 : constant Adjustment_Type := 2 ** 3;
+            Raster_V1   : constant Adjustment_Type := 2 ** 4;
+            Raster_V2   : constant Adjustment_Type := 2 ** 5;
+            Empty       : constant Adjustment_Type := 2 ** 6;
             Changed : Adjustment_Type := 0;
             Parent  : constant not null access Gtk_Adjustment_Record :=
-                         Gtk_Adjustment_Record
-                         (  Amplifier
-                         ) 'Unchecked_Access;
+                        Gtk_Adjustment_Record
+                          (  Amplifier
+                            ) 'Unchecked_Access;
             From  : constant Gdouble := Gdouble (Amplifier.Y1);
             To    : constant Gdouble := Gdouble (Amplifier.Y2);
             Span  : constant Gdouble :=
-                             (To - From) * Gdouble (Amplifier.Scaling);
+                      (To - From) * Gdouble (Amplifier.Scaling);
             Size  : Gdouble;
             V1    : Gdouble := Get_Value (Parent);
             V2    : Gdouble := V1 + Get_Page_Size (Parent);
@@ -330,7 +326,7 @@ package body Gtk.Layered.Waveform.Amplifier is
                declare
                   V     : Gdouble;
                   Scale : constant Rasters.Scale :=
-                                   Rasters.Create (V1, V2, Get_Count);
+                            Rasters.Create (V1, V2, Get_Count);
                begin
                   V := V1 - Gdouble'Remainder (V1, Scale.Minor);
                   declare
@@ -365,179 +361,179 @@ package body Gtk.Layered.Waveform.Amplifier is
                if 0 /= (Tracing_Mode and Trace_Amplifier) then ---------
                   if 0 /= (Changed and Undeflow_V1) then
                      Trace_Line
-                     (  Amplifier'Address,
-                        (  Edit.Image (Gdouble (Amplifier.Y1))
-                        &  " = V1 < ["
-                        &  Edit.Image (Get_Value (Parent))
-                        &  " set to "
-                        &  Edit.Image (V1)
-                        &  ".."
-                        &  Edit.Image (V2)
-                        &  " ["
-                        &  Edit.Image (Gdouble (Amplifier.Y1))
-                        &  ".."
-                        &  Edit.Image (Gdouble (Amplifier.Y2))
-                        &  "]"
-                     )  );
+                       (  Amplifier'Address,
+                          (  Edit.Image (Gdouble (Amplifier.Y1))
+                           &  " = V1 < ["
+                           &  Edit.Image (Get_Value (Parent))
+                           &  " set to "
+                           &  Edit.Image (V1)
+                           &  ".."
+                           &  Edit.Image (V2)
+                           &  " ["
+                           &  Edit.Image (Gdouble (Amplifier.Y1))
+                           &  ".."
+                           &  Edit.Image (Gdouble (Amplifier.Y2))
+                           &  "]"
+                          )  );
                   end if;
                   if 0 /= (Changed and Overflow_V1) then
                      Trace_Line
-                     (  Amplifier'Address,
-                        (  Edit.Image (Get_Value (Parent))
-                        &  "]>>>"
-                        &  Edit.Image (Span)
-                        &  " < V1 = "
-                        &  Edit.Image (Gdouble (Amplifier.Y1))
-                        &  " set to "
-                        &  Edit.Image (V1)
-                        &  ".."
-                        &  Edit.Image (V2)
-                        &  " ["
-                        &  Edit.Image (Gdouble (Amplifier.Y1))
-                        &  ".."
-                        &  Edit.Image (Gdouble (Amplifier.Y2))
-                        &  " ]"
-                     )  );
+                       (  Amplifier'Address,
+                          (  Edit.Image (Get_Value (Parent))
+                           &  "]>>>"
+                           &  Edit.Image (Span)
+                           &  " < V1 = "
+                           &  Edit.Image (Gdouble (Amplifier.Y1))
+                           &  " set to "
+                           &  Edit.Image (V1)
+                           &  ".."
+                           &  Edit.Image (V2)
+                           &  " ["
+                           &  Edit.Image (Gdouble (Amplifier.Y1))
+                           &  ".."
+                           &  Edit.Image (Gdouble (Amplifier.Y2))
+                           &  " ]"
+                          )  );
                   end if;
                   if 0 /= (Changed and Undeflow_V2) then
                      Trace_Line
-                     (  Amplifier'Address,
-                        (  Edit.Image
-                           (  Get_Value (Parent)
-                           +  Get_Page_Size (Parent)
-                           )
-                        &  "] < V2 = "
-                        &  Edit.Image (Gdouble (Amplifier.Y2))
-                        &  " set to "
-                        &  Edit.Image (V1)
-                        &  ".."
-                        &  Edit.Image (V2)
-                        &  " ["
-                        &  Edit.Image (Gdouble (Amplifier.Y1))
-                        &  ".."
-                        &  Edit.Image (Gdouble (Amplifier.Y2))
-                        &  " ]"
-                     )  );
+                       (  Amplifier'Address,
+                          (  Edit.Image
+                               (  Get_Value (Parent)
+                                +  Get_Page_Size (Parent)
+                               )
+                           &  "] < V2 = "
+                           &  Edit.Image (Gdouble (Amplifier.Y2))
+                           &  " set to "
+                           &  Edit.Image (V1)
+                           &  ".."
+                           &  Edit.Image (V2)
+                           &  " ["
+                           &  Edit.Image (Gdouble (Amplifier.Y1))
+                           &  ".."
+                           &  Edit.Image (Gdouble (Amplifier.Y2))
+                           &  " ]"
+                          )  );
                   end if;
                   if 0 /= (Changed and Overflow_V2) then
                      Trace_Line
-                     (  Amplifier'Address,
-                        (  Edit.Image (Gdouble (Amplifier.Y2))
-                        &  " = V2 < "
-                        &  Edit.Image (Span)
-                        &  " <<<["
-                        &  Edit.Image
-                           (  Get_Value (Parent)
-                           +  Get_Page_Size (Parent)
-                           )
-                        &  " set to "
-                        &  Edit.Image (V1)
-                        &  " .."
-                        &  Edit.Image (V2)
-                        &  " ["
-                        &  Edit.Image (Gdouble (Amplifier.Y1))
-                        &  " .."
-                        &  Edit.Image (Gdouble (Amplifier.Y2))
-                        &  " ]"
-                     )  );
+                       (  Amplifier'Address,
+                          (  Edit.Image (Gdouble (Amplifier.Y2))
+                           &  " = V2 < "
+                           &  Edit.Image (Span)
+                           &  " <<<["
+                           &  Edit.Image
+                             (  Get_Value (Parent)
+                              +  Get_Page_Size (Parent)
+                             )
+                           &  " set to "
+                           &  Edit.Image (V1)
+                           &  " .."
+                           &  Edit.Image (V2)
+                           &  " ["
+                           &  Edit.Image (Gdouble (Amplifier.Y1))
+                           &  " .."
+                           &  Edit.Image (Gdouble (Amplifier.Y2))
+                           &  " ]"
+                          )  );
                   end if;
                   if 0 /= (Changed and Raster_V1) then
                      Trace_Line
-                     (  Amplifier'Address,
-                        (  "Set lower at raster "
-                        &  Edit.Image (V1)
-                        &  ".."
-                        &  Edit.Image (V2)
-                        &  " ["
-                        &  Edit.Image (Gdouble (Amplifier.Y1))
-                        &  ".."
-                        &  Edit.Image (Gdouble (Amplifier.Y2))
-                        &  " ]"
-                     )  );
+                       (  Amplifier'Address,
+                          (  "Set lower at raster "
+                           &  Edit.Image (V1)
+                           &  ".."
+                           &  Edit.Image (V2)
+                           &  " ["
+                           &  Edit.Image (Gdouble (Amplifier.Y1))
+                           &  ".."
+                           &  Edit.Image (Gdouble (Amplifier.Y2))
+                           &  " ]"
+                          )  );
                   end if;
                   if 0 /= (Changed and Raster_V2) then
                      Trace_Line
-                     (  Amplifier'Address,
-                        (  "Set upper at raster "
-                        &  Edit.Image (V1)
-                        &  ".."
-                        &  Edit.Image (V2)
-                        &  " ["
-                        &  Edit.Image (Gdouble (Amplifier.Y1))
-                        &  ".."
-                        &  Edit.Image (Gdouble (Amplifier.Y2))
-                        &  " ]"
-                     )  );
+                       (  Amplifier'Address,
+                          (  "Set upper at raster "
+                           &  Edit.Image (V1)
+                           &  ".."
+                           &  Edit.Image (V2)
+                           &  " ["
+                           &  Edit.Image (Gdouble (Amplifier.Y1))
+                           &  ".."
+                           &  Edit.Image (Gdouble (Amplifier.Y2))
+                           &  " ]"
+                          )  );
                   end if;
                   if 0 /= (Changed and Empty) then
                      Trace_Line
-                     (  Amplifier'Address,
-                        (  "Empty range "
-                        &  Edit.Image (V1)
-                        &  ".."
-                        &  Edit.Image (V2)
-                        &  " ["
-                        &  Edit.Image (Gdouble (Amplifier.Y1))
-                        &  ".."
-                        &  Edit.Image (Gdouble (Amplifier.Y2))
-                        &  " ]"
-                     )  );
+                       (  Amplifier'Address,
+                          (  "Empty range "
+                           &  Edit.Image (V1)
+                           &  ".."
+                           &  Edit.Image (V2)
+                           &  " ["
+                           &  Edit.Image (Gdouble (Amplifier.Y1))
+                           &  ".."
+                           &  Edit.Image (Gdouble (Amplifier.Y2))
+                           &  " ]"
+                          )  );
                   end if;
                   Trace_Line
-                  (  Amplifier'Address,
-                     (  "Configured value "
-                     &  Edit.Image (V1)
-                     &  " page "
-                     &  Edit.Image (Size)
-                     &  " range "
-                     &  Edit.Image (Lower)
-                     &  ".."
-                     &  Edit.Image (Upper)
-                  )  );
+                    (  Amplifier'Address,
+                       (  "Configured value "
+                        &  Edit.Image (V1)
+                        &  " page "
+                        &  Edit.Image (Size)
+                        &  " range "
+                        &  Edit.Image (Lower)
+                        &  ".."
+                        &  Edit.Image (Upper)
+                       )  );
                end if; -------------------------------------------------
                Amplifier.Setting := False;
                Configure
-               (  Adjustment     => Parent,
-                  Step_Increment => Size * 0.2,
-                  Page_Increment => Size * 0.8,
-                  Page_Size      => Size,
-                  Value          => V1,
-                  Lower          => Lower,
-                  Upper          => Upper
-               );
+                 (  Adjustment     => Parent,
+                    Step_Increment => Size * 0.2,
+                    Page_Increment => Size * 0.8,
+                    Page_Size      => Size,
+                    Value          => V1,
+                    Lower          => Lower,
+                    Upper          => Upper
+                   );
             end if;
          end;
       end if;
    end Set_Range;
 
    procedure Set_Raster_Scaling
-             (  Amplifier : not null access
-                            Gtk_Waveform_Amplifier_Record;
-                Raster    : Boolean
-             )  is
+     (  Amplifier : not null access
+          Gtk_Waveform_Amplifier_Record;
+        Raster    : Boolean
+       )  is
    begin
-      if Amplifier.Raster /= Raster then
-         Amplifier.Raster := Raster;
+      if Amplifier.all.Raster /= Raster then
+         Amplifier.all.Raster := Raster;
          Emit (Amplifier, Raster_Mode_Changed_ID);
       end if;
    end Set_Raster_Scaling;
 
    procedure Set_Scaling
-             (  Amplifier : not null access
-                            Gtk_Waveform_Amplifier_Record;
-                Scaling   : Waveform_Scaling
-             )  is
+     (  Amplifier : not null access
+          Gtk_Waveform_Amplifier_Record;
+        Scaling   : Waveform_Scaling
+       )  is
    begin
-      Amplifier.Scaling := Scaling;
+      Amplifier.all.Scaling := Scaling;
    end Set_Scaling;
 
    procedure Set_Tick_Length
-             (  Amplifier : not null access
-                            Gtk_Waveform_Amplifier_Record;
-                Length    : Positive
-             )  is
+     (  Amplifier : not null access
+          Gtk_Waveform_Amplifier_Record;
+        Length    : Positive
+       )  is
    begin
-      Amplifier.Tick := Length;
+      Amplifier.all.Tick := Length;
    end Set_Tick_Length;
 
 end Gtk.Layered.Waveform.Amplifier;

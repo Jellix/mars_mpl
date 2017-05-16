@@ -23,7 +23,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
 with Glib.Properties.Creation;    use Glib.Properties.Creation;
@@ -36,29 +36,26 @@ package body Gtk.Layered.Bar is
    type Bar_Ptr is access all Bar_Layer;
 
    type Layer_Property is
-        (  Property_Scaled,
-           Property_Widened,
-           Property_From_X,
-           Property_From_Y,
-           Property_To_X,
-           Property_To_Y,
-           Property_Line_Width,
-           Property_Line_Color,
-           Property_Line_Cap,
-           Property_Value
-        );
+     (Property_Scaled,
+      Property_Widened,
+      Property_From_X,
+      Property_From_Y,
+      Property_To_X,
+      Property_To_Y,
+      Property_Line_Width,
+      Property_Line_Color,
+      Property_Line_Cap,
+      Property_Value);
 
    package Handlers is
       new Gtk.Handlers.User_Callback
-          (  GObject_Record,
-             Bar_Ptr
-          );
+       (GObject_Record,
+        Bar_Ptr);
 
    procedure Free is
       new Ada.Unchecked_Deallocation
-          (  Bar_Layer,
-             Bar_Ptr
-          );
+       (Bar_Layer,
+        Bar_Ptr);
 
    procedure Changed
              (  Adjustment   : access GObject_Record'Class;
@@ -87,9 +84,9 @@ package body Gtk.Layered.Bar is
             Layer'Unchecked_Access
          );
       declare
-         Lower : constant Gdouble := Adjustment.Get_Lower;
-         Upper : constant Gdouble := Adjustment.Get_Upper;
-         Value : constant Gdouble := Adjustment.Get_Value;
+         Lower : constant Gdouble := Adjustment.all.Get_Lower;
+         Upper : constant Gdouble := Adjustment.all.Get_Upper;
+         Value : constant Gdouble := Adjustment.all.Get_Value;
       begin
          if Upper <= Lower or else Value <= Lower then
             Layer.Set_Value (0.0);
@@ -102,17 +99,17 @@ package body Gtk.Layered.Bar is
    end Add_Adjustment;
 
    procedure Add_Bar
-             (  Under      : not null access Layer_Location'Class;
-                From       : Cairo_Tuple    := (0.0, 0.0);
-                Angle      : Gdouble        := 0.0;
-                Length     : Gdouble        := 1.0;
-                Width      : Gdouble        := 1.0;
-                Color      : Gdk_Color      := RGB (1.0, 0.0, 0.0);
-                Line_Cap   : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
-                Adjustment : access Gtk_Adjustment_Record'Class := null;
-                Scaled     : Boolean        := False;
-                Widened    : Boolean        := False
-             )  is
+     (Under      : not null access Layer_Location'Class;
+      From       : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
+      Angle      : Gdouble                            := 0.0;
+      Length     : Gdouble                            := 1.0;
+      Width      : Gdouble                            := 1.0;
+      Color      : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Line_Cap   : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
+      Adjustment : access Gtk_Adjustment_Record'Class := null;
+      Scaled     : Boolean                            := False;
+      Widened    : Boolean                            := False)
+   is
       Ptr   : Bar_Ptr := new Bar_Layer;
       Layer : Bar_Layer renames Ptr.all;
    begin
@@ -136,16 +133,16 @@ package body Gtk.Layered.Bar is
    end Add_Bar;
 
    procedure Add_Bar
-             (  Under      : not null access Layer_Location'Class;
-                From       : Cairo_Tuple    := (0.0, 0.0);
-                To         : Cairo_Tuple    := (0.0, 1.0);
-                Width      : Gdouble        := 1.0;
-                Color      : Gdk_Color      := RGB (1.0, 0.0, 0.0);
-                Line_Cap   : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
-                Adjustment : access Gtk_Adjustment_Record'Class := null;
-                Scaled     : Boolean        := False;
-                Widened    : Boolean        := False
-             )  is
+     (Under      : not null access Layer_Location'Class;
+      From       : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
+      To         : Cairo.Ellipses.Cairo_Tuple         := (0.0, 1.0);
+      Width      : Gdouble                            := 1.0;
+      Color      : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Line_Cap   : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
+      Adjustment : access Gtk_Adjustment_Record'Class := null;
+      Scaled     : Boolean                            := False;
+      Widened    : Boolean                            := False)
+   is
       Ptr   : Bar_Ptr := new Bar_Layer;
       Layer : Bar_Layer renames Ptr.all;
    begin
@@ -168,17 +165,18 @@ package body Gtk.Layered.Bar is
    end Add_Bar;
 
    function Add_Bar
-            (  Under      : not null access Layer_Location'Class;
-               From       : Cairo_Tuple    := (0.0, 0.0);
-               Angle      : Gdouble        := 0.0;
-               Length     : Gdouble        := 1.0;
-               Width      : Gdouble        := 1.0;
-               Color      : Gdk_Color      := RGB (1.0, 0.0, 0.0);
-               Line_Cap   : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
-               Adjustment : access Gtk_Adjustment_Record'Class := null;
-               Scaled     : Boolean        := False;
-               Widened    : Boolean        := False
-            )  return not null access Bar_Layer is
+     (Under      : not null access Layer_Location'Class;
+      From       : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
+      Angle      : Gdouble                            := 0.0;
+      Length     : Gdouble                            := 1.0;
+      Width      : Gdouble                            := 1.0;
+      Color      : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Line_Cap   : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
+      Adjustment : access Gtk_Adjustment_Record'Class := null;
+      Scaled     : Boolean                            := False;
+      Widened    : Boolean                            := False)
+      return not null access Bar_Layer
+   is
       Ptr   : Bar_Ptr := new Bar_Layer;
       Layer : Bar_Layer renames Ptr.all;
    begin
@@ -203,16 +201,17 @@ package body Gtk.Layered.Bar is
    end Add_Bar;
 
    function Add_Bar
-            (  Under      : not null access Layer_Location'Class;
-               From       : Cairo_Tuple    := (0.0, 0.0);
-               To         : Cairo_Tuple    := (0.0, 1.0);
-               Width      : Gdouble        := 1.0;
-               Color      : Gdk_Color      := RGB (1.0, 0.0, 0.0);
-               Line_Cap   : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
-               Adjustment : access Gtk_Adjustment_Record'Class := null;
-               Scaled     : Boolean        := False;
-               Widened    : Boolean        := False
-            )  return not null access Bar_Layer is
+     (Under      : not null access Layer_Location'Class;
+      From       : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
+      To         : Cairo.Ellipses.Cairo_Tuple         := (0.0, 1.0);
+      Width      : Gdouble                            := 1.0;
+      Color      : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Line_Cap   : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
+      Adjustment : access Gtk_Adjustment_Record'Class := null;
+      Scaled     : Boolean                            := False;
+      Widened    : Boolean                            := False)
+      return not null access Bar_Layer
+   is
       Ptr   : Bar_Ptr := new Bar_Layer;
       Layer : Bar_Layer renames Ptr.all;
    begin
@@ -235,10 +234,11 @@ package body Gtk.Layered.Bar is
          raise;
    end Add_Bar;
 
-   function Add
-            (  Under  : not null access Layer_Location'Class;
-               Stream : not null access Root_Stream_Type'Class
-            )  return not null access Bar_Layer is
+   overriding function Add
+     (Under  : not null access Layer_Location'Class;
+      Stream : not null access Ada.Streams.Root_Stream_Type'Class)
+      return not null access Bar_Layer
+   is
       Ptr : Bar_Ptr := new Bar_Layer;
    begin
       Restore (Stream.all, Ptr.all);
@@ -254,51 +254,52 @@ package body Gtk.Layered.Bar is
              (  Adjustment : access GObject_Record'Class;
                 Bar        : Bar_Ptr
              )  is
-      Lower : constant Gdouble := Get_Lower (Bar.Adjustment);
-      Upper : constant Gdouble := Get_Upper (Bar.Adjustment);
-      Value : constant Gdouble := Get_Value (Bar.Adjustment);
+      Lower : constant Gdouble := Get_Lower (Bar.all.Adjustment);
+      Upper : constant Gdouble := Get_Upper (Bar.all.Adjustment);
+      Value : constant Gdouble := Get_Value (Bar.all.Adjustment);
    begin
       if Upper <= Lower or else Value <= Lower then
-         Bar.Set_Value (0.0);
+         Bar.all.Set_Value (0.0);
       elsif Value >= Upper then
-         Bar.Set_Value (1.0);
+         Bar.all.Set_Value (1.0);
       else
-         Bar.Set_Value ((Value - Lower) / (Upper - Lower));
+         Bar.all.Set_Value ((Value - Lower) / (Upper - Lower));
       end if;
-      if not Bar.Widget.Drawing and then Bar.Updated then
-         Queue_Draw (Bar.Widget); -- Signal draw to the widget
+      if not Bar.all.Widget.all.Drawing and then Bar.all.Updated then
+         Queue_Draw (Bar.all.Widget); -- Signal draw to the widget
       end if;
    end Changed;
 
-   procedure Draw
-             (  Layer   : in out Bar_Layer;
-                Context : Cairo_Context;
-                Area    : Gdk_Rectangle
-             )  is
-      From, To : Cairo_Tuple;
+   overriding procedure Draw
+     (Layer   : in out Bar_Layer;
+      Context : Cairo.Cairo_Context;
+      Area    : Gdk_Rectangle)
+   is
+      From, To : Cairo.Ellipses.Cairo_Tuple;
       B : constant Gdouble := Layer.Value;
       A : constant Gdouble := 1.0 - B;
    begin
-      New_Path (Context);
+      Cairo.New_Path (Context);
       if Layer.Widened then
-         Set_Line_Width
+         Cairo.Set_Line_Width
          (  Context,
-            Layer.Line.Width * Layer.Widget.Get_Size
+            Layer.Line.Width * Layer.Widget.all.Get_Size
          );
       else
-         Set_Line_Width (Context, Layer.Line.Width);
+         Cairo.Set_Line_Width (Context, Layer.Line.Width);
       end if;
-      Set_Source_Rgb
+      Cairo.Set_Source_Rgb
       (  Context,
-         Gdouble (Red   (Layer.Line.Color)) / Gdouble (Guint16'Last),
-         Gdouble (Green (Layer.Line.Color)) / Gdouble (Guint16'Last),
-         Gdouble (Blue  (Layer.Line.Color)) / Gdouble (Guint16'Last)
+         Gdouble (Gdk.Color.Red   (Layer.Line.Color)) / Gdouble (Guint16'Last),
+         Gdouble (Gdk.Color.Green (Layer.Line.Color)) / Gdouble (Guint16'Last),
+         Gdouble (Gdk.Color.Blue  (Layer.Line.Color)) / Gdouble (Guint16'Last)
       );
-      Set_Line_Cap (Context, Layer.Line.Line_Cap);
+      Cairo.Set_Line_Cap (Context, Layer.Line.Line_Cap);
       if Layer.Scaled then
          declare
-            Size   : constant Gdouble := Layer.Widget.Get_Size;
-            Center : constant Cairo_Tuple := Layer.Widget.Get_Center;
+            Size   : constant Gdouble := Layer.Widget.all.Get_Size;
+            Center : constant Cairo.Ellipses.Cairo_Tuple :=
+                       Layer.Widget.all.Get_Center;
          begin
             From.X := Center.X + Layer.From.X * Size;
             From.Y := Center.Y + Layer.From.Y * Size;
@@ -309,17 +310,17 @@ package body Gtk.Layered.Bar is
          From := Layer.From;
          To   := Layer.To;
       end if;
-      Move_To (Context, From.X, From.Y);
-      Line_To
+      Cairo.Move_To (Context, From.X, From.Y);
+      Cairo.Line_To
       (  Cr => Context,
          X  => From.X * A + To.X * B,
          Y  => From.Y * A + To.Y * B
       );
-      Stroke  (Context);
+      Cairo.Stroke  (Context);
       Layer.Updated := False;
    end Draw;
 
-   procedure Finalize (Layer : in out Bar_Layer) is
+   overriding procedure Finalize (Layer : in out Bar_Layer) is
    begin
       Finalize (Abstract_Layer (Layer));
       if Layer.Adjustment /= null then
@@ -330,7 +331,7 @@ package body Gtk.Layered.Bar is
       end if;
    end Finalize;
 
-   function Get_Adjustment (Layer : Bar_Layer)
+   overriding function Get_Adjustment (Layer : Bar_Layer)
       return Gtk_Adjustment is
    begin
       return Layer.Adjustment;
@@ -345,7 +346,7 @@ package body Gtk.Layered.Bar is
          );
    end Get_Angle;
 
-   function Get_From (Layer : Bar_Layer) return Cairo_Tuple is
+   function Get_From (Layer : Bar_Layer) return Cairo.Ellipses.Cairo_Tuple is
    begin
       return Layer.From;
    end Get_From;
@@ -365,7 +366,9 @@ package body Gtk.Layered.Bar is
       return Layer.Line;
    end Get_Line;
 
-   function Get_Properties_Number (Layer : Bar_Layer) return Natural is
+   overriding function Get_Properties_Number (Layer : Bar_Layer) return Natural
+   is
+      pragma Unreferenced (Layer);
    begin
       return
       (  Layer_Property'Pos (Layer_Property'Last)
@@ -374,7 +377,7 @@ package body Gtk.Layered.Bar is
       );
    end Get_Properties_Number;
 
-   function Get_Property_Specification
+   overriding function Get_Property_Specification
             (  Layer    : Bar_Layer;
                Property : Positive
             )  return Param_Spec is
@@ -450,17 +453,16 @@ package body Gtk.Layered.Bar is
             when Property_Line_Color =>
                return
                   Gnew_Boxed
-                  (  Name       => "color",
-                     Boxed_Type => Gdk_Color_Type,
-                     Nick       => "color",
-                     Blurb      => "The bar's line color"
-                  );
+                   (Name       => "color",
+                    Boxed_Type => Gdk.Color.Gdk_Color_Type,
+                    Nick       => "color",
+                    Blurb      => "The bar's line color");
             when Property_Line_Cap =>
                return
                   Cairo.Line_Cap_Property.Gnew_Enum
                   (  Name    => "line-cap",
                      Nick    => "line cap",
-                     Default => Cairo_Line_Cap_Butt,
+                     Default => Cairo.Cairo_Line_Cap_Butt,
                      Blurb   => "The cap style of the bar's line"
                   );
             when Property_Scaled =>
@@ -485,84 +487,82 @@ package body Gtk.Layered.Bar is
       end if;
    end Get_Property_Specification;
 
-   function Get_Property_Value
-            (  Layer    : Bar_Layer;
-               Property : Positive
-            )  return GValue is
+   overriding function Get_Property_Value
+     (Layer    : Bar_Layer;
+      Property : Positive) return Glib.Values.GValue is
    begin
       if Property > Get_Properties_Number (Layer) then
          raise Constraint_Error;
       else
          declare
-            Value : GValue;
+            Value : Glib.Values.GValue;
          begin
             case Layer_Property'Val (Property - 1) is
                when Property_From_X =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.From.X);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.From.X);
                when Property_From_Y =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.From.Y);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.From.Y);
                when Property_To_X =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.To.X);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.To.X);
                when Property_To_Y =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.To.Y);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.To.Y);
                when Property_Value =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Value);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Value);
                when Property_Line_Width =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Line.Width);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Line.Width);
                when Property_Line_Color =>
-                  Set_Value (Value, Layer.Line.Color);
+                  Gdk.Color.Set_Value (Value, Layer.Line.Color);
                when Property_Line_Cap =>
                   Cairo.Line_Cap_Property.Set_Enum
                   (  Value,
                      Layer.Line.Line_Cap
                   );
                when Property_Scaled =>
-                  Init (Value, GType_Boolean);
-                  Set_Boolean (Value, Layer.Scaled);
+                  Glib.Values.Init (Value, GType_Boolean);
+                  Glib.Values.Set_Boolean (Value, Layer.Scaled);
                when Property_Widened =>
-                  Init (Value, GType_Boolean);
-                  Set_Boolean (Value, Layer.Widened);
+                  Glib.Values.Init (Value, GType_Boolean);
+                  Glib.Values.Set_Boolean (Value, Layer.Widened);
             end case;
             return Value;
          end;
       end if;
    end Get_Property_Value;
 
-   function Get_Scaled (Layer : Bar_Layer) return Boolean is
+   overriding function Get_Scaled (Layer : Bar_Layer) return Boolean is
    begin
       return Layer.Scaled;
    end Get_Scaled;
 
-   function Get_To (Layer : Bar_Layer) return Cairo_Tuple is
+   function Get_To (Layer : Bar_Layer) return Cairo.Ellipses.Cairo_Tuple is
    begin
       return Layer.To;
    end Get_To;
 
-   function Get_Value (Layer : Bar_Layer) return Gdouble is
+   overriding function Get_Value (Layer : Bar_Layer) return Gdouble is
    begin
       return Layer.Value;
    end Get_Value;
 
-   function Get_Widened (Layer : Bar_Layer) return Boolean is
+   overriding function Get_Widened (Layer : Bar_Layer) return Boolean is
    begin
       return Layer.Widened;
    end Get_Widened;
 
-   function Is_Updated (Layer : Bar_Layer) return Boolean is
+   overriding function Is_Updated (Layer : Bar_Layer) return Boolean is
    begin
       return Layer.Updated;
    end Is_Updated;
 
-   procedure Move
-             (  Layer  : in out Bar_Layer;
-                Offset : Cairo_Tuple
-             )  is
+   overriding procedure Move
+     (Layer  : in out Bar_Layer;
+      Offset : Cairo.Ellipses.Cairo_Tuple) is
    begin
       Layer.From.X  := Layer.From.X + Offset.X;
       Layer.From.Y  := Layer.From.Y + Offset.Y;
@@ -571,12 +571,12 @@ package body Gtk.Layered.Bar is
       Layer.Updated := True;
    end Move;
 
-   procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Layer  : in out Bar_Layer
-             )  is
-      From       : Cairo_Tuple;
-      To         : Cairo_Tuple;
+   overriding procedure Restore
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Layer  : in out Bar_Layer)
+   is
+      From       : Cairo.Ellipses.Cairo_Tuple;
+      To         : Cairo.Ellipses.Cairo_Tuple;
       Line       : Line_Parameters;
       Adjustment : Boolean;
    begin
@@ -607,7 +607,7 @@ package body Gtk.Layered.Bar is
       end if;
    end Restore;
 
-   procedure Scale
+   overriding procedure Scale
              (  Layer  : in out Bar_Layer;
                 Factor : Gdouble
              )  is
@@ -620,12 +620,11 @@ package body Gtk.Layered.Bar is
    end Scale;
 
    procedure Set
-             (  Layer  : in out Bar_Layer;
-                From   : Cairo_Tuple;
-                Angle  : Gdouble;
-                Length : Gdouble;
-                Line   : Line_Parameters
-             )  is
+     (Layer  : in out Bar_Layer;
+      From   : Cairo.Ellipses.Cairo_Tuple;
+      Angle  : Gdouble;
+      Length : Gdouble;
+      Line   : Line_Parameters) is
    begin
       Set
       (  Layer => Layer,
@@ -637,11 +636,10 @@ package body Gtk.Layered.Bar is
    end Set;
 
    procedure Set
-             (  Layer : in out Bar_Layer;
-                From  : Cairo_Tuple;
-                To    : Cairo_Tuple;
-                Line  : Line_Parameters
-             )  is
+     (Layer : in out Bar_Layer;
+      From  : Cairo.Ellipses.Cairo_Tuple;
+      To    : Cairo.Ellipses.Cairo_Tuple;
+      Line  : Line_Parameters) is
    begin
       if Line.Width <= 0.0 then
          raise Constraint_Error with "Non-positive line width";
@@ -653,46 +651,45 @@ package body Gtk.Layered.Bar is
       Set_Value (Layer, Layer.Value);
    end Set;
 
-   procedure Set_Property_Value
-             (  Layer    : in out Bar_Layer;
-                Property : Positive;
-                Value    : GValue
-             )  is
+   overriding procedure Set_Property_Value
+     (Layer    : in out Bar_Layer;
+      Property : Positive;
+      Value    : Glib.Values.GValue) is
    begin
       if Property > Get_Properties_Number (Layer) then
          raise Constraint_Error;
       else
          case Layer_Property'Val (Property - 1) is
             when Property_From_X =>
-               Layer.From.X := Get_Double (Value);
+               Layer.From.X := Glib.Values.Get_Double (Value);
             when Property_From_Y =>
-               Layer.From.Y := Get_Double (Value);
+               Layer.From.Y := Glib.Values.Get_Double (Value);
             when Property_To_X =>
-               Layer.To.X := Get_Double (Value);
+               Layer.To.X := Glib.Values.Get_Double (Value);
             when Property_To_Y =>
-               Layer.To.Y := Get_Double (Value);
+               Layer.To.Y := Glib.Values.Get_Double (Value);
             when Property_Value =>
-               Set_Value (Layer, Get_Double (Value));
+               Set_Value (Layer, Glib.Values.Get_Double (Value));
             when Property_Line_Width =>
-               Layer.Line.Width := Get_Double (Value);
+               Layer.Line.Width := Glib.Values.Get_Double (Value);
                if Layer.Line.Width < 0.0 then
                   Layer.Line.Width := 0.0;
                end if;
             when Property_Line_Color =>
-               Layer.Line.Color := Get_Value (Value);
+               Layer.Line.Color := Gdk.Color.Get_Value (Value);
             when Property_Line_Cap =>
                Layer.Line.Line_Cap :=
                   Cairo.Line_Cap_Property.Get_Enum (Value);
             when Property_Scaled =>
-               Layer.Scaled := Get_Boolean (Value);
+               Layer.Scaled := Glib.Values.Get_Boolean (Value);
             when Property_Widened =>
-               Layer.Widened := Get_Boolean (Value);
+               Layer.Widened := Glib.Values.Get_Boolean (Value);
          end case;
       end if;
       Layer.Updated := True;
    end Set_Property_Value;
 
-   procedure Set_Scaled
+   overriding procedure Set_Scaled
              (  Layer  : in out Bar_Layer;
                 Scaled : Boolean
              )  is
@@ -701,7 +698,7 @@ package body Gtk.Layered.Bar is
       Layer.Updated := True;
    end Set_Scaled;
 
-   procedure Set_Value
+   overriding procedure Set_Value
              (  Layer : in out Bar_Layer;
                 Value : Gdouble
              )  is
@@ -724,7 +721,7 @@ package body Gtk.Layered.Bar is
       end if;
    end Set_Value;
 
-   procedure Set_Widened
+   overriding procedure Set_Widened
              (  Layer   : in out Bar_Layer;
                 Widened : Boolean
              )  is
@@ -733,10 +730,9 @@ package body Gtk.Layered.Bar is
       Layer.Updated := True;
    end Set_Widened;
 
-   procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Layer  : Bar_Layer
-             )  is
+   overriding procedure Store
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Layer  : Bar_Layer) is
    begin
       Store (Stream, Layer.From);
       Store (Stream, Layer.To);

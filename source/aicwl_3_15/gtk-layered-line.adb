@@ -23,7 +23,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
 with Glib.Properties.Creation;       use Glib.Properties.Creation;
@@ -36,24 +36,24 @@ package body Gtk.Layered.Line is
    type Line_Ptr is access all Line_Layer;
 
    type Layer_Property is
-        (  Property_Scaled,
-           Property_Widened,
-           Property_From_X,
-           Property_From_Y,
-           Property_To_X,
-           Property_To_Y,
-           Property_Line_Width,
-           Property_Line_Color,
-           Property_Line_Cap
-        );
+     (Property_Scaled,
+      Property_Widened,
+      Property_From_X,
+      Property_From_Y,
+      Property_To_X,
+      Property_To_Y,
+      Property_Line_Width,
+      Property_Line_Color,
+      Property_Line_Cap);
 
    procedure Free is
-      new Ada.Unchecked_Deallocation (Line_Layer, Line_Ptr);
+     new Ada.Unchecked_Deallocation (Line_Layer, Line_Ptr);
 
-   function Add
-            (  Under  : not null access Layer_Location'Class;
-               Stream : not null access Root_Stream_Type'Class
-            )  return not null access Line_Layer is
+   overriding function Add
+     (Under  : not null access Layer_Location'Class;
+      Stream : not null access Ada.Streams.Root_Stream_Type'Class)
+      return not null access Line_Layer
+   is
       Ptr : Line_Ptr := new Line_Layer;
    begin
       Restore (Stream.all, Ptr.all);
@@ -66,16 +66,16 @@ package body Gtk.Layered.Line is
    end Add;
 
    procedure Add_Line
-             (  Under    : not null access Layer_Location'Class;
-                From     : Cairo_Tuple    := (0.0, 0.0);
-                Angle    : Gdouble         := 0.0;
-                Length   : Gdouble         := 1.0;
-                Width    : Gdouble         := 1.0;
-                Color    : Gdk_Color      := RGB (0.0, 0.0, 0.0);
-                Line_Cap : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
-                Scaled   : Boolean        := False;
-                Widened  : Boolean        := False
-             )  is
+     (Under    : not null access Layer_Location'Class;
+      From     : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
+      Angle    : Gdouble                    := 0.0;
+      Length   : Gdouble                    := 1.0;
+      Width    : Gdouble                    := 1.0;
+      Color    : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Line_Cap : Cairo.Cairo_Line_Cap       := Cairo.Cairo_Line_Cap_Butt;
+      Scaled   : Boolean                    := False;
+      Widened  : Boolean                    := False)
+   is
       Ptr   : Line_Ptr := new Line_Layer;
       Layer : Line_Layer renames Ptr.all;
    begin
@@ -83,12 +83,11 @@ package body Gtk.Layered.Line is
       Layer.Widened := Widened;
       Add (Ptr, Under);
       Set
-      (  Layer   => Layer,
+        (Layer   => Layer,
          From    => From,
          Angle   => Angle,
          Length  => Length,
-         Line    => (Width, Color, Line_Cap)
-      );
+         Line    => (Width, Color, Line_Cap));
    exception
       when others =>
          Free (Ptr);
@@ -96,15 +95,15 @@ package body Gtk.Layered.Line is
    end Add_Line;
 
    procedure Add_Line
-             (  Under    : not null access Layer_Location'Class;
-                From     : Cairo_Tuple    := (0.0, 0.0);
-                To       : Cairo_Tuple    := (0.0, 1.0);
-                Width    : Gdouble         := 1.0;
-                Color    : Gdk_Color      := RGB (0.0, 0.0, 0.0);
-                Line_Cap : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
-                Scaled   : Boolean        := False;
-                Widened  : Boolean        := False
-             )  is
+     (Under    : not null access Layer_Location'Class;
+      From     : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
+      To       : Cairo.Ellipses.Cairo_Tuple := (0.0, 1.0);
+      Width    : Gdouble                    := 1.0;
+      Color    : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Line_Cap : Cairo.Cairo_Line_Cap       := Cairo.Cairo_Line_Cap_Butt;
+      Scaled   : Boolean                    := False;
+      Widened  : Boolean                    := False)
+   is
       Ptr   : Line_Ptr := new Line_Layer;
       Layer : Line_Layer renames Ptr.all;
    begin
@@ -112,11 +111,10 @@ package body Gtk.Layered.Line is
       Layer.Widened := Widened;
       Add (Ptr, Under);
       Set
-      (  Layer => Layer,
+        (Layer => Layer,
          From  => From,
          To    => To,
-         Line  => (Width, Color, Line_Cap)
-      );
+         Line  => (Width, Color, Line_Cap));
    exception
       when others =>
          Free (Ptr);
@@ -124,16 +122,17 @@ package body Gtk.Layered.Line is
    end Add_Line;
 
    function Add_Line
-            (  Under    : not null access Layer_Location'Class;
-               From     : Cairo_Tuple    := (0.0, 0.0);
-               Angle    : Gdouble         := 0.0;
-               Length   : Gdouble         := 1.0;
-               Width    : Gdouble         := 1.0;
-               Color    : Gdk_Color      := RGB (0.0, 0.0, 0.0);
-               Line_Cap : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
-               Scaled   : Boolean        := False;
-               Widened  : Boolean        := False
-            )  return not null access Line_Layer is
+     (Under    : not null access Layer_Location'Class;
+      From     : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
+      Angle    : Gdouble                    := 0.0;
+      Length   : Gdouble                    := 1.0;
+      Width    : Gdouble                    := 1.0;
+      Color    : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Line_Cap : Cairo.Cairo_Line_Cap       := Cairo.Cairo_Line_Cap_Butt;
+      Scaled   : Boolean                    := False;
+      Widened  : Boolean                    := False)
+      return not null access Line_Layer
+   is
       Ptr   : Line_Ptr := new Line_Layer;
       Layer : Line_Layer renames Ptr.all;
    begin
@@ -141,12 +140,11 @@ package body Gtk.Layered.Line is
       Layer.Widened := Widened;
       Add (Ptr, Under);
       Set
-      (  Layer  => Layer,
+        (Layer  => Layer,
          From   => From,
          Angle  => Angle,
          Length => Length,
-         Line   => (Width, Color, Line_Cap)
-      );
+         Line   => (Width, Color, Line_Cap));
       return Layer'Unchecked_Access;
    exception
       when others =>
@@ -155,15 +153,16 @@ package body Gtk.Layered.Line is
    end Add_Line;
 
    function Add_Line
-            (  Under    : not null access Layer_Location'Class;
-               From     : Cairo_Tuple    := (0.0, 0.0);
-               To       : Cairo_Tuple    := (0.0, 1.0);
-               Width    : Gdouble         := 1.0;
-               Color    : Gdk_Color      := RGB (0.0, 0.0, 0.0);
-               Line_Cap : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
-               Scaled   : Boolean        := False;
-               Widened  : Boolean        := False
-            )  return not null access Line_Layer is
+     (Under    : not null access Layer_Location'Class;
+      From     : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
+      To       : Cairo.Ellipses.Cairo_Tuple := (0.0, 1.0);
+      Width    : Gdouble                    := 1.0;
+      Color    : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Line_Cap : Cairo.Cairo_Line_Cap       := Cairo.Cairo_Line_Cap_Butt;
+      Scaled   : Boolean                    := False;
+      Widened  : Boolean                    := False)
+      return not null access Line_Layer
+   is
       Ptr   : Line_Ptr := new Line_Layer;
       Layer : Line_Layer renames Ptr.all;
    begin
@@ -171,11 +170,10 @@ package body Gtk.Layered.Line is
       Layer.Widened := Widened;
       Add (Ptr, Under);
       Set
-      (  Layer => Layer,
+        (Layer => Layer,
          From  => From,
          To    => To,
-         Line  => (Width, Color, Line_Cap)
-      );
+         Line  => (Width, Color, Line_Cap));
       return Layer'Unchecked_Access;
    exception
       when others =>
@@ -183,70 +181,65 @@ package body Gtk.Layered.Line is
          raise;
    end Add_Line;
 
-   procedure Draw
-             (  Layer   : in out Line_Layer;
-                Context : Cairo_Context;
-                Area    : Gdk_Rectangle
-             )  is
+   overriding procedure Draw
+     (Layer   : in out Line_Layer;
+      Context : Cairo.Cairo_Context;
+      Area    : Gdk_Rectangle)
+   is
+      pragma Unreferenced (Area);
    begin
-      New_Path (Context);
+      Cairo.New_Path (Context);
       if Layer.Widened then
-         Set_Line_Width
-         (  Context,
-            Layer.Line.Width * Layer.Widget.Get_Size
-         );
+         Cairo.Set_Line_Width
+           (Context,
+            Layer.Line.Width * Layer.Widget.all.Get_Size);
       else
-         Set_Line_Width (Context, Layer.Line.Width);
+         Cairo.Set_Line_Width (Context, Layer.Line.Width);
       end if;
-      Set_Source_Rgb
-      (  Context,
-         Gdouble (Red   (Layer.Line.Color)) / Gdouble (Guint16'Last),
-         Gdouble (Green (Layer.Line.Color)) / Gdouble (Guint16'Last),
-         Gdouble (Blue  (Layer.Line.Color)) / Gdouble (Guint16'Last)
-      );
-      Set_Line_Cap (Context, Layer.Line.Line_Cap);
+      Cairo.Set_Source_Rgb
+        (Context,
+         Gdouble (Gdk.Color.Red   (Layer.Line.Color)) / Gdouble (Guint16'Last),
+         Gdouble (Gdk.Color.Green (Layer.Line.Color)) / Gdouble (Guint16'Last),
+         Gdouble (Gdk.Color.Blue  (Layer.Line.Color)) / Gdouble (Guint16'Last));
+      Cairo.Set_Line_Cap (Context, Layer.Line.Line_Cap);
       if Layer.Scaled then
          declare
-            Size   : constant Gdouble := Layer.Widget.Get_Size;
-            Center : constant Cairo_Tuple := Layer.Widget.Get_Center;
+            Size   : constant Gdouble := Layer.Widget.all.Get_Size;
+            Center : constant Cairo.Ellipses.Cairo_Tuple :=
+                       Layer.Widget.all.Get_Center;
          begin
-            Move_To
-            (  Cr => Context,
+            Cairo.Move_To
+              (Cr => Context,
                X  => Layer.From.X * Size + Center.X,
-               Y  => Layer.From.Y * Size + Center.Y
-            );
-            Line_To
-            (  Cr => Context,
+               Y  => Layer.From.Y * Size + Center.Y);
+            Cairo.Line_To
+              (Cr => Context,
                X  => Layer.To.X * Size + Center.X,
-               Y  => Layer.To.Y * Size + Center.Y
-            );
+               Y  => Layer.To.Y * Size + Center.Y);
          end;
       else
-         Move_To
-         (  Cr => Context,
+         Cairo.Move_To
+           (Cr => Context,
             X  => Layer.From.X,
-            Y  => Layer.From.Y
-         );
-         Line_To
-         (  Cr => Context,
+            Y  => Layer.From.Y);
+         Cairo.Line_To
+           (Cr => Context,
             X  => Layer.To.X,
-            Y  => Layer.To.Y
-         );
+            Y  => Layer.To.Y);
       end if;
-      Stroke  (Context);
+      Cairo.Stroke  (Context);
       Layer.Updated := False;
    end Draw;
 
    function Get_Angle (Layer : Line_Layer) return Gdouble is
    begin
       return
-         Arctan
-         (  X => Layer.To.X - Layer.From.X,
-            Y => Layer.To.Y - Layer.From.Y
-         );
+        Arctan
+          (X => Layer.To.X - Layer.From.X,
+           Y => Layer.To.Y - Layer.From.Y);
    end Get_Angle;
 
-   function Get_From (Layer : Line_Layer) return Cairo_Tuple is
+   function Get_From (Layer : Line_Layer) return Cairo.Ellipses.Cairo_Tuple is
    begin
       return Layer.From;
    end Get_From;
@@ -254,10 +247,9 @@ package body Gtk.Layered.Line is
    function Get_Length  (Layer : Line_Layer) return Gdouble is
    begin
       return
-         Sqrt
-         (  (Layer.To.X - Layer.From.X)**2
-         +  (Layer.To.Y - Layer.From.Y)**2
-         );
+        Sqrt
+          ((Layer.To.X - Layer.From.X) ** 2 +
+           (Layer.To.Y - Layer.From.Y) ** 2);
    end Get_Length;
 
    function Get_Line (Layer : Line_Layer) return Line_Parameters is
@@ -265,19 +257,18 @@ package body Gtk.Layered.Line is
       return Layer.Line;
    end Get_Line;
 
-   function Get_Properties_Number (Layer : Line_Layer) return Natural is
+   overriding function Get_Properties_Number (Layer : Line_Layer) return Natural
+   is
+      pragma Unreferenced (Layer);
    begin
       return
-      (  Layer_Property'Pos (Layer_Property'Last)
-      -  Layer_Property'Pos (Layer_Property'First)
-      +  1
-      );
+        (Layer_Property'Pos (Layer_Property'Last) -
+             Layer_Property'Pos (Layer_Property'First) + 1);
    end Get_Properties_Number;
 
-   function Get_Property_Specification
-            (  Layer    : Line_Layer;
-               Property : Positive
-            )  return Param_Spec is
+   overriding function Get_Property_Specification
+     (Layer    : Line_Layer;
+      Property : Positive) return Param_Spec is
    begin
       if Property > Get_Properties_Number (Layer) then
          raise Constraint_Error;
@@ -285,166 +276,158 @@ package body Gtk.Layered.Line is
          case Layer_Property'Val (Property - 1) is
             when Property_From_X =>
                return
-                  Gnew_Double
-                  (  Name    => "x0",
-                     Nick    => "x0",
-                     Minimum => Gdouble'First,
-                     Maximum => Gdouble'Last,
-                     Default => 0.0,
-                     Blurb   => "The x-coordinate of the point " &
-                                "corresponding to the value 0"
-                  );
+                 Gnew_Double
+                   (Name    => "x0",
+                    Nick    => "x0",
+                    Minimum => Gdouble'First,
+                    Maximum => Gdouble'Last,
+                    Default => 0.0,
+                    Blurb   =>
+                       "The x-coordinate of the point corresponding to the " &
+                       "value 0");
             when Property_From_Y =>
                return
-                  Gnew_Double
-                  (  Name    => "y0",
-                     Nick    => "y0",
-                     Minimum => Gdouble'First,
-                     Maximum => Gdouble'Last,
-                     Default => 0.0,
-                     Blurb   => "The y-coordinate of the point " &
-                                "corresponding to the value 0"
-                  );
+                 Gnew_Double
+                   (Name    => "y0",
+                    Nick    => "y0",
+                    Minimum => Gdouble'First,
+                    Maximum => Gdouble'Last,
+                    Default => 0.0,
+                    Blurb   =>
+                       "The y-coordinate of the point corresponding to the " &
+                       "value 0");
             when Property_To_X =>
                return
-                  Gnew_Double
-                  (  Name    => "x1",
-                     Nick    => "x1",
-                     Minimum => Gdouble'First,
-                     Maximum => Gdouble'Last,
-                     Default => 0.0,
-                     Blurb   => "The x-coordinate of the point " &
-                                "corresponding to the value 1"
-                  );
+                 Gnew_Double
+                   (Name    => "x1",
+                    Nick    => "x1",
+                    Minimum => Gdouble'First,
+                    Maximum => Gdouble'Last,
+                    Default => 0.0,
+                    Blurb   =>
+                       "The x-coordinate of the point corresponding to the " &
+                       "value 1");
             when Property_To_Y =>
                return
-                  Gnew_Double
-                  (  Name    => "y1",
-                     Nick    => "y1",
-                     Minimum => Gdouble'First,
-                     Maximum => Gdouble'Last,
-                     Default => 0.0,
-                     Blurb   => "The y-coordinate of the point " &
-                                "corresponding to the value 1"
-                  );
+                 Gnew_Double
+                   (Name    => "y1",
+                    Nick    => "y1",
+                    Minimum => Gdouble'First,
+                    Maximum => Gdouble'Last,
+                    Default => 0.0,
+                    Blurb   =>
+                       "The y-coordinate of the point corresponding to the " &
+                       "value 1");
             when Property_Line_Width =>
                return
-                  Gnew_Double
-                  (  Name    => "width",
-                     Nick    => "width",
-                     Minimum => 0.0,
-                     Maximum => Gdouble'Last,
-                     Default => 1.0,
-                     Blurb   => "The line width"
-                  );
+                 Gnew_Double
+                   (Name    => "width",
+                    Nick    => "width",
+                    Minimum => 0.0,
+                    Maximum => Gdouble'Last,
+                    Default => 1.0,
+                    Blurb   => "The line width");
             when Property_Line_Color =>
                return
-                  Gnew_Boxed
-                  (  Name       => "color",
-                     Boxed_Type => Gdk_Color_Type,
-                     Nick       => "color",
-                     Blurb      => "The line color"
-                  );
+                 Gnew_Boxed
+                   (Name       => "color",
+                    Boxed_Type => Gdk.Color.Gdk_Color_Type,
+                    Nick       => "color",
+                    Blurb      => "The line color");
             when Property_Line_Cap =>
                return
-                  Cairo.Line_Cap_Property.Gnew_Enum
-                  (  Name    => "line-cap",
-                     Nick    => "line cap",
-                     Default => Cairo_Line_Cap_Butt,
-                     Blurb   => "The cap style of the line"
-                  );
+                 Cairo.Line_Cap_Property.Gnew_Enum
+                   (Name    => "line-cap",
+                    Nick    => "line cap",
+                    Default => Cairo.Cairo_Line_Cap_Butt,
+                    Blurb   => "The cap style of the line");
             when Property_Scaled =>
                return
-                  Gnew_Boolean
-                  (  Name    => "scaled",
-                     Nick    => "scaled",
-                     Default => False,
-                     Blurb   => "The line size is changed when " &
-                                "the widget is resized"
-                  );
+                 Gnew_Boolean
+                   (Name    => "scaled",
+                    Nick    => "scaled",
+                    Default => False,
+                    Blurb   =>
+                       "The line size is changed when the widget is resized");
             when Property_Widened =>
                return
-                  Gnew_Boolean
-                  (  Name    => "widened",
-                     Nick    => "widened",
-                     Default => False,
-                     Blurb   => "The line width is changed " &
-                                "when the widget is resized"
-                  );
+                 Gnew_Boolean
+                   (Name    => "widened",
+                    Nick    => "widened",
+                    Default => False,
+                    Blurb   =>
+                       "The line width is changed when the widget is resized");
          end case;
       end if;
    end Get_Property_Specification;
 
-   function Get_Property_Value
-            (  Layer    : Line_Layer;
-               Property : Positive
-            )  return GValue is
+   overriding function Get_Property_Value
+     (Layer    : Line_Layer;
+      Property : Positive) return Glib.Values.GValue is
    begin
       if Property > Get_Properties_Number (Layer) then
          raise Constraint_Error;
       else
          declare
-            Value : GValue;
+            Value : Glib.Values.GValue;
          begin
             case Layer_Property'Val (Property - 1) is
                when Property_From_X =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.From.X);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.From.X);
                when Property_From_Y =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.From.Y);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.From.Y);
                when Property_To_X =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.To.X);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.To.X);
                when Property_To_Y =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.To.Y);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.To.Y);
                when Property_Line_Width =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Line.Width);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Line.Width);
                when Property_Line_Color =>
-                  Set_Value (Value, Layer.Line.Color);
+                  Gdk.Color.Set_Value (Value, Layer.Line.Color);
                when Property_Line_Cap =>
                   Cairo.Line_Cap_Property.Set_Enum
-                  (  Value,
-                     Layer.Line.Line_Cap
-                  );
+                    (Value,
+                     Layer.Line.Line_Cap);
                when Property_Scaled =>
-                  Init (Value, GType_Boolean);
-                  Set_Boolean (Value, Layer.Scaled);
+                  Glib.Values.Init (Value, GType_Boolean);
+                  Glib.Values.Set_Boolean (Value, Layer.Scaled);
                when Property_Widened =>
-                  Init (Value, GType_Boolean);
-                  Set_Boolean (Value, Layer.Widened);
+                  Glib.Values.Init (Value, GType_Boolean);
+                  Glib.Values.Set_Boolean (Value, Layer.Widened);
             end case;
             return Value;
          end;
       end if;
    end Get_Property_Value;
 
-   function Get_Scaled (Layer : Line_Layer) return Boolean is
+   overriding function Get_Scaled (Layer : Line_Layer) return Boolean is
    begin
       return Layer.Scaled;
    end Get_Scaled;
 
-   function Get_To (Layer : Line_Layer) return Cairo_Tuple is
+   function Get_To (Layer : Line_Layer) return Cairo.Ellipses.Cairo_Tuple is
    begin
       return Layer.To;
    end Get_To;
 
-   function Get_Widened (Layer : Line_Layer) return Boolean is
+   overriding function Get_Widened (Layer : Line_Layer) return Boolean is
    begin
       return Layer.Widened;
    end Get_Widened;
 
-   function Is_Updated (Layer : Line_Layer) return Boolean is
+   overriding function Is_Updated (Layer : Line_Layer) return Boolean is
    begin
       return Layer.Updated;
    end Is_Updated;
 
-   procedure Move
-             (  Layer  : in out Line_Layer;
-                Offset : Cairo_Tuple
-             )  is
+   overriding procedure Move
+     (Layer  : in out Line_Layer;
+      Offset : Cairo.Ellipses.Cairo_Tuple) is
    begin
       Layer.From.X  := Layer.From.X + Offset.X;
       Layer.From.Y  := Layer.From.Y + Offset.Y;
@@ -453,12 +436,12 @@ package body Gtk.Layered.Line is
       Layer.Updated := True;
    end Move;
 
-   procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Layer  : in out Line_Layer
-             )  is
-      From : Cairo_Tuple;
-      To   : Cairo_Tuple;
+   overriding procedure Restore
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Layer  : in out Line_Layer)
+   is
+      From : Cairo.Ellipses.Cairo_Tuple;
+      To   : Cairo.Ellipses.Cairo_Tuple;
       Line : Line_Parameters;
    begin
       Restore (Stream, From);
@@ -466,17 +449,15 @@ package body Gtk.Layered.Line is
       Restore (Stream, Line);
       Restore (Stream, Layer.Scaled, Layer.Widened);
       Set
-      (  Layer => Layer,
+        (Layer => Layer,
          From  => From,
          To    => To,
-         Line  => Line
-      );
+         Line  => Line);
    end Restore;
 
-   procedure Scale
-             (  Layer  : in out Line_Layer;
-                Factor : Gdouble
-             )  is
+   overriding procedure Scale
+     (Layer  : in out Line_Layer;
+      Factor : Gdouble) is
    begin
       Layer.From.X  := Layer.From.X * Factor;
       Layer.From.Y  := Layer.From.Y * Factor;
@@ -486,28 +467,25 @@ package body Gtk.Layered.Line is
    end Scale;
 
    procedure Set
-             (  Layer  : in out Line_Layer;
-                From   : Cairo_Tuple;
-                Angle  : Gdouble;
-                Length : Gdouble;
-                Line   : Line_Parameters
-             )  is
+     (Layer  : in out Line_Layer;
+      From   : Cairo.Ellipses.Cairo_Tuple;
+      Angle  : Gdouble;
+      Length : Gdouble;
+      Line   : Line_Parameters) is
    begin
       Set
-      (  Layer => Layer,
+        (Layer => Layer,
          Line  => Line,
          From  => From,
-         To    => (  X => From.X + Length * Cos (Angle),
-                     Y => From.Y + Length * Sin (Angle)
-      )           );
+         To    => (X => From.X + Length * Cos (Angle),
+                   Y => From.Y + Length * Sin (Angle)));
    end Set;
 
    procedure Set
-             (  Layer : in out Line_Layer;
-                From  : Cairo_Tuple;
-                To    : Cairo_Tuple;
-                Line  : Line_Parameters
-             )  is
+     (Layer : in out Line_Layer;
+      From  : Cairo.Ellipses.Cairo_Tuple;
+      To    : Cairo.Ellipses.Cairo_Tuple;
+      Line  : Line_Parameters) is
    begin
       if Line.Width <= 0.0 then
          raise Constraint_Error with "Non-positive line width";
@@ -518,65 +496,61 @@ package body Gtk.Layered.Line is
       Layer.Updated := True;
    end Set;
 
-   procedure Set_Property_Value
-             (  Layer    : in out Line_Layer;
-                Property : Positive;
-                Value    : GValue
-             )  is
+   overriding procedure Set_Property_Value
+     (Layer    : in out Line_Layer;
+      Property : Positive;
+      Value    : Glib.Values.GValue) is
    begin
       if Property > Get_Properties_Number (Layer) then
          raise Constraint_Error;
       else
          case Layer_Property'Val (Property - 1) is
             when Property_From_X =>
-               Layer.From.X := Get_Double (Value);
+               Layer.From.X := Glib.Values.Get_Double (Value);
             when Property_From_Y =>
-               Layer.From.Y := Get_Double (Value);
+               Layer.From.Y := Glib.Values.Get_Double (Value);
             when Property_To_X =>
-               Layer.To.X := Get_Double (Value);
+               Layer.To.X := Glib.Values.Get_Double (Value);
             when Property_To_Y =>
-               Layer.To.Y := Get_Double (Value);
+               Layer.To.Y := Glib.Values.Get_Double (Value);
             when Property_Line_Width =>
-               Layer.Line.Width := Get_Double (Value);
+               Layer.Line.Width := Glib.Values.Get_Double (Value);
                if Layer.Line.Width < 0.0 then
                   Layer.Line.Width := 0.0;
                end if;
             when Property_Line_Color =>
-               Layer.Line.Color := Get_Value (Value);
+               Layer.Line.Color := Gdk.Color.Get_Value (Value);
             when Property_Line_Cap =>
                Layer.Line.Line_Cap :=
-                  Cairo.Line_Cap_Property.Get_Enum (Value);
+                 Cairo.Line_Cap_Property.Get_Enum (Value);
             when Property_Scaled =>
-               Layer.Scaled := Get_Boolean (Value);
+               Layer.Scaled := Glib.Values.Get_Boolean (Value);
             when Property_Widened =>
-               Layer.Widened := Get_Boolean (Value);
+               Layer.Widened := Glib.Values.Get_Boolean (Value);
          end case;
       end if;
       Layer.Updated := True;
    end Set_Property_Value;
 
-   procedure Set_Scaled
-             (  Layer  : in out Line_Layer;
-                Scaled : Boolean
-             )  is
+   overriding procedure Set_Scaled
+     (Layer  : in out Line_Layer;
+      Scaled : Boolean) is
    begin
       Layer.Scaled  := Scaled;
       Layer.Updated := True;
    end Set_Scaled;
 
-   procedure Set_Widened
-             (  Layer   : in out Line_Layer;
-                Widened : Boolean
-             )  is
+   overriding procedure Set_Widened
+     (Layer   : in out Line_Layer;
+      Widened : Boolean) is
    begin
       Layer.Widened := Widened;
       Layer.Updated := True;
    end Set_Widened;
 
-   procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Layer  : Line_Layer
-             )  is
+   overriding procedure Store
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Layer  : Line_Layer) is
    begin
       Store (Stream, Layer.From);
       Store (Stream, Layer.To);

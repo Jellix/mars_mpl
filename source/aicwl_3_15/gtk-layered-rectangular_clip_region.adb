@@ -23,17 +23,14 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Ada.IO_Exceptions;           use Ada.IO_Exceptions;
 with Ada.Numerics;                use Ada.Numerics;
-with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
 with Cairo.Transformations;       use Cairo.Transformations;
 with Glib.Properties.Creation;    use Glib.Properties.Creation;
 with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
 
 with Ada.Unchecked_Deallocation;
-with Gtk.Layered.Elliptic_Shape_Property;
 
 package body Gtk.Layered.Rectangular_Clip_Region is
 
@@ -59,11 +56,11 @@ package body Gtk.Layered.Rectangular_Clip_Region is
              Rectangular_Clip_Region_Off_Layer_Ptr
           );
 
-   function Add
-            (  Under  : not null access Layer_Location'Class;
-               Stream : not null access Root_Stream_Type'Class
-            )  return not null access
-                      Rectangular_Clip_Region_Off_Layer is
+   overriding function Add
+     (Under  : not null access Layer_Location'Class;
+      Stream : not null access Ada.Streams.Root_Stream_Type'Class)
+      return not null access Rectangular_Clip_Region_Off_Layer
+   is
       Ptr : Rectangular_Clip_Region_Off_Layer_Ptr :=
                new Rectangular_Clip_Region_Off_Layer;
    begin
@@ -76,11 +73,11 @@ package body Gtk.Layered.Rectangular_Clip_Region is
          raise;
    end Add;
 
-   function Add
-            (  Under  : not null access Layer_Location'Class;
-               Stream : not null access Root_Stream_Type'Class
-            )  return not null access
-                      Rectangular_Clip_Region_On_Layer is
+   overriding function Add
+     (Under  : not null access Layer_Location'Class;
+      Stream : not null access Ada.Streams.Root_Stream_Type'Class)
+      return not null access Rectangular_Clip_Region_On_Layer
+   is
       Ptr : Rectangular_Clip_Region_On_Layer_Ptr :=
                new Rectangular_Clip_Region_On_Layer;
    begin
@@ -94,14 +91,14 @@ package body Gtk.Layered.Rectangular_Clip_Region is
    end Add;
 
    procedure Add_Rectangular_Clip_Region
-             (  Under          : not null access Layer_Location'Class;
-                Height         : Gdouble     := 1.0;
-                Width          : Gdouble     := 1.0;
-                Center         : Cairo_Tuple := (0.0, 0.0);
-                Rotation_Angle : Gdouble     := 0.0;
-                Corner_Radius  : Gdouble     := 0.0;
-                Scaled         : Boolean     := False
-             )  is
+     (Under          : not null access Layer_Location'Class;
+      Height         : Gdouble                    := 1.0;
+      Width          : Gdouble                    := 1.0;
+      Center         : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
+      Rotation_Angle : Gdouble                    := 0.0;
+      Corner_Radius  : Gdouble                    := 0.0;
+      Scaled         : Boolean                    := False)
+   is
       On_Ptr  : Rectangular_Clip_Region_On_Layer_Ptr :=
                    new Rectangular_Clip_Region_On_Layer;
       Off_Ptr : Rectangular_Clip_Region_Off_Layer_Ptr :=
@@ -119,8 +116,8 @@ package body Gtk.Layered.Rectangular_Clip_Region is
          Corner_Radius  => Corner_Radius
       );
       Add (Off_Ptr, Under);
-      On_Ptr.Off := Off_Ptr;
-      Off_Ptr.On := On_Ptr;
+      On_Ptr.all.Off := Off_Ptr;
+      Off_Ptr.all.On := On_Ptr;
    exception
       when others =>
          Free (On_Ptr);
@@ -129,15 +126,15 @@ package body Gtk.Layered.Rectangular_Clip_Region is
    end Add_Rectangular_Clip_Region;
 
    function Add_Rectangular_Clip_Region
-            (  Under          : not null access Layer_Location'Class;
-               Height         : Gdouble     := 1.0;
-               Width          : Gdouble     := 1.0;
-               Center         : Cairo_Tuple := (0.0, 0.0);
-               Rotation_Angle : Gdouble     := 0.0;
-               Corner_Radius  : Gdouble     := 0.0;
-               Scaled         : Boolean     := False
-            )  return not null access
-                      Rectangular_Clip_Region_On_Layer is
+     (Under          : not null access Layer_Location'Class;
+      Height         : Gdouble                    := 1.0;
+      Width          : Gdouble                    := 1.0;
+      Center         : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
+      Rotation_Angle : Gdouble                    := 0.0;
+      Corner_Radius  : Gdouble                    := 0.0;
+      Scaled         : Boolean                    := False)
+      return not null access Rectangular_Clip_Region_On_Layer
+   is
       On_Ptr  : Rectangular_Clip_Region_On_Layer_Ptr :=
                    new Rectangular_Clip_Region_On_Layer;
       Off_Ptr : Rectangular_Clip_Region_Off_Layer_Ptr :=
@@ -155,8 +152,8 @@ package body Gtk.Layered.Rectangular_Clip_Region is
          Corner_Radius  => Corner_Radius
       );
       Add (Off_Ptr, Under);
-      On_Ptr.Off := Off_Ptr;
-      Off_Ptr.On := On_Ptr;
+      On_Ptr.all.Off := Off_Ptr;
+      Off_Ptr.all.On := On_Ptr;
       return Layer'Unchecked_Access;
    exception
       when others =>
@@ -165,23 +162,24 @@ package body Gtk.Layered.Rectangular_Clip_Region is
          raise;
    end Add_Rectangular_Clip_Region;
 
-   procedure Draw
-             (  Layer   : in out Rectangular_Clip_Region_On_Layer;
-                Context : Cairo_Context;
-                Area    : Gdk_Rectangle
-             )  is
+   overriding procedure Draw
+     (Layer   : in out Rectangular_Clip_Region_On_Layer;
+      Context : Cairo.Cairo_Context;
+      Area    : Gdk_Rectangle)
+   is
       Half_Width  : Gdouble := Layer.Width  / 2.0;
       Half_Height : Gdouble := Layer.Height / 2.0;
       Radius      : Gdouble := Layer.Radius;
       T           : Translate_And_Rotate;
    begin
       Rotate (T, Layer.Angle);
-      Save (Context);
-      New_Path (Context);
+      Cairo.Save (Context);
+      Cairo.New_Path (Context);
       if Layer.Scaled then
          declare
-            Center : constant Cairo_Tuple := Layer.Widget.Get_Center;
-            Size   : constant Gdouble     := Layer.Widget.Get_Size;
+            Center : constant Cairo.Ellipses.Cairo_Tuple :=
+                       Layer.Widget.all.Get_Center;
+            Size   : constant Gdouble     := Layer.Widget.all.Get_Size;
          begin
             Half_Width  := Half_Width  * Size;
             Half_Height := Half_Height * Size;
@@ -245,51 +243,52 @@ package body Gtk.Layered.Rectangular_Clip_Region is
             Y       => Radius - Half_Height,
             Radius  => Radius,
             Angle1  => Pi,
-            Angle2  => 3.0 * Pi /2.0
+            Angle2  => 3.0 * Pi / 2.0
          );
       end if;
-      Close_Path (Context);
-      Clip (Context);
+      Cairo.Close_Path (Context);
+      Cairo.Clip (Context);
       Layer.Updated := False;
       Layer.Drawn   := True;
    end Draw;
 
-   procedure Draw
-             (  Layer   : in out Rectangular_Clip_Region_Off_Layer;
-                Context : Cairo_Context;
-                Area    : Gdk_Rectangle
-             )  is
+   overriding procedure Draw
+     (Layer   : in out Rectangular_Clip_Region_Off_Layer;
+      Context : Cairo.Cairo_Context;
+      Area    : Gdk_Rectangle)
+   is
+      pragma Unreferenced (Area);
    begin
-      if Layer.On /= null and then Layer.On.Drawn then
-         Layer.On.Drawn := False;
-         Restore (Context);
+      if Layer.On /= null and then Layer.On.all.Drawn then
+         Layer.On.all.Drawn := False;
+         Cairo.Restore (Context);
       end if;
    end Draw;
 
-   procedure Finalize
+   overriding procedure Finalize
              (  Layer : in out Rectangular_Clip_Region_On_Layer
              )  is
    begin
       if Layer.Off /= null then
-         Layer.Off.On := null;
+         Layer.Off.all.On := null;
          Free (Layer.Off);
       end if;
       Finalize (Abstract_Layer (Layer));
    end Finalize;
 
-   procedure Finalize
+   overriding procedure Finalize
              (  Layer : in out Rectangular_Clip_Region_Off_Layer
              )  is
    begin
       if Layer.On /= null then
-         Layer.On.Off := null;
+         Layer.On.all.Off := null;
          Layer.On     := null;
       end if;
       Finalize (Abstract_Layer (Layer));
    end Finalize;
 
    function Get_Center (Layer : Rectangular_Clip_Region_On_Layer)
-      return Cairo_Tuple is
+      return Cairo.Ellipses.Cairo_Tuple is
    begin
       return Layer.Center;
    end Get_Center;
@@ -306,9 +305,10 @@ package body Gtk.Layered.Rectangular_Clip_Region is
       return Layer.Radius;
    end Get_Corner_Radius;
 
-   function Get_Properties_Number
-            (  Layer : Rectangular_Clip_Region_On_Layer
-            )  return Natural is
+   overriding function Get_Properties_Number
+     (Layer : Rectangular_Clip_Region_On_Layer) return Natural
+   is
+      pragma Unreferenced (Layer);
    begin
       return
       (  Layer_Property'Pos (Layer_Property'Last)
@@ -317,14 +317,15 @@ package body Gtk.Layered.Rectangular_Clip_Region is
       );
    end Get_Properties_Number;
 
-   function Get_Properties_Number
-            (  Layer : Rectangular_Clip_Region_Off_Layer
-            )  return Natural is
+   overriding function Get_Properties_Number
+     (Layer : Rectangular_Clip_Region_Off_Layer) return Natural
+   is
+      pragma Unreferenced (Layer);
    begin
       return 0;
    end Get_Properties_Number;
 
-   function Get_Property_Specification
+   overriding function Get_Property_Specification
             (  Layer    : Rectangular_Clip_Region_On_Layer;
                Property : Positive
             )  return Param_Spec is
@@ -380,7 +381,7 @@ package body Gtk.Layered.Rectangular_Clip_Region is
                   Gnew_Double
                   (  Name    => "angle",
                      Nick    => "angle",
-                     Minimum =>-2.0 * Pi,
+                     Minimum => -2.0 * Pi,
                      Maximum => 2.0 * Pi,
                      Default => 0.0,
                      Blurb   => "The angle of the size " &
@@ -411,7 +412,7 @@ package body Gtk.Layered.Rectangular_Clip_Region is
       end if;
    end Get_Property_Specification;
 
-   function Get_Property_Specification
+   overriding function Get_Property_Specification
             (  Layer    : Rectangular_Clip_Region_Off_Layer;
                Property : Positive
             )  return Param_Spec is
@@ -421,50 +422,49 @@ package body Gtk.Layered.Rectangular_Clip_Region is
       return Result;
    end Get_Property_Specification;
 
-   function Get_Property_Value
-            (  Layer    : Rectangular_Clip_Region_On_Layer;
-               Property : Positive
-            )  return GValue is
+   overriding function Get_Property_Value
+     (Layer    : Rectangular_Clip_Region_On_Layer;
+      Property : Positive) return Glib.Values.GValue is
    begin
       if Property > Get_Properties_Number (Layer) then
          raise Constraint_Error;
       else
          declare
-            Value : GValue;
+            Value : Glib.Values.GValue;
          begin
             case Layer_Property'Val (Property - 1) is
                when Property_Center_X =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Center.X);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Center.X);
                when Property_Center_Y =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Center.Y);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Center.Y);
                when Property_Height =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Height);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Height);
                when Property_Width =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Width);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Width);
                when Property_Radius =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Radius);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Radius);
                when Property_Angle =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Angle);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Angle);
                when Property_Scaled =>
-                  Init (Value, GType_Boolean);
-                  Set_Boolean (Value, Layer.Scaled);
+                  Glib.Values.Init (Value, GType_Boolean);
+                  Glib.Values.Set_Boolean (Value, Layer.Scaled);
             end case;
             return Value;
          end;
       end if;
    end Get_Property_Value;
 
-   function Get_Property_Value
-            (  Layer    : Rectangular_Clip_Region_Off_Layer;
-               Property : Positive
-            )  return GValue is
-      Result : GValue;
+   overriding function Get_Property_Value
+     (Layer    : Rectangular_Clip_Region_Off_Layer;
+      Property : Positive) return Glib.Values.GValue
+   is
+      Result : Glib.Values.GValue;
    begin
       raise Constraint_Error;
       return Result;
@@ -477,7 +477,7 @@ package body Gtk.Layered.Rectangular_Clip_Region is
       return Layer.Angle;
    end Get_Rotation_Angle;
 
-   function Get_Scaled (Layer : Rectangular_Clip_Region_On_Layer)
+   overriding function Get_Scaled (Layer : Rectangular_Clip_Region_On_Layer)
       return Boolean is
    begin
       return Layer.Scaled;
@@ -489,46 +489,47 @@ package body Gtk.Layered.Rectangular_Clip_Region is
       return Layer.Width;
    end Get_Width;
 
-   function Is_Updated (Layer : Rectangular_Clip_Region_On_Layer)
+   overriding function Is_Updated (Layer : Rectangular_Clip_Region_On_Layer)
       return Boolean is
    begin
       return Layer.Updated;
    end Is_Updated;
 
-   function Is_Updated (Layer : Rectangular_Clip_Region_Off_Layer)
-      return Boolean is
+   overriding function Is_Updated
+     (Layer : Rectangular_Clip_Region_Off_Layer) return Boolean
+   is
+      pragma Unreferenced (Layer);
    begin
       return False;
    end Is_Updated;
 
-   procedure Move
-             (  Layer  : in out Rectangular_Clip_Region_On_Layer;
-                Offset : Cairo_Tuple
-             )  is
+   overriding procedure Move
+     (Layer  : in out Rectangular_Clip_Region_On_Layer;
+      Offset : Cairo.Ellipses.Cairo_Tuple) is
    begin
       Layer.Center.X := Layer.Center.X + Offset.X;
       Layer.Center.Y := Layer.Center.Y + Offset.Y;
       Layer.Updated  := True;
    end Move;
 
-   procedure Remove
+   overriding procedure Remove
              (  Layer : in out Rectangular_Clip_Region_On_Layer
              )  is
    begin
       if Layer.Off /= null then
-         Layer.Off.On := null;
+         Layer.Off.all.On := null;
          Free (Layer.Off);
       end if;
       Remove (Abstract_Layer (Layer));
    end Remove;
 
-   procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Layer  : in out Rectangular_Clip_Region_On_Layer
-             )  is
+   overriding procedure Restore
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Layer  : in out Rectangular_Clip_Region_On_Layer)
+   is
       Height : Gdouble;
       Width  : Gdouble;
-      Center : Cairo_Tuple;
+      Center : Cairo.Ellipses.Cairo_Tuple;
       Angle  : Gdouble;
       Radius : Gdouble;
    begin
@@ -548,7 +549,7 @@ package body Gtk.Layered.Rectangular_Clip_Region is
       );
    end Restore;
 
-   procedure Scale
+   overriding procedure Scale
              (  Layer  : in out Rectangular_Clip_Region_On_Layer;
                 Factor : Gdouble
              )  is
@@ -574,13 +575,12 @@ package body Gtk.Layered.Rectangular_Clip_Region is
    end Scale;
 
    procedure Set
-             (  Layer   : in out Rectangular_Clip_Region_On_Layer;
-                Height         : Gdouble;
-                Width          : Gdouble;
-                Center         : Cairo_Tuple;
-                Rotation_Angle : Gdouble;
-                Corner_Radius  : Gdouble
-             )  is
+     (Layer   : in out Rectangular_Clip_Region_On_Layer;
+      Height         : Gdouble;
+      Width          : Gdouble;
+      Center         : Cairo.Ellipses.Cairo_Tuple;
+      Rotation_Angle : Gdouble;
+      Corner_Radius  : Gdouble) is
    begin
       if 2.0 * Corner_Radius > Height then
          raise Constraint_Error with
@@ -601,32 +601,31 @@ package body Gtk.Layered.Rectangular_Clip_Region is
       Layer.Updated := True;
    end Set;
 
-   procedure Set_Property_Value
-             (  Layer    : in out Rectangular_Clip_Region_On_Layer;
-                Property : Positive;
-                Value    : GValue
-             )  is
+   overriding procedure Set_Property_Value
+     (Layer    : in out Rectangular_Clip_Region_On_Layer;
+      Property : Positive;
+      Value    : Glib.Values.GValue) is
    begin
       if Property > Get_Properties_Number (Layer) then
          raise Constraint_Error;
       else
          case Layer_Property'Val (Property - 1) is
             when Property_Center_X =>
-               Layer.Center.X := Get_Double (Value);
+               Layer.Center.X := Glib.Values.Get_Double (Value);
             when Property_Center_Y =>
-               Layer.Center.Y := Get_Double (Value);
+               Layer.Center.Y := Glib.Values.Get_Double (Value);
             when Property_Height =>
-               Layer.Height := Get_Double (Value);
+               Layer.Height := Glib.Values.Get_Double (Value);
                if Layer.Height < 0.0 then
                   Layer.Height := 0.0;
                end if;
             when Property_Width =>
-               Layer.Width := Get_Double (Value);
+               Layer.Width := Glib.Values.Get_Double (Value);
                if Layer.Width < 0.0 then
                   Layer.Width := 0.0;
                end if;
             when Property_Radius =>
-               Layer.Radius := Get_Double (Value);
+               Layer.Radius := Glib.Values.Get_Double (Value);
                if Layer.Radius < 0.0 then
                   Layer.Radius := 0.0;
                elsif 2.0 * Layer.Radius > Layer.Height then
@@ -635,40 +634,37 @@ package body Gtk.Layered.Rectangular_Clip_Region is
                   Layer.Radius := Layer.Width / 2.0;
                end if;
             when Property_Angle =>
-               Layer.Angle := Get_Double (Value);
-               if Layer.Angle not in -2.0 * Pi..2.0 * Pi then
+               Layer.Angle := Glib.Values.Get_Double (Value);
+               if Layer.Angle not in -2.0 * Pi .. 2.0 * Pi then
                   Layer.Angle :=
                      Gdouble'Remainder (Layer.Angle, 2.0 * Pi);
                end if;
             when Property_Scaled =>
-               Layer.Scaled := Get_Boolean (Value);
+               Layer.Scaled := Glib.Values.Get_Boolean (Value);
          end case;
       end if;
       Layer.Updated := True;
    end Set_Property_Value;
 
-   procedure Set_Property_Value
-             (  Layer    : in out Rectangular_Clip_Region_Off_Layer;
-                Property : Positive;
-                Value    : GValue
-             )  is
+   overriding procedure Set_Property_Value
+     (Layer    : in out Rectangular_Clip_Region_Off_Layer;
+      Property : Positive;
+      Value    : Glib.Values.GValue) is
    begin
       raise Constraint_Error;
    end Set_Property_Value;
 
-   procedure Set_Scaled
-             (  Layer  : in out Rectangular_Clip_Region_On_Layer;
-                Scaled : Boolean
-             )  is
+   overriding procedure Set_Scaled
+     (Layer  : in out Rectangular_Clip_Region_On_Layer;
+      Scaled : Boolean) is
    begin
       Layer.Scaled  := Scaled;
       Layer.Updated := True;
    end Set_Scaled;
 
-   procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Layer  : Rectangular_Clip_Region_On_Layer
-             )  is
+   overriding procedure Store
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Layer  : Rectangular_Clip_Region_On_Layer) is
    begin
       Store (Stream, Layer.Height);
       Store (Stream, Layer.Width);

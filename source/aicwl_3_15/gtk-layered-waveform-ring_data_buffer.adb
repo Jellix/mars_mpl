@@ -23,7 +23,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 with Ada.Exceptions;     use Ada.Exceptions;
 with Ada.IO_Exceptions;  use Ada.IO_Exceptions;
@@ -38,16 +38,15 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
 
    procedure Free is
       new Ada.Unchecked_Deallocation
-          (  Gtk_Wavefrom_Ring_Data_Buffer_Record'Class,
-             Gtk_Wavefrom_Ring_Data_Buffer
-          );
+       (Gtk_Wavefrom_Ring_Data_Buffer_Record'Class,
+        Gtk_Wavefrom_Ring_Data_Buffer);
 
    function Where (Name : String) return String is
    begin
       return " in Gtk.Layered.Waveform.Ring_Data_Buffer." & Name;
    end Where;
 
-   procedure Backward
+   overriding procedure Backward
              (  Source : in out Source_Scanner;
                 T      : in out X_Axis;
                 V      : out Y_Axis
@@ -85,7 +84,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
       Source.T := T;
    end Backward;
 
-   procedure Backward
+   overriding procedure Backward
              (  Source : in out Source_Scanner;
                 T      : in out X_Axis;
                 V      : out Y_Axis;
@@ -128,7 +127,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
          Got_It := False;
    end Backward;
 
-   procedure Connected
+   overriding procedure Connected
              (  Source : in out Gtk_Wavefrom_Ring_Data_Buffer_Record;
                 Layer  : in out Waveform_Layer'Class
              )  is
@@ -138,7 +137,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
             Old_Ptr : Layers_List_Ptr := Source.Layers.Ptr;
             Layers  : Layers_List renames Source.Layers.Ptr.all;
          begin
-            for Index in 1..Source.Layers.Connected loop
+            for Index in 1 .. Source.Layers.Connected loop
                if Layers (Index) = Layer'Unchecked_Access then
                   return;
                end if;
@@ -149,61 +148,61 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
                       (  1
                       .. (Source.Layers.Connected * 3) / 2
                       );
-               Source.Layers.Ptr (1..Source.Layers.Connected) :=
-                  Layers (1..Source.Layers.Connected);
+               Source.Layers.Ptr.all (1 .. Source.Layers.Connected) :=
+                 Layers (1 .. Source.Layers.Connected);
                Free (Old_Ptr);
             end if;
          end;
       end if;
       Source.Layers.Connected := Source.Layers.Connected + 1;
-      Source.Layers.Ptr (Source.Layers.Connected) :=
+      Source.Layers.Ptr.all (Source.Layers.Connected) :=
          Layer'Unchecked_Access;
    end Connected;
 
-   function Create
+   overriding function Create
             (  Source : not null access
                         Gtk_Wavefrom_Ring_Data_Buffer_Record
             )  return Waveform_Data_Scanner'Class is
    begin
-      if Source.Length > 0 then
+      if Source.all.Length > 0 then
          return Source_Scanner'
-                (  Index  => Source.First,
+                (  Index  => Source.all.First,
                    Source => Source.all'Unchecked_Access,
-                   T      => Source.Data
+                   T      => Source.all.Data
                              (  Positive
-                                (  (Source.First mod Source.Wrap)
+                                (  (Source.all.First mod Source.all.Wrap)
                                 +  1
                              )  ) .T
                 );
       else
          return Source_Scanner'
-                (  Index  => Source.First,
+                (  Index  => Source.all.First,
                    Source => Source.all'Unchecked_Access,
                    T      => X_Axis'Last
                 );
       end if;
    end Create;
 
-   procedure Disconnected
+   overriding procedure Disconnected
              (  Source : in out Gtk_Wavefrom_Ring_Data_Buffer_Record;
                 Layer  : in out Waveform_Layer'Class
              )  is
       Layers : Layers_List renames Source.Layers.Ptr.all;
    begin
       if Source.Layers.Connected > 0 then
-         for Index in reverse 1..Source.Layers.Connected loop
+         for Index in reverse 1 .. Source.Layers.Connected loop
             if Layers (Index) = Layer'Unchecked_Access then
                Layers (Index) := null;
                Source.Layers.Connected := Source.Layers.Connected - 1;
-               Layers (Index..Source.Layers.Connected) :=
-                  Layers (Index + 1..Source.Layers.Connected + 1);
+               Layers (Index .. Source.Layers.Connected) :=
+                 Layers (Index + 1 .. Source.Layers.Connected + 1);
                return;
             end if;
          end loop;
       end if;
    end Disconnected;
 
-   procedure Erase
+   overriding procedure Erase
              (  Source : in out Gtk_Wavefrom_Ring_Data_Buffer_Record
              )  is
       First, Last : Point;
@@ -222,21 +221,20 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
       end if;
    end Erase;
 
-   procedure Finalize (Object : in out List) is
+   overriding procedure Finalize (Object : in out List) is
    begin
       while Object.Connected > 0 loop
-         Object.Ptr (Object.Connected).Set_Source;
+         Object.Ptr.all (Object.Connected).all.Set_Source;
       end loop;
       Free (Object.Ptr);
    exception
       when Error : others =>
          Log
-         (  GtkAda_Contributions_Domain,
+           (Gtk.Missed.GtkAda_Contributions_Domain,
             Log_Level_Critical,
-            (  "Fault: "
+            "Fault: "
             &  Exception_Information (Error)
-            &  Where ("Finalize")
-         )  );
+            &  Where ("Finalize"));
    end Finalize;
 
    procedure Find
@@ -283,7 +281,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
       end loop;
    end Find;
 
-   procedure First
+   overriding procedure First
              (  Source : in out Source_Scanner;
                 T      : out X_Axis;
                 V      : out Y_Axis
@@ -306,7 +304,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
       end loop;
    end First;
 
-   procedure First
+   overriding procedure First
              (  Source : in out Source_Scanner;
                 T      : out X_Axis;
                 V      : out Y_Axis;
@@ -330,7 +328,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
       end loop;
    end First;
 
-   procedure Forward
+   overriding procedure Forward
              (  Source : in out Source_Scanner;
                 T      : in out X_Axis;
                 V      : out Y_Axis
@@ -365,7 +363,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
       Source.T := T;
    end Forward;
 
-   procedure Forward
+   overriding procedure Forward
              (  Source : in out Source_Scanner;
                 T      : in out X_Axis;
                 V      : out Y_Axis;
@@ -416,7 +414,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
       end if;
    end Get;
 
-   function Get_Source
+   overriding function Get_Source
             (  Scanner : Source_Scanner
             )  return not null access Waveform_Data_Source'Class is
    begin
@@ -453,11 +451,11 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
       return
       (  Source.Length > 0
       and then
-         Index in Source.First..Source.First + Source.Length - 1
+         Index in Source.First .. Source.First + Source.Length - 1
       );
    end Is_In;
 
-   function Is_In
+   overriding function Is_In
             (  Source : Source_Scanner;
                T      : X_Axis
             )  return Boolean is
@@ -480,7 +478,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
       end loop;
    end Is_In;
 
-   procedure Last
+   overriding procedure Last
              (  Source : in out Source_Scanner;
                 T      : out X_Axis;
                 V      : out Y_Axis
@@ -503,7 +501,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
       end loop;
    end Last;
 
-   procedure Last
+   overriding procedure Last
              (  Source : in out Source_Scanner;
                 T      : out X_Axis;
                 V      : out Y_Axis;
@@ -533,37 +531,35 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
                 To     : X_Axis
              )  is
    begin
-      if (  Source.Layers.Connected > 0
-         and then
-            Source.Layers.Ptr /= null
-         )
+      if
+        Source.Layers.Connected > 0 and then
+        Source.Layers.Ptr /= null
       then
          declare
             Layers : Layers_List renames Source.Layers.Ptr.all;
          begin
-            for Index in 1..Source.Layers.Connected loop
+            for Index in 1 .. Source.Layers.Connected loop
                declare
                   Layer : constant Waveform_Layer_Ptr := Layers (Index);
                begin
                   if Layer /= null then
-                     Layer.Changed (From, To);
+                     Layer.all.Changed (From, To);
                   end if;
                exception
                   when Error : others =>
                      Log
-                     (  GtkAda_Contributions_Domain,
+                       (Gtk.Missed.GtkAda_Contributions_Domain,
                         Log_Level_Critical,
-                        (  "Fault: "
+                        "Fault: "
                         &  Exception_Information (Error)
-                        &  Where ("Notify")
-                     )  );
+                        &  Where ("Notify"));
                end;
             end loop;
          end;
       end if;
    end Notify;
 
-   procedure Put
+   overriding procedure Put
              (  Source : in out Gtk_Wavefrom_Ring_Data_Buffer_Record;
                 T      : X_Axis;
                 V      : Y_Axis
@@ -576,7 +572,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
          This := Data (Positive (Index mod Source.Wrap + 1));
          if This.T <= T then
             if This.T = T then
-                -- Replace this point
+               -- Replace this point
                if This.V /= V then
                   Data (Positive (Index mod Source.Wrap + 1)).V := V;
                   Source.Notify (T, T);

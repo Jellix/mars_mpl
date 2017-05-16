@@ -23,14 +23,14 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 separate (Gtk.Layered.Waveform)
-   procedure Sample_Lines
-             (  Layer  : in out Waveform_Layer;
-                Data   : in out Line_Method_Data;
-                X1, X2 : Horizontal_Offset
-             )  is
+procedure Sample_Lines
+  (Layer  : in out Waveform_Layer;
+   Data   : in out Line_Method_Data;
+   X1, X2 : Horizontal_Offset)
+is
    function To_X (T : X_Axis) return Horizontal_Offset is
       pragma Inline (To_X);
    begin
@@ -38,13 +38,13 @@ separate (Gtk.Layered.Waveform)
    end To_X;
 
    procedure Set_Interval_Bounds
-             (  T     : X_Axis;
-                X     : out Horizontal_Offset;
-                Right : out X_Axis
-             )  is
+     (T     : X_Axis;
+      X     : out Horizontal_Offset;
+      Right : out X_Axis)
+   is
       pragma Inline (Set_Interval_Bounds);
       Offset : constant X_Axis :=
-                        X_Axis'Floor ((T - Layer.T1) / Layer.dT);
+                 X_Axis'Floor ((T - Layer.T1) / Layer.dT);
    begin
       Right := (Offset + 1.0) * Layer.dT + Layer.T1;
       X := Horizontal_Offset (Offset) + X1;
@@ -53,9 +53,9 @@ separate (Gtk.Layered.Waveform)
    procedure Add_Point (X : Horizontal_Offset; Y : Y_Axis) is
       pragma Inline (Add_Point);
       Index : constant Natural :=
-                 (Data.First + Data.Count) mod Data.Points'Length;
+                (Data.First + Data.Count) mod Data.Points'Length;
    begin
-      Data.Points (Index) := (X, Y);
+      Data.Points.all (Index) := (X, Y);
       if Data.Count + 1 < Data.Points'Length then
          Data.Count := Data.Count + 1;
          if 0 /= (Tracing_Mode and Trace_Waveform) then ----------------
@@ -65,26 +65,25 @@ separate (Gtk.Layered.Waveform)
          Data.First := Data.First + 1;
          if 0 /= (Tracing_Mode and Trace_Waveform) then ----------------
             Trace_Line
-            (  Layer'Address,
-               (  " Buffer overflow"
-               &  Integer'Image (Data.Points'Length)
-               &  ", width"
-               &  Horizontal_Offset'Image (X2 - X1 + 1)
-               &  ", @"
-               &  Horizontal_Offset'Image (X)
-               &  ", count"
-               &  Integer'Image (Data.Count)
-            )  );
+              (Layer'Address,
+               (" Buffer overflow"
+                &  Integer'Image (Data.Points'Length)
+                &  ", width"
+                &  Horizontal_Offset'Image (X2 - X1 + 1)
+                &  ", @"
+                &  Horizontal_Offset'Image (X)
+                &  ", count"
+                &  Integer'Image (Data.Count)));
             Dump (Layer, Data.Points.all, Index);
          end if; -------------------------------------------------------
       end if;
    end Add_Point;
 
    procedure Add
-             (  X           : Horizontal_Offset;
-                Left, Right : Y_Axis;
-                Min,  Max   : Y_Axis
-             )  is
+     (X           : Horizontal_Offset;
+      Left, Right : Y_Axis;
+      Min,  Max   : Y_Axis)
+   is
       pragma Inline (Add);
    begin
       if Min < Y_Axis'Min (Left, Right) then
@@ -133,38 +132,35 @@ separate (Gtk.Layered.Waveform)
       if 0 /= (Tracing_Mode and Trace_Waveform) then -------------------
          if Data.Last_Count > 0 then
             Trace
-            (  Layer'Address,
-               (  " >"
-               &  Integer'Image (Data.Last_Count)
-               &  " |"
-               &  Integer'Image (Data.Count)
-               &  " : "
-               &  Edit.Image (Gdouble (Data.Last_T))
-               &  " L"
-               &  Horizontal_Offset'Image (To_X (Layer.Last_T1))
-               &  " = "
-               &  Edit.Image (Gdouble (Layer.Last_T1))
-            )  );
+              (Layer'Address,
+               (" >"
+                &  Integer'Image (Data.Last_Count)
+                &  " |"
+                &  Integer'Image (Data.Count)
+                &  " : "
+                &  Edit.Image (Gdouble (Data.Last_T))
+                &  " L"
+                &  Horizontal_Offset'Image (To_X (Layer.Last_T1))
+                &  " = "
+                &  Edit.Image (Gdouble (Layer.Last_T1))));
          else
             Trace
-            (  Layer'Address,
-               (  " >"
-               &  Integer'Image (Data.Last_Count)
-               &  " : "
-               &  Edit.Image (Gdouble (Data.Last_T))
-               &  " |"
-               &  Integer'Image (Data.Count)
-            )  );
+              (Layer'Address,
+               (" >"
+                &  Integer'Image (Data.Last_Count)
+                &  " : "
+                &  Edit.Image (Gdouble (Data.Last_T))
+                &  " |"
+                &  Integer'Image (Data.Count)));
          end if;
       end if; ----------------------------------------------------------
       if Layer.Amplifier_Object /= null then
-         Layer.Amplifier_Object.Add_Range
-         (  Layer => Layer,
+         Layer.Amplifier_Object.all.Add_Range
+           (Layer => Layer,
             From  => Layer.T1,
             To    => Layer.T2,
             Lower => Total_Min,
-            Upper => Total_Max
-         );
+            Upper => Total_Max);
       end if;
    end Done;
 
@@ -184,25 +180,22 @@ begin
       Length : constant Positive := 4 * Positive (X2 - X1 + 2);
    begin
       if Data.Points = null then
-         Data.Points := new Points_Array (0..Length);
+         Data.Points := new Points_Array (0 .. Length);
          Data.Last_T := X_Axis'First;
       elsif Data.Points'Length < Length then
          Free (Data.Points);
-         Data.Points := new Points_Array (0..Length);
+         Data.Points := new Points_Array (0 .. Length);
          Data.Last_T := X_Axis'First;
       end if;
    end;
    --
    -- Finding the leftmost values
    --
-   if (  Layer.Valid
-      and then
-         Layer.Method = Resample_New_And_Stroke
-      and then
-         Data.Last_T in Layer.T1..Layer.T2 + Layer.dT
-      and then
-         Layer.Data.Is_In (Data.Last_T)
-      )
+   if
+     Layer.Valid and then
+     Layer.Method = Resample_New_And_Stroke and then
+     Data.Last_T in Layer.T1 .. Layer.T2 + Layer.dT and then
+     Layer.Data.all.Is_In (Data.Last_T)
    then
       Data.Count := Data.Last_Count;
       --
@@ -212,24 +205,21 @@ begin
          Width : constant X_Axis := Layer.T2 - Layer.T1;
          Shift : Horizontal_Offset;
          Index : Natural := -- Index of the last sampled point
-                 (  (Data.First + Data.Last_Count - 1)
-                 mod
-                    Data.Points'Length
-                 );
+                   ((Data.First + Data.Last_Count - 1) mod Data.Points'Length);
       begin
          Layer.T1 := Layer.T1 - X_Axis'Remainder (Layer.T1, Layer.dT);
          Layer.T2 := Layer.T1 + Width;
          Shift :=
-            Horizontal_Offset ((Layer.T1 - Layer.Last_T1) / Layer.dT);
+           Horizontal_Offset ((Layer.T1 - Layer.Last_T1) / Layer.dT);
          --
          -- Adjusting  the time margins  to make the shift a multiple of
          -- the time step
          --
          T := Data.Last_T;
-         V := Data.Points (Index).Y;
+         V := Data.Points.all (Index).Y;
          loop
             declare
-               This : Point_Data renames Data.Points (Index);
+               This : Point_Data renames Data.Points.all (Index);
             begin
                Total_Min := Y_Axis'Min (Total_Min, This.Y);
                Total_Max := Y_Axis'Max (Total_Max, This.Y);
@@ -245,70 +235,66 @@ begin
          end loop;
          Data.Count := Data.Count - Data.Last_Count;
          Data.First :=
-            (Data.First + Data.Last_Count) mod Data.Points'Length;
+           (Data.First + Data.Last_Count) mod Data.Points'Length;
          Data.Last_Count := Data.Count;
          if 0 /= (Tracing_Mode and Trace_Waveform) then ----------------
             Trace
-            (  Layer'Address,
-               (  "T1 "
-               &  Edit.Image (Gdouble (Layer.T1))
-               &  " L"
-               &  Horizontal_Offset'Image (To_X (T))
-               &  " = "
-               &  Edit.Image (Gdouble (T))
-               &  " shift"
-               &  Horizontal_Offset'Image (Shift)
-               &  " = "
-               &  Edit.Image (Gdouble (X_Axis (Shift) * Layer.dT))
-               &  ", count"
-               &  Integer'Image (Data.Count)
-               &  " @"
-               &  Integer'Image (Data.First)
-               &  ">|"
-            )  );
-            for Item in Index..Index + Data.Count - 1 loop
+              (Layer'Address,
+               ("T1 "
+                &  Edit.Image (Gdouble (Layer.T1))
+                &  " L"
+                &  Horizontal_Offset'Image (To_X (T))
+                &  " = "
+                &  Edit.Image (Gdouble (T))
+                &  " shift"
+                &  Horizontal_Offset'Image (Shift)
+                &  " = "
+                &  Edit.Image (Gdouble (X_Axis (Shift) * Layer.dT))
+                &  ", count"
+                &  Integer'Image (Data.Count)
+                &  " @"
+                &  Integer'Image (Data.First)
+                &  ">|"));
+            for Item in Index .. Index + Data.Count - 1 loop
                Dump
-               (  Layer,
+                 (Layer,
                   Data.Points.all,
-                  (Item + Data.Points'Length) mod Data.Points'Length
-               );
+                  (Item + Data.Points'Length) mod Data.Points'Length);
             end loop;
          end if; -------------------------------------------------------
       end;
       Left := (T, V);
-      Layer.Data.Forward (T, V, Got_It);
+      Layer.Data.all.Forward (T, V, Got_It);
       if not Got_It then -- No new points
          Layer.Sampled := True;
          Layer.Valid   := Data.Last_Count > 0;
          Layer.Last_T1 := Layer.T1;
          if 0 /= (Tracing_Mode and Trace_Waveform) then ----------------
             Trace
-            (  Layer'Address,
-               (  " >"
-               &  Integer'Image (Data.Last_Count)
-               &  " |"
-               &  Integer'Image (Data.Count)
-               &  " : "
-               &  Edit.Image (Gdouble (Data.Last_T))
-               &  " L"
-               &  Horizontal_Offset'Image (To_X (Layer.Last_T1))
-               &  " = "
-               &  Edit.Image (Gdouble (Layer.Last_T1))
-            )  );
+              (Layer'Address,
+               (" >"
+                &  Integer'Image (Data.Last_Count)
+                &  " |"
+                &  Integer'Image (Data.Count)
+                &  " : "
+                &  Edit.Image (Gdouble (Data.Last_T))
+                &  " L"
+                &  Horizontal_Offset'Image (To_X (Layer.Last_T1))
+                &  " = "
+                &  Edit.Image (Gdouble (Layer.Last_T1))));
          end if; -------------------------------------------------------
          return;
       end if;
       if 0 /= (Tracing_Mode and Trace_Waveform) then -------------------
          Trace
-         (  Layer'Address,
-            (  " |<"
-            &  Integer'Image (Data.First)
-            &  " T"
-            &  Horizontal_Offset'Image (To_X (T))
-            &  " = "
-            &  Edit.Image (Gdouble (T))
-            &  " >|"
-         )  );
+           (Layer'Address,
+            (" |<"
+             &  Integer'Image (Data.First)
+             &  " T"
+             &  Horizontal_Offset'Image (To_X (T))
+             &  " = "
+             &  Edit.Image (Gdouble (T))
+             &  " >|"));
       end if; ----------------------------------------------------------
       if T >= Layer.T2 then
          --
@@ -319,9 +305,8 @@ begin
                Add_Point (To_X (Layer.T2), Left.V);
             when Linear =>
                Right :=
-                  (  T => Layer.T2,
-                     V => Interpolate (Layer.T2, Left, (T, V))
-                  );
+                 (T => Layer.T2,
+                  V => Interpolate (Layer.T2, Left, (T, V)));
                Add_Point (To_X (Layer.T2), Right.V);
                Total_Min := Y_Axis'Min (Total_Min, Right.V);
                Total_Max := Y_Axis'Max (Total_Max, Right.V);
@@ -346,62 +331,57 @@ begin
          if 0 /= (Tracing_Mode and Trace_Waveform) then ----------------
             if not Layer.Valid then
                Trace
-               (  Layer'Address,
-                  (  "sample [not Valid] step "
-                  &  Edit.Image (Gdouble (Layer.dT))
-                  &  ">|"
-               )  );
-            elsif Data.Last_T not in Layer.T1..Layer.T2 + Layer.dT then
+                 (Layer'Address,
+                  ("sample [not Valid] step "
+                   &  Edit.Image (Gdouble (Layer.dT))
+                   &  ">|"));
+            elsif Data.Last_T not in Layer.T1 .. Layer.T2 + Layer.dT then
                Trace
-               (  Layer'Address,
-                  (  "sample [Last_T "
-                  &  Edit.Image (Gdouble (Data.Last_T))
-                  &  " out "
-                  &  Edit.Image (Gdouble (Layer.T1))
-                  &  ".."
-                  &  Edit.Image (Gdouble (Layer.T2 + Layer.dT))
-                  &  "] step "
-                  &  Edit.Image (Gdouble (Layer.dT))
-                  &  ">|"
-               )  );
-            elsif not Layer.Data.Is_In (Data.Last_T) then
+                 (Layer'Address,
+                  ("sample [Last_T "
+                   &  Edit.Image (Gdouble (Data.Last_T))
+                   &  " out "
+                   &  Edit.Image (Gdouble (Layer.T1))
+                   &  ".."
+                   &  Edit.Image (Gdouble (Layer.T2 + Layer.dT))
+                   &  "] step "
+                   &  Edit.Image (Gdouble (Layer.dT))
+                   &  ">|"));
+            elsif not Layer.Data.all.Is_In (Data.Last_T) then
                declare
                   T1, T2 : X_Axis;
                   V1, V2 : Y_Axis;
                begin
-                  Layer.Data.First (T1, V1, Got_It);
+                  Layer.Data.all.First (T1, V1, Got_It);
                   if Got_It then
-                     Layer.Data.Last  (T2, V2, Got_It);
+                     Layer.Data.all.Last  (T2, V2, Got_It);
                   end if;
                   if Got_It then
                      Trace
-                     (  Layer'Address,
-                        (  "sample [Last_T "
-                        &  Edit.Image (Gdouble (Data.Last_T))
-                        &  " not in "
-                        &  Edit.Image (Gdouble (T1))
-                        &  ".."
-                        &  Edit.Image (Gdouble (T2))
-                        &  ">|"
-                     )  );
+                       (Layer'Address,
+                        ("sample [Last_T "
+                         &  Edit.Image (Gdouble (Data.Last_T))
+                         &  " not in "
+                         &  Edit.Image (Gdouble (T1))
+                         &  ".."
+                         &  Edit.Image (Gdouble (T2))
+                         &  ">|"));
                   else
                      Trace
-                     (  Layer'Address,
-                        (  "sample [Last_T "
-                        &  Edit.Image (Gdouble (Data.Last_T))
-                        &  " not in empty>|"
-                     )  );
+                       (Layer'Address,
+                        ("sample [Last_T "
+                         &  Edit.Image (Gdouble (Data.Last_T))
+                         &  " not in empty>|"));
                   end if;
                end;
             else
                Trace
-               (  Layer'Address,
-                  (  "sample [Last_T "
-                  &  Edit.Image (Gdouble (Data.Last_T))
-                  &  "] step "
-                  &  Edit.Image (Gdouble (Layer.dT))
-                  &  ">|"
-               )  );
+                 (Layer'Address,
+                  ("sample [Last_T "
+                   &  Edit.Image (Gdouble (Data.Last_T))
+                   &  "] step "
+                   &  Edit.Image (Gdouble (Layer.dT))
+                   &  ">|"));
             end if;
          end if; -------------------------------------------------------
          Layer.T1 := Layer.T1 - X_Axis'Remainder (Layer.T1, Layer.dT);
@@ -413,23 +393,22 @@ begin
       --
       -- Getting the point left or at Layer.T1
       --
-      Layer.Data.Backward (T, V, Got_It);
+      Layer.Data.all.Backward (T, V, Got_It);
       if not Got_It then -- No points left of Layer.T1
-         Layer.Data.Forward (T, V, Got_It);
+         Layer.Data.all.Forward (T, V, Got_It);
          if not Got_It then -- No points at all
             Layer.Sampled := True;
             Layer.Valid   := Data.Last_Count > 0;
             Layer.Last_T1 := Layer.T1;
             if 0 /= (Tracing_Mode and Trace_Waveform) then -------------
                Trace
-               (  Layer'Address,
-                  (  " >"
-                  &  Integer'Image (Data.Last_Count)
-                  &  " : "
-                  &  Edit.Image (Gdouble (Data.Last_T))
-                  &  " |"
-                  &  Integer'Image (Data.Count)
-               )  );
+                 (Layer'Address,
+                  (" >"
+                   &  Integer'Image (Data.Last_Count)
+                   &  " : "
+                   &  Edit.Image (Gdouble (Data.Last_T))
+                   &  " |"
+                   &  Integer'Image (Data.Count)));
             end if; ----------------------------------------------------
             return;
          end if;
@@ -439,18 +418,17 @@ begin
             Layer.Last_T1 := Layer.T1;
             if 0 /= (Tracing_Mode and Trace_Waveform) then -------------
                Trace
-               (  Layer'Address,
-                  (  " >"
-                  &  Integer'Image (Data.Last_Count)
-                  &  " |"
-                  &  Integer'Image (Data.Count)
-                  &  " : "
-                  &  Edit.Image (Gdouble (Data.Last_T))
-                  &  " L"
-                  &  Horizontal_Offset'Image (To_X (Layer.Last_T1))
-                  &  " = "
-                  &  Edit.Image (Gdouble (Layer.Last_T1))
-               )  );
+                 (Layer'Address,
+                  (" >"
+                   &  Integer'Image (Data.Last_Count)
+                   &  " |"
+                   &  Integer'Image (Data.Count)
+                   &  " : "
+                   &  Edit.Image (Gdouble (Data.Last_T))
+                   &  " L"
+                   &  Horizontal_Offset'Image (To_X (Layer.Last_T1))
+                   &  " = "
+                   &  Edit.Image (Gdouble (Layer.Last_T1))));
             end if; ----------------------------------------------------
             if not Layer.Extrapolate_Left then
                return;
@@ -475,7 +453,7 @@ begin
       else -- Starting before Layer.T1
          Left := (T, V);
          loop
-            Layer.Data.Forward (T, V, Got_It);
+            Layer.Data.all.Forward (T, V, Got_It);
             if not Got_It then -- No points visible
                if Layer.Extrapolate_Right then
                   Total_Min := Left.V;
@@ -488,18 +466,17 @@ begin
                Layer.Last_T1 := Layer.T1;
                if 0 /= (Tracing_Mode and Trace_Waveform) then ----------
                   Trace
-                  (  Layer'Address,
-                     (  " >"
-                     &  Integer'Image (Data.Last_Count)
-                     &  " |"
-                     &  Integer'Image (Data.Count)
-                     &  " : "
-                     &  Edit.Image (Gdouble (Data.Last_T))
-                     &  " L"
-                     &  Horizontal_Offset'Image (To_X(Layer.Last_T1))
-                     &  " = "
-                     &  Edit.Image (Gdouble (Layer.Last_T1))
-                  )  );
+                    (Layer'Address,
+                     (" >"
+                      &  Integer'Image (Data.Last_Count)
+                      &  " |"
+                      &  Integer'Image (Data.Count)
+                      &  " : "
+                      &  Edit.Image (Gdouble (Data.Last_T))
+                      &  " L"
+                      &  Horizontal_Offset'Image (To_X (Layer.Last_T1))
+                      &  " = "
+                      &  Edit.Image (Gdouble (Layer.Last_T1))));
                end if; -------------------------------------------------
                return;
             end if;
@@ -514,12 +491,10 @@ begin
                      Last  := (Layer.T2, Left.V);
                   when Linear =>
                      Right := (T, V);
-                     First := (  T => Layer.T1,
-                                 V => Interpolate (First.T, First, Last)
-                              );
-                     Last  := (  T => Layer.T2,
-                                 V => Interpolate (Last.T, First, Last)
-                              );
+                     First := (T => Layer.T1,
+                               V => Interpolate (First.T, First, Last));
+                     Last  := (T => Layer.T2,
+                               V => Interpolate (Last.T, First, Last));
                end case;
                Add_Point (To_X (First.T), First.V);
                Add_Point (To_X (Last.T),  Last.V);
@@ -594,16 +569,14 @@ begin
                   --
                   -- Looking for the points within this interval
                   --
-                  Layer.Data.Forward (T, V, Got_It);
+                  Layer.Data.all.Forward (T, V, Got_It);
                   if not Got_It then -- No more points left
                      X := Horizontal_Offset'Max (X, X1);
-                     if (  Layer.Extrapolate_Left
-                        and then
-                           Empty
-                        and then
-                           Count = 1
-                        and then X > X1
-                        )
+                     if
+                       Layer.Extrapolate_Left and then
+                       Empty and then
+                       Count = 1 and then
+                       X > X1
                      then
                         Add_Point (X1, Left.V);
                      end if;
@@ -632,12 +605,10 @@ begin
                   Right := (T, V);
                end if;
                if Count = 1 then -- Only one point in the interval
-                  if (  Layer.Extrapolate_Left
-                     and then
-                        Empty
-                     and then
-                        X > X1
-                     )
+                  if
+                    Layer.Extrapolate_Left and then
+                    Empty and then
+                    X > X1
                   then
                      Add_Point (X1, Left.V);
                   end if;
@@ -689,27 +660,24 @@ begin
                   --
                   -- Looking for the points within this interval
                   --
-                  Layer.Data.Forward (X_Axis (T), Y_Axis (V), Got_It);
+                  Layer.Data.all.Forward (X_Axis (T), Y_Axis (V), Got_It);
                   if not Got_It then -- No more points left
                      if Count = 1 then
-                        if (  Layer.Extrapolate_Left
-                           and then
-                              Empty
-                           and then
-                              X > X1
-                           )
+                        if
+                          Layer.Extrapolate_Left and then
+                          Empty and then
+                          X > X1
                         then
                            Add_Point (X1, First.V);
                         end if;
                         Add_Point (X, First.V);
                      else
                         Add
-                        (  X,
+                          (X,
                            Interpolate (T2 - Layer.dT, Left, First),
                            Max,
                            Min,
-                           Max
-                        );
+                           Max);
                      end if;
                      Total_Min := Y_Axis'Min (Total_Min, Min);
                      Total_Max := Y_Axis'Max (Total_Max, Max);
@@ -735,12 +703,10 @@ begin
                   Right := (T, V);
                end if;
                if Count = 1 then -- Only one point in the interval
-                  if (  Layer.Extrapolate_Left
-                     and then
-                        Empty
-                     and then
-                        X > X1
-                     )
+                  if
+                    Layer.Extrapolate_Left and then
+                    Empty and then
+                    X > X1
                   then
                      Add_Point (X1, First.V);
                   end if;
@@ -750,11 +716,10 @@ begin
                   Data.Last_T := First.T;
                else -- Multiple points on the interval
                   Add
-                  (  X,
+                    (X,
                      Interpolate (T2 - Layer.dT, Left, First),
                      Interpolate (T2, Last, Right),
-                     Min, Max
-                  );
+                     Min, Max);
                   Left := Right;
                   Data.Last_Count := Data.Count;
                   Data.Last_T := Last.T;
@@ -764,14 +729,12 @@ begin
                if T > Layer.T2 then -- No more points visible
                   if Count = 1 then
                      Right :=
-                        (  Layer.T2,
-                           Interpolate (Layer.T2, First, Right)
-                        );
+                       (Layer.T2,
+                        Interpolate (Layer.T2, First, Right));
                   else
                      Right :=
-                        (  Layer.T2,
-                           Interpolate (Layer.T2, Last, Right)
-                        );
+                       (Layer.T2,
+                        Interpolate (Layer.T2, Last, Right));
                   end if;
                   Add_Point (To_X (Right.T), Right.V);
                   Total_Min := Y_Axis'Min (Total_Min, Right.V);
@@ -787,10 +750,7 @@ begin
 exception
    when Error : others =>
       Log
-      (  GtkAda_Contributions_Domain,
+        (Gtk.Missed.GtkAda_Contributions_Domain,
          Log_Level_Critical,
-         (  "Fault: "
-         &  Exception_Information (Error)
-         &  Where ("Sample_Lines")
-      )  );
+         "Fault: " & Exception_Information (Error) & Where ("Sample_Lines"));
 end Sample_Lines;

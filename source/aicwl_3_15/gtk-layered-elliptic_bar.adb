@@ -23,7 +23,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
 with Glib.Properties.Creation;    use Glib.Properties.Creation;
@@ -36,42 +36,41 @@ package body Gtk.Layered.Elliptic_Bar is
    type Elliptic_Bar_Ptr is access all Elliptic_Bar_Layer;
 
    type Layer_Property is
-        (  Property_Scaled,
-           Property_Widened,
-           Property_Center_X,
-           Property_Center_Y,
-           Property_Curvature,
-           Property_Radius,
-           Property_Angle,
-           Property_From,
-           Property_Length,
-           Property_Line_Width,
-           Property_Line_Color,
-           Property_Line_Cap,
-           Property_Value
-        );
+     (Property_Scaled,
+      Property_Widened,
+      Property_Center_X,
+      Property_Center_Y,
+      Property_Curvature,
+      Property_Radius,
+      Property_Angle,
+      Property_From,
+      Property_Length,
+      Property_Line_Width,
+      Property_Line_Color,
+      Property_Line_Cap,
+      Property_Value);
 
    package Handlers is
-      new Gtk.Handlers.User_Callback
-          (  GObject_Record,
-             Elliptic_Bar_Ptr
-          );
+     new Gtk.Handlers.User_Callback
+       (GObject_Record,
+        Elliptic_Bar_Ptr);
 
    procedure Free is
-      new Ada.Unchecked_Deallocation
-          (  Elliptic_Bar_Layer,
-             Elliptic_Bar_Ptr
-          );
+     new Ada.Unchecked_Deallocation
+       (  Elliptic_Bar_Layer,
+          Elliptic_Bar_Ptr
+         );
 
    procedure Changed
-             (  Adjustment : access GObject_Record'Class;
-                Needle     : Elliptic_Bar_Ptr
-             );
+     (  Adjustment : access GObject_Record'Class;
+        Needle     : Elliptic_Bar_Ptr
+       );
 
-   function Add
-            (  Under  : not null access Layer_Location'Class;
-               Stream : not null access Root_Stream_Type'Class
-            )  return not null access Elliptic_Bar_Layer is
+   overriding function Add
+     (Under  : not null access Layer_Location'Class;
+      Stream : not null access Ada.Streams.Root_Stream_Type'Class)
+      return not null access Elliptic_Bar_Layer
+   is
       Ptr : Elliptic_Bar_Ptr := new Elliptic_Bar_Layer;
    begin
       Restore (Stream.all, Ptr.all);
@@ -84,30 +83,30 @@ package body Gtk.Layered.Elliptic_Bar is
    end Add;
 
    procedure Add_Adjustment
-             (  Layer      : in out Elliptic_Bar_Layer;
-                Adjustment : not null access Gtk_Adjustment_Record'Class
-             )  is
+     (  Layer      : in out Elliptic_Bar_Layer;
+        Adjustment : not null access Gtk_Adjustment_Record'Class
+       )  is
    begin
       Ref (Adjustment);
       Layer.Adjustment := Adjustment.all'Unchecked_Access;
       Layer.Changed :=
-         Handlers.Connect
-         (  Adjustment,
-            "changed",
-            Handlers.To_Marshaller (Changed'Access),
-            Layer'Unchecked_Access
-         );
+        Handlers.Connect
+          (  Adjustment,
+             "changed",
+             Handlers.To_Marshaller (Changed'Access),
+             Layer'Unchecked_Access
+            );
       Layer.Value_Changed :=
-         Handlers.Connect
-         (  Adjustment,
-            "value_changed",
-            Handlers.To_Marshaller (Changed'Access),
-            Layer'Unchecked_Access
-         );
+        Handlers.Connect
+          (  Adjustment,
+             "value_changed",
+             Handlers.To_Marshaller (Changed'Access),
+             Layer'Unchecked_Access
+            );
       declare
-         Lower : constant Gdouble := Adjustment.Get_Lower;
-         Upper : constant Gdouble := Adjustment.Get_Upper;
-         Value : constant Gdouble := Adjustment.Get_Value;
+         Lower : constant Gdouble := Adjustment.all.Get_Lower;
+         Upper : constant Gdouble := Adjustment.all.Get_Upper;
+         Value : constant Gdouble := Adjustment.all.Get_Value;
       begin
          if Upper <= Lower or else Value <= Lower then
             Layer.Set_Value (0.0);
@@ -120,17 +119,17 @@ package body Gtk.Layered.Elliptic_Bar is
    end Add_Adjustment;
 
    procedure Add_Elliptic_Bar
-             (  Under      : not null access Layer_Location'Class;
-                Ellipse    : Ellipse_Parameters := Unit_Circle;
-                From       : Gdouble        := 3.0 * Pi / 4.0;
-                Length     : Gdouble        := 3.0 * Pi / 2.0;
-                Width      : Gdouble        := 1.0;
-                Color      : Gdk_Color      := RGB (1.0, 0.0, 0.0);
-                Line_Cap   : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
-                Adjustment : access Gtk_Adjustment_Record'Class := null;
-                Scaled     : Boolean        := False;
-                Widened    : Boolean        := False
-             )  is
+     (Under      : not null access Layer_Location'Class;
+      Ellipse    : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
+      From       : Gdouble                            := 3.0 * Pi / 4.0;
+      Length     : Gdouble                            := 3.0 * Pi / 2.0;
+      Width      : Gdouble                            := 1.0;
+      Color      : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Line_Cap   : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
+      Adjustment : access Gtk_Adjustment_Record'Class := null;
+      Scaled     : Boolean                            := False;
+      Widened    : Boolean                            := False)
+   is
       Ptr   : Elliptic_Bar_Ptr := new Elliptic_Bar_Layer;
       Layer : Elliptic_Bar_Layer renames Ptr.all;
    begin
@@ -138,12 +137,12 @@ package body Gtk.Layered.Elliptic_Bar is
       Layer.Scaled  := Scaled;
       Add (Ptr, Under);
       Set
-      (  Layer   => Layer,
-         Line    => (Width, Color, Line_Cap),
-         Ellipse => Ellipse,
-         From    => From,
-         Length  => Length
-      );
+        (  Layer   => Layer,
+           Line    => (Width, Color, Line_Cap),
+           Ellipse => Ellipse,
+           From    => From,
+           Length  => Length
+          );
       if Adjustment /= null then
          Add_Adjustment (Ptr.all, Adjustment);
       end if;
@@ -154,17 +153,18 @@ package body Gtk.Layered.Elliptic_Bar is
    end Add_Elliptic_Bar;
 
    function Add_Elliptic_Bar
-            (  Under      : not null access Layer_Location'Class;
-               Ellipse    : Ellipse_Parameters := Unit_Circle;
-               From       : Gdouble        := 3.0 * Pi / 4.0;
-               Length     : Gdouble        := 3.0 * Pi / 2.0;
-               Width      : Gdouble        := 1.0;
-               Color      : Gdk_Color      := RGB (1.0, 0.0, 0.0);
-               Line_Cap   : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
-               Adjustment : access Gtk_Adjustment_Record'Class := null;
-               Scaled     : Boolean        := False;
-               Widened    : Boolean        := False
-            )  return not null access Elliptic_Bar_Layer is
+     (Under      : not null access Layer_Location'Class;
+      Ellipse    : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
+      From       : Gdouble                            := 3.0 * Pi / 4.0;
+      Length     : Gdouble                            := 3.0 * Pi / 2.0;
+      Width      : Gdouble                            := 1.0;
+      Color      : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Line_Cap   : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
+      Adjustment : access Gtk_Adjustment_Record'Class := null;
+      Scaled     : Boolean                            := False;
+      Widened    : Boolean                            := False)
+      return not null access Elliptic_Bar_Layer
+   is
       Ptr   : Elliptic_Bar_Ptr := new Elliptic_Bar_Layer;
       Layer : Elliptic_Bar_Layer renames Ptr.all;
    begin
@@ -172,12 +172,12 @@ package body Gtk.Layered.Elliptic_Bar is
       Layer.Scaled  := Scaled;
       Add (Ptr, Under);
       Set
-      (  Layer   => Layer,
-         Line    => (Width, Color, Line_Cap),
-         Ellipse => Ellipse,
-         From    => From,
-         Length  => Length
-      );
+        (  Layer   => Layer,
+           Line    => (Width, Color, Line_Cap),
+           Ellipse => Ellipse,
+           From    => From,
+           Length  => Length
+          );
       if Adjustment /= null then
          Add_Adjustment (Ptr.all, Adjustment);
       end if;
@@ -189,69 +189,67 @@ package body Gtk.Layered.Elliptic_Bar is
    end Add_Elliptic_Bar;
 
    procedure Changed
-             (  Adjustment : access GObject_Record'Class;
-                Needle     : Elliptic_Bar_Ptr
-             )  is
-      Lower : constant Gdouble := Get_Lower (Needle.Adjustment);
-      Upper : constant Gdouble := Get_Upper (Needle.Adjustment);
-      Value : constant Gdouble := Get_Value (Needle.Adjustment);
+     (  Adjustment : access GObject_Record'Class;
+        Needle     : Elliptic_Bar_Ptr
+       )  is
+      Lower : constant Gdouble := Get_Lower (Needle.all.Adjustment);
+      Upper : constant Gdouble := Get_Upper (Needle.all.Adjustment);
+      Value : constant Gdouble := Get_Value (Needle.all.Adjustment);
    begin
       if Upper <= Lower or else Value <= Lower then
-         Needle.Set_Value (0.0);
+         Needle.all.Set_Value (0.0);
       elsif Value >= Upper then
-         Needle.Set_Value (1.0);
+         Needle.all.Set_Value (1.0);
       else
-         Needle.Set_Value ((Value - Lower) / (Upper - Lower));
+         Needle.all.Set_Value ((Value - Lower) / (Upper - Lower));
       end if;
-      if not Needle.Widget.Drawing and then Needle.Updated then
-         Queue_Draw (Needle.Widget); -- Signal draw to the widget
+      if not Needle.all.Widget.all.Drawing and then Needle.all.Updated then
+         Queue_Draw (Needle.all.Widget); -- Signal draw to the widget
       end if;
    end Changed;
 
-   procedure Draw
-             (  Layer   : in out Elliptic_Bar_Layer;
-                Context : Cairo_Context;
-                Area    : Gdk_Rectangle
-             )  is
+   overriding procedure Draw
+     (Layer   : in out Elliptic_Bar_Layer;
+      Context : Cairo.Cairo_Context;
+      Area    : Gdk_Rectangle)
+   is
+      use type Cairo.Ellipses.Ellipse_Parameters;
    begin
-      New_Path (Context);
+      Cairo.New_Path (Context);
       if Layer.Widened then
-         Set_Line_Width
-         (  Context,
-            Layer.Line.Width * Layer.Widget.Get_Size
-         );
+         Cairo.Set_Line_Width
+           (  Context,
+              Layer.Line.Width * Layer.Widget.all.Get_Size
+             );
       else
-         Set_Line_Width (Context, Layer.Line.Width);
+         Cairo.Set_Line_Width (Context, Layer.Line.Width);
       end if;
-      Set_Source_Rgb
-      (  Context,
-         Gdouble (Red   (Layer.Line.Color)) / Gdouble (Guint16'Last),
-         Gdouble (Green (Layer.Line.Color)) / Gdouble (Guint16'Last),
-         Gdouble (Blue  (Layer.Line.Color)) / Gdouble (Guint16'Last)
-      );
-      Set_Line_Cap (Context, Layer.Line.Line_Cap);
+      Cairo.Set_Source_Rgb
+        (  Context,
+           Gdouble (Gdk.Color.Red   (Layer.Line.Color)) / Gdouble (Guint16'Last),
+           Gdouble (Gdk.Color.Green (Layer.Line.Color)) / Gdouble (Guint16'Last),
+           Gdouble (Gdk.Color.Blue  (Layer.Line.Color)) / Gdouble (Guint16'Last)
+          );
+      Cairo.Set_Line_Cap (Context, Layer.Line.Line_Cap);
       if Layer.Scaled then
-         Elliptic_Arc_Abs
-         (  Context,
-            (  Layer.Ellipse * Layer.Widget.Get_Size
-            +  Layer.Widget.Get_Center
-            ),
+         Cairo.Ellipses.Elliptic_Arc_Abs
+           (Context,
+            Layer.Ellipse * Layer.Widget.all.Get_Size +
+              Layer.Widget.all.Get_Center,
             Layer.From,
-            Layer.Value * Layer.Length
-         );
+            Layer.Value * Layer.Length);
       else
-         Elliptic_Arc_Abs
-         (  Context,
+         Cairo.Ellipses.Elliptic_Arc_Abs
+           (Context,
             Layer.Ellipse,
             Layer.From,
-            Layer.Value * Layer.Length
-         );
+            Layer.Value * Layer.Length);
       end if;
-      Stroke  (Context);
+      Cairo.Stroke  (Context);
       Layer.Updated := False;
    end Draw;
 
-   procedure Finalize (Layer : in out Elliptic_Bar_Layer) is
+   overriding procedure Finalize (Layer : in out Elliptic_Bar_Layer) is
    begin
       Finalize (Abstract_Layer (Layer));
       if Layer.Adjustment /= null then
@@ -262,14 +260,14 @@ package body Gtk.Layered.Elliptic_Bar is
       end if;
    end Finalize;
 
-   function Get_Adjustment (Layer : Elliptic_Bar_Layer)
-      return Gtk_Adjustment is
+   overriding function Get_Adjustment (Layer : Elliptic_Bar_Layer)
+                            return Gtk_Adjustment is
    begin
       return Layer.Adjustment;
    end Get_Adjustment;
 
    function Get_Ellipse (Layer : Elliptic_Bar_Layer)
-      return Ellipse_Parameters is
+                         return Cairo.Ellipses.Ellipse_Parameters is
    begin
       return Layer.Ellipse;
    end Get_Ellipse;
@@ -285,26 +283,26 @@ package body Gtk.Layered.Elliptic_Bar is
    end Get_Length;
 
    function Get_Line (Layer : Elliptic_Bar_Layer)
-      return Line_Parameters is
+                      return Line_Parameters is
    begin
       return Layer.Line;
    end Get_Line;
 
-   function Get_Properties_Number
-            (  Layer : Elliptic_Bar_Layer
-            )  return Natural is
+   overriding function Get_Properties_Number
+     (  Layer : Elliptic_Bar_Layer
+       )  return Natural is
    begin
       return
-      (  Layer_Property'Pos (Layer_Property'Last)
-      -  Layer_Property'Pos (Layer_Property'First)
-      +  1
-      );
+        (  Layer_Property'Pos (Layer_Property'Last)
+           -  Layer_Property'Pos (Layer_Property'First)
+           +  1
+          );
    end Get_Properties_Number;
 
-   function Get_Property_Specification
-            (  Layer    : Elliptic_Bar_Layer;
-               Property : Positive
-            )  return Param_Spec is
+   overriding function Get_Property_Specification
+     (  Layer    : Elliptic_Bar_Layer;
+        Property : Positive
+       )  return Param_Spec is
    begin
       if Property > Get_Properties_Number (Layer) then
          raise Constraint_Error;
@@ -312,233 +310,230 @@ package body Gtk.Layered.Elliptic_Bar is
          case Layer_Property'Val (Property - 1) is
             when Property_Center_X =>
                return
-                  Gnew_Double
-                  (  Name    => "x",
-                     Nick    => "x",
-                     Minimum => Gdouble'First,
-                     Maximum => Gdouble'Last,
-                     Default => 0.0,
-                     Blurb =>
-                        "The x-coordinate of the bar's ellipse center"
-                  );
+                 Gnew_Double
+                   (  Name    => "x",
+                      Nick    => "x",
+                      Minimum => Gdouble'First,
+                      Maximum => Gdouble'Last,
+                      Default => 0.0,
+                      Blurb   =>
+                         "The x-coordinate of the bar's ellipse center"
+                     );
             when Property_Center_Y =>
                return
-                  Gnew_Double
-                  (  Name    => "y",
-                     Nick    => "y",
-                     Minimum => Gdouble'First,
-                     Maximum => Gdouble'Last,
-                     Default => 0.0,
-                     Blurb =>
-                        "The y-coordinate of the bar's ellipse center"
-                  );
+                 Gnew_Double
+                   (  Name    => "y",
+                      Nick    => "y",
+                      Minimum => Gdouble'First,
+                      Maximum => Gdouble'Last,
+                      Default => 0.0,
+                      Blurb   =>
+                         "The y-coordinate of the bar's ellipse center"
+                     );
             when Property_Curvature =>
                return
-                  Gnew_Double
-                  (  Name    => "k",
-                     Nick    => "k",
-                     Minimum => 0.0,
-                     Maximum => Gdouble'Last,
-                     Default => 0.0,
-                     Blurb =>
-                        "The curvature of the bar's ellipse major axis"
-                  );
+                 Gnew_Double
+                   (  Name    => "k",
+                      Nick    => "k",
+                      Minimum => 0.0,
+                      Maximum => Gdouble'Last,
+                      Default => 0.0,
+                      Blurb   =>
+                         "The curvature of the bar's ellipse major axis"
+                     );
             when Property_Radius =>
                return
-                  Gnew_Double
-                  (  Name    => "r",
-                     Nick    => "r",
-                     Minimum => 1.0E-6,
-                     Maximum => Gdouble'Last,
-                     Default => 0.5,
-                     Blurb =>
-                        "The radius of the bar's ellipse minor axis"
-                  );
+                 Gnew_Double
+                   (  Name    => "r",
+                      Nick    => "r",
+                      Minimum => 1.0E-6,
+                      Maximum => Gdouble'Last,
+                      Default => 0.5,
+                      Blurb   =>
+                         "The radius of the bar's ellipse minor axis"
+                     );
             when Property_Angle =>
                return
-                  Gnew_Double
-                  (  Name    => "angle",
-                     Nick    => "angle",
-                     Minimum =>-2.0 * Pi,
-                     Maximum => 2.0 * Pi,
-                     Default => 0.0,
-                     Blurb =>
-                        "The angle of the major ellipse axis of the bar"
-                  );
+                 Gnew_Double
+                   (  Name    => "angle",
+                      Nick    => "angle",
+                      Minimum => -2.0 * Pi,
+                      Maximum => 2.0 * Pi,
+                      Default => 0.0,
+                      Blurb   =>
+                         "The angle of the major ellipse axis of the bar"
+                     );
             when Property_From =>
                return
-                  Gnew_Double
-                  (  Name    => "from",
-                     Nick    => "from",
-                     Minimum =>-2.0 * Pi,
-                     Maximum => 2.0 * Pi,
-                     Default => 0.0,
-                     Blurb   => "The angle of the bar beginning " &
-                                "corresponding to the value 0"
-                  );
+                 Gnew_Double
+                   (  Name    => "from",
+                      Nick    => "from",
+                      Minimum => -2.0 * Pi,
+                      Maximum => 2.0 * Pi,
+                      Default => 0.0,
+                      Blurb   => "The angle of the bar beginning " &
+                        "corresponding to the value 0"
+                     );
             when Property_Length =>
                return
-                  Gnew_Double
-                  (  Name    => "length",
-                     Nick    => "length",
-                     Minimum =>-2.0 * Pi,
-                     Maximum => 2.0 * Pi,
-                     Default => 0.0,
-                     Blurb   => "The angular length of the bar, " &
-                                "the length added to the value of " &
-                                "the property from is the angle " &
-                                "coresponding to the value 1"
-                  );
+                 Gnew_Double
+                   (  Name    => "length",
+                      Nick    => "length",
+                      Minimum => -2.0 * Pi,
+                      Maximum => 2.0 * Pi,
+                      Default => 0.0,
+                      Blurb   => "The angular length of the bar, " &
+                        "the length added to the value of " &
+                        "the property from is the angle " &
+                        "coresponding to the value 1"
+                     );
             when Property_Line_Width =>
                return
-                  Gnew_Double
-                  (  Name    => "width",
-                     Nick    => "width",
-                     Minimum => 0.0,
-                     Maximum => Gdouble'Last,
-                     Default => 1.0,
-                     Blurb   => "The width of the bar's line"
-                  );
+                 Gnew_Double
+                   (  Name    => "width",
+                      Nick    => "width",
+                      Minimum => 0.0,
+                      Maximum => Gdouble'Last,
+                      Default => 1.0,
+                      Blurb   => "The width of the bar's line"
+                     );
             when Property_Line_Color =>
                return
-                  Gnew_Boxed
-                  (  Name       => "color",
-                     Boxed_Type => Gdk_Color_Type,
-                     Nick       => "color",
-                     Blurb      => "The color of the bar"
-                  );
+                 Gnew_Boxed
+                   (Name       => "color",
+                    Boxed_Type => Gdk.Color.Gdk_Color_Type,
+                    Nick       => "color",
+                    Blurb      => "The color of the bar");
             when Property_Line_Cap =>
                return
-                  Cairo.Line_Cap_Property.Gnew_Enum
-                  (  Name    => "line-cap",
-                     Nick    => "line cap",
-                     Default => Cairo_Line_Cap_Butt,
-                     Blurb   => "The cap style of the line of the bar"
-                  );
+                 Cairo.Line_Cap_Property.Gnew_Enum
+                   (Name    => "line-cap",
+                    Nick    => "line cap",
+                    Default => Cairo.Cairo_Line_Cap_Butt,
+                    Blurb   => "The cap style of the line of the bar");
             when Property_Value =>
                return
-                  Gnew_Double
-                  (  Name    => "value",
-                     Nick    => "value",
-                     Minimum => 0.0,
-                     Maximum => 1.0,
-                     Default => 0.0,
-                     Blurb   => "The indicated value"
-                  );
+                 Gnew_Double
+                   (  Name    => "value",
+                      Nick    => "value",
+                      Minimum => 0.0,
+                      Maximum => 1.0,
+                      Default => 0.0,
+                      Blurb   => "The indicated value"
+                     );
             when Property_Scaled =>
                return
-                  Gnew_Boolean
-                  (  Name    => "scaled",
-                     Nick    => "scaled",
-                     Default => False,
-                     Blurb   => "The bar size is changed when " &
-                                "the widget is resized"
-                  );
+                 Gnew_Boolean
+                   (  Name    => "scaled",
+                      Nick    => "scaled",
+                      Default => False,
+                      Blurb   => "The bar size is changed when " &
+                        "the widget is resized"
+                     );
             when Property_Widened =>
                return
-                  Gnew_Boolean
-                  (  Name    => "widened",
-                     Nick    => "widened",
-                     Default => False,
-                     Blurb   => "The bar's line width is changed " &
-                                "when the widget is resized"
-                  );
+                 Gnew_Boolean
+                   (  Name    => "widened",
+                      Nick    => "widened",
+                      Default => False,
+                      Blurb   => "The bar's line width is changed " &
+                        "when the widget is resized"
+                     );
          end case;
       end if;
    end Get_Property_Specification;
 
-   function Get_Property_Value
-            (  Layer    : Elliptic_Bar_Layer;
-               Property : Positive
-            )  return GValue is
+   overriding function Get_Property_Value
+     (Layer    : Elliptic_Bar_Layer;
+      Property : Positive) return Glib.Values.GValue is
    begin
       if Property > Get_Properties_Number (Layer) then
          raise Constraint_Error;
       else
          declare
-            Value : GValue;
+            Value : Glib.Values.GValue;
          begin
             case Layer_Property'Val (Property - 1) is
                when Property_Center_X =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Ellipse.Center.X);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Ellipse.Center.X);
                when Property_Center_Y =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Ellipse.Center.Y);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Ellipse.Center.Y);
                when Property_Curvature =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Ellipse.Major_Curvature);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Ellipse.Major_Curvature);
                when Property_Radius =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Ellipse.Minor_Radius);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Ellipse.Minor_Radius);
                when Property_Angle =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Ellipse.Angle);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Ellipse.Angle);
                when Property_From =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.From);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.From);
                when Property_Length =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Length);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Length);
                when Property_Line_Width =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Line.Width);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Line.Width);
                when Property_Line_Color =>
-                  Set_Value (Value, Layer.Line.Color);
+                  Gdk.Color.Set_Value (Value, Layer.Line.Color);
                when Property_Line_Cap =>
                   Cairo.Line_Cap_Property.Set_Enum
-                  (  Value,
-                     Layer.Line.Line_Cap
-                  );
+                    (Value,
+                     Layer.Line.Line_Cap);
                when Property_Scaled =>
-                  Init (Value, GType_Boolean);
-                  Set_Boolean (Value, Layer.Scaled);
+                  Glib.Values.Init (Value, GType_Boolean);
+                  Glib.Values.Set_Boolean (Value, Layer.Scaled);
                when Property_Widened =>
-                  Init (Value, GType_Boolean);
-                  Set_Boolean (Value, Layer.Widened);
+                  Glib.Values.Init (Value, GType_Boolean);
+                  Glib.Values.Set_Boolean (Value, Layer.Widened);
                when Property_Value =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Value);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Value);
             end case;
             return Value;
          end;
       end if;
    end Get_Property_Value;
 
-   function Get_Scaled (Layer : Elliptic_Bar_Layer) return Boolean is
+   overriding function Get_Scaled (Layer : Elliptic_Bar_Layer) return Boolean is
    begin
       return Layer.Scaled;
    end Get_Scaled;
 
-   function Get_Value (Layer : Elliptic_Bar_Layer) return Gdouble is
+   overriding function Get_Value (Layer : Elliptic_Bar_Layer) return Gdouble is
    begin
       return Layer.Value;
    end Get_Value;
 
-   function Get_Widened (Layer : Elliptic_Bar_Layer) return Boolean is
+   overriding function Get_Widened (Layer : Elliptic_Bar_Layer) return Boolean is
    begin
       return Layer.Widened;
    end Get_Widened;
 
-   function Is_Updated (Layer : Elliptic_Bar_Layer) return Boolean is
+   overriding function Is_Updated (Layer : Elliptic_Bar_Layer) return Boolean is
    begin
       return Layer.Updated;
    end Is_Updated;
 
-   procedure Move
-             (  Layer  : in out Elliptic_Bar_Layer;
-                Offset : Cairo_Tuple
-             )  is
+   overriding procedure Move
+     (Layer  : in out Elliptic_Bar_Layer;
+      Offset : Cairo.Ellipses.Cairo_Tuple)
+   is
+      use type Cairo.Ellipses.Ellipse_Parameters;
    begin
       Layer.Ellipse := Layer.Ellipse + Offset;
       Layer.Updated := True;
    end Move;
 
-   procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Layer  : in out Elliptic_Bar_Layer
-             )  is
-      Ellipse    : Ellipse_Parameters;
+   overriding procedure Restore
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Layer  : in out Elliptic_Bar_Layer)
+   is
+      Ellipse    : Cairo.Ellipses.Ellipse_Parameters;
       From       : Gdouble;
       Length     : Gdouble;
       Line       : Line_Parameters;
@@ -550,12 +545,12 @@ package body Gtk.Layered.Elliptic_Bar is
       Restore (Stream, Line);
       Restore (Stream, Layer.Scaled, Layer.Widened, Adjustment);
       Set
-      (  Layer   => Layer,
-         Ellipse => Ellipse,
-         From    => From,
-         Length  => Length,
-         Line    => Line
-      );
+        (  Layer   => Layer,
+           Ellipse => Ellipse,
+           From    => From,
+           Length  => Length,
+           Line    => Line
+          );
       if Adjustment then
          declare
             Adjustment : Gtk_Adjustment;
@@ -573,11 +568,13 @@ package body Gtk.Layered.Elliptic_Bar is
       end if;
    end Restore;
 
-   procedure Scale
-             (  Layer  : in out Elliptic_Bar_Layer;
-                Factor : Gdouble
-             )  is
-      Ellipse : constant Ellipse_Parameters := Layer.Ellipse * Factor;
+   overriding procedure Scale
+     (Layer  : in out Elliptic_Bar_Layer;
+      Factor : Gdouble)
+   is
+      use type Cairo.Ellipses.Ellipse_Parameters;
+      Ellipse : constant Cairo.Ellipses.Ellipse_Parameters :=
+                  Layer.Ellipse * Factor;
    begin
       if Ellipse.Minor_Radius <= 0.0 then
          raise Constraint_Error with "Non-positive ellipse radius";
@@ -589,12 +586,11 @@ package body Gtk.Layered.Elliptic_Bar is
    end Scale;
 
    procedure Set
-             (  Layer   : in out Elliptic_Bar_Layer;
-                Ellipse : Ellipse_Parameters;
-                From    : Gdouble;
-                Length  : Gdouble;
-                Line    : Line_Parameters
-             )  is
+     (Layer   : in out Elliptic_Bar_Layer;
+      Ellipse : Cairo.Ellipses.Ellipse_Parameters;
+      From    : Gdouble;
+      Length  : Gdouble;
+      Line    : Line_Parameters) is
    begin
       if Ellipse.Minor_Radius <= 0.0 then
          raise Constraint_Error with "Non-positive ellipse radius";
@@ -611,81 +607,78 @@ package body Gtk.Layered.Elliptic_Bar is
       Set_Value (Layer, Layer.Value);
    end Set;
 
-   procedure Set_Property_Value
-             (  Layer    : in out Elliptic_Bar_Layer;
-                Property : Positive;
-                Value    : GValue
-             )  is
+   overriding procedure Set_Property_Value
+     (Layer    : in out Elliptic_Bar_Layer;
+      Property : Positive;
+      Value    : Glib.Values.GValue) is
    begin
       if Property > Get_Properties_Number (Layer) then
          raise Constraint_Error;
       else
          case Layer_Property'Val (Property - 1) is
             when Property_Center_X =>
-               Layer.Ellipse.Center.X := Get_Double (Value);
+               Layer.Ellipse.Center.X := Glib.Values.Get_Double (Value);
             when Property_Center_Y =>
-               Layer.Ellipse.Center.Y := Get_Double (Value);
+               Layer.Ellipse.Center.Y := Glib.Values.Get_Double (Value);
             when Property_Curvature =>
-               Layer.Ellipse.Major_Curvature := Get_Double (Value);
+               Layer.Ellipse.Major_Curvature := Glib.Values.Get_Double (Value);
                if Layer.Ellipse.Major_Curvature < 0.0 then
                   Layer.Ellipse.Major_Curvature := 0.0;
                end if;
             when Property_Radius =>
-               Layer.Ellipse.Minor_Radius := Get_Double (Value);
+               Layer.Ellipse.Minor_Radius := Glib.Values.Get_Double (Value);
                if Layer.Ellipse.Minor_Radius < 1.0E-6 then
                   Layer.Ellipse.Minor_Radius := 1.0E-6;
                end if;
             when Property_Angle =>
-               Layer.Ellipse.Angle := Get_Double (Value);
-               if Layer.Ellipse.Angle not in -2.0 * Pi..2.0 * Pi then
+               Layer.Ellipse.Angle := Glib.Values.Get_Double (Value);
+               if Layer.Ellipse.Angle not in -2.0 * Pi .. 2.0 * Pi then
                   Layer.Ellipse.Angle :=
-                     Gdouble'Remainder (Layer.Ellipse.Angle, 2.0 * Pi);
+                    Gdouble'Remainder (Layer.Ellipse.Angle, 2.0 * Pi);
                end if;
             when Property_From =>
-               Layer.From := Get_Double (Value);
-               if Layer.From not in -2.0 * Pi..2.0 * Pi then
+               Layer.From := Glib.Values.Get_Double (Value);
+               if Layer.From not in -2.0 * Pi .. 2.0 * Pi then
                   Layer.From := Gdouble'Remainder (Layer.From, 2.0 * Pi);
                end if;
             when Property_Length =>
-               Layer.Length := Get_Double (Value);
-               if Layer.Length not in -2.0 * Pi..2.0 * Pi then
+               Layer.Length := Glib.Values.Get_Double (Value);
+               if Layer.Length not in -2.0 * Pi .. 2.0 * Pi then
                   Layer.Length :=
-                     Gdouble'Remainder (Layer.Length, 2.0 * Pi);
+                    Gdouble'Remainder (Layer.Length, 2.0 * Pi);
                end if;
             when Property_Line_Width =>
-               Layer.Line.Width := Get_Double (Value);
+               Layer.Line.Width := Glib.Values.Get_Double (Value);
                if Layer.Line.Width < 0.0 then
                   Layer.Line.Width := 0.0;
                end if;
             when Property_Line_Color =>
-               Layer.Line.Color := Get_Value (Value);
+               Layer.Line.Color := Gdk.Color.Get_Value (Value);
             when Property_Line_Cap =>
                Layer.Line.Line_Cap :=
-                  Cairo.Line_Cap_Property.Get_Enum (Value);
+                 Cairo.Line_Cap_Property.Get_Enum (Value);
             when Property_Value =>
-               Set_Value (Layer, Get_Double (Value));
+               Set_Value (Layer, Glib.Values.Get_Double (Value));
             when Property_Scaled =>
-               Layer.Scaled := Get_Boolean (Value);
+               Layer.Scaled := Glib.Values.Get_Boolean (Value);
             when Property_Widened =>
-               Layer.Widened := Get_Boolean (Value);
+               Layer.Widened := Glib.Values.Get_Boolean (Value);
          end case;
       end if;
       Layer.Updated := True;
    end Set_Property_Value;
 
-   procedure Set_Scaled
-             (  Layer  : in out Elliptic_Bar_Layer;
-                Scaled : Boolean
-             )  is
+   overriding procedure Set_Scaled
+     (Layer  : in out Elliptic_Bar_Layer;
+      Scaled : Boolean) is
    begin
       Layer.Scaled  := Scaled;
       Layer.Updated := True;
    end Set_Scaled;
 
-   procedure Set_Value
-             (  Layer : in out Elliptic_Bar_Layer;
-                Value : Gdouble
-             )  is
+   overriding procedure Set_Value
+     (Layer : in out Elliptic_Bar_Layer;
+      Value : Gdouble) is
    begin
       if Value <= 0.0 then
          if Layer.Value /= 0.0 then
@@ -705,30 +698,27 @@ package body Gtk.Layered.Elliptic_Bar is
       end if;
    end Set_Value;
 
-   procedure Set_Widened
-             (  Layer   : in out Elliptic_Bar_Layer;
-                Widened : Boolean
-             )  is
+   overriding procedure Set_Widened
+     (Layer   : in out Elliptic_Bar_Layer;
+      Widened : Boolean) is
    begin
       Layer.Widened := Widened;
       Layer.Updated := True;
    end Set_Widened;
 
-   procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Layer  : Elliptic_Bar_Layer
-             )  is
+   overriding procedure Store
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Layer  : Elliptic_Bar_Layer) is
    begin
       Store (Stream, Layer.Ellipse);
       Store (Stream, Layer.From);
       Store (Stream, Layer.Length);
       Store (Stream, Layer.Line);
       Store
-      (  Stream,
+        (Stream,
          Layer.Scaled,
          Layer.Widened,
-         Layer.Adjustment /= null
-      );
+         Layer.Adjustment /= null);
       if Layer.Adjustment = null then
          Store (Stream, Layer.Value);
       else

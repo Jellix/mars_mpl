@@ -23,248 +23,244 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
+
+with Gtk.Missed;
 
 package Gtk.Layered.Flat_Scale is
---
--- Flat_Scale_Layer -- Layer showing ticks of a flat  gauge.  The  ticks
---                     are   drawn   from  starting  from  the  position
--- specified  by  the  parameter  From  along  the  line  which angle is
--- specified   by   the   parameter   Rotation_Angle.  Ticks  are  drawn
--- perpendicular to the line. The ticks start at the from angle and  end
--- at the to angle. The ticks are numbered 1,2,3 until the skipped tick,
--- which is not drawn. The next tick has again the number 1.  The  first
--- tick at the from angle has the specified number.
---
-   type Flat_Scale_Layer (<>) is
-      new Abstract_Layer
-      and Scalable_Layer
-      and Widened_Layer with private;
---
--- Add_Flat_Scale -- Add scale ticks
---
---    Under    - The layer or widget where to place it under
---    Step     - The tick step
---    First    - The position of the first tick
---    Skipped  - The position of skipped ticks
---    From     - Coordinates of the first tick
---    Length   - The scale length
---    Breadth  - The tick length
---    Angle    - The angle of the scale (perpendicular to ticks)
---    Width    - The tick line width
---    Color    - The tick line color
---    Line_Cap - Line cap style
---    Scaled   - The layer is scaled together with the parent
---    Widened  - The layer's line is widened together with the widget
---
--- The layer scaling is performed as follows:
---
--- (o)  The first tick position X is multiplied by the widget's size and
---      placed in the coordinate system centered in the widget's center;
--- (o)  The first tick position Y is multiplied by the widget's size and
---      placed in the coordinate system centered in the widget's center;
--- (o)  Length, width, step are multiplied by the widget's size.
---
--- Exceptions :
---
---    Constraint_Error - Wrong parameters
---
-   procedure Add_Flat_Scale
-             (  Under    : not null access Layer_Location'Class;
-                Step     : Gdouble;
-                First    : Tick_Number    := Tick_Number'Last;
-                Skipped  : Tick_Number    := Tick_Number'Last;
-                From     : Cairo_Tuple    := (0.0, 0.0);
-                Length   : Gdouble        := 1.0;
-                Breadth  : Gdouble        := 1.0;
-                Angle    : Gdouble        := 0.0;
-                Width    : Gdouble        := 1.0;
-                Color    : Gdk_Color      := RGB (0.0, 0.0, 0.0);
-                Line_Cap : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
-                Scaled   : Boolean        := False;
-                Widened  : Boolean        := False
-             );
-   function Add_Flat_Scale
-            (  Under    : not null access Layer_Location'Class;
-               Step     : Gdouble;
-               First    : Tick_Number    := Tick_Number'Last;
-               Skipped  : Tick_Number    := Tick_Number'Last;
-               From     : Cairo_Tuple    := (0.0, 0.0);
-               Length   : Gdouble        := 1.0;
-               Breadth  : Gdouble        := 1.0;
-               Angle    : Gdouble        := 0.0;
-               Width    : Gdouble        := 1.0;
-               Color    : Gdk_Color      := RGB (0.0, 0.0, 0.0);
-               Line_Cap : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
-               Scaled   : Boolean        := False;
-               Widened  : Boolean        := False
-            )  return not null access Flat_Scale_Layer;
---
--- Get_Angle -- The rotation angle
---
---    Layer - The scale layer
---
--- Returns :
---
---    The scale angle
---
-   function Get_Angle (Layer : Flat_Scale_Layer) return Gdouble;
---
--- Get_Breadth -- The tick length
---
---    Layer  - The scale layer
---
--- Returns :
---
---    The tick length
---
-   function Get_Breadth (Layer : Flat_Scale_Layer) return Gdouble;
---
--- Get_From -- Position of the scale beginning
---
---    Layer - The scale layer
---
--- Returns :
---
---    The first tick position
---
-   function Get_From (Layer : Flat_Scale_Layer) return Cairo_Tuple;
---
--- Get_Length -- The length of the scale
---
---    Layer - The scale layer
---
--- Returns :
---
---    The scale length
---
-   function Get_Length (Layer : Flat_Scale_Layer) return Gdouble;
---
--- Get_Line -- Ticks line parameters
---
---    Layer - The scale layer
---
--- Returns :
---
---    The line parameters
---
-   function Get_Line (Layer : Flat_Scale_Layer) return Line_Parameters;
---
--- Get_Ticks -- The parameters of the scale
---
---    Layer - The scale layer
---
--- Returns :
---
---    The parameters of the scale
---
-   function Get_Ticks (Layer : Flat_Scale_Layer)
-      return Tick_Parameters;
---
--- Set -- Parameters of the scale
---
---    Layer   - The scale layer
---    Line    - The tick lines parameters
---    Ticks   - The parameters of the scale ticks
---    From    - Coordinates of the first tick
---    Length  - The scale length
---    Breadth - The tick length
---    Angle   - The angle of the scale (perpendicular to ticks)
---
--- Exceptions :
---
---    Constraint_Error - Wrong parameters
---
-   procedure Set
-             (  Layer   : in out Flat_Scale_Layer;
-                Line    : Line_Parameters;
-                Ticks   : Tick_Parameters;
-                From    : Cairo_Tuple;
-                Length  : Gdouble;
-                Breadth : Gdouble;
-                Angle   : Gdouble
-             );
 
-   overriding
-      function Add
-               (  Under  : not null access Layer_Location'Class;
-                  Stream : not null access Root_Stream_Type'Class
-               )  return not null access Flat_Scale_Layer;
-   overriding
-      procedure Draw
-                (  Layer   : in out Flat_Scale_Layer;
-                   Context : Cairo_Context;
-                   Area    : Gdk_Rectangle
-                );
-   overriding
-      function Get_Scaled (Layer : Flat_Scale_Layer) return Boolean;
-   overriding
-      function Get_Properties_Number
-               (  Layer : Flat_Scale_Layer
-               )  return Natural;
-   overriding
-      function Get_Property_Specification
-               (  Layer    : Flat_Scale_Layer;
-                  Property : Positive
-               )  return Param_Spec;
-   overriding
-      function Get_Property_Value
-               (  Layer    : Flat_Scale_Layer;
-                  Property : Positive
-               )  return GValue;
-   overriding
-      function Get_Widened (Layer : Flat_Scale_Layer) return Boolean;
-   overriding
-      function Is_Updated (Layer : Flat_Scale_Layer) return Boolean;
-   overriding
-      procedure Move
-                (  Layer  : in out Flat_Scale_Layer;
-                   Offset : Cairo_Tuple
-                );
-   overriding
-      procedure Restore
-                (  Stream : in out Root_Stream_Type'Class;
-                   Layer  : in out Flat_Scale_Layer
-                );
-   overriding
-      procedure Scale
-                (  Layer  : in out Flat_Scale_Layer;
-                   Factor : Gdouble
-                );
-   overriding
-      procedure Set_Property_Value
-                (  Layer    : in out Flat_Scale_Layer;
-                   Property : Positive;
-                   Value    : GValue
-                );
-   overriding
-      procedure Set_Scaled
-                (  Layer  : in out Flat_Scale_Layer;
-                   Scaled : Boolean
-                );
-   overriding
-      procedure Set_Widened
-                (  Layer   : in out Flat_Scale_Layer;
-                   Widened : Boolean
-                );
-   overriding
-      procedure Store
-                (  Stream : in out Root_Stream_Type'Class;
-                   Layer  : Flat_Scale_Layer
-                );
-private
-   type Flat_Scale_Layer is
-      new Abstract_Layer and Scalable_Layer and Widened_Layer with
-   record
-      Ticks   : Tick_Parameters;
+   --
+   -- Flat_Scale_Layer -- Layer showing ticks of a flat  gauge.  The  ticks
+   --                     are   drawn   from  starting  from  the  position
+   -- specified  by  the  parameter  From  along  the  line  which angle is
+   -- specified   by   the   parameter   Rotation_Angle.  Ticks  are  drawn
+   -- perpendicular to the line. The ticks start at the from angle and  end
+   -- at the to angle. The ticks are numbered 1,2,3 until the skipped tick,
+   -- which is not drawn. The next tick has again the number 1.  The  first
+   -- tick at the from angle has the specified number.
+   --
+   type Flat_Scale_Layer (<>) is
+     new Abstract_Layer
+     and Scalable_Layer
+     and Widened_Layer with private;
+   --
+   -- Add_Flat_Scale -- Add scale ticks
+   --
+   --    Under    - The layer or widget where to place it under
+   --    Step     - The tick step
+   --    First    - The position of the first tick
+   --    Skipped  - The position of skipped ticks
+   --    From     - Coordinates of the first tick
+   --    Length   - The scale length
+   --    Breadth  - The tick length
+   --    Angle    - The angle of the scale (perpendicular to ticks)
+   --    Width    - The tick line width
+   --    Color    - The tick line color
+   --    Line_Cap - Line cap style
+   --    Scaled   - The layer is scaled together with the parent
+   --    Widened  - The layer's line is widened together with the widget
+   --
+   -- The layer scaling is performed as follows:
+   --
+   -- (o)  The first tick position X is multiplied by the widget's size and
+   --      placed in the coordinate system centered in the widget's center;
+   -- (o)  The first tick position Y is multiplied by the widget's size and
+   --      placed in the coordinate system centered in the widget's center;
+   -- (o)  Length, width, step are multiplied by the widget's size.
+   --
+   -- Exceptions :
+   --
+   --    Constraint_Error - Wrong parameters
+   --
+   procedure Add_Flat_Scale
+     (Under    : not null access Layer_Location'Class;
+      Step     : Gdouble;
+      First    : Tick_Number                := Tick_Number'Last;
+      Skipped  : Tick_Number                := Tick_Number'Last;
+      From     : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
+      Length   : Gdouble                    := 1.0;
+      Breadth  : Gdouble                    := 1.0;
+      Angle    : Gdouble                    := 0.0;
+      Width    : Gdouble                    := 1.0;
+      Color    : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Line_Cap : Cairo.Cairo_Line_Cap       := Cairo.Cairo_Line_Cap_Butt;
+      Scaled   : Boolean                    := False;
+      Widened  : Boolean                    := False);
+
+   function Add_Flat_Scale
+     (Under    : not null access Layer_Location'Class;
+      Step     : Gdouble;
+      First    : Tick_Number                := Tick_Number'Last;
+      Skipped  : Tick_Number                := Tick_Number'Last;
+      From     : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
+      Length   : Gdouble                    := 1.0;
+      Breadth  : Gdouble                    := 1.0;
+      Angle    : Gdouble                    := 0.0;
+      Width    : Gdouble                    := 1.0;
+      Color    : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Line_Cap : Cairo.Cairo_Line_Cap       := Cairo.Cairo_Line_Cap_Butt;
+      Scaled   : Boolean                    := False;
+      Widened  : Boolean                    := False)
+      return not null access Flat_Scale_Layer;
+
+   --
+   -- Get_Angle -- The rotation angle
+   --
+   --    Layer - The scale layer
+   --
+   -- Returns :
+   --
+   --    The scale angle
+   --
+   function Get_Angle (Layer : Flat_Scale_Layer) return Gdouble;
+   --
+   -- Get_Breadth -- The tick length
+   --
+   --    Layer  - The scale layer
+   --
+   -- Returns :
+   --
+   --    The tick length
+   --
+   function Get_Breadth (Layer : Flat_Scale_Layer) return Gdouble;
+
+   --
+   -- Get_From -- Position of the scale beginning
+   --
+   --    Layer - The scale layer
+   --
+   -- Returns :
+   --
+   --    The first tick position
+   --
+   function Get_From
+     (Layer : Flat_Scale_Layer) return Cairo.Ellipses.Cairo_Tuple;
+
+   --
+   -- Get_Length -- The length of the scale
+   --
+   --    Layer - The scale layer
+   --
+   -- Returns :
+   --
+   --    The scale length
+   --
+   function Get_Length (Layer : Flat_Scale_Layer) return Gdouble;
+   --
+   -- Get_Line -- Ticks line parameters
+   --
+   --    Layer - The scale layer
+   --
+   -- Returns :
+   --
+   --    The line parameters
+   --
+   function Get_Line (Layer : Flat_Scale_Layer) return Line_Parameters;
+   --
+   -- Get_Ticks -- The parameters of the scale
+   --
+   --    Layer - The scale layer
+   --
+   -- Returns :
+   --
+   --    The parameters of the scale
+   --
+   function Get_Ticks (Layer : Flat_Scale_Layer)
+                       return Tick_Parameters;
+   --
+   -- Set -- Parameters of the scale
+   --
+   --    Layer   - The scale layer
+   --    Line    - The tick lines parameters
+   --    Ticks   - The parameters of the scale ticks
+   --    From    - Coordinates of the first tick
+   --    Length  - The scale length
+   --    Breadth - The tick length
+   --    Angle   - The angle of the scale (perpendicular to ticks)
+   --
+   -- Exceptions :
+   --
+   --    Constraint_Error - Wrong parameters
+   --
+   procedure Set
+     (Layer   : in out Flat_Scale_Layer;
       Line    : Line_Parameters;
-      From    : Cairo_Tuple;
+      Ticks   : Tick_Parameters;
+      From    : Cairo.Ellipses.Cairo_Tuple;
       Length  : Gdouble;
       Breadth : Gdouble;
-      Angle   : Gdouble;
-      Scaled  : Boolean := False;
-      Widened : Boolean := False;
-      Updated : Boolean := True;
-   end record;
+      Angle   : Gdouble);
+
+   overriding function Add
+     (Under  : not null access Layer_Location'Class;
+      Stream : not null access Ada.Streams.Root_Stream_Type'Class)
+      return not null access Flat_Scale_Layer;
+
+   overriding procedure Draw
+     (Layer   : in out Flat_Scale_Layer;
+      Context : Cairo.Cairo_Context;
+      Area    : Gdk_Rectangle);
+
+   overriding function Get_Scaled (Layer : Flat_Scale_Layer) return Boolean;
+
+   overriding function Get_Properties_Number
+     (Layer : Flat_Scale_Layer) return Natural;
+
+   overriding function Get_Property_Specification
+     (Layer    : Flat_Scale_Layer;
+      Property : Positive) return Param_Spec;
+
+   overriding function Get_Property_Value
+     (Layer    : Flat_Scale_Layer;
+      Property : Positive) return Glib.Values.GValue;
+
+   overriding function Get_Widened (Layer : Flat_Scale_Layer) return Boolean;
+
+   overriding function Is_Updated (Layer : Flat_Scale_Layer) return Boolean;
+
+   overriding procedure Move
+     (Layer  : in out Flat_Scale_Layer;
+      Offset : Cairo.Ellipses.Cairo_Tuple);
+
+   overriding procedure Restore
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Layer  : in out Flat_Scale_Layer);
+
+   overriding procedure Scale
+     (Layer  : in out Flat_Scale_Layer;
+      Factor : Gdouble);
+
+   overriding procedure Set_Property_Value
+     (Layer    : in out Flat_Scale_Layer;
+      Property : Positive;
+      Value    : Glib.Values.GValue);
+
+   overriding procedure Set_Scaled
+     (Layer  : in out Flat_Scale_Layer;
+      Scaled : Boolean);
+
+   overriding procedure Set_Widened
+     (Layer   : in out Flat_Scale_Layer;
+      Widened : Boolean);
+
+   overriding procedure Store
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Layer  : Flat_Scale_Layer);
+
+private
+
+   type Flat_Scale_Layer is
+     new Abstract_Layer and Scalable_Layer and Widened_Layer with
+      record
+         Ticks   : Tick_Parameters;
+         Line    : Line_Parameters;
+         From    : Cairo.Ellipses.Cairo_Tuple;
+         Length  : Gdouble;
+         Breadth : Gdouble;
+         Angle   : Gdouble;
+         Scaled  : Boolean := False;
+         Widened : Boolean := False;
+         Updated : Boolean := True;
+      end record;
 
 end Gtk.Layered.Flat_Scale;

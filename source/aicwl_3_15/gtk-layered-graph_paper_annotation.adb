@@ -23,16 +23,15 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 with Ada.Exceptions;              use Ada.Exceptions;
 with Ada.Numerics;                use Ada.Numerics;
-with Ada.IO_Exceptions;           use Ada.IO_Exceptions;
 with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
 with Glib.Messages;               use Glib.Messages;
 with Glib.Properties.Creation;    use Glib.Properties.Creation;
-with Gtk.Layered.Label;           use Gtk.Layered.Label;
 with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
+with Interfaces.C;
 with Strings_Edit.Integers;       use Strings_Edit.Integers;
 
 with Cairo.Font_Slant_Property;
@@ -43,40 +42,43 @@ with Pango.Cairo.Fonts.Font_Type_Property;
 with Strings_Edit.Integers.Superscript;
 
 package body Gtk.Layered.Graph_Paper_Annotation is
+
+   pragma Warnings (Off, "declaration hides ""Superscript""");
+   pragma Warnings (Off, "declaration hides ""Value""");
+
    use Gtk.Layered.Waveform.Edit;
 
    type Layer_Property is
-        (  Property_Scaled,
-           Property_Enlarged,
-           Property_Orientation,
-           Property_Alignment,
-           Property_From,
-           Property_To,
-           Property_Value,
-           Property_Font_Type,
-           Property_Family,
-           Property_Slant,
-           Property_Font_Size,
-           Property_Weight,
-           Property_Height,
-           Property_Stretch,
-           Property_Use_Superscript,
-           Property_Text_Angle,
-           Property_X_Justify,
-           Property_Y_Justify,
-           Property_Color,
-           Property_Background_Color,
-           Property_Border,
-           Property_Overlap,
-           Property_Opacity
-        );
+     (Property_Scaled,
+      Property_Enlarged,
+      Property_Orientation,
+      Property_Alignment,
+      Property_From,
+      Property_To,
+      Property_Value,
+      Property_Font_Type,
+      Property_Family,
+      Property_Slant,
+      Property_Font_Size,
+      Property_Weight,
+      Property_Height,
+      Property_Stretch,
+      Property_Use_Superscript,
+      Property_Text_Angle,
+      Property_X_Justify,
+      Property_Y_Justify,
+      Property_Color,
+      Property_Background_Color,
+      Property_Border,
+      Property_Overlap,
+      Property_Opacity);
 
    function "+" (Value : Annotation_Text_Ptr) return UTF8_String is
    begin
       if Value = null then
          return "";
       else
-         return Value.Buffer (1..Value.Length);
+         return Value.all.Buffer (1 .. Value.all.Length);
       end if;
    end "+";
 
@@ -87,29 +89,26 @@ package body Gtk.Layered.Graph_Paper_Annotation is
 
    procedure Free is
       new Ada.Unchecked_Deallocation
-          (  Graph_Paper_Annotation_Layer,
-             Graph_Paper_Annotation_Ptr
-          );
+       (Graph_Paper_Annotation_Layer,
+        Graph_Paper_Annotation_Ptr);
    procedure Free is
       new Ada.Unchecked_Deallocation
-          (  Graph_Paper_Time_Annotation_Layer,
-             Graph_Paper_Time_Annotation_Ptr
-          );
+       (Graph_Paper_Time_Annotation_Layer,
+        Graph_Paper_Time_Annotation_Ptr);
    procedure Free is
       new Ada.Unchecked_Deallocation
-          (  Annotation_Text,
-             Annotation_Text_Ptr
-          );
+       (Annotation_Text,
+        Annotation_Text_Ptr);
    procedure Free is
       new Ada.Unchecked_Deallocation
-          (  Annotation_List,
-             Annotation_List_Ptr
-          );
+       (Annotation_List,
+        Annotation_List_Ptr);
 
-   function Add
-            (  Under  : not null access Layer_Location'Class;
-               Stream : not null access Root_Stream_Type'Class
-            )  return not null access Graph_Paper_Annotation_Layer is
+   overriding function Add
+     (Under  : not null access Layer_Location'Class;
+      Stream : not null access Ada.Streams.Root_Stream_Type'Class)
+      return not null access Graph_Paper_Annotation_Layer
+   is
       Ptr : Graph_Paper_Annotation_Ptr :=
                new Graph_Paper_Annotation_Layer;
    begin
@@ -122,11 +121,11 @@ package body Gtk.Layered.Graph_Paper_Annotation is
          raise;
    end Add;
 
-   function Add
-            (  Under  : not null access Layer_Location'Class;
-               Stream : not null access Root_Stream_Type'Class
-            )  return not null access
-                      Graph_Paper_Time_Annotation_Layer is
+   overriding function Add
+     (Under  : not null access Layer_Location'Class;
+      Stream : not null access Ada.Streams.Root_Stream_Type'Class)
+      return not null access Graph_Paper_Time_Annotation_Layer
+   is
       Ptr : Graph_Paper_Time_Annotation_Ptr :=
                new Graph_Paper_Time_Annotation_Layer;
    begin
@@ -140,24 +139,24 @@ package body Gtk.Layered.Graph_Paper_Annotation is
    end Add;
 
    function Add_Annotation_Implementation
-            (  Under       : not null access Layer_Location'Class;
-               Paper       : access Graph_Paper_Layer'Class;
-               Location    : Axis_Location;
-               Face        : Pango_Cairo_Font;
-               Height      : Gdouble;
-               Stretch     : Gdouble;
-               Color       : Gdk_Color;
-               Text_Angle  : Gdouble;
-               Justify_X   : Alignment;
-               Justify_Y   : Vertical_Alignment;
-               Superscript : Boolean;
-               Background  : Gdk_Color;
-               Border      : Gdouble;
-               Overlap     : Gdouble;
-               Opacity     : Fill_Opacity;
-               Scaled      : Boolean;
-               Enlarged    : Boolean
-            )  return Graph_Paper_Annotation_Ptr is
+     (Under       : not null access Layer_Location'Class;
+      Paper       : access Graph_Paper_Layer'Class;
+      Location    : Axis_Location;
+      Face        : Pango_Cairo_Font;
+      Height      : Gdouble;
+      Stretch     : Gdouble;
+      Color       : Gdk.Color.Gdk_Color;
+      Text_Angle  : Gdouble;
+      Justify_X   : Alignment;
+      Justify_Y   : Vertical_Alignment;
+      Superscript : Boolean;
+      Background  : Gdk.Color.Gdk_Color;
+      Border      : Gdouble;
+      Overlap     : Gdouble;
+      Opacity     : Fill_Opacity;
+      Scaled      : Boolean;
+      Enlarged    : Boolean) return Graph_Paper_Annotation_Ptr
+   is
       Ptr   : Graph_Paper_Annotation_Ptr :=
                  new Graph_Paper_Annotation_Layer;
       Layer : Graph_Paper_Annotation_Layer renames Ptr.all;
@@ -166,7 +165,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       Layer.Enlarged := Enlarged;
       Add (Ptr, Under);
       Set
-      (  Layer       => Layer,
+        (Layer       => Layer,
          Location    => Location,
          Face        => Face,
          Height      => Height,
@@ -179,10 +178,9 @@ package body Gtk.Layered.Graph_Paper_Annotation is
          Background  => Background,
          Border      => Border,
          Overlap     => Overlap,
-         Opacity     => Opacity
-      );
+         Opacity     => Opacity);
       if Paper /= null then
-         Paper.Attach (Layer);
+         Paper.all.Attach (Layer);
          Layer.Paper := Paper.all'Unchecked_Access;
       end if;
       return Ptr;
@@ -193,24 +191,24 @@ package body Gtk.Layered.Graph_Paper_Annotation is
    end Add_Annotation_Implementation;
 
    function Add_Annotation_Implementation
-            (  Under       : not null access Layer_Location'Class;
-               Paper       : access Graph_Paper_Layer'Class;
-               Location    : Axis_Location;
-               Face        : Pango_Cairo_Font;
-               Height      : Gdouble;
-               Stretch     : Gdouble;
-               Color       : Gdk_Color;
-               Text_Angle  : Gdouble;
-               Justify_X   : Alignment;
-               Justify_Y   : Vertical_Alignment;
-               Superscript : Boolean;
-               Background  : Gdk_Color;
-               Border      : Gdouble;
-               Overlap     : Gdouble;
-               Opacity     : Fill_Opacity;
-               Scaled      : Boolean;
-               Enlarged    : Boolean
-            )  return Graph_Paper_Time_Annotation_Ptr is
+     (Under       : not null access Layer_Location'Class;
+      Paper       : access Graph_Paper_Layer'Class;
+      Location    : Axis_Location;
+      Face        : Pango_Cairo_Font;
+      Height      : Gdouble;
+      Stretch     : Gdouble;
+      Color       : Gdk.Color.Gdk_Color;
+      Text_Angle  : Gdouble;
+      Justify_X   : Alignment;
+      Justify_Y   : Vertical_Alignment;
+      Superscript : Boolean;
+      Background  : Gdk.Color.Gdk_Color;
+      Border      : Gdouble;
+      Overlap     : Gdouble;
+      Opacity     : Fill_Opacity;
+      Scaled      : Boolean;
+      Enlarged    : Boolean) return Graph_Paper_Time_Annotation_Ptr
+   is
       Ptr   : Graph_Paper_Time_Annotation_Ptr :=
                  new Graph_Paper_Time_Annotation_Layer;
       Layer : Graph_Paper_Time_Annotation_Layer renames Ptr.all;
@@ -219,7 +217,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       Layer.Enlarged := Enlarged;
       Add (Ptr, Under);
       Set
-      (  Layer       => Layer,
+        (Layer       => Layer,
          Location    => Location,
          Face        => Face,
          Height      => Height,
@@ -232,10 +230,9 @@ package body Gtk.Layered.Graph_Paper_Annotation is
          Background  => Background,
          Border      => Border,
          Overlap     => Overlap,
-         Opacity     => Opacity
-      );
+         Opacity     => Opacity);
       if Paper /= null then
-         Paper.Attach (Layer);
+         Paper.all.Attach (Layer);
          Layer.Paper := Paper.all'Unchecked_Access;
       end if;
       return Ptr;
@@ -246,223 +243,214 @@ package body Gtk.Layered.Graph_Paper_Annotation is
    end Add_Annotation_Implementation;
 
    procedure Add_Graph_Paper_Annotation
-             (  Under       : not null access Layer_Location'Class;
-                Paper       : not null access Graph_Paper_Layer'Class;
-                Location    : Axis_Location :=
-                                 (  Orientation => Vertical,
-                                    Alignment   => Absolute,
-                                    Top         => -0.5,
-                                    Bottom      => -0.5,
-                                    X_Position  =>  0.0
-                                 );
-                Face        : Pango_Cairo_Font :=
-                                 Create_Pango ("arial unicode ms");
-                Height      : Gdouble            := 12.0;
-                Stretch     : Gdouble            := 1.0;
-                Color       : Gdk_Color          := RGB (0.0, 0.0, 0.0);
-                Text_Angle  : Gdouble            := 0.0;
-                Justify_X   : Alignment          := Center;
-                Justify_Y   : Vertical_Alignment := Center;
-                Superscript : Boolean            := True;
-                Background  : Gdk_Color          := RGB (1.0, 1.0, 1.0);
-                Border      : Gdouble            := 2.0;
-                Overlap     : Gdouble            :=-2.0;
-                Opacity     : Fill_Opacity       := 1.0;
-                Scaled      : Boolean            := False;
-                Enlarged    : Boolean            := False
-             )  is
+     (Under       : not null access Layer_Location'Class;
+      Paper       : not null access Graph_Paper_Layer'Class;
+      Location    : Axis_Location       :=
+        (Orientation => Vertical,
+         Alignment   => Absolute,
+         Top         => -0.5,
+         Bottom      => -0.5,
+         X_Position  =>  0.0);
+      Face        : Pango_Cairo_Font    := Create_Pango ("arial unicode ms");
+      Height      : Gdouble             := 12.0;
+      Stretch     : Gdouble             := 1.0;
+      Color       : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Text_Angle  : Gdouble             := 0.0;
+      Justify_X   : Alignment           := Center;
+      Justify_Y   : Vertical_Alignment  := Center;
+      Superscript : Boolean             := True;
+      Background  : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 1.0, 1.0);
+      Border      : Gdouble             := 2.0;
+      Overlap     : Gdouble             := -2.0;
+      Opacity     : Fill_Opacity        := 1.0;
+      Scaled      : Boolean             := False;
+      Enlarged    : Boolean             := False)
+   is
       Ptr : Graph_Paper_Annotation_Ptr;
    begin
       Ptr :=
          Add_Annotation_Implementation
-         (  Under       => Under,
-            Paper       => Paper,
-            Location    => Location,
-            Face        => Face,
-            Height      => Height,
-            Stretch     => Stretch,
-            Text_Angle  => Text_Angle,
-            Justify_X   => Justify_X,
-            Justify_Y   => Justify_Y,
-            Color       => Color,
-            Superscript => Superscript,
-            Background  => Background,
-            Border      => Border,
-            Overlap     => Overlap,
-            Opacity     => Opacity,
-            Scaled      => Scaled,
-            Enlarged    => Enlarged
-         );
+          (Under       => Under,
+           Paper       => Paper,
+           Location    => Location,
+           Face        => Face,
+           Height      => Height,
+           Stretch     => Stretch,
+           Text_Angle  => Text_Angle,
+           Justify_X   => Justify_X,
+           Justify_Y   => Justify_Y,
+           Color       => Color,
+           Superscript => Superscript,
+           Background  => Background,
+           Border      => Border,
+           Overlap     => Overlap,
+           Opacity     => Opacity,
+           Scaled      => Scaled,
+           Enlarged    => Enlarged);
+      pragma Unreferenced (Ptr);
    end Add_Graph_Paper_Annotation;
 
    function Add_Graph_Paper_Annotation
-            (  Under       : not null access Layer_Location'Class;
-               Paper       : not null access Graph_Paper_Layer'Class;
-               Location    : Axis_Location :=
-                                (  Orientation => Vertical,
-                                   Alignment   => Absolute,
-                                   Top         => -0.5,
-                                   Bottom      =>  0.5,
-                                   X_Position  =>  0.0
-                                );
-               Face        : Pango_Cairo_Font :=
-                                Create_Pango ("arial unicode ms");
-               Height      : Gdouble            := 12.0;
-               Stretch     : Gdouble            := 1.0;
-               Color       : Gdk_Color          := RGB (0.0, 0.0, 0.0);
-               Text_Angle  : Gdouble            := 0.0;
-               Justify_X   : Alignment          := Center;
-               Justify_Y   : Vertical_Alignment := Center;
-               Superscript : Boolean            := True;
-               Background  : Gdk_Color          := RGB (1.0, 1.0, 1.0);
-               Border      : Gdouble            := 2.0;
-               Overlap     : Gdouble            :=-2.0;
-               Opacity     : Fill_Opacity       := 1.0;
-               Scaled      : Boolean            := False;
-               Enlarged    : Boolean            := False
-            )  return not null access Graph_Paper_Annotation_Layer is
+     (Under       : not null access Layer_Location'Class;
+      Paper       : not null access Graph_Paper_Layer'Class;
+      Location    : Axis_Location       :=
+        (Orientation => Vertical,
+         Alignment   => Absolute,
+         Top         => -0.5,
+         Bottom      =>  0.5,
+         X_Position  =>  0.0);
+      Face        : Pango_Cairo_Font    := Create_Pango ("arial unicode ms");
+      Height      : Gdouble             := 12.0;
+      Stretch     : Gdouble             := 1.0;
+      Color       : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Text_Angle  : Gdouble             := 0.0;
+      Justify_X   : Alignment           := Center;
+      Justify_Y   : Vertical_Alignment  := Center;
+      Superscript : Boolean             := True;
+      Background  : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 1.0, 1.0);
+      Border      : Gdouble             := 2.0;
+      Overlap     : Gdouble             := -2.0;
+      Opacity     : Fill_Opacity        := 1.0;
+      Scaled      : Boolean             := False;
+      Enlarged    : Boolean             := False)
+      return not null access Graph_Paper_Annotation_Layer
+   is
       Ptr : Graph_Paper_Annotation_Ptr;
    begin
       Ptr :=
          Add_Annotation_Implementation
-         (  Under       => Under,
-            Paper       => Paper,
-            Location    => Location,
-            Face        => Face,
-            Height      => Height,
-            Stretch     => Stretch,
-            Text_Angle  => Text_Angle,
-            Justify_X   => Justify_X,
-            Justify_Y   => Justify_Y,
-            Color       => Color,
-            Superscript => Superscript,
-            Background  => Background,
-            Border      => Border,
-            Overlap     => Overlap,
-            Opacity     => Opacity,
-            Scaled      => Scaled,
-            Enlarged    => Enlarged
-         );
+          (Under       => Under,
+           Paper       => Paper,
+           Location    => Location,
+           Face        => Face,
+           Height      => Height,
+           Stretch     => Stretch,
+           Text_Angle  => Text_Angle,
+           Justify_X   => Justify_X,
+           Justify_Y   => Justify_Y,
+           Color       => Color,
+           Superscript => Superscript,
+           Background  => Background,
+           Border      => Border,
+           Overlap     => Overlap,
+           Opacity     => Opacity,
+           Scaled      => Scaled,
+           Enlarged    => Enlarged);
       return Ptr.all'Unchecked_Access;
    end Add_Graph_Paper_Annotation;
 
    procedure Add_Graph_Paper_Time_Annotation
-             (  Under       : not null access Layer_Location'Class;
-                Paper       : not null access Graph_Paper_Layer'Class;
-                Location    : Axis_Location :=
-                                 (  Orientation => Horizontal,
-                                    Alignment   => Absolute,
-                                    Left        => -0.5,
-                                    Right       => -0.5,
-                                    Y_Position  =>  0.0
-                                 );
-                Face        : Pango_Cairo_Font :=
-                                 Create_Pango ("arial unicode ms");
-                Height      : Gdouble            := 12.0;
-                Stretch     : Gdouble            := 1.0;
-                Color       : Gdk_Color          := RGB (0.0, 0.0, 0.0);
-                Text_Angle  : Gdouble            := 0.0;
-                Justify_X   : Alignment          := Center;
-                Justify_Y   : Vertical_Alignment := Center;
-                Superscript : Boolean            := True;
-                Background  : Gdk_Color          := RGB (1.0, 1.0, 1.0);
-                Border      : Gdouble            := 2.0;
-                Overlap     : Gdouble            :=-2.0;
-                Opacity     : Fill_Opacity       := 1.0;
-                Scaled      : Boolean            := False;
-                Enlarged    : Boolean            := False
-             )  is
+     (Under       : not null access Layer_Location'Class;
+      Paper       : not null access Graph_Paper_Layer'Class;
+      Location    : Axis_Location       :=
+        (Orientation => Horizontal,
+         Alignment   => Absolute,
+         Left        => -0.5,
+         Right       => -0.5,
+         Y_Position  =>  0.0);
+      Face        : Pango_Cairo_Font    := Create_Pango ("arial unicode ms");
+      Height      : Gdouble             := 12.0;
+      Stretch     : Gdouble             := 1.0;
+      Color       : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Text_Angle  : Gdouble             := 0.0;
+      Justify_X   : Alignment           := Center;
+      Justify_Y   : Vertical_Alignment  := Center;
+      Superscript : Boolean             := True;
+      Background  : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 1.0, 1.0);
+      Border      : Gdouble             := 2.0;
+      Overlap     : Gdouble             := -2.0;
+      Opacity     : Fill_Opacity        := 1.0;
+      Scaled      : Boolean             := False;
+      Enlarged    : Boolean             := False)
+   is
       Ptr : Graph_Paper_Time_Annotation_Ptr;
    begin
       Ptr :=
          Add_Annotation_Implementation
-         (  Under       => Under,
-            Paper       => Paper,
-            Location    => Location,
-            Face        => Face,
-            Height      => Height,
-            Stretch     => Stretch,
-            Text_Angle  => Text_Angle,
-            Justify_X   => Justify_X,
-            Justify_Y   => Justify_Y,
-            Color       => Color,
-            Superscript => Superscript,
-            Background  => Background,
-            Border      => Border,
-            Overlap     => Overlap,
-            Opacity     => Opacity,
-            Scaled      => Scaled,
-            Enlarged    => Enlarged
-         );
+          (Under       => Under,
+           Paper       => Paper,
+           Location    => Location,
+           Face        => Face,
+           Height      => Height,
+           Stretch     => Stretch,
+           Text_Angle  => Text_Angle,
+           Justify_X   => Justify_X,
+           Justify_Y   => Justify_Y,
+           Color       => Color,
+           Superscript => Superscript,
+           Background  => Background,
+           Border      => Border,
+           Overlap     => Overlap,
+           Opacity     => Opacity,
+           Scaled      => Scaled,
+           Enlarged    => Enlarged);
+      pragma Unreferenced (Ptr);
    end Add_Graph_Paper_Time_Annotation;
 
    function Add_Graph_Paper_Time_Annotation
-            (  Under       : not null access Layer_Location'Class;
-               Paper       : not null access Graph_Paper_Layer'Class;
-               Location    : Axis_Location :=
-                                (  Orientation => Horizontal,
-                                   Alignment   => Absolute,
-                                   Left        => -0.5,
-                                   Right       => -0.5,
-                                   Y_Position  =>  0.0
-                                );
-               Face        : Pango_Cairo_Font :=
-                                Create_Pango ("arial unicode ms");
-               Height      : Gdouble            := 12.0;
-               Stretch     : Gdouble            := 1.0;
-               Color       : Gdk_Color          := RGB (0.0, 0.0, 0.0);
-               Text_Angle  : Gdouble            := 0.0;
-               Justify_X   : Alignment          := Center;
-               Justify_Y   : Vertical_Alignment := Center;
-               Superscript : Boolean            := True;
-               Background  : Gdk_Color          := RGB (1.0, 1.0, 1.0);
-               Border      : Gdouble            := 2.0;
-               Overlap     : Gdouble            :=-2.0;
-               Opacity     : Fill_Opacity       := 1.0;
-               Scaled      : Boolean            := False;
-               Enlarged    : Boolean            := False
-            )  return not null access
-                      Graph_Paper_Time_Annotation_Layer is
+     (Under       : not null access Layer_Location'Class;
+      Paper       : not null access Graph_Paper_Layer'Class;
+      Location    : Axis_Location       :=
+        (Orientation => Horizontal,
+         Alignment   => Absolute,
+         Left        => -0.5,
+         Right       => -0.5,
+         Y_Position  =>  0.0);
+      Face        : Pango_Cairo_Font    := Create_Pango ("arial unicode ms");
+      Height      : Gdouble             := 12.0;
+      Stretch     : Gdouble             := 1.0;
+      Color       : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Text_Angle  : Gdouble             := 0.0;
+      Justify_X   : Alignment           := Center;
+      Justify_Y   : Vertical_Alignment  := Center;
+      Superscript : Boolean             := True;
+      Background  : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 1.0, 1.0);
+      Border      : Gdouble             := 2.0;
+      Overlap     : Gdouble             := -2.0;
+      Opacity     : Fill_Opacity        := 1.0;
+      Scaled      : Boolean             := False;
+      Enlarged    : Boolean             := False)
+      return not null access Graph_Paper_Time_Annotation_Layer
+   is
       Ptr : Graph_Paper_Time_Annotation_Ptr;
    begin
       Ptr :=
          Add_Annotation_Implementation
-         (  Under       => Under,
-            Paper       => Paper,
-            Location    => Location,
-            Face        => Face,
-            Height      => Height,
-            Stretch     => Stretch,
-            Text_Angle  => Text_Angle,
-            Justify_X   => Justify_X,
-            Justify_Y   => Justify_Y,
-            Color       => Color,
-            Superscript => Superscript,
-            Background  => Background,
-            Border      => Border,
-            Overlap     => Overlap,
-            Opacity     => Opacity,
-            Scaled      => Scaled,
-            Enlarged    => Enlarged
-         );
+          (Under       => Under,
+           Paper       => Paper,
+           Location    => Location,
+           Face        => Face,
+           Height      => Height,
+           Stretch     => Stretch,
+           Text_Angle  => Text_Angle,
+           Justify_X   => Justify_X,
+           Justify_Y   => Justify_Y,
+           Color       => Color,
+           Superscript => Superscript,
+           Background  => Background,
+           Border      => Border,
+           Overlap     => Overlap,
+           Opacity     => Opacity,
+           Scaled      => Scaled,
+           Enlarged    => Enlarged);
       return Ptr.all'Unchecked_Access;
    end Add_Graph_Paper_Time_Annotation;
 
-   procedure Detached
-             (  Annotation : in out Graph_Paper_Annotation_Layer
-             )  is
+   overriding procedure Detached
+     (Annotation : in out Graph_Paper_Annotation_Layer) is
    begin
       Annotation.Paper := null;
    end Detached;
 
-   procedure Changed
-             (  Layer  : in out Graph_Paper_Annotation_Layer;
-                Paper  : Graph_Paper_Layer'Class;
-                Box    : Cairo_Box;
-                X1, X2 : X_Axis;
-                Y1, Y2 : Y_Axis
-             )  is
+   overriding procedure Changed
+     (Layer  : in out Graph_Paper_Annotation_Layer;
+      Paper  : Graph_Paper_Layer'Class;
+      Box    : Cairo.Ellipses.Cairo_Box;
+      X1, X2 : X_Axis;
+      Y1, Y2 : Y_Axis)
+   is
       use Gtk.Layered.Waveform.Rasters;
+      use type Cairo.Ellipses.Cairo_Box;
       Changed : Boolean := Layer.Updated;
    begin
       case Layer.Location.Orientation is
@@ -492,60 +480,60 @@ package body Gtk.Layered.Graph_Paper_Annotation is
          Changed := True;
       end if;
       Layer.Updated := Changed;
-      if Changed and not Layer.Widget.Drawing then
+      if Changed and then not Layer.Widget.all.Drawing then
          Queue_Draw (Layer.Widget); -- Signal draw to the widget
       end if;
    exception
       when Error : others =>
          Log
-         (  GtkAda_Contributions_Domain,
+           (Gtk.Missed.GtkAda_Contributions_Domain,
             Log_Level_Critical,
-            (  "Fault: "
-            &  Exception_Information (Error)
-            &  Where ("Changed")
-         )  );
+            "Fault: " & Exception_Information (Error) & Where ("Changed"));
    end Changed;
 
    procedure Delete (List : in out Annotation_List_Ptr) is
    begin
       if List /= null then
          for Index in List'Range loop
-            Free (List (Index));
+            Free (List.all (Index));
          end loop;
          Free (List);
       end if;
    end Delete;
 
-   procedure Draw
-             (  Layer   : in out Graph_Paper_Annotation_Layer;
-                Context : Cairo_Context;
-                Area    : Gdk_Rectangle
-             )  is
+   overriding procedure Draw
+     (Layer   : in out Graph_Paper_Annotation_Layer;
+      Context : Cairo.Cairo_Context;
+      Area    : Gdk_Rectangle)
+   is
+      pragma Unreferenced (Area);
       dX : constant Gdouble := Layer.Box.X2 - Layer.Box.X1 + 1.0;
       dY : constant Gdouble := Layer.Box.Y2 - Layer.Box.Y1 + 1.0;
       dT : constant Gdouble := Layer.T2 - Layer.T1;
       dV : constant Gdouble := Layer.V2 - Layer.V1;
-      FX, FY : long_double;
-      X0, Y0 : long_double;
+      FX, FY : Interfaces.C.long_double;
+      X0, Y0 : Interfaces.C.long_double;
 
       function To_X (T : Gdouble) return Gdouble is
          pragma Inline (To_X);
+         use type Interfaces.C.long_double;
       begin
          return
-            Gdouble (long_double'Rounding (FX * long_double (T)) + X0);
+            Gdouble (Interfaces.C.long_double'Rounding (FX * Interfaces.C.long_double (T)) + X0);
       end To_X;
 
       function To_Y (V : Gdouble) return Gdouble is
          pragma Inline (To_Y);
+         use type Interfaces.C.long_double;
       begin
          return
-            Gdouble (Y0 - long_double'Rounding (FY * long_double (V)));
+            Gdouble (Y0 - Interfaces.C.long_double'Rounding (FY * Interfaces.C.long_double (V)));
       end To_Y;
 
       Cos_A   : constant Gdouble := abs Cos (Layer.Text_Angle);
       Sin_A   : constant Gdouble := abs Sin (Layer.Text_Angle);
-      Old_Box : Cairo_Box := (others => Gdouble'First);
-      New_Box : Cairo_Box;
+      Old_Box : Cairo.Ellipses.Cairo_Box := (others => Gdouble'First);
+      New_Box : Cairo.Ellipses.Cairo_Box;
       Border  : Gdouble := Layer.Border;
       Overlap : Gdouble := Layer.Overlap;
       From    : Gdouble; -- The first point of the annotation
@@ -553,40 +541,35 @@ package body Gtk.Layered.Graph_Paper_Annotation is
 
       function Draw_Text (X, Y : Gdouble; Index : Positive)
          return Boolean is
-         Extents : Cairo_Text_Extents;
+         Extents : Cairo.Cairo_Text_Extents;
          Gain    : Gdouble;
-         Box     : Cairo_Tuple;
+         Box     : Cairo.Ellipses.Cairo_Tuple;
          Width   : Gdouble;
          Height  : Gdouble;
       begin
-         if (  Layer.Texts = null
-            or else
-               Index > Layer.Texts'Length
-            or else
-               Layer.Texts (Index) = null
-            or else
-               Layer.Texts (Index).Length = 0
-            )
+         if
+           Layer.Texts = null or else
+           Index > Layer.Texts'Length or else
+           Layer.Texts.all (Index) = null or else
+           Layer.Texts.all (Index).all.Length = 0
          then
             return False;
          end if;
          Get_Markup_Extents
-         (  Layer.Face,
+           (Layer.Face,
             Context,
-            +Layer.Texts (Index),
-            Extents
-         );
+            +Layer.Texts.all (Index),
+            Extents);
          if Extents.Height <= 0.0 or else Extents.Width <= 0.0 then
             return False;
          end if;
          Gain := Layer.Height / Extents.Height;
          if Layer.Enlarged then
-            Gain := Gain * Layer.Widget.Get_Size;
+            Gain := Gain * Layer.Widget.all.Get_Size;
          end if;
          Box :=
-            (  Gain * Extents.Width * Layer.Stretch + Border * 2.0,
-               Gain * Extents.Height                + Border * 2.0
-            );
+           (Gain * Extents.Width * Layer.Stretch + Border * 2.0,
+            Gain * Extents.Height                + Border * 2.0);
          Width  := Cos_A * Box.X + Sin_A * Box.Y;
          Height := Sin_A * Box.X + Cos_A * Box.Y;
          case Layer.Justify_X is
@@ -611,68 +594,61 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                   return False;
                end if;
          end case;
-         if (  (  New_Box.X1 in Old_Box.X1..Old_Box.X2
-               or else
-                  New_Box.X2 in Old_Box.X1..Old_Box.X2
-               )
-            and then
-               (  New_Box.Y1 in Old_Box.Y1..Old_Box.Y2
-               or else
-                  New_Box.Y2 in Old_Box.Y1..Old_Box.Y2
-            )  )
+         if
+           (New_Box.X1 in Old_Box.X1 .. Old_Box.X2 or else
+            New_Box.X2 in Old_Box.X1 .. Old_Box.X2) and then
+           (New_Box.Y1 in Old_Box.Y1 .. Old_Box.Y2 or else
+            New_Box.Y2 in Old_Box.Y1 .. Old_Box.Y2)
          then
             return False;
          else
             Old_Box :=
-               (  X1 => New_Box.X1 + Overlap,
-                  X2 => New_Box.X2 - Overlap,
-                  Y1 => New_Box.Y1 + Overlap,
-                  Y2 => New_Box.Y2 - Overlap
-               );
+              (X1 => New_Box.X1 + Overlap,
+               X2 => New_Box.X2 - Overlap,
+               Y1 => New_Box.Y1 + Overlap,
+               Y2 => New_Box.Y2 - Overlap);
          end if;
          declare
-            State : Context_State := Save (Context);
+            State : Cairo.Ellipses.Context_State :=
+                      Cairo.Ellipses.Save (Context);
+            pragma Unreferenced (State);
          begin
-            Translate
-            (  Context,
+            Cairo.Translate
+              (Context,
                New_Box.X1 + Width / 2.0,
-               New_Box.Y1 + Height / 2.0
-            );
-            Rotate (Context, Layer.Text_Angle);
+               New_Box.Y1 + Height / 2.0);
+            Cairo.Rotate (Context, Layer.Text_Angle);
             if Layer.Opacity < 1.0 then
-               Move_To (Context, -Box.X / 2.0, -Box.Y / 2.0);
-               Rel_Line_To (Context, Box.X, 0.0);
-               Rel_Line_To (Context, 0.0, Box.Y);
-               Rel_Line_To (Context, -Box.X, 0.0);
-               Close_Path (Context);
-               Set_Source_Rgba
-               (  Cr    => Context,
-                  Red   => Gdouble (Red   (Layer.Background)) /
+               Cairo.Move_To (Context, -Box.X / 2.0, -Box.Y / 2.0);
+               Cairo.Rel_Line_To (Context, Box.X, 0.0);
+               Cairo.Rel_Line_To (Context, 0.0, Box.Y);
+               Cairo.Rel_Line_To (Context, -Box.X, 0.0);
+               Cairo.Close_Path (Context);
+               Cairo.Set_Source_Rgba
+                 (Cr    => Context,
+                  Red   => Gdouble (Gdk.Color.Red   (Layer.Background)) /
                            Gdouble (Guint16'Last),
-                  Green => Gdouble (Green (Layer.Background)) /
+                  Green => Gdouble (Gdk.Color.Green (Layer.Background)) /
                            Gdouble (Guint16'Last),
-                  Blue  => Gdouble (Blue  (Layer.Background)) /
+                  Blue  => Gdouble (Gdk.Color.Blue  (Layer.Background)) /
                            Gdouble (Guint16'Last),
-                  Alpha => 1.0 - Layer.Opacity
-               );
-               Fill (Context);
-               Set_Source_Rgb
-               (  Cr    => Context,
-                  Red   => Gdouble (Red   (Layer.Color)) /
+                  Alpha => 1.0 - Layer.Opacity);
+               Cairo.Fill (Context);
+               Cairo.Set_Source_Rgb
+                 (Cr    => Context,
+                  Red   => Gdouble (Gdk.Color.Red   (Layer.Color)) /
                            Gdouble (Guint16'Last),
-                  Green => Gdouble (Green (Layer.Color)) /
+                  Green => Gdouble (Gdk.Color.Green (Layer.Color)) /
                            Gdouble (Guint16'Last),
-                  Blue  => Gdouble (Blue  (Layer.Color)) /
-                           Gdouble (Guint16'Last)
-               );
+                  Blue  => Gdouble (Gdk.Color.Blue  (Layer.Color)) /
+                           Gdouble (Guint16'Last));
             end if;
-            Scale (Context, Gain * Layer.Stretch, Gain);
-            Move_To
-            (  Cr => Context,
+            Cairo.Scale (Context, Gain * Layer.Stretch, Gain);
+            Cairo.Move_To
+              (Cr => Context,
                X  => -Extents.X_Bearing - Extents.Width  * 0.5,
-               Y  => -Extents.Y_Bearing - Extents.Height * 0.5
-            );
-            Show_Markup (Layer.Face, Context, +Layer.Texts (Index));
+               Y  => -Extents.Y_Bearing - Extents.Height * 0.5);
+            Show_Markup (Layer.Face, Context, +Layer.Texts.all (Index));
          end;
          return True;
       end Draw_Text;
@@ -680,21 +656,16 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       Onto : Gdouble; -- The line location
 
       Step : constant Gdouble :=
-                      (  Gdouble (Layer.Raster.Minor)
-                      *  Gdouble (Layer.Raster.Ticks + 1)
-                      );
+               (Gdouble (Layer.Raster.Minor) *
+                  Gdouble (Layer.Raster.Ticks + 1));
       V0   : constant Gdouble :=
-                      (  Gdouble (Layer.Raster.Low_Value)
-                      +  Gdouble (Layer.Raster.Minor)
-                      *  Gdouble
-                         (  Layer.Raster.Ticks
-                         -  Layer.Raster.Low_Tick
-                         +  1
-                      )  );
+               (Gdouble (Layer.Raster.Low_Value) +
+                  Gdouble (Layer.Raster.Minor) *
+                  Gdouble (Layer.Raster.Ticks - Layer.Raster.Low_Tick + 1));
 
       procedure Draw_X is
          Start  : Integer;
-         Box    : Cairo_Box;
+         Box    : Cairo.Ellipses.Cairo_Box;
          Median : constant Gdouble := V0 + dT * 0.5;
          function Draw (Index : Integer) return Boolean is
             pragma Inline (Draw);
@@ -702,14 +673,11 @@ package body Gtk.Layered.Graph_Paper_Annotation is
          begin
             T := V0 + Step * Gdouble (Index);
             X := To_X (T);
-            if X not in From..To then
+            if X not in From .. To then
                return False;
             else
                if Draw_Text (X, Onto, Index + 1) then
-                  if (  abs (Median - T)
-                     <  abs (Median - Layer.Middle_Value)
-                     )
-                  then
+                  if abs (Median - T) < abs (Median - Layer.Middle_Value) then
                      Layer.Middle_Value := T;
                   end if;
                   if Index = Start then
@@ -723,18 +691,18 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       begin
          if dX > 0.0 and then dT > 0.0 then
             V1 := V0 + dT;
-            if Layer.Middle_Value in V0..V1 then
+            if Layer.Middle_Value in V0 .. V1 then
                Start := Integer ((Layer.Middle_Value - V0) / Step);
             else
                Start := Integer (0.5 * dT / Step);
             end if;
             Layer.Middle_Value := Gdouble'First;
             if Draw (Start) then
-               for Index in reverse 0..Start - 1 loop
+               for Index in reverse 0 .. Start - 1 loop
                   exit when not Draw (Index);
                end loop;
                Old_Box := Box;
-               for Index in Start + 1..Natural'Last loop
+               for Index in Start + 1 .. Natural'Last loop
                   exit when not Draw (Index);
                end loop;
             end if;
@@ -743,7 +711,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
 
       procedure Draw_Y is
          Start  : Integer;
-         Box    : Cairo_Box;
+         Box    : Cairo.Ellipses.Cairo_Box;
          Median : constant Gdouble := V0 + dV * 0.5;
          function Draw (Index : Integer) return Boolean is
             pragma Inline (Draw);
@@ -751,14 +719,11 @@ package body Gtk.Layered.Graph_Paper_Annotation is
          begin
             V := V0 + Step * Gdouble (Index);
             Y := To_Y (V);
-            if Y not in From..To then
+            if Y not in From .. To then
                return False;
             else
                if Draw_Text (Onto, Y, Index + 1) then
-                  if (  abs (Median - V)
-                     <  abs (Median - Layer.Middle_Value)
-                     )
-                  then
+                  if abs (Median - V) < abs (Median - Layer.Middle_Value) then
                      Layer.Middle_Value := V;
                   end if;
                   if Index = Start then
@@ -772,18 +737,18 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       begin
          if dY > 0.0 and then dV > 0.0 then
             V1 := V0 + dV;
-            if Layer.Middle_Value in V0..V1 then
+            if Layer.Middle_Value in V0 .. V1 then
                Start := Integer ((Layer.Middle_Value - V0) / Step);
             else
                Start := Integer (0.5 * dV / Step);
             end if;
             Layer.Middle_Value := Gdouble'First;
             if Draw (Start) then
-               for Index in reverse 0..Start - 1 loop
+               for Index in reverse 0 .. Start - 1 loop
                   exit when not Draw (Index);
                end loop;
                Old_Box := Box;
-               for Index in Start + 1..Natural'Last loop
+               for Index in Start + 1 .. Natural'Last loop
                   exit when not Draw (Index);
                end loop;
             end if;
@@ -793,29 +758,29 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       use Gtk.Layered.Waveform.Rasters;
 
       function Set_X return Boolean is
+         use type Interfaces.C.long_double;
       begin
          if dT <= 0.0 then
             Layer.Updated := False;
             return True;
          else
-            FX := long_double (dX) / long_double (dT);
-            X0 := (  long_double'Rounding (long_double (Layer.Box.X1))
-                  -  long_double'Rounding (FX * long_double (Layer.T1))
-                  );
+            FX := Interfaces.C.long_double (dX) / Interfaces.C.long_double (dT);
+            X0 := (Interfaces.C.long_double'Rounding (Interfaces.C.long_double (Layer.Box.X1)) -
+                     Interfaces.C.long_double'Rounding (FX * Interfaces.C.long_double (Layer.T1)));
             return False;
          end if;
       end Set_X;
 
       function Set_Y return Boolean is
+         use type Interfaces.C.long_double;
       begin
          if dV <= 0.0 then
             Layer.Updated := False;
             return True;
          else
-            FY := long_double (dY) / long_double (dV);
-            Y0 := (  long_double'Rounding (long_double (Layer.Box.Y2))
-                  +  long_double'Rounding (FY * long_double (Layer.V1))
-                  );
+            FY := Interfaces.C.long_double (dY) / Interfaces.C.long_double (dV);
+            Y0 := (Interfaces.C.long_double'Rounding (Interfaces.C.long_double (Layer.Box.Y2)) +
+                     Interfaces.C.long_double'Rounding (FY * Interfaces.C.long_double (Layer.V1)));
             return False;
          end if;
       end Set_Y;
@@ -823,29 +788,30 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       if Layer.Scaled then
          declare
             X_Size : constant Gdouble :=
-                     Gdouble (Layer.Widget.Get_Allocated_Width);
+                     Gdouble (Layer.Widget.all.Get_Allocated_Width);
             Y_Size : constant Gdouble :=
-                     Gdouble (Layer.Widget.Get_Allocated_Height);
+                     Gdouble (Layer.Widget.all.Get_Allocated_Height);
          begin
             case Layer.Location.Orientation is
                when Horizontal =>
-                  if Set_X then return; end if;
+                  if Set_X then
+                     return;
+                  end if;
                   From :=
-                     (  Layer.Location.Left * X_Size
-                     +  Layer.Widget.Get_Center.X
-                     );
+                    (Layer.Location.Left * X_Size +
+                       Layer.Widget.all.Get_Center.X);
                   To :=
-                     (  Layer.Location.Right * X_Size
-                     +  Layer.Widget.Get_Center.X
-                     );
+                    (Layer.Location.Right * X_Size +
+                       Layer.Widget.all.Get_Center.X);
                   case Layer.Location.Alignment is
                      when Absolute =>
                         Onto :=
-                           (  Layer.Location.Y_Position * Y_Size
-                           +  Layer.Widget.Get_Center.Y
-                           );
+                          (Layer.Location.Y_Position * Y_Size +
+                             Layer.Widget.all.Get_Center.Y);
                      when Relative =>
-                        if Set_Y then return; end if;
+                        if Set_Y then
+                           return;
+                        end if;
                         Onto := Gdouble (Layer.Location.Y_Value);
                         if Onto < Layer.V1 or else Onto > Layer.V2 then
                            Layer.Updated := False;
@@ -854,23 +820,24 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                         Onto := To_Y (Onto);
                   end case;
                when Vertical =>
-                  if Set_Y then return; end if;
+                  if Set_Y then
+                     return;
+                  end if;
                   From :=
-                     (  Layer.Location.Top * Y_Size
-                     +  Layer.Widget.Get_Center.Y
-                     );
+                    (Layer.Location.Top * Y_Size +
+                       Layer.Widget.all.Get_Center.Y);
                   To :=
-                     (  Layer.Location.Bottom * Y_Size
-                     +  Layer.Widget.Get_Center.Y
-                     );
+                    (Layer.Location.Bottom * Y_Size +
+                       Layer.Widget.all.Get_Center.Y);
                   case Layer.Location.Alignment is
                      when Absolute =>
                         Onto :=
-                           (  Layer.Location.X_Position * X_Size
-                           +  Layer.Widget.Get_Center.X
-                           );
+                          (Layer.Location.X_Position * X_Size +
+                             Layer.Widget.all.Get_Center.X);
                      when Relative =>
-                        if Set_X then return; end if;
+                        if Set_X then
+                           return;
+                        end if;
                         Onto := Gdouble (Layer.Location.X_Value);
                         if Onto < Layer.T1 or else Onto > Layer.T2 then
                            Layer.Updated := False;
@@ -883,14 +850,18 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       else
          case Layer.Location.Orientation is
             when Horizontal =>
-               if Set_X then return; end if;
+               if Set_X then
+                  return;
+               end if;
                From := Layer.Location.Left;
                To   := Layer.Location.Right;
                case Layer.Location.Alignment is
                   when Absolute =>
                      Onto := Layer.Location.Y_Position;
                   when Relative =>
-                     if Set_Y then return; end if;
+                     if Set_Y then
+                        return;
+                     end if;
                      Onto := Gdouble (Layer.Location.Y_Value);
                      if Onto < Layer.V1 or else Onto > Layer.V2 then
                         Layer.Updated := False;
@@ -899,14 +870,18 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                      Onto := To_Y (Onto);
                end case;
             when Vertical =>
-               if Set_Y then return; end if;
+               if Set_Y then
+                  return;
+               end if;
                From := Layer.Location.Top;
                To   := Layer.Location.Bottom;
                case Layer.Location.Alignment is
                   when Absolute =>
                      Onto := Layer.Location.X_Position;
                   when Relative =>
-                     if Set_X then return; end if;
+                     if Set_X then
+                        return;
+                     end if;
                      Onto := Gdouble (Layer.Location.X_Value);
                      if Onto < Layer.T1 or else Onto > Layer.T2 then
                         Layer.Updated := False;
@@ -917,18 +892,18 @@ package body Gtk.Layered.Graph_Paper_Annotation is
          end case;
       end if;
       declare
-         State : Context_State := Save (Context);
+         State : Cairo.Ellipses.Context_State := Cairo.Ellipses.Save (Context);
+         pragma Unreferenced (State);
       begin
-         New_Path (Context);
-         Set_Source_Rgb
-         (  Context,
-            Gdouble (Red   (Layer.Color)) / Gdouble (Guint16'Last),
-            Gdouble (Green (Layer.Color)) / Gdouble (Guint16'Last),
-            Gdouble (Blue  (Layer.Color)) / Gdouble (Guint16'Last)
-         );
+         Cairo.New_Path (Context);
+         Cairo.Set_Source_Rgb
+           (Context,
+            Gdouble (Gdk.Color.Red   (Layer.Color)) / Gdouble (Guint16'Last),
+            Gdouble (Gdk.Color.Green (Layer.Color)) / Gdouble (Guint16'Last),
+            Gdouble (Gdk.Color.Blue  (Layer.Color)) / Gdouble (Guint16'Last));
          if Layer.Enlarged then
-            Border  := Border  * Layer.Widget.Get_Size;
-            Overlap := Overlap * Layer.Widget.Get_Size;
+            Border  := Border  * Layer.Widget.all.Get_Size;
+            Overlap := Overlap * Layer.Widget.all.Get_Size;
          end if;
          if Layer.Updated then -- Renewing texts
             declare
@@ -947,22 +922,16 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                      exit when V > V2;
                      if Layer.Renderer = null then
                         Layer.Set_Text
-                        (  Index + 1,
-                           (  Graph_Paper_Annotation_Layer'Class
-                              (  Layer
-                              ) .Render (V, Layer.Raster)
-                           &  Suffix
-                        )  );
+                          (Index + 1,
+                           (Graph_Paper_Annotation_Layer'Class
+                                (Layer).Render (V, Layer.Raster) & Suffix));
                      else
                         Layer.Set_Text
-                        (  Index + 1,
-                           (  Layer.Renderer
-                              (  Layer,
+                          (Index + 1,
+                           (Layer.Renderer
+                                (Layer,
                                  V,
-                                 Layer.Raster
-                              )
-                           &  Suffix
-                        )  );
+                                 Layer.Raster) & Suffix));
                      end if;
                   end loop;
                end if;
@@ -981,18 +950,15 @@ package body Gtk.Layered.Graph_Paper_Annotation is
    exception
       when Error : others =>
          Log
-         (  GtkAda_Contributions_Domain,
+           (Gtk.Missed.GtkAda_Contributions_Domain,
             Log_Level_Critical,
-            (  "Fault: "
-            &  Exception_Information (Error)
-            &  Where ("Draw")
-         )  );
+            "Fault: " & Exception_Information (Error) & Where ("Draw"));
    end Draw;
 
-   procedure Finalize (Layer : in out Graph_Paper_Annotation_Layer) is
+   overriding procedure Finalize (Layer : in out Graph_Paper_Annotation_Layer) is
    begin
       if Layer.Paper /= null then
-         Layer.Paper.Detach (Layer);
+         Layer.Paper.all.Detach (Layer);
          Layer.Paper := null;
       end if;
       Finalize (Abstract_Layer (Layer));
@@ -1000,8 +966,8 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       Free (Layer.Suffix);
    end Finalize;
 
-   function Get_Background_Color (Layer : Graph_Paper_Annotation_Layer)
-      return Gdk_Color is
+   function Get_Background_Color
+     (Layer : Graph_Paper_Annotation_Layer) return Gdk.Color.Gdk_Color is
    begin
       return Layer.Background;
    end Get_Background_Color;
@@ -1012,8 +978,8 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       return Layer.Border;
    end Get_Border;
 
-   function Get_Color (Layer : Graph_Paper_Annotation_Layer)
-      return Gdk_Color is
+   function Get_Color
+     (Layer : Graph_Paper_Annotation_Layer) return Gdk.Color.Gdk_Color is
    begin
       return Layer.Color;
    end Get_Color;
@@ -1024,8 +990,8 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       return Layer.Enlarged;
    end Get_Enlarged;
 
-  function Get_Face (Layer : Graph_Paper_Annotation_Layer)
-      return Pango_Cairo_Font is
+   function Get_Face (Layer : Graph_Paper_Annotation_Layer)
+                      return Pango_Cairo_Font is
    begin
       return Layer.Face;
    end Get_Face;
@@ -1066,21 +1032,19 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       return Layer.Overlap;
    end Get_Overlap;
 
-   function Get_Properties_Number
-            (  Layer : Graph_Paper_Annotation_Layer
-            )  return Natural is
+   overriding function Get_Properties_Number
+     (Layer : Graph_Paper_Annotation_Layer) return Natural
+   is
+      pragma Unreferenced (Layer);
    begin
       return
-      (  Layer_Property'Pos (Layer_Property'Last)
-      -  Layer_Property'Pos (Layer_Property'First)
-      +  1
-      );
+        (Layer_Property'Pos (Layer_Property'Last) -
+             Layer_Property'Pos (Layer_Property'First) + 1);
    end Get_Properties_Number;
 
-   function Get_Property_Specification
-            (  Layer    : Graph_Paper_Annotation_Layer;
-               Property : Positive
-            )  return Param_Spec is
+   overriding function Get_Property_Specification
+     (Layer    : Graph_Paper_Annotation_Layer;
+      Property : Positive) return Param_Spec is
    begin
       if Property > Get_Properties_Number (Layer) then
          raise Constraint_Error;
@@ -1089,406 +1053,372 @@ package body Gtk.Layered.Graph_Paper_Annotation is
             when Property_Font_Type =>
                return
                   Pango.Cairo.Fonts.Font_Type_Property.Gnew_Enum
-                  (  Name    => "font-type",
-                     Nick    => "font type",
-                     Default => Pango_Font,
-                     Blurb   => "The backend used for the font, " &
-                                "e.g. toy font, pango font"
-                  );
+                   (Name    => "font-type",
+                    Nick    => "font type",
+                    Default => Pango_Font,
+                    Blurb   =>
+                       "The backend used for the font, e.g. toy font, pango " &
+                       "font");
             when Property_Border =>
                return
                   Gnew_Double
-                  (  Name    => "border-width",
-                     Nick    => "border",
-                     Minimum => Gdouble'First,
-                     Maximum => Gdouble'Last,
-                     Default => 2.0,
-                     Blurb   => "The amount added to the four sides" &
-                                "of the annotation text extents box " &
-                                "in order to get the corresponding " &
-                                "background box"
-                  );
+                   (Name    => "border-width",
+                    Nick    => "border",
+                    Minimum => Gdouble'First,
+                    Maximum => Gdouble'Last,
+                    Default => 2.0,
+                    Blurb   => "The amount added to the four sides" &
+                      "of the annotation text extents box " &
+                      "in order to get the corresponding " &
+                      "background box");
             when Property_Overlap =>
                return
                   Gnew_Double
-                  (  Name    => "border-overlap",
-                     Nick    => "overlap",
-                     Minimum => Gdouble'First,
-                     Maximum => Gdouble'Last,
-                     Default =>-2.0,
-                     Blurb   => "The amount inside the box allowed" &
-                                "to overlap other boxes"
-                  );
+                   (Name    => "border-overlap",
+                    Nick    => "overlap",
+                    Minimum => Gdouble'First,
+                    Maximum => Gdouble'Last,
+                    Default => -2.0,
+                    Blurb   => "The amount inside the box allowed" &
+                      "to overlap other boxes");
             when Property_From =>
                return
                   Gnew_Double
-                  (  Name    => "from",
-                     Nick    => "from",
-                     Minimum => Gdouble'First,
-                     Maximum => Gdouble'Last,
-                     Default => 0.0,
-                     Blurb   => "The x-coordinate of the point " &
-                                "of the line along which annotation " &
-                                "texts are arranged when the " &
-                                "annotation is horizontal. When " &
-                                "annotation is vertical it is the " &
-                                "y-coordinate. Annotation text is " &
-                                "shown only the corresponding " &
-                                "coordinate of the box is no less " &
-                                "than the property value"
-                  );
+                   (Name    => "from",
+                    Nick    => "from",
+                    Minimum => Gdouble'First,
+                    Maximum => Gdouble'Last,
+                    Default => 0.0,
+                    Blurb   => "The x-coordinate of the point " &
+                      "of the line along which annotation " &
+                      "texts are arranged when the " &
+                      "annotation is horizontal. When " &
+                      "annotation is vertical it is the " &
+                      "y-coordinate. Annotation text is " &
+                      "shown only the corresponding " &
+                      "coordinate of the box is no less " &
+                      "than the property value");
             when Property_To =>
                return
                   Gnew_Double
-                  (  Name    => "to",
-                     Nick    => "to",
-                     Minimum => Gdouble'First,
-                     Maximum => Gdouble'Last,
-                     Default => 0.0,
-                     Blurb   => "The x-coordinate of the point " &
-                                "of the line along which annotation " &
-                                "texts are arranged when the " &
-                                "annotation is horizontal. When " &
-                                "annotation is vertical it is the " &
-                                "y-coordinate. Annotation text is " &
-                                "shown only the corresponding " &
-                                "coordinate of the box is no greater " &
-                                "than the property value"
-                  );
+                   (Name    => "to",
+                    Nick    => "to",
+                    Minimum => Gdouble'First,
+                    Maximum => Gdouble'Last,
+                    Default => 0.0,
+                    Blurb   => "The x-coordinate of the point " &
+                      "of the line along which annotation " &
+                      "texts are arranged when the " &
+                      "annotation is horizontal. When " &
+                      "annotation is vertical it is the " &
+                      "y-coordinate. Annotation text is " &
+                      "shown only the corresponding " &
+                      "coordinate of the box is no greater " &
+                      "than the property value");
             when Property_Value =>
                return
                   Gnew_Double
-                  (  Name    => "value",
-                     Nick    => "value",
-                     Minimum => Gdouble'First,
-                     Maximum => Gdouble'Last,
-                     Default => 0.0,
-                     Blurb   => "The y-coordinate of the line along " &
-                                "which annotation texts are " &
-                                "arranged when the annotation is " &
-                                "horizontal. When annotation is " &
-                                "vertical it is the x-coordinate. " &
-                                "When annotation position is " &
-                                "relative, the value is the y- or " &
-                                "x-value. In the latter case an " &
-                                "annotation text is shown only if " &
-                                "in the corresponding range of the " &
-                                "graph paper box"
-                  );
+                   (Name    => "value",
+                    Nick    => "value",
+                    Minimum => Gdouble'First,
+                    Maximum => Gdouble'Last,
+                    Default => 0.0,
+                    Blurb   => "The y-coordinate of the line along " &
+                      "which annotation texts are " &
+                      "arranged when the annotation is " &
+                      "horizontal. When annotation is " &
+                      "vertical it is the x-coordinate. " &
+                      "When annotation position is " &
+                      "relative, the value is the y- or " &
+                      "x-value. In the latter case an " &
+                      "annotation text is shown only if " &
+                      "in the corresponding range of the " &
+                      "graph paper box");
             when Property_Text_Angle =>
                return
                   Gnew_Double
-                  (  Name    => "text-angle",
-                     Nick    => "text angle",
-                     Minimum =>-2.0 * Pi,
-                     Maximum => 2.0 * Pi,
-                     Default => 0.0,
-                     Blurb   => "The angle of the annotation texts " &
-                                "base line"
-                  );
+                   (Name    => "text-angle",
+                    Nick    => "text angle",
+                    Minimum => -2.0 * Pi,
+                    Maximum => 2.0 * Pi,
+                    Default => 0.0,
+                    Blurb   => "The angle of the annotation texts " &
+                      "base line");
             when Property_Stretch =>
                return
                   Gnew_Double
-                  (  Name    => "stretch",
-                     Nick    => "stretch",
-                     Minimum => 0.0,
-                     Maximum => Gdouble'Last,
-                     Default => 1.0,
-                     Blurb   => "The relation of the rendered width " &
-                                "of an annotation text to its " &
-                                "original width. The stretch value " &
-                                "1 keeps texts unchanged"
-                  );
+                   (Name    => "stretch",
+                    Nick    => "stretch",
+                    Minimum => 0.0,
+                    Maximum => Gdouble'Last,
+                    Default => 1.0,
+                    Blurb   => "The relation of the rendered width " &
+                      "of an annotation text to its " &
+                      "original width. The stretch value " &
+                      "1 keeps texts unchanged");
             when Property_Height =>
                return
                   Gnew_Double
-                  (  Name    => "height",
-                     Nick    => "height",
-                     Minimum => 0.0,
-                     Maximum => Gdouble'Last,
-                     Default => 12.0,
-                     Blurb   => "The annotation text font height"
-                  );
+                   (Name    => "height",
+                    Nick    => "height",
+                    Minimum => 0.0,
+                    Maximum => Gdouble'Last,
+                    Default => 12.0,
+                    Blurb   => "The annotation text font height");
             when Property_Family =>
                return
                   Gnew_String
-                  (  Name    => "font-familiy",
-                     Nick    => "font famility",
-                     Default => "arial",
-                     Blurb   => "The annotation text font family, " &
-                                "e.g. courier"
-                  );
+                   (Name    => "font-familiy",
+                    Nick    => "font famility",
+                    Default => "arial",
+                    Blurb   => "The annotation text font family, " &
+                      "e.g. courier");
             when Property_Opacity =>
                return
                   Gnew_Double
-                  (  Name    => "background-opacity",
-                     Nick    => "opacity",
-                     Minimum => 0.0,
-                     Maximum => 1.0,
-                     Default => 1.0,
-                     Blurb   => "The opacity of the text background " &
-                                "boxes"
-                  );
+                   (Name    => "background-opacity",
+                    Nick    => "opacity",
+                    Minimum => 0.0,
+                    Maximum => 1.0,
+                    Default => 1.0,
+                    Blurb   => "The opacity of the text background " &
+                      "boxes");
             when Property_X_Justify =>
                return
                   Gtk.Layered.Alignment_Property.Gnew_Enum
-                  (  Name    => "text-alignment",
-                     Nick    => "text X-alignment",
-                     Default => Center,
-                     Blurb   => "The text horizontal alignment " &
-                                "relatively to the annotation " &
-                                "line"
-                  );
+                   (Name    => "text-alignment",
+                    Nick    => "text X-alignment",
+                    Default => Center,
+                    Blurb   => "The text horizontal alignment " &
+                      "relatively to the annotation " &
+                      "line");
             when Property_Y_Justify =>
                return
                   Gtk.Layered.Vertical_Alignment_Property.Gnew_Enum
-                  (  Name    => "text-vertical-alignment",
-                     Nick    => "text Y-alignment",
-                     Default => Center,
-                     Blurb   => "The vertical horizontal alignment " &
-                                "relatively to the annotation " &
-                                "line"
-                  );
+                   (Name    => "text-vertical-alignment",
+                    Nick    => "text Y-alignment",
+                    Default => Center,
+                    Blurb   => "The vertical horizontal alignment " &
+                      "relatively to the annotation " &
+                      "line");
             when Property_Slant =>
                return
                   Cairo.Font_Slant_Property.Gnew_Enum
-                  (  Name    => "font-slant",
-                     Nick    => "font slant",
-                     Default => Cairo_Font_Slant_Normal,
-                     Blurb   => "The annotation text font slant"
-                  );
+                   (Name    => "font-slant",
+                    Nick    => "font slant",
+                    Default => Cairo.Cairo_Font_Slant_Normal,
+                    Blurb   => "The annotation text font slant");
             when Property_Font_Size =>
                return
                   Gnew_Uint
-                  (  Name    => "font-size",
-                     Nick    => "font size",
-                     Minimum => 1,
-                     Maximum => Guint (Gint'Last),
-                     Default => 12,
-                     Blurb   => "The font size in points. " &
-                                "The value is only relevant for " &
-                                "pango fonts. For cairo toy size " &
-                                "is ignored"
-                  );
+                   (Name    => "font-size",
+                    Nick    => "font size",
+                    Minimum => 1,
+                    Maximum => Guint (Gint'Last),
+                    Default => 12,
+                    Blurb   => "The font size in points. " &
+                      "The value is only relevant for " &
+                      "pango fonts. For cairo toy size " &
+                      "is ignored");
             when Property_Weight =>
                return
                   Pango.Enums.Weight_Property.Gnew_Enum
-                  (  Name    => "font-weight",
-                     Nick    => "font weight",
-                     Default => Pango.Enums.Pango_Weight_Normal,
-                     Blurb   => "The annotation text font weight"
-                  );
+                   (Name    => "font-weight",
+                    Nick    => "font weight",
+                    Default => Pango.Enums.Pango_Weight_Normal,
+                    Blurb   => "The annotation text font weight");
             when Property_Color =>
                return
                   Gnew_Boxed
-                  (  Name       => "color",
-                     Boxed_Type => Gdk_Color_Type,
-                     Nick       => "color",
-                     Blurb      => "The annotation texts color"
-                  );
+                   (Name       => "color",
+                    Boxed_Type => Gdk.Color.Gdk_Color_Type,
+                    Nick       => "color",
+                    Blurb      => "The annotation texts color");
             when Property_Background_Color =>
                return
                   Gnew_Boxed
-                  (  Name       => "background-color",
-                     Boxed_Type => Gdk_Color_Type,
-                     Nick       => "background",
-                     Blurb      => "The annotation texts background " &
-                                   "color"
-                  );
+                   (Name       => "background-color",
+                    Boxed_Type => Gdk.Color.Gdk_Color_Type,
+                    Nick       => "background",
+                    Blurb      => "The annotation texts background " &
+                      "color");
             when Property_Scaled =>
                return
                   Gnew_Boolean
-                  (  Name    => "scaled",
-                     Nick    => "scaled",
-                     Default => False,
-                     Blurb   => "The annotation size is changed when " &
-                                "the widget is resized"
-                  );
+                   (Name    => "scaled",
+                    Nick    => "scaled",
+                    Default => False,
+                    Blurb   => "The annotation size is changed when " &
+                      "the widget is resized");
             when Property_Use_Superscript =>
                return
                   Gnew_Boolean
-                  (  Name    => "use-superscript",
-                     Nick    => "superscript",
-                     Default => False,
-                     Blurb   => "The annotation text may use " &
-                                "superscript characters for " &
-                                "the exponent part. When false, " &
-                                "the Eyy notation is used instead"
-                  );
+                   (Name    => "use-superscript",
+                    Nick    => "superscript",
+                    Default => False,
+                    Blurb   => "The annotation text may use " &
+                      "superscript characters for " &
+                      "the exponent part. When false, " &
+                      "the Eyy notation is used instead");
             when Property_Enlarged =>
                return
                   Gnew_Boolean
-                  (  Name    => "enlarged",
-                     Nick    => "enlarged",
-                     Default => False,
-                     Blurb   => "The annotation texts sizes are " &
-                                "changed when the widget is resized"
-                  );
+                   (Name    => "enlarged",
+                    Nick    => "enlarged",
+                    Default => False,
+                    Blurb   => "The annotation texts sizes are " &
+                      "changed when the widget is resized");
             when Property_Orientation =>
                return
                   Gnew_Boolean
-                  (  Name    => "orientation",
-                     Nick    => "orientation",
-                     Default => False,
-                     Blurb   => "The annotation corresponds to the " &
-                                "x-axis when false or to the y-axis " &
-                                "otherwise"
-                  );
+                   (Name    => "orientation",
+                    Nick    => "orientation",
+                    Default => False,
+                    Blurb   => "The annotation corresponds to the " &
+                      "x-axis when false or to the y-axis " &
+                      "otherwise");
             when Property_Alignment =>
                return
                   Gnew_Boolean
-                  (  Name    => "alignment",
-                     Nick    => "alignment",
-                     Default => False,
-                     Blurb   => "The annotation line position " &
-                                "is a coordinate when this property " &
-                                "is false. Otherwise it is a " &
-                                "value, e.g. horizontal axis located" &
-                                "where the signal value would appear"
-                  );
+                   (Name    => "alignment",
+                    Nick    => "alignment",
+                    Default => False,
+                    Blurb   => "The annotation line position " &
+                      "is a coordinate when this property " &
+                      "is false. Otherwise it is a " &
+                      "value, e.g. horizontal axis located" &
+                      "where the signal value would appear");
          end case;
       end if;
    end Get_Property_Specification;
 
-   function Get_Property_Value
-            (  Layer    : Graph_Paper_Annotation_Layer;
-               Property : Positive
-            )  return GValue is
+   overriding function Get_Property_Value
+     (Layer    : Graph_Paper_Annotation_Layer;
+      Property : Positive) return Glib.Values.GValue is
    begin
       if Property > Get_Properties_Number (Layer) then
          raise Constraint_Error;
       else
          declare
-            Value : GValue;
+            Value : Glib.Values.GValue;
          begin
             case Layer_Property'Val (Property - 1) is
                when Property_Border =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Border);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Border);
                when Property_Font_Type =>
                   Pango.Cairo.Fonts.Font_Type_Property.Set_Enum
-                  (  Value,
-                     Get_Type (Layer.Face)
-                  );
+                    (Value,
+                     Get_Type (Layer.Face));
                when Property_Overlap =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Overlap);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Overlap);
                when Property_Opacity =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Opacity);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Opacity);
                when Property_From =>
-                  Init (Value, GType_Double);
+                  Glib.Values.Init (Value, GType_Double);
                   case Layer.Location.Orientation is
                      when Horizontal =>
-                        Set_Double (Value, Layer.Location.Left);
+                        Glib.Values.Set_Double (Value, Layer.Location.Left);
                      when Vertical =>
-                        Set_Double (Value, Layer.Location.Top);
+                        Glib.Values.Set_Double (Value, Layer.Location.Top);
                   end case;
                when Property_To =>
-                  Init (Value, GType_Double);
+                  Glib.Values.Init (Value, GType_Double);
                   case Layer.Location.Orientation is
                      when Horizontal =>
-                        Set_Double (Value, Layer.Location.Right);
+                        Glib.Values.Set_Double (Value, Layer.Location.Right);
                      when Vertical =>
-                        Set_Double (Value, Layer.Location.Bottom);
+                        Glib.Values.Set_Double (Value, Layer.Location.Bottom);
                   end case;
                when Property_Value =>
-                  Init (Value, GType_Double);
+                  Glib.Values.Init (Value, GType_Double);
                   case Layer.Location.Orientation is
                      when Horizontal =>
                         case Layer.Location.Alignment is
                            when Absolute =>
-                              Set_Double
-                              (  Value,
-                                 Layer.Location.Y_Position
-                              );
+                              Glib.Values.Set_Double
+                                (Value,
+                                 Layer.Location.Y_Position);
                            when Relative =>
-                              Set_Double
-                              (  Value,
-                                 Gdouble (Layer.Location.Y_Value)
-                              );
+                              Glib.Values.Set_Double
+                                (Value,
+                                 Gdouble (Layer.Location.Y_Value));
                         end case;
                      when Vertical =>
                         case Layer.Location.Alignment is
                            when Absolute =>
-                              Set_Double
-                              (  Value,
-                                 Layer.Location.X_Position
-                              );
+                              Glib.Values.Set_Double
+                                (Value,
+                                 Layer.Location.X_Position);
                            when Relative =>
-                              Set_Double
-                              (  Value,
-                                 Gdouble (Layer.Location.X_Value)
-                              );
+                              Glib.Values.Set_Double
+                                (Value,
+                                 Gdouble (Layer.Location.X_Value));
                         end case;
                   end case;
                when Property_Text_Angle =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Text_Angle);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Text_Angle);
                when Property_Background_Color =>
-                  Set_Value (Value, Layer.Background);
+                  Gdk.Color.Set_Value (Value, Layer.Background);
                when Property_Color =>
-                  Set_Value (Value, Layer.Color);
+                  Gdk.Color.Set_Value (Value, Layer.Color);
                when Property_Height =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Height);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Height);
                when Property_Family =>
-                  Init (Value, GType_String);
-                  Set_String (Value, Get_Family (Layer.Face));
+                  Glib.Values.Init (Value, GType_String);
+                  Glib.Values.Set_String (Value, Get_Family (Layer.Face));
                when Property_Slant =>
                   Cairo.Font_Slant_Property.Set_Enum
-                  (  Value,
-                     Get_Slant (Layer.Face)
-                  );
+                    (Value,
+                     Get_Slant (Layer.Face));
                when Property_Font_Size =>
-                  Init (Value, GType_Uint);
-                  Set_Uint (Value, Guint (Get_Size (Layer.Face)));
+                  Glib.Values.Init (Value, GType_Uint);
+                  Glib.Values.Set_Uint (Value, Guint (Get_Size (Layer.Face)));
                when Property_Weight =>
                   Pango.Enums.Weight_Property.Set_Enum
-                  (  Value,
-                     Get_Weight (Layer.Face)
-                  );
+                    (Value,
+                     Get_Weight (Layer.Face));
                when Property_X_Justify =>
                   Gtk.Layered.Alignment_Property.Set_Enum
-                  (  Value,
-                     Layer.Justify_X
-                  );
+                    (Value,
+                     Layer.Justify_X);
                when Property_Y_Justify =>
                   Gtk.Layered.Vertical_Alignment_Property.Set_Enum
-                  (  Value,
-                     Layer.Justify_Y
-                  );
+                    (Value,
+                     Layer.Justify_Y);
                when Property_Stretch =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Stretch);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Stretch);
                when Property_Scaled =>
-                  Init (Value, GType_Boolean);
-                  Set_Boolean (Value, Layer.Scaled);
+                  Glib.Values.Init (Value, GType_Boolean);
+                  Glib.Values.Set_Boolean (Value, Layer.Scaled);
                when Property_Enlarged =>
-                  Init (Value, GType_Boolean);
-                  Set_Boolean (Value, Layer.Enlarged);
+                  Glib.Values.Init (Value, GType_Boolean);
+                  Glib.Values.Set_Boolean (Value, Layer.Enlarged);
                when Property_Orientation =>
-                  Init (Value, GType_Boolean);
-                  Set_Boolean
-                  (  Value,
-                     Layer.Location.Orientation = Vertical
-                  );
+                  Glib.Values.Init (Value, GType_Boolean);
+                  Glib.Values.Set_Boolean
+                    (Value,
+                     Layer.Location.Orientation = Vertical);
                when Property_Use_Superscript =>
-                  Init (Value, GType_Boolean);
-                  Set_Boolean (Value, Layer.Superscript);
+                  Glib.Values.Init (Value, GType_Boolean);
+                  Glib.Values.Set_Boolean (Value, Layer.Superscript);
                when Property_Alignment =>
-                  Init (Value, GType_Boolean);
-                  Set_Boolean
-                  (  Value,
-                     Layer.Location.Alignment = Relative
-                  );
+                  Glib.Values.Init (Value, GType_Boolean);
+                  Glib.Values.Set_Boolean
+                    (Value,
+                     Layer.Location.Alignment = Relative);
             end case;
             return Value;
          end;
       end if;
    end Get_Property_Value;
 
-   function Get_Scaled (Layer : Graph_Paper_Annotation_Layer)
+   overriding function Get_Scaled (Layer : Graph_Paper_Annotation_Layer)
       return Boolean is
    begin
       return Layer.Scaled;
@@ -1519,22 +1449,16 @@ package body Gtk.Layered.Graph_Paper_Annotation is
    end Get_Text_Angle;
 
    function Image
-            (  Layer : Graph_Paper_Annotation_Layer;
-               Value : Gdouble
-            )  return UTF8_String is
+     (Layer : Graph_Paper_Annotation_Layer;
+      Value : Gdouble) return UTF8_String is
    begin
       if Layer.Renderer = null then
          return
-         (  Graph_Paper_Annotation_Layer'Class
-            (  Layer
-            ) .Render (Value, Layer.Raster)
-         &  (+Layer.Suffix)
-         );
+           (Graph_Paper_Annotation_Layer'Class
+              (Layer).Render (Value, Layer.Raster) & (+Layer.Suffix));
       else
          return
-         (  Layer.Renderer (Layer, Value, Layer.Raster)
-         &  (+Layer.Suffix)
-         );
+           (Layer.Renderer (Layer, Value, Layer.Raster) & (+Layer.Suffix));
       end if;
    end Image;
 
@@ -1544,9 +1468,9 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       if Interval > 10.0 then
          return Image (Gdouble (Interval), AbsSmall => 0);
       elsif Interval > 1.0 then
-         return Image (Gdouble (Interval), AbsSmall =>-3);
+         return Image (Gdouble (Interval), AbsSmall => -3);
       else
-         return Image (Gdouble (Interval), AbsSmall =>-6);
+         return Image (Gdouble (Interval), AbsSmall => -6);
       end if;
    end Image;
 
@@ -1555,107 +1479,92 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       use Gtk.Layered.Waveform.Edit;
       use Strings_Edit;
       Now     : constant Ada.Calendar.Time := Clock;
-      Text    : String (1..80);
+      Text    : String (1 .. 80);
       Value   : constant Gdouble := Gdouble (Seconds (Stamp));
       Second  : constant Integer := Integer (Gdouble'Floor (Value));
       Pointer : Integer := Text'First;
    begin
       Put
-      (  Destination => Text,
+        (Destination => Text,
          Pointer     => Pointer,
          Value       => Second / 3600,
          Justify     => Strings_Edit.Right,
          Field       => 2,
-         Fill        => '0'
-      );
+         Fill        => '0');
       Put
-      (  Destination => Text,
+        (Destination => Text,
          Pointer     => Pointer,
-         Value       => ':'
-      );
+         Value       => ':');
       Put
-      (  Destination => Text,
+        (Destination => Text,
          Pointer     => Pointer,
          Value       => (Second / 60) mod 60,
          Justify     => Strings_Edit.Right,
          Field       => 2,
-         Fill        => '0'
-      );
+         Fill        => '0');
       Put
-      (  Destination => Text,
+        (Destination => Text,
          Pointer     => Pointer,
-         Value       => ':'
-      );
+         Value       => ':');
       if Second mod 60 < 10 then
          Put
-         (  Destination => Text,
+           (Destination => Text,
             Pointer     => Pointer,
-            Value       => '0'
-         );
+            Value       => '0');
       end if;
       Put
-      (  Destination => Text,
+        (Destination => Text,
          Pointer     => Pointer,
          Value       => Value - Gdouble (60 * (Second / 60)),
-         AbsSmall    =>-3
-      );
-      if (  Year (Now) /= Year (Stamp)
-         or else
-            Month (Now) /= Month (Stamp)
-         or else
-            Day (Now) /= Day (Stamp)
-         )
+         AbsSmall    => -3);
+      if
+        Year (Now) /= Year (Stamp) or else
+        Month (Now) /= Month (Stamp) or else
+        Day (Now) /= Day (Stamp)
       then
          Put
-         (  Destination => Text,
+           (Destination => Text,
             Pointer     => Pointer,
-            Value       => " "
-         );
+            Value       => " ");
          Put
-         (  Destination => Text,
+           (Destination => Text,
             Pointer     => Pointer,
-            Value       => Integer (Year (Stamp))
-         );
+            Value       => Integer (Year (Stamp)));
          Put
-         (  Destination => Text,
+           (Destination => Text,
             Pointer     => Pointer,
-            Value       => "."
-         );
+            Value       => ".");
          Put
-         (  Destination => Text,
+           (Destination => Text,
             Pointer     => Pointer,
             Value       => Integer (Month (Stamp)),
             Field       => 2,
             Fill        => '0',
-            Justify     => Strings_Edit.Right
-         );
+            Justify     => Strings_Edit.Right);
          Put
-         (  Destination => Text,
+           (Destination => Text,
             Pointer     => Pointer,
-            Value       => "."
-         );
+            Value       => ".");
          Put
-         (  Destination => Text,
+           (Destination => Text,
             Pointer     => Pointer,
             Value       => Integer (Day (Stamp)),
             Field       => 2,
             Fill        => '0',
-            Justify     => Strings_Edit.Right
-         );
+            Justify     => Strings_Edit.Right);
       end if;
-      return Text (Text'First..Pointer - 1);
+      return Text (Text'First .. Pointer - 1);
    end Image;
 
-   function Is_Updated (Layer : Graph_Paper_Annotation_Layer)
+   overriding function Is_Updated (Layer : Graph_Paper_Annotation_Layer)
       return Boolean is
    begin
       return Layer.Updated;
    end Is_Updated;
 
-   procedure Move
-             (  Layer  : in out Graph_Paper_Annotation_Layer;
-                Offset : Cairo_Tuple
-             )  is
+   overriding procedure Move
+     (Layer  : in out Graph_Paper_Annotation_Layer;
+      Offset : Cairo.Ellipses.Cairo_Tuple) is
    begin
       case Layer.Location.Orientation is
          when Horizontal =>
@@ -1682,117 +1591,110 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       Layer.Updated := True;
    end Move;
 
-   function Render
-            (  Layer  : Graph_Paper_Annotation_Layer;
-               Value  : Gdouble;
-               Raster : Gtk.Layered.Waveform.Rasters.Scale
-            )  return UTF8_String is
+   overriding function Render
+     (Layer  : Graph_Paper_Annotation_Layer;
+      Value  : Gdouble;
+      Raster : Gtk.Layered.Waveform.Rasters.Scale) return UTF8_String
+   is
       Small : constant Integer := 0;
       Power : Integer;
    begin
-       if Raster.Small > 0 then
-          Power := (Raster.Small / 3) * 3;
-       elsif Raster.Small < -3 then
-          Power := -3 * ((2 - Raster.Small) / 3);
-       else
-          return Image (Value, AbsSmall => Raster.Small);
-       end if;
-       declare
-          Text : constant String :=
-                 Image (Value / 10.0 ** Power, AbsSmall => Small);
-       begin
-          if Text = "0" or else Power = 0 then
-             return Text;
-          else
-             if Layer.Superscript then
-                return
-                (  Text
-                &  Character'Val (16#C2#)
-                &  Character'Val (16#B7#)
-                &  "10"
-                &  Strings_Edit.Integers.Superscript.Image (Power)
-                );
-             else
-                return Text & "E" & Image (Power);
-             end if;
-          end if;
+      if Raster.Small > 0 then
+         Power := (Raster.Small / 3) * 3;
+      elsif Raster.Small < -3 then
+         Power := -3 * ((2 - Raster.Small) / 3);
+      else
+         return Image (Value, AbsSmall => Raster.Small);
+      end if;
+      declare
+         Text : constant String :=
+                  Image (Value / 10.0 ** Power, AbsSmall => Small);
+      begin
+         if Text = "0" or else Power = 0 then
+            return Text;
+         else
+            if Layer.Superscript then
+               return
+                 (Text
+                  &  Character'Val (16#C2#)
+                  &  Character'Val (16#B7#)
+                  &  "10"
+                  &  Strings_Edit.Integers.Superscript.Image (Power));
+            else
+               return Text & "E" & Image (Power);
+            end if;
+         end if;
       end;
    end Render;
 
-   function Render
-            (  Layer  : Graph_Paper_Time_Annotation_Layer;
-               Value  : Gdouble;
-               Raster : Gtk.Layered.Waveform.Rasters.Scale
-            )  return UTF8_String is
+   overriding function Render
+     (Layer  : Graph_Paper_Time_Annotation_Layer;
+      Value  : Gdouble;
+      Raster : Gtk.Layered.Waveform.Rasters.Scale) return UTF8_String
+   is
+      pragma Unreferenced (Raster);
       use Ada.Calendar;
       use Strings_Edit;
-      Text    : String (1..80);
+      Text    : String (1 .. 80);
       Stamp   : constant Gdouble :=
                 Gdouble (Seconds (To_Time (Value)));
       Second  : constant Integer := Integer (Gdouble'Floor (Stamp));
       Pointer : Integer := Text'First;
    begin
       Put
-      (  Destination => Text,
+        (Destination => Text,
          Pointer     => Pointer,
          Value       => Second / 3600,
          Justify     => Strings_Edit.Right,
          Field       => 2,
-         Fill        => '0'
-      );
+         Fill        => '0');
       if Layer.Raster.Small < 4 then
          Put
-         (  Destination => Text,
+           (Destination => Text,
             Pointer     => Pointer,
-            Value       => ':'
-         );
+            Value       => ':');
          Put
-         (  Destination => Text,
+           (Destination => Text,
             Pointer     => Pointer,
             Value       => (Second / 60) mod 60,
             Justify     => Strings_Edit.Right,
             Field       => 2,
-            Fill        => '0'
-         );
+            Fill        => '0');
          if Layer.Raster.Small < 2 then
             Put
-            (  Destination => Text,
+              (Destination => Text,
                Pointer     => Pointer,
-               Value       => ':'
-            );
+               Value       => ':');
             Put
-            (  Destination => Text,
+              (Destination => Text,
                Pointer     => Pointer,
                Value       => Second mod 60,
                Justify     => Strings_Edit.Right,
                Field       => 2,
-               Fill        => '0'
-            );
+               Fill        => '0');
             if Layer.Raster.Small < 0 then
                declare
                   Fraction : constant String :=
-                     Image
-                     (  Value    => Stamp - Gdouble (Second),
-                        AbsSmall => Layer.Raster.Small
-                     );
+                               Image
+                                 (Value    => Stamp - Gdouble (Second),
+                                  AbsSmall => Layer.Raster.Small);
                begin
                   Put
-                  (  Destination => Text,
+                    (Destination => Text,
                      Pointer     => Pointer,
-                     Value  =>
-                        Fraction (Fraction'First + 1..Fraction'Last)
-                  );
+                     Value       =>
+                       Fraction (Fraction'First + 1 .. Fraction'Last));
                end;
             end if;
          end if;
       end if;
-      return Text (Text'First..Pointer - 1);
+      return Text (Text'First .. Pointer - 1);
    end Render;
 
-   procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Layer  : in out Graph_Paper_Annotation_Layer
-             )  is
+   overriding procedure Restore
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Layer  : in out Graph_Paper_Annotation_Layer)
+   is
       Face        : Pango_Cairo_Font;
       Height      : Gdouble;
       Stretch     : Gdouble;
@@ -1800,11 +1702,11 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       To          : Gdouble;
       Value       : Gdouble;
       Text_Angle  : Gdouble;
-      Color       : Gdk_Color;
+      Color       : Gdk.Color.Gdk_Color;
       Justify_X   : Alignment;
       Justify_Y   : Vertical_Alignment;
       Location    : Axis_Location;
-      Background  : Gdk_Color;
+      Background  : Gdk.Color.Gdk_Color;
       Border      : Gdouble;
       Overlap     : Gdouble;
       Opacity     : Gdouble;
@@ -1827,13 +1729,12 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       Restore (Stream, Overlap);
       Restore (Stream, Opacity);
       Restore
-      (  Stream,
+        (Stream,
          Layer.Scaled,
          Layer.Enlarged,
          Orientation,
          Alignment,
-         Superscript
-      );
+         Superscript);
       case Orientation is
          when False =>
             case Alignment is
@@ -1853,7 +1754,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
             end case;
       end case;
       Set
-      (  Layer       => Layer,
+        (Layer       => Layer,
          Location    => Location,
          Face        => Face,
          Height      => Height,
@@ -1866,15 +1767,14 @@ package body Gtk.Layered.Graph_Paper_Annotation is
          Border      => Border,
          Overlap     => Overlap,
          Opacity     => Opacity,
-         Superscript => Superscript
-      );
+         Superscript => Superscript);
       Layer.Updated := True;
    end Restore;
 
-   procedure Scale
-             (  Layer  : in out Graph_Paper_Annotation_Layer;
-                Factor : Gdouble
-             )  is
+   overriding procedure Scale
+     (Layer  : in out Graph_Paper_Annotation_Layer;
+      Factor : Gdouble)
+   is
       Height : constant Gdouble := Layer.Height * Factor;
       Length : Gdouble;
    begin
@@ -1886,23 +1786,13 @@ package body Gtk.Layered.Graph_Paper_Annotation is
             Length :=
                (Layer.Location.Right - Layer.Location.Left) * Factor;
             Layer.Location.Left :=
-               (  (  Layer.Location.Left
-                  +  Layer.Location.Right
-                  -  Length
-                  )
-               /  2.0
-               );
+              ((Layer.Location.Left + Layer.Location.Right - Length) / 2.0);
             Layer.Location.Right := Layer.Location.Left + Length;
          when Vertical =>
             Length :=
                (Layer.Location.Bottom - Layer.Location.Top) * Factor;
             Layer.Location.Top :=
-               (  (  Layer.Location.Top
-                  +  Layer.Location.Bottom
-                  -  Length
-                  )
-               /  2.0
-               );
+              ((Layer.Location.Top + Layer.Location.Bottom - Length) /  2.0);
             Layer.Location.Bottom := Layer.Location.Top + Length;
       end case;
       Layer.Height  := Height;
@@ -1910,21 +1800,20 @@ package body Gtk.Layered.Graph_Paper_Annotation is
    end Scale;
 
    procedure Set
-             (  Layer       : in out Graph_Paper_Annotation_Layer;
-                Location    : Axis_Location;
-                Face        : Pango_Cairo_Font;
-                Height      : Gdouble;
-                Stretch     : Gdouble;
-                Color       : Gdk_Color;
-                Text_Angle  : Gdouble;
-                Justify_X   : Alignment;
-                Justify_Y   : Vertical_Alignment;
-                Superscript : Boolean;
-                Background  : Gdk_Color;
-                Border      : Gdouble;
-                Overlap     : Gdouble;
-                Opacity     : Fill_Opacity
-             )  is
+     (Layer       : in out Graph_Paper_Annotation_Layer;
+      Location    : Axis_Location;
+      Face        : Pango_Cairo_Font;
+      Height      : Gdouble;
+      Stretch     : Gdouble;
+      Color       : Gdk.Color.Gdk_Color;
+      Text_Angle  : Gdouble;
+      Justify_X   : Alignment;
+      Justify_Y   : Vertical_Alignment;
+      Superscript : Boolean;
+      Background  : Gdk.Color.Gdk_Color;
+      Border      : Gdouble;
+      Overlap     : Gdouble;
+      Opacity     : Fill_Opacity) is
    begin
       if Height <= 0.0 then
          raise Constraint_Error with "Non-positive height";
@@ -1958,59 +1847,54 @@ package body Gtk.Layered.Graph_Paper_Annotation is
    end Set;
 
    procedure Set_Enlarged
-             (  Layer    : in out Graph_Paper_Annotation_Layer;
-                Enlarged : Boolean
-             )  is
+     (Layer    : in out Graph_Paper_Annotation_Layer;
+      Enlarged : Boolean) is
    begin
       Layer.Enlarged := Enlarged;
       Layer.Updated  := True;
    end Set_Enlarged;
 
    procedure Set_Face
-             (  Layer : in out Graph_Paper_Annotation_Layer;
-                Face  : Pango_Cairo_Font
-             )  is
+     (Layer : in out Graph_Paper_Annotation_Layer;
+      Face  : Pango_Cairo_Font) is
    begin
       Layer.Face    := Face;
       Layer.Updated := True;
    end Set_Face;
 
-   procedure Set_Property_Value
-             (  Layer    : in out Graph_Paper_Annotation_Layer;
-                Property : Positive;
-                Value    : GValue
-             )  is
+   overriding procedure Set_Property_Value
+     (Layer    : in out Graph_Paper_Annotation_Layer;
+      Property : Positive;
+      Value    : Glib.Values.GValue) is
    begin
       if Property > Get_Properties_Number (Layer) then
          raise Constraint_Error;
       else
          case Layer_Property'Val (Property - 1) is
             when Property_Border =>
-               Layer.Border := Get_Double (Value);
+               Layer.Border := Glib.Values.Get_Double (Value);
             when Property_Font_Type =>
                Set_Type
-               (  Layer.Face,
-                  Pango.Cairo.Fonts.Font_Type_Property.Get_Enum (Value)
-               );
+                 (Layer.Face,
+                  Pango.Cairo.Fonts.Font_Type_Property.Get_Enum (Value));
             when Property_Overlap =>
-               Layer.Overlap := Get_Double (Value);
+               Layer.Overlap := Glib.Values.Get_Double (Value);
             when Property_Opacity =>
                Layer.Opacity :=
                   Gdouble'Max
-                  (  0.0,
-                     Gdouble'Min
-                     (  1.0,
-                        Get_Double (Value)
-                  )  );
+                   (0.0,
+                    Gdouble'Min
+                      (1.0,
+                       Glib.Values.Get_Double (Value)));
             when Property_From =>
                case Layer.Location.Orientation is
                   when Horizontal =>
-                     Layer.Location.Left := Get_Double (Value);
+                     Layer.Location.Left := Glib.Values.Get_Double (Value);
                      if Layer.Location.Left > Layer.Location.Right then
                         Layer.Location.Right := Layer.Location.Left;
                      end if;
                   when Vertical =>
-                     Layer.Location.Top := Get_Double (Value);
+                     Layer.Location.Top := Glib.Values.Get_Double (Value);
                      if Layer.Location.Top > Layer.Location.Bottom then
                         Layer.Location.Bottom := Layer.Location.Top;
                      end if;
@@ -2018,12 +1902,12 @@ package body Gtk.Layered.Graph_Paper_Annotation is
             when Property_To =>
                case Layer.Location.Orientation is
                   when Horizontal =>
-                     Layer.Location.Right := Get_Double (Value);
+                     Layer.Location.Right := Glib.Values.Get_Double (Value);
                      if Layer.Location.Left > Layer.Location.Right then
                         Layer.Location.Left := Layer.Location.Right;
                      end if;
                   when Vertical =>
-                     Layer.Location.Bottom := Get_Double (Value);
+                     Layer.Location.Bottom := Glib.Values.Get_Double (Value);
                      if Layer.Location.Top > Layer.Location.Bottom then
                         Layer.Location.Top := Layer.Location.Bottom;
                      end if;
@@ -2034,38 +1918,38 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                      case Layer.Location.Alignment is
                         when Absolute =>
                            Layer.Location.Y_Position :=
-                              Get_Double (Value);
+                              Glib.Values.Get_Double (Value);
                         when Relative =>
                            Layer.Location.Y_Value :=
-                              Y_Axis (Get_Double (Value));
+                              Y_Axis (Glib.Values.Get_Double (Value));
                      end case;
                   when Vertical =>
                      case Layer.Location.Alignment is
                         when Absolute =>
                            Layer.Location.X_Position :=
-                              Get_Double (Value);
+                              Glib.Values.Get_Double (Value);
                         when Relative =>
                            Layer.Location.X_Value :=
-                              X_Axis (Get_Double (Value));
+                              X_Axis (Glib.Values.Get_Double (Value));
                      end case;
                end case;
             when Property_Background_Color =>
-               Layer.Background := Get_Value (Value);
+               Layer.Background := Gdk.Color.Get_Value (Value);
             when Property_Color =>
-               Layer.Color := Get_Value (Value);
+               Layer.Color := Gdk.Color.Get_Value (Value);
             when Property_Stretch =>
-               Layer.Stretch := Get_Double (Value);
+               Layer.Stretch := Glib.Values.Get_Double (Value);
                if Layer.Stretch < 0.0 then
                   Layer.Stretch := 0.0;
                end if;
             when Property_Text_Angle =>
-               Layer.Text_Angle := Get_Double (Value);
-               if Layer.Text_Angle not in -2.0 * Pi..2.0 * Pi then
+               Layer.Text_Angle := Glib.Values.Get_Double (Value);
+               if Layer.Text_Angle not in -2.0 * Pi .. 2.0 * Pi then
                   Layer.Text_Angle :=
                      Gdouble'Remainder (Layer.Text_Angle, 2.0 * Pi);
                end if;
             when Property_Height =>
-               Layer.Height := Get_Double (Value);
+               Layer.Height := Glib.Values.Get_Double (Value);
                if Layer.Height < 0.0 then
                   Layer.Height := 0.0;
                end if;
@@ -2075,39 +1959,34 @@ package body Gtk.Layered.Graph_Paper_Annotation is
             when Property_Y_Justify =>
                Layer.Justify_Y :=
                   Gtk.Layered.Vertical_Alignment_Property.Get_Enum
-                  (  Value
-                  );
+                   (Value);
             when Property_Family =>
-               Set_Family (Layer.Face, Get_String (Value));
+               Set_Family (Layer.Face, Glib.Values.Get_String (Value));
             when Property_Slant =>
                Set_Slant
-               (  Layer.Face,
-                  Cairo.Font_Slant_Property.Get_Enum (Value)
-               );
+                 (Layer.Face,
+                  Cairo.Font_Slant_Property.Get_Enum (Value));
             when Property_Font_Size =>
                Set_Size
-               (  Layer.Face,
+                 (Layer.Face,
                   Gint
-                  (  Guint'Max
-                     (  Guint'Min
-                        (  Get_Uint (Value),
-                           Guint (Gint'Last)
-                        ),
-                        1
-               )  )  );
+                    (Guint'Max
+                         (Guint'Min
+                              (Glib.Values.Get_Uint (Value),
+                               Guint (Gint'Last)),
+                          1)));
             when Property_Weight =>
                Set_Weight
-               (  Layer.Face,
-                  Pango.Enums.Weight_Property.Get_Enum (Value)
-               );
+                 (Layer.Face,
+                  Pango.Enums.Weight_Property.Get_Enum (Value));
             when Property_Scaled =>
-               Layer.Scaled := Get_Boolean (Value);
+               Layer.Scaled := Glib.Values.Get_Boolean (Value);
             when Property_Enlarged =>
-               Layer.Enlarged := Get_Boolean (Value);
+               Layer.Enlarged := Glib.Values.Get_Boolean (Value);
             when Property_Use_Superscript =>
-               Layer.Superscript := Get_Boolean (Value);
+               Layer.Superscript := Glib.Values.Get_Boolean (Value);
             when Property_Orientation =>
-               case Get_Boolean (Value) is
+               case Glib.Values.Get_Boolean (Value) is
                   when False =>
                      case Layer.Location.Orientation is
                         when Horizontal =>
@@ -2116,20 +1995,18 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                            case Layer.Location.Alignment is
                               when Absolute =>
                                  Layer.Location :=
-                                    (  Horizontal,
-                                       Absolute,
-                                       Layer.Location.Top,
-                                       Layer.Location.Bottom,
-                                       Layer.Location.Y_Position
-                                    );
+                                   (Horizontal,
+                                    Absolute,
+                                    Layer.Location.Top,
+                                    Layer.Location.Bottom,
+                                    Layer.Location.Y_Position);
                               when Relative =>
                                  Layer.Location :=
-                                    (  Horizontal,
-                                       Relative,
-                                       Layer.Location.Top,
-                                       Layer.Location.Bottom,
-                                       Layer.Location.Y_Value
-                                    );
+                                   (Horizontal,
+                                    Relative,
+                                    Layer.Location.Top,
+                                    Layer.Location.Bottom,
+                                    Layer.Location.Y_Value);
                            end case;
                      end case;
                   when True =>
@@ -2138,27 +2015,25 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                            case Layer.Location.Alignment is
                               when Absolute =>
                                  Layer.Location :=
-                                    (  Vertical,
-                                       Absolute,
-                                       Layer.Location.Left,
-                                       Layer.Location.Right,
-                                       Layer.Location.X_Position
-                                    );
+                                   (Vertical,
+                                    Absolute,
+                                    Layer.Location.Left,
+                                    Layer.Location.Right,
+                                    Layer.Location.X_Position);
                               when Relative =>
                                  Layer.Location :=
-                                    (  Vertical,
-                                       Relative,
-                                       Layer.Location.Left,
-                                       Layer.Location.Right,
-                                       Layer.Location.X_Value
-                                    );
+                                   (Vertical,
+                                    Relative,
+                                    Layer.Location.Left,
+                                    Layer.Location.Right,
+                                    Layer.Location.X_Value);
                            end case;
                         when Vertical =>
                            null;
                      end case;
                end case;
             when Property_Alignment =>
-               case Get_Boolean (Value) is
+               case Glib.Values.Get_Boolean (Value) is
                   when False =>
                      case Layer.Location.Alignment is
                         when Absolute =>
@@ -2167,20 +2042,18 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                            case Layer.Location.Orientation is
                               when Horizontal =>
                                  Layer.Location :=
-                                    (  Horizontal,
-                                       Absolute,
-                                       Layer.Location.Left,
-                                       Layer.Location.Right,
-                                       Gdouble (Layer.Location.Y_Value)
-                                    );
+                                   (Horizontal,
+                                    Absolute,
+                                    Layer.Location.Left,
+                                    Layer.Location.Right,
+                                    Gdouble (Layer.Location.Y_Value));
                               when Vertical =>
                                  Layer.Location :=
-                                    (  Vertical,
-                                       Absolute,
-                                       Layer.Location.Top,
-                                       Layer.Location.Bottom,
-                                       Gdouble (Layer.Location.X_Value)
-                                    );
+                                   (Vertical,
+                                    Absolute,
+                                    Layer.Location.Top,
+                                    Layer.Location.Bottom,
+                                    Gdouble (Layer.Location.X_Value));
                            end case;
                      end case;
                   when True =>
@@ -2189,22 +2062,18 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                            case Layer.Location.Orientation is
                               when Horizontal =>
                                  Layer.Location :=
-                                    (  Horizontal,
-                                       Relative,
-                                       Layer.Location.Left,
-                                       Layer.Location.Right,
-                                       Y_Axis
-                                       (  Layer.Location.Y_Position
-                                    )  );
+                                   (Horizontal,
+                                    Relative,
+                                    Layer.Location.Left,
+                                    Layer.Location.Right,
+                                    Y_Axis (Layer.Location.Y_Position));
                               when Vertical =>
                                  Layer.Location :=
-                                    (  Vertical,
-                                       Relative,
-                                       Layer.Location.Top,
-                                       Layer.Location.Bottom,
-                                       X_Axis
-                                       (  Layer.Location.X_Position
-                                    )  );
+                                   (Vertical,
+                                    Relative,
+                                    Layer.Location.Top,
+                                    Layer.Location.Bottom,
+                                    X_Axis (Layer.Location.X_Position));
                            end case;
                         when Relative =>
                            null;
@@ -2216,62 +2085,58 @@ package body Gtk.Layered.Graph_Paper_Annotation is
    end Set_Property_Value;
 
    procedure Set_Renderer
-             (  Layer    : in out Graph_Paper_Annotation_Layer;
-                Renderer : Renderer_Function
-             )  is
+     (Layer    : in out Graph_Paper_Annotation_Layer;
+      Renderer : Renderer_Function) is
    begin
       Layer.Renderer := Renderer;
    end Set_Renderer;
 
-   procedure Set_Scaled
-             (  Layer  : in out Graph_Paper_Annotation_Layer;
-                Scaled : Boolean
-             )  is
+   overriding procedure Set_Scaled
+     (Layer  : in out Graph_Paper_Annotation_Layer;
+      Scaled : Boolean) is
    begin
       Layer.Scaled  := Scaled;
       Layer.Updated := True;
    end Set_Scaled;
 
    procedure Set_Suffix
-             (  Layer  : in out Graph_Paper_Annotation_Layer;
-                Suffix : UTF8_String
-             )  is
+     (Layer  : in out Graph_Paper_Annotation_Layer;
+      Suffix : UTF8_String) is
    begin
       if Layer.Suffix = null then
-         Layer.Suffix := new Annotation_Text'
-                             (  Suffix'Length,
-                                Suffix'Length,
-                                Suffix
-                             );
-      elsif Layer.Suffix.Size < Suffix'Length then
+         Layer.Suffix :=
+           new Annotation_Text'
+             (Suffix'Length,
+              Suffix'Length,
+              Suffix);
+      elsif Layer.Suffix.all.Size < Suffix'Length then
          Free (Layer.Suffix);
-         Layer.Suffix := new Annotation_Text'
-                             (  Suffix'Length,
-                                Suffix'Length,
-                                Suffix
-                             );
+         Layer.Suffix :=
+           new Annotation_Text'
+             (Suffix'Length,
+              Suffix'Length,
+              Suffix);
       else
-         Layer.Suffix.Length := Suffix'Length;
-         Layer.Suffix.Buffer (1..Suffix'Length) := Suffix;
+         Layer.Suffix.all.Length := Suffix'Length;
+         Layer.Suffix.all.Buffer (1 .. Suffix'Length) := Suffix;
       end if;
       Layer.Updated := True;
    end Set_Suffix;
 
    procedure Set_Text
-             (  Layer    : in out Graph_Paper_Annotation_Layer;
-                Position : Positive;
-                Text     : UTF8_String
-             )  is
+     (Layer    : in out Graph_Paper_Annotation_Layer;
+      Position : Positive;
+      Text     : UTF8_String) is
    begin
       if Layer.Texts = null then
          if Position = 1 then
             Layer.Texts :=
                new Annotation_List'
-                   (  1..1 => new Annotation_Text'
-                                  (  Text'Length,
-                                     Text'Length,
-                                     Text
-                   )              );
+                (1 .. 1 =>
+                    new Annotation_Text'
+                   (Text'Length,
+                    Text'Length,
+                    Text));
             Layer.Updated := True;
             return;
          end if;
@@ -2280,35 +2145,32 @@ package body Gtk.Layered.Graph_Paper_Annotation is
             declare
                Old_Texts : Annotation_List_Ptr := Layer.Texts;
             begin
-               Layer.Texts := new Annotation_List (1..Position);
-               Layer.Texts (Old_Texts'Range) := Old_Texts.all;
-               Layer.Texts (Position) :=
+               Layer.Texts := new Annotation_List (1 .. Position);
+               Layer.Texts.all (Old_Texts'Range) := Old_Texts.all;
+               Layer.Texts.all (Position) :=
                   new Annotation_Text'
-                      (  Text'Length,
-                         Text'Length,
-                         Text
-                      );
+                   (Text'Length,
+                    Text'Length,
+                    Text);
                Free (Old_Texts);
                Layer.Updated := True;
                return;
             end;
          end if;
       else
-         if (  Layer.Texts (Position) /= null
-            and then
-               Layer.Texts (Position).Size >= Text'Length
-            )
+         if
+           Layer.Texts.all (Position) /= null and then
+           Layer.Texts.all (Position).all.Size >= Text'Length
          then
-            Layer.Texts (Position).Buffer (1..Text'Length) := Text;
-            Layer.Texts (Position).Length := Text'Length;
+            Layer.Texts.all (Position).all.Buffer (1 .. Text'Length) := Text;
+            Layer.Texts.all (Position).all.Length := Text'Length;
          else
-            Free (Layer.Texts (Position));
-            Layer.Texts (Position) :=
+            Free (Layer.Texts.all (Position));
+            Layer.Texts.all (Position) :=
                new Annotation_Text'
-                   (  Text'Length,
-                      Text'Length,
-                      Text
-                   );
+                (Text'Length,
+                 Text'Length,
+                 Text);
          end if;
          Layer.Updated := True;
          return;
@@ -2316,10 +2178,9 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       raise Constraint_Error with "No such text";
    end Set_Text;
 
-   procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Layer  : Graph_Paper_Annotation_Layer
-             )  is
+   overriding procedure Store
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Layer  : Graph_Paper_Annotation_Layer) is
    begin
       Store (Stream, Layer.Face);
       Store (Stream, Layer.Height);
@@ -2352,13 +2213,15 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       Store (Stream, Layer.Border);
       Store (Stream, Layer.Opacity);
       Store
-      (  Stream,
+        (Stream,
          Layer.Scaled,
          Layer.Enlarged,
          Layer.Location.Orientation = Vertical,
          Layer.Location.Alignment   = Relative,
-         Layer.Superscript
-      );
+         Layer.Superscript);
    end Store;
+
+   pragma Warnings (On, "declaration hides ""Value""");
+   pragma Warnings (On, "declaration hides ""Superscript""");
 
 end Gtk.Layered.Graph_Paper_Annotation;

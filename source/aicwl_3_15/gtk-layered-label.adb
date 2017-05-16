@@ -23,13 +23,11 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
-with Glib.Messages;               use Glib.Messages;
 with Glib.Properties.Creation;    use Glib.Properties.Creation;
 with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
-with Pango.Layout;                use Pango.Layout;
 
 with Ada.Unchecked_Deallocation;
 with Cairo.Font_Slant_Property;
@@ -42,30 +40,24 @@ package body Gtk.Layered.Label is
    Eps : constant := 1.0E-6;
 
    type Layer_Property is
-        (  Property_Scaled,
-           Property_X,
-           Property_Y,
-           Property_Text,
-           Property_Markup,
-           Property_Font_Type,
-           Property_Family,
-           Property_Slant,
-           Property_Font_Size,
-           Property_Weight,
-           Property_Height,
-           Property_Stretch,
-           Property_Angle,
-           Property_Skew,
-           Property_Mode,
-           Property_Color
-        );
+     (Property_Scaled,
+      Property_X,
+      Property_Y,
+      Property_Text,
+      Property_Markup,
+      Property_Font_Type,
+      Property_Family,
+      Property_Slant,
+      Property_Font_Size,
+      Property_Weight,
+      Property_Height,
+      Property_Stretch,
+      Property_Angle,
+      Property_Skew,
+      Property_Mode,
+      Property_Color);
 
    type Label_Ptr is access all Label_Layer;
-
-   function Where (Name : String) return String is
-   begin
-      return " in Gtk.Layered.Label." & Name;
-   end Where;
 
    procedure Free is
       new Ada.Unchecked_Deallocation (Label_Layer, Label_Ptr);
@@ -75,10 +67,9 @@ package body Gtk.Layered.Label is
    protected Text_Mutex is
       function Get_Text (Layer : Label_Layer) return UTF8_String;
       procedure Set_Text
-                (  Layer  : in out Label_Layer;
-                   Text   : UTF8_String;
-                   Markup : Boolean
-                );
+        (Layer  : in out Label_Layer;
+         Text   : UTF8_String;
+         Markup : Boolean);
    end Text_Mutex;
 
    protected body Text_Mutex is
@@ -88,10 +79,10 @@ package body Gtk.Layered.Label is
       end Get_Text;
 
       procedure Set_Text
-                (  Layer  : in out Label_Layer;
-                   Text   : UTF8_String;
-                   Markup : Boolean
-                )  is
+        (Layer  : in out Label_Layer;
+         Text   : UTF8_String;
+         Markup : Boolean)
+      is
          Ptr : constant String_Ptr := new UTF8_String'(Text);
       begin
          Free (Layer.Text);
@@ -102,10 +93,11 @@ package body Gtk.Layered.Label is
 
    end Text_Mutex;
 
-   function Add
-            (  Under  : not null access Layer_Location'Class;
-               Stream : not null access Root_Stream_Type'Class
-            )  return not null access Label_Layer is
+   overriding function Add
+     (Under  : not null access Layer_Location'Class;
+      Stream : not null access Ada.Streams.Root_Stream_Type'Class)
+      return not null access Label_Layer
+   is
       Ptr : Label_Ptr := new Label_Layer;
    begin
       Restore (Stream.all, Ptr.all);
@@ -118,24 +110,23 @@ package body Gtk.Layered.Label is
    end Add;
 
    procedure Add_Label
-             (  Under    : not null access Layer_Location'Class;
-                Text     : UTF8_String := "";
-                Location : Cairo_Tuple := (0.0, 0.0);
-                Face     : Pango_Cairo_Font :=
-                              Create_Toy
-                              (  Family => "sans",
-                                 Slant  => Cairo_Font_Slant_Normal,
-                                 Weight => Cairo_Font_Weight_Normal
-                              );
-                Height   : Gdouble             := 12.0;
-                Stretch  : Gdouble             := 1.0;
-                Mode     : Text_Transformation := Moved_Centered;
-                Color    : Gdk_Color           := RGB (0.0, 0.0, 0.0);
-                Angle    : Gdouble             := 3.0 * Pi / 2.0;
-                Skew     : Gdouble             := 0.0;
-                Markup   : Boolean             := False;
-                Scaled   : Boolean             := False
-             )  is
+     (Under    : not null access Layer_Location'Class;
+      Text     : UTF8_String                := "";
+      Location : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
+      Face     : Pango_Cairo_Font           :=
+        Create_Toy
+          (Family => "sans",
+           Slant  => Cairo.Cairo_Font_Slant_Normal,
+           Weight => Cairo.Cairo_Font_Weight_Normal);
+      Height   : Gdouble                    := 12.0;
+      Stretch  : Gdouble                    := 1.0;
+      Mode     : Text_Transformation        := Moved_Centered;
+      Color    : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Angle    : Gdouble                    := 3.0 * Pi / 2.0;
+      Skew     : Gdouble                    := 0.0;
+      Markup   : Boolean                    := False;
+      Scaled   : Boolean                    := False)
+   is
       Ptr   : Label_Ptr := new Label_Layer;
       Layer : Label_Layer renames Ptr.all;
    begin
@@ -144,7 +135,7 @@ package body Gtk.Layered.Label is
       Layer.Scaled := Scaled;
       Add (Ptr, Under);
       Set
-      (  Layer    => Layer,
+        (Layer    => Layer,
          Location => Location,
          Face     => Face,
          Height   => Height,
@@ -152,8 +143,7 @@ package body Gtk.Layered.Label is
          Mode     => Mode,
          Color    => Color,
          Angle    => Angle,
-         Skew     => Skew
-      );
+         Skew     => Skew);
    exception
       when others =>
          Free (Ptr);
@@ -161,24 +151,24 @@ package body Gtk.Layered.Label is
    end Add_Label;
 
    function Add_Label
-            (  Under    : not null access Layer_Location'Class;
-               Text     : UTF8_String := "";
-               Location : Cairo_Tuple := (0.0, 0.0);
-               Face     : Pango_Cairo_Font :=
-                             Create_Toy
-                             (  Family => "sans",
-                                Slant  => Cairo_Font_Slant_Normal,
-                                Weight => Cairo_Font_Weight_Normal
-                             );
-               Height   : Gdouble             := 12.0;
-               Stretch  : Gdouble             := 1.0;
-               Mode     : Text_Transformation := Moved_Centered;
-               Color    : Gdk_Color           := RGB (0.0, 0.0, 0.0);
-               Angle    : Gdouble             := 3.0 * Pi / 2.0;
-               Skew     : Gdouble             := 0.0;
-               Markup   : Boolean             := False;
-               Scaled   : Boolean             := False
-            )  return not null access Label_Layer is
+     (Under    : not null access Layer_Location'Class;
+      Text     : UTF8_String                := "";
+      Location : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
+      Face     : Pango_Cairo_Font           :=
+        Create_Toy
+          (Family => "sans",
+           Slant  => Cairo.Cairo_Font_Slant_Normal,
+           Weight => Cairo.Cairo_Font_Weight_Normal);
+      Height   : Gdouble                    := 12.0;
+      Stretch  : Gdouble                    := 1.0;
+      Mode     : Text_Transformation        := Moved_Centered;
+      Color    : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Angle    : Gdouble                    := 3.0 * Pi / 2.0;
+      Skew     : Gdouble                    := 0.0;
+      Markup   : Boolean                    := False;
+      Scaled   : Boolean                    := False)
+      return not null access Label_Layer
+   is
       Ptr   : Label_Ptr := new Label_Layer;
       Layer : Label_Layer renames Ptr.all;
    begin
@@ -204,21 +194,24 @@ package body Gtk.Layered.Label is
          raise;
    end Add_Label;
 
-   procedure Draw
-             (  Layer   : in out Label_Layer;
-                Context : Cairo_Context;
-                Area    : Gdk_Rectangle
-             )  is
-      Size    : constant Gdouble     := Layer.Widget.Get_Size;
-      Text    : constant UTF8_String := Text_Mutex.Get_Text (Layer);
-      Gain    : Gdouble              := 1.0;
-      State   : Context_State        := Save (Context);
+   overriding procedure Draw
+     (Layer   : in out Label_Layer;
+      Context : Cairo.Cairo_Context;
+      Area    : Gdk_Rectangle)
+   is
+      pragma Unreferenced (Area);
+      Size    : constant Gdouble             := Layer.Widget.all.Get_Size;
+      Text    : constant UTF8_String         := Text_Mutex.Get_Text (Layer);
+      Gain    : Gdouble                      := 1.0;
+      State   : Cairo.Ellipses.Context_State := Cairo.Ellipses.Save (Context);
+      pragma Unreferenced (State);
       X, Y    : aliased Gdouble;
-      Extents : Cairo_Text_Extents;
+      Extents : Cairo.Cairo_Text_Extents;
    begin
       if Layer.Scaled then
          declare
-            Center : constant Cairo_Tuple := Layer.Widget.Get_Center;
+            Center : constant Cairo.Ellipses.Cairo_Tuple :=
+                       Layer.Widget.all.Get_Center;
          begin
             X := Center.X + Layer.X * Size;
             Y := Center.Y + Layer.Y * Size;
@@ -227,7 +220,7 @@ package body Gtk.Layered.Label is
          X := Layer.X;
          Y := Layer.Y;
       end if;
-      Move_To (Context, X, Y);
+      Cairo.Move_To (Context, X, Y);
       if Layer.Markup then
          Get_Markup_Extents (Layer.Face, Context, Text, Extents);
       else
@@ -238,50 +231,39 @@ package body Gtk.Layered.Label is
          if Layer.Scaled then
             Gain := Gain * Size;
          end if;
-         Translate
-         (  Cr => Context,
+         Cairo.Translate
+           (Cr => Context,
             Tx => X,
-            Ty => Y
-         );
---           Set_Source_RGB (Context, 1.0, 0.0, 0.0);
---           Move_To (Context, -Extents.Width / 2.0, -Extents.Height / 2.0);
---           Rel_Line_To (Context, Extents.Width, 0.0);
---           Rel_Line_To (Context, 0.0, Extents.Height);
---           Rel_Line_To (Context, -Extents.Width, 0.0);
---           Close_Path (Context);
---           Stroke (context);
---
---           Move_To
---           (  Cr => Context,
---              X  => -Extents.X_Bearing - Extents.Width / 2.0,
---              Y  => -Extents.Y_Bearing - Extents.Height / 2.0
---           );
---           Show_Text (Layer.Face, Context, Text);
---           Move_To (Context, 0.0, 0.0);
+            Ty => Y);
+         --           Set_Source_RGB (Context, 1.0, 0.0, 0.0);
+         --           Move_To (Context, -Extents.Width / 2.0, -Extents.Height / 2.0);
+         --           Rel_Line_To (Context, Extents.Width, 0.0);
+         --           Rel_Line_To (Context, 0.0, Extents.Height);
+         --           Rel_Line_To (Context, -Extents.Width, 0.0);
+         --           Close_Path (Context);
+         --           Stroke (context);
+         --
+         --           Move_To
+         --           (  Cr => Context,
+         --              X  => -Extents.X_Bearing - Extents.Width / 2.0,
+         --              Y  => -Extents.Y_Bearing - Extents.Height / 2.0
+         --           );
+         --           Show_Text (Layer.Face, Context, Text);
+         --           Move_To (Context, 0.0, 0.0);
 
          case Layer.Mode is
             when Moved_Inside =>
-               Translate
-               (  Cr => Context,
-                  Tx => ( -Extents.Width
-                        *  0.5 * Gain * Layer.Stretch
-                        *  Cos (Layer.Angle)
-                        ),
-                  Ty => ( -Extents.Height
-                        *  0.5 * Gain
-                        *  Sin (Layer.Angle)
-               )        );
+               Cairo.Translate
+                 (Cr => Context,
+                  Tx => (Extents.Width * 0.5 * Gain * Layer.Stretch *
+                             Cos (Layer.Angle)),
+                  Ty => (-Extents.Height * 0.5 * Gain * Sin (Layer.Angle)));
             when Moved_Outside =>
-               Translate
-               (  Cr => Context,
-                  Tx => (  Extents.Width
-                        *  0.5 * Gain * Layer.Stretch
-                        *  Cos (Layer.Angle)
-                        ),
-                  Ty => (  Extents.Height
-                        *  0.5 * Gain
-                        *  Sin (Layer.Angle)
-               )        );
+               Cairo.Translate
+                 (Cr => Context,
+                  Tx => (Extents.Width * 0.5 * Gain * Layer.Stretch *
+                             Cos (Layer.Angle)),
+                  Ty => (Extents.Height * 0.5 * Gain * Sin (Layer.Angle)));
             when Moved_Centered =>
                null;
             when Rotated =>
@@ -298,11 +280,11 @@ package body Gtk.Layered.Label is
 --                             +  Extents.Height * Sin_Angle
 --                    )        );
 --                 end;
-               Rotate (Context, Layer.Angle + Pi / 2.0);
+               Cairo.Rotate (Context, Layer.Angle + Pi / 2.0);
             when Skewed =>
-               Rotate (Context, Layer.Angle);
+               Cairo.Rotate (Context, Layer.Angle);
                declare
-                  Matrix : aliased Cairo_Matrix;
+                  Matrix : aliased Cairo.Cairo_Matrix;
                begin
                   Matrix.Xx := 1.0;
                   Matrix.Xy := -1.0 * Tan (Layer.Skew);
@@ -310,7 +292,7 @@ package body Gtk.Layered.Label is
                   Matrix.Yx := 0.0;
                   Matrix.Yy := 1.0;
                   Matrix.Y0 := 0.0;
-                  Transform (Context, Matrix'Access);
+                  Cairo.Transform (Context, Matrix'Access);
                end;
          end case;
 --           -- Bounding rectangle
@@ -340,11 +322,10 @@ package body Gtk.Layered.Label is
 --           Stroke (Context);
 --           Move_To (Context, 0.0, 0.0);
 
-         Scale
-         (  Cr => Context,
+         Cairo.Scale
+           (Cr => Context,
             Sx => Gain * Layer.Stretch,
-            Sy => Gain
-         );
+            Sy => Gain);
 
 --           -- Bounding rectangle
 --           Set_Source_RGB (Context, 1.0, 1.0, 1.0);
@@ -360,17 +341,15 @@ package body Gtk.Layered.Label is
 --           Close_Path (Context);
 --           Stroke (Context);
 
-         Set_Source_Rgb
-         (  Context,
-            Gdouble (Red   (Layer.Color)) / Gdouble (Guint16'Last),
-            Gdouble (Green (Layer.Color)) / Gdouble (Guint16'Last),
-            Gdouble (Blue  (Layer.Color)) / Gdouble (Guint16'Last)
-         );
-         Move_To
-         (  Cr => Context,
+         Cairo.Set_Source_Rgb
+           (Context,
+            Gdouble (Gdk.Color.Red   (Layer.Color)) / Gdouble (Guint16'Last),
+            Gdouble (Gdk.Color.Green (Layer.Color)) / Gdouble (Guint16'Last),
+            Gdouble (Gdk.Color.Blue  (Layer.Color)) / Gdouble (Guint16'Last));
+         Cairo.Move_To
+           (Cr => Context,
             X  => -(Extents.X_Bearing + Extents.Width  * 0.5),
-            Y  => -(Extents.Y_Bearing + Extents.Height * 0.5)
-         );
+            Y  => -(Extents.Y_Bearing + Extents.Height * 0.5));
          if Layer.Markup then
             Show_Markup (Layer.Face, Context, Text);
          else
@@ -380,7 +359,7 @@ package body Gtk.Layered.Label is
       Layer.Updated := False;
    end Draw;
 
-   procedure Finalize (Layer : in out Label_Layer) is
+   overriding procedure Finalize (Layer : in out Label_Layer) is
    begin
       Finalize (Abstract_Layer (Layer));
       Free (Layer.Text);
@@ -391,7 +370,7 @@ package body Gtk.Layered.Label is
       return Layer.Angle;
    end Get_Angle;
 
-   function Get_Color (Layer : Label_Layer) return Gdk_Color is
+   function Get_Color (Layer : Label_Layer) return Gdk.Color.Gdk_Color is
    begin
       return Layer.Color;
    end Get_Color;
@@ -406,7 +385,8 @@ package body Gtk.Layered.Label is
       return Layer.Height;
    end Get_Height;
 
-   function Get_Location (Layer : Label_Layer) return Cairo_Tuple is
+   function Get_Location
+     (Layer : Label_Layer) return Cairo.Ellipses.Cairo_Tuple is
    begin
       return (X => Layer.X, Y => Layer.Y);
    end Get_Location;
@@ -421,9 +401,10 @@ package body Gtk.Layered.Label is
       return Layer.Mode;
    end Get_Mode;
 
-   function Get_Properties_Number
-            (  Layer : Label_Layer
-            )  return Natural is
+   overriding function Get_Properties_Number
+     (Layer : Label_Layer) return Natural
+   is
+      pragma Unreferenced (Layer);
    begin
       return
       (  Layer_Property'Pos (Layer_Property'Last)
@@ -432,7 +413,7 @@ package body Gtk.Layered.Label is
       );
    end Get_Properties_Number;
 
-   function Get_Property_Specification
+   overriding function Get_Property_Specification
             (  Layer    : Label_Layer;
                Property : Positive
             )  return Param_Spec is
@@ -515,12 +496,11 @@ package body Gtk.Layered.Label is
                   );
             when Property_Slant =>
                return
-                  Cairo.Font_Slant_Property.Gnew_Enum
-                  (  Name    => "font-slant",
-                     Nick    => "font slant",
-                     Default => Cairo_Font_Slant_Normal,
-                     Blurb   => "The text font slant"
-                  );
+                 Cairo.Font_Slant_Property.Gnew_Enum
+                   (Name    => "font-slant",
+                    Nick    => "font slant",
+                    Default => Cairo.Cairo_Font_Slant_Normal,
+                    Blurb   => "The text font slant");
             when Property_Font_Size =>
                return
                   Gnew_Uint
@@ -563,11 +543,10 @@ package body Gtk.Layered.Label is
             when Property_Color =>
                return
                   Gnew_Boxed
-                  (  Name       => "color",
-                     Boxed_Type => Gdk_Color_Type,
-                     Nick       => "color",
-                     Blurb      => "The text color"
-                  );
+                   (Name       => "color",
+                    Boxed_Type => Gdk.Color.Gdk_Color_Type,
+                    Nick       => "color",
+                    Blurb      => "The text color");
             when Property_Scaled =>
                return
                   Gnew_Boolean
@@ -582,7 +561,7 @@ package body Gtk.Layered.Label is
                   Gnew_Double
                   (  Name    => "angle",
                      Nick    => "angle",
-                     Minimum =>-2.0 * Pi,
+                     Minimum => -2.0 * Pi,
                      Maximum => 2.0 * Pi,
                      Default => 0.0,
                      Blurb   => "The angle of the label text base " &
@@ -595,7 +574,7 @@ package body Gtk.Layered.Label is
                   Gnew_Double
                   (  Name    => "skew",
                      Nick    => "skew",
-                     Minimum =>-2.0 * Pi,
+                     Minimum => -2.0 * Pi,
                      Maximum => 2.0 * Pi,
                      Default => 0.0,
                      Blurb   => "When the text transformation mode " &
@@ -607,84 +586,79 @@ package body Gtk.Layered.Label is
       end if;
    end Get_Property_Specification;
 
-   function Get_Property_Value
-            (  Layer    : Label_Layer;
-               Property : Positive
-            )  return GValue is
+   overriding function Get_Property_Value
+     (Layer    : Label_Layer;
+      Property : Positive) return Glib.Values.GValue is
    begin
       if Property > Get_Properties_Number (Layer) then
          raise Constraint_Error;
       else
          declare
-            Value : GValue;
+            Value : Glib.Values.GValue;
          begin
             case Layer_Property'Val (Property - 1) is
                when Property_X =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.X);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.X);
                when Property_Y =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Y);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Y);
                when Property_Angle =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Angle);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Angle);
                when Property_Skew =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Skew);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Skew);
                when Property_Color =>
-                  Set_Value (Value, Layer.Color);
+                  Gdk.Color.Set_Value (Value, Layer.Color);
                when Property_Height =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Height);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Height);
                when Property_Mode =>
                   Gtk.Layered.Text_Transformation_Property.Set_Enum
-                  (  Value,
-                     Layer.Mode
-                  );
+                    (Value,
+                     Layer.Mode);
                when Property_Font_Type =>
                   Pango.Cairo.Fonts.Font_Type_Property.Set_Enum
-                  (  Value,
-                     Get_Type (Layer.Face)
-                  );
+                    (Value,
+                     Get_Type (Layer.Face));
                when Property_Family =>
-                  Init (Value, GType_String);
-                  Set_String (Value, Get_Family (Layer.Face));
+                  Glib.Values.Init (Value, GType_String);
+                  Glib.Values.Set_String (Value, Get_Family (Layer.Face));
                when Property_Slant =>
                   Cairo.Font_Slant_Property.Set_Enum
-                  (  Value,
-                     Get_Slant (Layer.Face)
-                  );
+                    (Value,
+                     Get_Slant (Layer.Face));
                when Property_Font_Size =>
-                  Init (Value, GType_Uint);
-                  Set_Uint (Value, Guint (Get_Size (Layer.Face)));
+                  Glib.Values.Init (Value, GType_Uint);
+                  Glib.Values.Set_Uint (Value, Guint (Get_Size (Layer.Face)));
                when Property_Weight =>
                   Pango.Enums.Weight_Property.Set_Enum
-                  (  Value,
-                     Get_Weight (Layer.Face)
-                  );
+                    (Value,
+                     Get_Weight (Layer.Face));
                when Property_Stretch =>
-                  Init (Value, GType_Double);
-                  Set_Double (Value, Layer.Stretch);
+                  Glib.Values.Init (Value, GType_Double);
+                  Glib.Values.Set_Double (Value, Layer.Stretch);
                when Property_Text =>
-                  Init (Value, GType_String);
+                  Glib.Values.Init (Value, GType_String);
                   if Layer.Text = null then
-                     Set_String (Value, "");
+                     Glib.Values.Set_String (Value, "");
                   else
-                     Set_String (Value, Layer.Text.all);
+                     Glib.Values.Set_String (Value, Layer.Text.all);
                   end if;
                when Property_Markup =>
-                  Init (Value, GType_Boolean);
-                  Set_Boolean (Value, Layer.Markup);
+                  Glib.Values.Init (Value, GType_Boolean);
+                  Glib.Values.Set_Boolean (Value, Layer.Markup);
                when Property_Scaled =>
-                  Init (Value, GType_Boolean);
-                  Set_Boolean (Value, Layer.Scaled);
+                  Glib.Values.Init (Value, GType_Boolean);
+                  Glib.Values.Set_Boolean (Value, Layer.Scaled);
             end case;
             return Value;
          end;
       end if;
    end Get_Property_Value;
 
-   function Get_Scaled (Layer : Label_Layer) return Boolean is
+   overriding function Get_Scaled (Layer : Label_Layer) return Boolean is
    begin
       return Layer.Scaled;
    end Get_Scaled;
@@ -704,31 +678,30 @@ package body Gtk.Layered.Label is
       return Text_Mutex.Get_Text (Layer);
    end Get_Text;
 
-   function Is_Updated (Layer : Label_Layer) return Boolean is
+   overriding function Is_Updated (Layer : Label_Layer) return Boolean is
    begin
       return Layer.Updated;
    end Is_Updated;
 
-   procedure Move
-             (  Layer  : in out Label_Layer;
-                Offset : Cairo_Tuple
-             )  is
+   overriding procedure Move
+     (Layer  : in out Label_Layer;
+      Offset : Cairo.Ellipses.Cairo_Tuple) is
    begin
       Layer.X := Layer.X + Offset.X;
       Layer.Y := Layer.Y + Offset.Y;
       Layer.Updated := True;
    end Move;
 
-   procedure Restore
-             (  Stream : in out Root_Stream_Type'Class;
-                Layer  : in out Label_Layer
-             )  is
+   overriding procedure Restore
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Layer  : in out Label_Layer)
+   is
       X, Y    : Gdouble;
       Face    : Pango_Cairo_Font;
       Height  : Gdouble;
       Stretch : Gdouble;
       Mode    : Text_Transformation;
-      Color   : Gdk_Color;
+      Color   : Gdk.Color.Gdk_Color;
       Angle   : Gdouble;
       Skew    : Gdouble;
    begin
@@ -756,7 +729,7 @@ package body Gtk.Layered.Label is
       Layer.Set_Text (Restore (Stream'Access), Layer.Markup);
    end Restore;
 
-   procedure Scale
+   overriding procedure Scale
              (  Layer  : in out Label_Layer;
                 Factor : Gdouble
              )  is
@@ -770,16 +743,15 @@ package body Gtk.Layered.Label is
    end Scale;
 
    procedure Set
-             (  Layer    : in out Label_Layer;
-                Location : Cairo_Tuple;
-                Face     : Pango_Cairo_Font;
-                Height   : Gdouble;
-                Stretch  : Gdouble;
-                Mode     : Text_Transformation;
-                Color    : Gdk_Color;
-                Angle    : Gdouble;
-                Skew     : Gdouble
-             )  is
+     (Layer    : in out Label_Layer;
+      Location : Cairo.Ellipses.Cairo_Tuple;
+      Face     : Pango_Cairo_Font;
+      Height   : Gdouble;
+      Stretch  : Gdouble;
+      Mode     : Text_Transformation;
+      Color    : Gdk.Color.Gdk_Color;
+      Angle    : Gdouble;
+      Skew     : Gdouble) is
    begin
       if abs Skew >= Pi / 2.0 - Eps then
          raise Constraint_Error with "Skew is greater than half Pi";
@@ -800,39 +772,38 @@ package body Gtk.Layered.Label is
       Layer.Updated := True;
    end Set;
 
-   procedure Set_Property_Value
-             (  Layer    : in out Label_Layer;
-                Property : Positive;
-                Value    : GValue
-             )  is
+   overriding procedure Set_Property_Value
+     (Layer    : in out Label_Layer;
+      Property : Positive;
+      Value    : Glib.Values.GValue) is
    begin
       if Property > Get_Properties_Number (Layer) then
          raise Constraint_Error;
       else
          case Layer_Property'Val (Property - 1) is
             when Property_X =>
-               Layer.X := Get_Double (Value);
+               Layer.X := Glib.Values.Get_Double (Value);
             when Property_Y =>
-               Layer.Y := Get_Double (Value);
+               Layer.Y := Glib.Values.Get_Double (Value);
             when Property_Angle =>
-               Layer.Angle := Get_Double (Value);
-               if Layer.Angle not in -2.0 * Pi..2.0 * Pi then
+               Layer.Angle := Glib.Values.Get_Double (Value);
+               if Layer.Angle not in -2.0 * Pi .. 2.0 * Pi then
                   Layer.Angle :=
                      Gdouble'Remainder (Layer.Angle, 2.0 * Pi);
                end if;
             when Property_Skew =>
-               Layer.Skew := Get_Double (Value);
-               if Layer.Skew not in -2.0 * Pi..2.0 * Pi then
+               Layer.Skew := Glib.Values.Get_Double (Value);
+               if Layer.Skew not in -2.0 * Pi .. 2.0 * Pi then
                   Layer.Skew :=
                      Gdouble'Remainder (Layer.Skew, 2.0 * Pi);
                end if;
             when Property_Stretch =>
-               Layer.Stretch := Get_Double (Value);
+               Layer.Stretch := Glib.Values.Get_Double (Value);
                if Layer.Stretch < 0.0 then
                   Layer.Stretch := 0.0;
                end if;
             when Property_Height =>
-               Layer.Height := Get_Double (Value);
+               Layer.Height := Glib.Values.Get_Double (Value);
                if Layer.Height < 0.0 then
                   Layer.Height := 0.0;
                end if;
@@ -847,7 +818,7 @@ package body Gtk.Layered.Label is
                   Pango.Cairo.Fonts.Font_Type_Property.Get_Enum (Value)
                );
             when Property_Family =>
-               Set_Family (Layer.Face, Get_String (Value));
+               Set_Family (Layer.Face, Glib.Values.Get_String (Value));
             when Property_Slant =>
                Set_Slant
                (  Layer.Face,
@@ -855,34 +826,31 @@ package body Gtk.Layered.Label is
                );
             when Property_Font_Size =>
                Set_Size
-               (  Layer.Face,
+                 (Layer.Face,
                   Gint
-                  (  Guint'Max
-                     (  Guint'Min
-                        (  Get_Uint (Value),
-                           Guint (Gint'Last)
-                        ),
-                        1
-               )  )  );
+                    (Guint'Max
+                         (Guint'Min
+                              (Glib.Values.Get_Uint (Value),
+                               Guint (Gint'Last)),
+                          1)));
             when Property_Weight =>
                Set_Weight
-               (  Layer.Face,
-                  Pango.Enums.Weight_Property.Get_Enum (Value)
-               );
+                 (Layer.Face,
+                  Pango.Enums.Weight_Property.Get_Enum (Value));
             when Property_Text =>
-               Set_Text (Layer, Get_String (Value), Layer.Markup);
+               Set_Text (Layer, Glib.Values.Get_String (Value), Layer.Markup);
             when Property_Markup =>
-               Layer.Markup := Get_Boolean (Value);
+               Layer.Markup := Glib.Values.Get_Boolean (Value);
             when Property_Color =>
-               Layer.Color := Get_Value (Value);
+               Layer.Color := Gdk.Color.Get_Value (Value);
             when Property_Scaled =>
-               Layer.Scaled := Get_Boolean (Value);
+               Layer.Scaled := Glib.Values.Get_Boolean (Value);
          end case;
       end if;
       Layer.Updated := True;
    end Set_Property_Value;
 
-   procedure Set_Scaled
+   overriding procedure Set_Scaled
              (  Layer  : in out Label_Layer;
                 Scaled : Boolean
              )  is
@@ -900,10 +868,9 @@ package body Gtk.Layered.Label is
       Text_Mutex.Set_Text (Layer, Text, Markup);
    end Set_Text;
 
-   procedure Store
-             (  Stream : in out Root_Stream_Type'Class;
-                Layer  : Label_Layer
-             )  is
+   overriding procedure Store
+     (Stream : in out Ada.Streams.Root_Stream_Type'Class;
+      Layer  : Label_Layer) is
    begin
       Store (Stream, Layer.X);
       Store (Stream, Layer.Y);

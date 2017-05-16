@@ -23,27 +23,29 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 separate (Gtk.Layered.Waveform)
-   procedure Draw_Lines
-             (  Layer   : in out Waveform_Layer;
-                Context : Cairo_Context;
-                Data    : in out Line_Method_Data
-             )  is
-   procedure Move_To (Point : Cairo_Tuple) is
+procedure Draw_Lines
+  (Layer   : in out Waveform_Layer;
+   Context : Cairo.Cairo_Context;
+   Data    : in out Line_Method_Data)
+is
+   pragma Warnings (Off, "declaration hides ""Point""");
+
+   procedure Move_To (Point : Cairo.Ellipses.Cairo_Tuple) is
       pragma Inline (Move_To);
    begin
-      Move_To (Context, Point.X, Point.Y);
+      Cairo.Move_To (Context, Point.X, Point.Y);
    end Move_To;
 
-   procedure Line_To (Point : Cairo_Tuple) is
+   procedure Line_To (Point : Cairo.Ellipses.Cairo_Tuple) is
       pragma Inline (Line_To);
    begin
-      Line_To (Context, Point.X, Point.Y);
+      Cairo.Line_To (Context, Point.X, Point.Y);
    end Line_To;
 
-   Antialias : constant Cairo_Antialias := Get_Antialias (Context);
+   Antialias : constant Cairo.Cairo_Antialias := Cairo.Get_Antialias (Context);
    X1, X2    : Gdouble;
    Y1, Y2    : Gdouble;
 begin
@@ -51,14 +53,14 @@ begin
       if Layer.Scaled then
          declare
             X_Size : constant Gdouble :=
-                     Gdouble (Layer.Widget.Get_Allocated_Width);
+                     Gdouble (Layer.Widget.all.Get_Allocated_Width);
             Y_Size : constant Gdouble :=
-                     Gdouble (Layer.Widget.Get_Allocated_Height);
+                     Gdouble (Layer.Widget.all.Get_Allocated_Height);
          begin
-            X1 := Layer.Box.X1 * X_Size + Layer.Widget.Get_Center.X;
-            X2 := Layer.Box.X2 * X_Size + Layer.Widget.Get_Center.X;
-            Y1 := Layer.Box.Y1 * Y_Size + Layer.Widget.Get_Center.Y;
-            Y2 := Layer.Box.Y2 * Y_Size + Layer.Widget.Get_Center.Y;
+            X1 := Layer.Box.X1 * X_Size + Layer.Widget.all.Get_Center.X;
+            X2 := Layer.Box.X2 * X_Size + Layer.Widget.all.Get_Center.X;
+            Y1 := Layer.Box.Y1 * Y_Size + Layer.Widget.all.Get_Center.Y;
+            Y2 := Layer.Box.Y2 * Y_Size + Layer.Widget.all.Get_Center.Y;
          end;
       else
          X1 := Layer.Box.X1;
@@ -68,133 +70,131 @@ begin
       end if;
       Layer.Set_Y_Conversion (Y1, Y2);
       declare
-         State : Context_State := Save (Context);
+         State : Cairo.Ellipses.Context_State := Cairo.Ellipses.Save (Context);
+         pragma Unreferenced (State);
       begin
-         Set_Antialias (Context, Cairo_Antialias_None);
+         Cairo.Set_Antialias (Context, Cairo.Cairo_Antialias_None);
          --
          -- Clipping the bounding rectangle of the waveform
          --
-         New_Path (Context);
-         Move_To (Context, X1, Y1);
-         Line_To (Context, X2, Y1);
-         Line_To (Context, X2, Y2);
-         Line_To (Context, X1, Y2);
-         Close_Path (Context);
-         Clip (Context);
+         Cairo.New_Path (Context);
+         Cairo.Move_To (Context, X1, Y1);
+         Cairo.Line_To (Context, X2, Y1);
+         Cairo.Line_To (Context, X2, Y2);
+         Cairo.Line_To (Context, X1, Y2);
+         Cairo.Close_Path (Context);
+         Cairo.Clip (Context);
          declare
             Points : Points_Array renames Data.Points.all;
 
-            function Point (Offset : Natural) return Cairo_Tuple is
+            function Point
+              (Offset : Natural) return Cairo.Ellipses.Cairo_Tuple
+            is
                pragma Inline (Point);
                Result : constant  Point_Data :=
                   Points ((Data.First + Offset) mod Points'Length);
             begin
                return
-               (  Gdouble (Result.X),
-                  Layer.Y0 - Layer.YY * Gdouble (Result.Y)
-               );
+                 (Gdouble (Result.X),
+                  Layer.Y0 - Layer.YY * Gdouble (Result.Y));
             end Point;
 
-            function Line_Point (Offset : Natural) return Cairo_Tuple is
+            function Line_Point
+              (Offset : Natural) return Cairo.Ellipses.Cairo_Tuple
+            is
                pragma Inline (Line_Point);
                Result : constant Point_Data :=
                   Points ((Data.First + Offset) mod Points'Length);
             begin
                return
-               (  Gdouble (Result.X) + 0.5,
-                  Layer.Y0 - Layer.YY * Gdouble (Result.Y) + 0.5
-               );
+                 (Gdouble (Result.X) + 0.5,
+                  Layer.Y0 - Layer.YY * Gdouble (Result.Y) + 0.5);
             end Line_Point;
          begin
             Move_To (Line_Point (0));
-            for Index in 1..Data.Count - 1 loop
+            for Index in 1 .. Data.Count - 1 loop
                Line_To (Line_Point (Index));
             end loop;
             if Layer.Opacity = 0.0 then -- No filling
                if Layer.Widened then
-                  Set_Line_Width
-                  (  Context,
-                     Layer.Line.Width * Layer.Widget.Get_Size
-                  );
+                  Cairo.Set_Line_Width
+                    (Context,
+                     Layer.Line.Width * Layer.Widget.all.Get_Size);
                else
-                  Set_Line_Width (Context, Layer.Line.Width);
+                  Cairo.Set_Line_Width (Context, Layer.Line.Width);
                end if;
-               Set_Line_Cap (Context, Layer.Line.Line_Cap);
-               Set_Source_Rgb
-               (  Cr    => Context,
-                  Red   => Gdouble (Red (Layer.Line.Color)) /
+               Cairo.Set_Line_Cap (Context, Layer.Line.Line_Cap);
+               Cairo.Set_Source_Rgb
+                 (Cr    => Context,
+                  Red   => Gdouble (Gdk.Color.Red (Layer.Line.Color)) /
                            Gdouble (Guint16'Last),
-                  Green => Gdouble (Green (Layer.Line.Color)) /
+                  Green => Gdouble (Gdk.Color.Green (Layer.Line.Color)) /
                            Gdouble (Guint16'Last),
-                  Blue  => Gdouble (Blue (Layer.Line.Color)) /
-                           Gdouble (Guint16'Last)
-               );
-               Stroke (Context);
+                  Blue  => Gdouble (Gdk.Color.Blue (Layer.Line.Color)) /
+                           Gdouble (Guint16'Last));
+               Cairo.Stroke (Context);
             elsif Layer.Opacity = 1.0 then -- Opaque filling
-               Line_To (Context, Point (Data.Count - 1).X, Y2);
-               Line_To (Context, Point (0             ).X, Y2);
-               Close_Path (Context);
-               Set_Source_Rgb
-               (  Cr    => Context,
-                  Red   => Gdouble (Red (Layer.Line.Color)) /
+               Cairo.Line_To (Context, Point (Data.Count - 1).X, Y2);
+               Cairo.Line_To (Context, Point (0)             .X, Y2);
+               Cairo.Close_Path (Context);
+               Cairo.Set_Source_Rgb
+                 (Cr    => Context,
+                  Red   => Gdouble (Gdk.Color.Red (Layer.Line.Color)) /
                            Gdouble (Guint16'Last),
-                  Green => Gdouble (Green (Layer.Line.Color)) /
+                  Green => Gdouble (Gdk.Color.Green (Layer.Line.Color)) /
                            Gdouble (Guint16'Last),
-                  Blue  => Gdouble (Blue (Layer.Line.Color)) /
+                  Blue  => Gdouble (Gdk.Color.Blue (Layer.Line.Color)) /
                            Gdouble (Guint16'Last)
                );
-               Fill (Context);
+               Cairo.Fill (Context);
             else -- Transparent filling
-               Line_To (Context, Point (Data.Count - 1).X, Y2);
-               Line_To (Context, Point (0             ).X, Y2);
-               Close_Path (Context);
-               Set_Source_Rgba
-               (  Cr    => Context,
-                  Red   => Gdouble (Red   (Layer.Line.Color)) /
+               Cairo.Line_To (Context, Point (Data.Count - 1).X, Y2);
+               Cairo.Line_To (Context, Point (0)             .X, Y2);
+               Cairo.Close_Path (Context);
+               Cairo.Set_Source_Rgba
+                 (Cr    => Context,
+                  Red   => Gdouble (Gdk.Color.Red   (Layer.Line.Color)) /
                            Gdouble (Guint16'Last),
-                  Green => Gdouble (Green (Layer.Line.Color)) /
+                  Green => Gdouble (Gdk.Color.Green (Layer.Line.Color)) /
                            Gdouble (Guint16'Last),
-                  Blue  => Gdouble (Blue  (Layer.Line.Color)) /
+                  Blue  => Gdouble (Gdk.Color.Blue  (Layer.Line.Color)) /
                            Gdouble (Guint16'Last),
                   Alpha => 1.0 - Layer.Opacity
                );
-               Fill (Context);
+               Cairo.Fill (Context);
                   -- Drawing the line over it
                Move_To (Point (0));
-               for Index in 1..Data.Count - 1 loop
+               for Index in 1 .. Data.Count - 1 loop
                   Line_To (Point (Index));
                end loop;
                if Layer.Widened then
-                  Set_Line_Width
-                  (  Context,
-                     Layer.Line.Width * Layer.Widget.Get_Size
-                  );
+                  Cairo.Set_Line_Width
+                    (Context,
+                     Layer.Line.Width * Layer.Widget.all.Get_Size);
                else
-                  Set_Line_Width (Context, Layer.Line.Width);
+                  Cairo.Set_Line_Width (Context, Layer.Line.Width);
                end if;
-               Set_Line_Cap (Context, Layer.Line.Line_Cap);
-               Set_Source_Rgb
-               (  Cr    => Context,
-                  Red   => Gdouble (Red (Layer.Line.Color)) /
+               Cairo.Set_Line_Cap (Context, Layer.Line.Line_Cap);
+               Cairo.Set_Source_Rgb
+                 (Cr    => Context,
+                  Red   => Gdouble (Gdk.Color.Red (Layer.Line.Color)) /
                            Gdouble (Guint16'Last),
-                  Green => Gdouble (Green (Layer.Line.Color)) /
+                  Green => Gdouble (Gdk.Color.Green (Layer.Line.Color)) /
                            Gdouble (Guint16'Last),
-                  Blue  => Gdouble (Blue (Layer.Line.Color)) /
+                  Blue  => Gdouble (Gdk.Color.Blue (Layer.Line.Color)) /
                            Gdouble (Guint16'Last)
                );
-               Stroke (Context);
+               Cairo.Stroke (Context);
             end if;
          end;
-         Set_Antialias (Context, Antialias);
+         Cairo.Set_Antialias (Context, Antialias);
       end;
    end if;
+   pragma Warnings (On, "declaration hides ""Point""");
 exception
    when Error : others =>
       Log
-      (  GtkAda_Contributions_Domain,
+        (Gtk.Missed.GtkAda_Contributions_Domain,
          Log_Level_Critical,
-         (  "Fault: "
-         &  Exception_Information (Error)
-         &  Where ("Draw_Lines")
-      )  );
+         "Fault: " & Exception_Information (Error) & Where ("Draw_Lines"));
 end Draw_Lines;

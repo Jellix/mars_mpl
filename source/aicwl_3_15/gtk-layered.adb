@@ -23,25 +23,25 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Ada.Exceptions;            use Ada.Exceptions;
-with Ada.Tags;                  use Ada.Tags;
-with Ada.Text_IO;               use Ada.Text_IO;
-with Gdk.Cairo;                 use Gdk.Cairo;
-with Glib.Messages;             use Glib.Messages;
-with Glib.Properties.Creation;  use Glib.Properties.Creation;
-with Glib.Object;               use Glib.Object;
-with Gtkada.Types;              use Gtkada.Types;
-with Interfaces.C.Strings;      use Interfaces.C;
-with Strings_Edit.Integers;     use Strings_Edit.Integers;
-with System.Storage_Elements;   use System.Storage_Elements;
+with Ada.Exceptions;
+with Ada.Text_IO;
 
-with Cairo.Region;
+with Glib.Messages;
+with Glib.Properties.Creation;
+with Glib.Object;
+with Gtkada.Types;
+with Gtk.Missed;
+with Interfaces.C.Strings;
+with System.Storage_Elements;
+
 with Glib.Object.Checked_Destroy;
-with Gtk.Main;
 
 package body Gtk.Layered is
+
+   pragma Warnings (Off, "declaration hides ""Left""");
+   pragma Warnings (Off, "declaration hides ""Widget""");
 
    function Where (Name : String) return String is
    begin
@@ -51,9 +51,8 @@ package body Gtk.Layered is
    Class : Ada_GObject_Class := Uninitialized_Class;
 
    Signal_Names : constant Gtkada.Types.Chars_Ptr_Array :=
-      (  0 => Interfaces.C.Strings.New_String ("layer-added"),
-         1 => Interfaces.C.Strings.New_String ("layer-removed")
-      );
+                    (0 => Interfaces.C.Strings.New_String ("layer-added"),
+                     1 => Interfaces.C.Strings.New_String ("layer-removed"));
    Layer_Added_ID   : Signal_Id := Invalid_Signal_Id;
    Layer_Removed_ID : Signal_Id := Invalid_Signal_Id;
 
@@ -68,41 +67,68 @@ package body Gtk.Layered is
    function Match (Left, Right : Param_Spec) return Boolean is
    begin
       return
-      (  Value /= Value_Type (Left)
-      or else
-         (  (  Minimum (Specification (Left))
-            =  Minimum (Specification (Right))
-            )
-         and then
-            (  Maximum (Specification (Left))
-            =  Maximum (Specification (Right))
-      )  )  );
+        (Value /= Glib.Properties.Creation.Value_Type (Left)
+         or else
+           ((Minimum (Specification (Left)) = Minimum (Specification (Right)))
+            and then
+              (Maximum (Specification (Left)) =
+                   Maximum (Specification (Right)))));
    end Match;
 
    function Match_Char is
-      new Match (Gint8, GType_Char, Param_Spec_Char);
+     new Match (Gint8,
+                GType_Char,
+                Glib.Properties.Creation.Param_Spec_Char,
+                Glib.Properties.Creation.Minimum,
+                Glib.Properties.Creation.Maximum);
    function Match_UChar is
-      new Match (Guint8, GType_Uchar, Param_Spec_Uchar);
+     new Match (Guint8,
+                GType_Uchar,
+                Glib.Properties.Creation.Param_Spec_Uchar,
+                Glib.Properties.Creation.Minimum,
+                Glib.Properties.Creation.Maximum);
    function Match_Int is
-      new Match (Gint, GType_Int, Param_Spec_Int);
+     new Match (Gint,
+                GType_Int,
+                Glib.Properties.Creation.Param_Spec_Int,
+                Glib.Properties.Creation.Minimum,
+                Glib.Properties.Creation.Maximum);
    function Match_UInt is
-      new Match (Guint, GType_Uint, Param_Spec_Uint);
+     new Match (Guint,
+                GType_Uint,
+                Glib.Properties.Creation.Param_Spec_Uint,
+                Glib.Properties.Creation.Minimum,
+                Glib.Properties.Creation.Maximum);
    function Match_Long is
-      new Match (Glong, GType_Long, Param_Spec_Long);
+     new Match (Glong,
+                GType_Long,
+                Glib.Properties.Creation.Param_Spec_Long,
+                Glib.Properties.Creation.Minimum,
+                Glib.Properties.Creation.Maximum);
    function Match_ULong is
-      new Match (Gulong, GType_Ulong, Param_Spec_Ulong);
+     new Match (Gulong,
+                GType_Ulong,
+                Glib.Properties.Creation.Param_Spec_Ulong,
+                Glib.Properties.Creation.Minimum,
+                Glib.Properties.Creation.Maximum);
    function Match_Float is
-      new Match (Gfloat, GType_Float, Param_Spec_Float);
+     new Match (Gfloat,
+                GType_Float,
+                Glib.Properties.Creation.Param_Spec_Float,
+                Glib.Properties.Creation.Minimum,
+                Glib.Properties.Creation.Maximum);
    function Match_Double is
-      new Match (Gdouble, GType_Double, Param_Spec_Double);
+     new Match (Gdouble,
+                GType_Double,
+                Glib.Properties.Creation.Param_Spec_Double,
+                Glib.Properties.Creation.Minimum,
+                Glib.Properties.Creation.Maximum);
 
    function Above (Layer : Abstract_Layer)
       return access Abstract_Layer'Class is
    begin
-      if (  Layer.Widget /= null
-         and then
-            Layer.Next /= Layer.Widget.Bottom
-         )
+      if
+        Layer.Widget /= null and then Layer.Next /= Layer.Widget.all.Bottom
       then
          return Layer.Next;
       else
@@ -110,13 +136,13 @@ package body Gtk.Layered is
       end if;
    end Above;
 
-   procedure Add
-             (  Layer : not null access Abstract_Layer;
-                Under : not null access Layer_Location'Class
-             )  is
+   overriding procedure Add
+     (Layer : not null access Abstract_Layer;
+      Under : not null access Layer_Location'Class)
+   is
       After : Abstract_Layer_Ptr;
    begin
-      if Layer.Prev /= null or else Layer.Next /= null then
+      if Layer.all.Prev /= null or else Layer.all.Next /= null then
          raise Constraint_Error with "Layer is already inserted";
       end if;
       if Under.all in Gtk_Layered_Record'Class then
@@ -125,17 +151,17 @@ package body Gtk.Layered is
             Widget : Gtk_Layered_Record'Class renames
                      Gtk_Layered_Record'Class (Under.all);
          begin
-            Layer.Widget := Widget'Unchecked_Access;
+            Layer.all.Widget := Widget'Unchecked_Access;
             if Widget.Bottom = null then
                Widget.Bottom  := Layer.all'Unchecked_Access;
-               Layer.Next     := Layer.all'Unchecked_Access;
-               Layer.Prev     := Layer.all'Unchecked_Access;
+               Layer.all.Next     := Layer.all'Unchecked_Access;
+               Layer.all.Prev     := Layer.all'Unchecked_Access;
                Widget.Depth   := 1;
                Widget.Updated := True;
                Emit (Widget'Access, Layer_Added_ID, 1);
                return;
             end if;
-            After := Widget.Bottom.Prev;
+            After := Widget.Bottom.all.Prev;
          end;
       elsif Under.all in Abstract_Layer'Class then
          -- Inserting under another layer
@@ -147,32 +173,31 @@ package body Gtk.Layered is
                raise Constraint_Error with
                      "Insertion under a layer of no widget";
             end if;
-            if Location'Access = Location.Widget.Bottom then
-               Location.Widget.Bottom := Layer.all'Unchecked_Access;
+            if Location'Access = Location.Widget.all.Bottom then
+               Location.Widget.all.Bottom := Layer.all'Unchecked_Access;
             end if;
-            Layer.Widget := Location.Widget;
+            Layer.all.Widget := Location.Widget;
             After := Location.Prev;
          end;
       else
          raise Constraint_Error with
                "Unknown type of the layer location";
       end if;
-      Layer.Prev := After;
-      Layer.Next := After.Next;
-      Layer.Prev.Next      := Layer.all'Unchecked_Access;
-      Layer.Next.Prev      := Layer.all'Unchecked_Access;
-      Layer.Widget.Depth   := Layer.Widget.Depth + 1;
-      Layer.Widget.Updated := True;
-      Emit (Layer.Widget, Layer_Added_ID, Guint (Layer.Get_Position));
+      Layer.all.Prev := After;
+      Layer.all.Next := After.all.Next;
+      Layer.all.Prev.all.Next      := Layer.all'Unchecked_Access;
+      Layer.all.Next.all.Prev      := Layer.all'Unchecked_Access;
+      Layer.all.Widget.all.Depth   := Layer.all.Widget.all.Depth + 1;
+      Layer.all.Widget.all.Updated := True;
+      Emit (Layer.all.Widget, Layer_Added_ID, Guint (Layer.all.Get_Position));
    exception
       when Error : others =>
-         Log
-         (  GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            (  "Fault: "
-            &  Exception_Information (Error)
-            &  Where ("Add")
-         )  );
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: "
+            & Ada.Exceptions.Exception_Information (Error)
+            & Where ("Add"));
          raise;
    end Add;
 
@@ -183,7 +208,7 @@ package body Gtk.Layered is
          raise Constraint_Error with
                "Layer does not belong to any widget";
       end if;
-      if Layer.Next = Layer.Widget.Bottom then
+      if Layer.Next = Layer.Widget.all.Bottom then
          return Layer.Widget;
       else
          return Layer.Next;
@@ -193,12 +218,10 @@ package body Gtk.Layered is
    function Below (Layer : Abstract_Layer)
       return access Abstract_Layer'Class is
    begin
-      if (  Layer.Widget /= null
-         and then
-            Layer.Prev /= null
-        and then
-            Layer.Prev.Next /= Layer.Widget.Bottom
-         )
+      if
+        Layer.Widget /= null and then
+        Layer.Prev /= null and then
+        Layer.Prev.all.Next /= Layer.Widget.all.Bottom
       then
          return Layer.Prev;
       else
@@ -207,30 +230,28 @@ package body Gtk.Layered is
    end Below;
 
    procedure Destroy
-             (  Widget : access Gtk_Layered_Record'Class
-             )  is
-      This : Abstract_Layer_Ptr := Widget.Bottom;
+     (Widget : access Gtk_Layered_Record'Class)
+   is
+      This : Abstract_Layer_Ptr := Widget.all.Bottom;
    begin
       while This /= null loop
          Free (This);
-         This := Widget.Bottom;
+         This := Widget.all.Bottom;
       end loop;
-      Widget.Finalize;
+      Widget.all.Finalize;
    exception
       when Error : others =>
-         Log
-         (  GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            (  "Fault: "
-            &  Exception_Information (Error)
-            &  Where ("Destroy")
-         )  );
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: "
+            & Ada.Exceptions.Exception_Information (Error)
+            & Where ("Destroy"));
    end Destroy;
 
    function Draw
-            (  Widget  : access Gtk_Layered_Record'Class;
-               Context : Cairo_Context
-            )  return Boolean is
+     (Widget  : access Gtk_Layered_Record'Class;
+      Context : Cairo.Cairo_Context) return Boolean is
    begin
       -- Put_Line
       -- (  "+++ "
@@ -238,54 +259,50 @@ package body Gtk.Layered is
       -- &  Integer_Address'Image (To_Integer (Widget.all'Address))
       -- );
       Refresh (Widget, Context);
-       -- Put_Line ("--- " & Expanded_Name (Widget.all'Tag));
+      -- Put_Line ("--- " & Expanded_Name (Widget.all'Tag));
       return True;
    exception
       when Error : others =>
-         Log
-         (  GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            (  "Fault: "
-            &  Exception_Information (Error)
-            &  Where ("Draw")
-         )  );
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: "
+            & Ada.Exceptions.Exception_Information (Error)
+            & Where ("Draw"));
          return True;
    end Draw;
 
    procedure Emit
-             (  Widget : not null access Gtk_Layered_Record'Class;
-                Signal : Signal_Id;
-                Value  : Guint
-             )  is
+     (Widget : not null access Gtk_Layered_Record'Class;
+      Signal : Signal_Id;
+      Value  : Guint)
+   is
       procedure EmitV
-                (  Params : System.Address;
-                   Signal : Signal_Id;
-                   Quark  : GQuark;
-                   Result : System.Address
-                );
+        (Params : System.Address;
+         Signal : Signal_Id;
+         Quark  : GQuark;
+         Result : System.Address);
       pragma Import (C, EmitV, "g_signal_emitv");
       procedure Set_Object
-                (  Value  : in out GValue;
-                   Object : System.Address
-                );
+        (Value  : in out Glib.Values.GValue;
+         Object : System.Address);
       pragma Import (C, Set_Object, "g_value_set_object");
-      Params : GValue_Array (0..1);
-      Result : GValue;
+      Params : Glib.Values.GValue_Array (0 .. 1);
+      Result : Glib.Values.GValue;
    begin
       if Class /= Glib.Object.Uninitialized_Class then
          declare
             This : constant GType := Get_Type;
          begin
-            Init (Params (0), This);
+            Glib.Values.Init (Params (0), This);
             Set_Object
-            (  Params (0),
-               Gtk.Widget.Convert (Widget.all'Unchecked_Access)
-            );
-            Init (Params (1), GType_Uint);
-            Set_Uint (Params (1), Value);
+              (Params (0),
+               Gtk.Widget.Convert (Widget.all'Unchecked_Access));
+            Glib.Values.Init (Params (1), GType_Uint);
+            Glib.Values.Set_Uint (Params (1), Value);
             EmitV (Params (0)'Address, Signal, 0, Result'Address);
-            Unset (Params (0));
-            Unset (Params (1));
+            Glib.Values.Unset (Params (0));
+            Glib.Values.Unset (Params (1));
          end;
       end if;
    end Emit;
@@ -299,16 +316,15 @@ package body Gtk.Layered is
       end loop;
    exception
       when Error : others =>
-         Log
-         (  GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            (  "Fault: "
-            &  Exception_Information (Error)
-            &  Where ("Erase")
-         )  );
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: "
+            & Ada.Exceptions.Exception_Information (Error)
+            & Where ("Erase"));
    end Erase;
 
-   procedure Finalize (Layer : in out Abstract_Layer) is
+   overriding procedure Finalize (Layer : in out Abstract_Layer) is
       Widget : constant Gtk_Layered := Layer.Widget;
    begin
       Remove (Layer);
@@ -318,27 +334,24 @@ package body Gtk.Layered is
    end Finalize;
 
    function Find_Property
-            (  Layer      : Abstract_Layer'Class;
-               Name       : String;
-               Constraint : GType := GType_Invalid
-            )  return Natural is
+     (Layer      : Abstract_Layer'Class;
+      Name       : String;
+      Constraint : GType := GType_Invalid) return Natural is
    begin
-      for Index in 1..Layer.Get_Properties_Number loop
+      for Index in 1 .. Layer.Get_Properties_Number loop
          declare
             Property : constant Param_Spec :=
                        Get_Property_Specification (Layer, Index);
          begin
-            if (  Nick_Name (Property) = Name
-               and then
-                  (  Constraint = GType_Invalid
-                  or else
-                     Constraint = Value_Type (Property)
-               )  )
+            if
+              Glib.Properties.Creation.Nick_Name (Property) = Name and then
+              (Constraint = GType_Invalid or else
+               Constraint = Glib.Properties.Creation.Value_Type (Property))
             then
-               Unref (Property);
+               Glib.Properties.Creation.Unref (Property);
                return Index;
             else
-               Unref (Property);
+               Glib.Properties.Creation.Unref (Property);
             end if;
          end;
       end loop;
@@ -346,40 +359,30 @@ package body Gtk.Layered is
    end Find_Property;
 
    function Find_Property
-            (  Layer      : Abstract_Layer'Class;
-               Constraint : Param_Spec
-            )  return Natural is
+     (Layer      : Abstract_Layer'Class;
+      Constraint : Param_Spec) return Natural is
    begin
-      for Index in 1..Layer.Get_Properties_Number loop
+      for Index in 1 .. Layer.Get_Properties_Number loop
          declare
             Property : constant Param_Spec :=
                        Get_Property_Specification (Layer, Index);
          begin
-            if (  Nick_Name (Property) = Nick_Name (Constraint)
-               and then
-                  Value_Type (Property) = Value_Type (Constraint)
-               and then
-                  Match_Char (Property, Constraint)
-               and then
-                  Match_UChar (Property, Constraint)
-               and then
-                  Match_Int (Property, Constraint)
-               and then
-                  Match_UInt (Property, Constraint)
-               and then
-                  Match_Long (Property, Constraint)
-               and then
-                  Match_ULong (Property, Constraint)
-               and then
-                  Match_Float (Property, Constraint)
-               and then
-                  Match_Double (Property, Constraint)
-               )
+            if
+              Glib.Properties.Creation.Nick_Name (Property) = Glib.Properties.Creation.Nick_Name (Constraint) and then
+              Glib.Properties.Creation.Value_Type (Property) = Glib.Properties.Creation.Value_Type (Constraint) and then
+              Match_Char (Property, Constraint) and then
+              Match_UChar (Property, Constraint) and then
+              Match_Int (Property, Constraint) and then
+              Match_UInt (Property, Constraint) and then
+              Match_Long (Property, Constraint) and then
+              Match_ULong (Property, Constraint) and then
+              Match_Float (Property, Constraint) and then
+              Match_Double (Property, Constraint)
             then
-               Unref (Property);
+               Glib.Properties.Creation.Unref (Property);
                return Index;
             else
-               Unref (Property);
+               Glib.Properties.Creation.Unref (Property);
             end if;
          end;
       end loop;
@@ -387,41 +390,39 @@ package body Gtk.Layered is
    end Find_Property;
 
    function Get_Aspect_Ratio
-            (  Widget : not null access constant Gtk_Layered_Record
-            )  return Gdouble is
+     (Widget : not null access constant Gtk_Layered_Record) return Gdouble is
    begin
-      return Widget.Aspect_Ratio;
+      return Widget.all.Aspect_Ratio;
    end Get_Aspect_Ratio;
 
    function Get_Bottom (Widget : not null access Gtk_Layered_Record)
       return not null access Layer_Location'Class is
    begin
-      if Widget.Bottom = null then
+      if Widget.all.Bottom = null then
          return Widget;
       else
-         return Widget.Bottom;
+         return Widget.all.Bottom;
       end if;
    end Get_Bottom;
 
    function Get_Center
-            (  Widget : not null access constant Gtk_Layered_Record
-            )  return Cairo_Tuple is
+     (Widget : not null access constant Gtk_Layered_Record)
+      return Cairo.Ellipses.Cairo_Tuple is
    begin
-      return Widget.Center;
+      return Widget.all.Center;
    end Get_Center;
 
    function Get_Depth
-            (  Widget : not null access constant Gtk_Layered_Record
-            )  return Natural is
+     (Widget : not null access constant Gtk_Layered_Record) return Natural is
    begin
-      return Widget.Depth;
+      return Widget.all.Depth;
    end Get_Depth;
 
    function Get_Drawing_Time
-            (  Widget : not null access constant Gtk_Layered_Record
-            )  return Time is
+     (Widget : not null access constant Gtk_Layered_Record)
+      return Ada.Real_Time.Time is
    begin
-      return Widget.Drawing_Time;
+      return Widget.all.Drawing_Time;
    end Get_Drawing_Time;
 
    function Get_First_Tick (First, Skipped : Tick_Number)
@@ -437,16 +438,16 @@ package body Gtk.Layered is
    end Get_First_Tick;
 
    function Get_Layer
-            (  Widget : not null access Gtk_Layered_Record;
-               Layer  : Positive
-            )  return access Abstract_Layer'Class is
-      This : Abstract_Layer_Ptr := Widget.Bottom;
+     (Widget : not null access Gtk_Layered_Record;
+      Layer  : Positive) return access Abstract_Layer'Class
+   is
+      This : Abstract_Layer_Ptr := Widget.all.Bottom;
    begin
-      for Position in 2..Layer loop
-         if This.Next = Widget.Bottom then
+      for Position in 2 .. Layer loop
+         if This.all.Next = Widget.all.Bottom then
             return null;
          end if;
-         This := This.Next;
+         This := This.all.Next;
       end loop;
       return This;
    end Get_Layer;
@@ -454,7 +455,7 @@ package body Gtk.Layered is
    function Get_Lower (Widget : not null access Gtk_Layered_Record)
       return access Abstract_Layer'Class is
    begin
-      return Widget.Bottom;
+      return Widget.all.Bottom;
    end Get_Lower;
 
    function Get_Position (Layer : Abstract_Layer) return Natural is
@@ -464,13 +465,13 @@ package body Gtk.Layered is
       else
          declare
             This : access constant Abstract_Layer'Class :=
-                   Layer.Widget.Bottom;
+                   Layer.Widget.all.Bottom;
          begin
-            for Position in 1..Layer.Widget.Depth loop
+            for Position in 1 .. Layer.Widget.all.Depth loop
                if This = Layer'Access then
                   return Position;
                end if;
-               This := This.Next;
+               This := This.all.Next;
             end loop;
             raise Program_Error;
          end;
@@ -478,33 +479,31 @@ package body Gtk.Layered is
    end Get_Position;
 
    function Get_Size
-            (  Widget : not null access constant Gtk_Layered_Record
-            )  return Gdouble is
+     (Widget : not null access constant Gtk_Layered_Record) return Gdouble is
    begin
-      return Widget.Size;
+      return Widget.all.Size;
    end Get_Size;
 
    function Get_Type return GType is
    begin
       Initialize_Class_Record
-      (  Ancestor     => Gtk.Drawing_Area.Get_Type,
+        (Ancestor     => Gtk.Drawing_Area.Get_Type,
          Class_Record => Class,
          Type_Name    => "GtkLayered",
          Signals      => Signal_Names,
-         Parameters   => (  0 => (0 => GType_Uint),
-                            1 => (0 => GType_Uint)
-      )                  );
-      return Class.The_Type;
+         Parameters   => (0 => (0 => GType_Uint),
+                          1 => (0 => GType_Uint)));
+      return Class.all.The_Type;
    end Get_Type;
 
    function Get_Upper (Widget : not null access Gtk_Layered_Record)
       return access Abstract_Layer'Class is
-      This : constant Abstract_Layer_Ptr := Widget.Bottom;
+      This : constant Abstract_Layer_Ptr := Widget.all.Bottom;
    begin
       if This = null then
          return null;
       else
-         return This.Prev;
+         return This.all.Prev;
       end if;
    end Get_Upper;
 
@@ -515,11 +514,9 @@ package body Gtk.Layered is
    end Get_Widget;
 
    procedure Gtk_New (Widget : out Gtk_Layered) is
-      procedure Free is
-         new Ada.Unchecked_Deallocation
-             (  Gtk_Layered_Record'Class,
-                Gtk_Layered
-             );
+   --        procedure Free is
+   --           new Ada.Unchecked_Deallocation (Gtk_Layered_Record'Class,
+   --                                           Gtk_Layered);
    begin
       Widget := new Gtk_Layered_Record;
       Gtk.Layered.Initialize (Widget);
@@ -531,8 +528,7 @@ package body Gtk.Layered is
    end Gtk_New;
 
    procedure Initialize
-             (  Widget : not null access Gtk_Layered_Record'Class
-             )  is
+     (Widget : not null access Gtk_Layered_Record'Class) is
    begin
       G_New (Widget, Get_Type);
       Gtk.Drawing_Area.Initialize (Widget);
@@ -551,48 +547,42 @@ package body Gtk.Layered is
          end;
       end if;
       Widget_Callback.Connect
-      (  Widget,
+        (Widget,
          "destroy",
-         Destroy'Access
-      );
+         Destroy'Access);
       Return_Boolean_Callback.Connect
-      (  Widget,
+        (Widget,
          "draw",
-         Return_Boolean_Callback.To_Marshaller (Draw'Access)
---         True
-      );
+         Return_Boolean_Callback.To_Marshaller (Draw'Access));
       Widget_Callback.Connect
-      (  Widget,
+        (Widget,
          "notify",
-         Notify'Access
-      );
+         Notify'Access);
       Widget_Callback.Connect
-      (  Widget,
+        (Widget,
          "size_allocate",
          Allocation_Marshaller.To_Marshaller (Size_Allocate'Access),
-         After => True
-      );
+         After => True);
       Widget_Callback.Connect
-      (  Widget,
+        (Widget,
          "style-updated",
-         Style_Updated'Access
-      );
+         Style_Updated'Access);
       Style_Updated (Widget);
    end Initialize;
 
    procedure Insert
-             (  Widget   : not null access Gtk_Layered_Record'Class;
-                Layer    : in out Abstract_Layer'Class;
-                Position : Positive
-             )  is
+     (Widget   : not null access Gtk_Layered_Record'Class;
+      Layer    : in out Abstract_Layer'Class;
+      Position : Positive)
+   is
       Under   : access Abstract_Layer'Class;
       Current : constant Natural := Layer.Get_Position;
    begin
       Layer.Remove;
       if Current > 0 or else Position < Current then
-         Under := Widget.Get_Layer (Position);
+         Under := Widget.all.Get_Layer (Position);
       else
-         Under := Widget.Get_Layer (Position + 1);
+         Under := Widget.all.Get_Layer (Position + 1);
       end if;
       if Under = null then
          Layer.Add (Widget);
@@ -601,48 +591,49 @@ package body Gtk.Layered is
       end if;
    end Insert;
 
-   function Is_Caching (Layer : Abstract_Layer) return Boolean is
+   function Is_Caching (Layer : Abstract_Layer) return Boolean
+   is
+      pragma Unreferenced (Layer);
    begin
       return False;
    end Is_Caching;
 
    procedure Notify
-             (  Widget : access Gtk_Layered_Record'Class;
-                Params : GValues
-             )  is
-      This  : Abstract_Layer_Ptr := Widget.Bottom;
+     (Widget : access Gtk_Layered_Record'Class;
+      Params : Glib.Values.GValues)
+   is
+      This  : Abstract_Layer_Ptr := Widget.all.Bottom;
       Param : constant Param_Spec :=
-              Param_Spec (Get_Proxy (Nth (Params, 1)));
+              Param_Spec (Glib.Values.Get_Proxy (Glib.Values.Nth (Params, 1)));
    begin
-      if Widget.Get_Realized then
-         for Position in 1..Widget.Depth loop
+      if Widget.all.Get_Realized then
+         for Position in 1 .. Widget.all.Depth loop
             Property_Set (This.all, Param);
-            This := This.Next;
+            This := This.all.Next;
          end loop;
       end if;
    exception
       when Error : others =>
-         Log
-         (  GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            (  "Fault: "
-            &  Exception_Information (Error)
-            &  Where ("Notify")
-         )  );
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: "
+            & Ada.Exceptions.Exception_Information (Error)
+            & Where ("Notify"));
    end Notify;
 
    procedure Refresh
-             (  Widget  : not null access Gtk_Layered_Record;
-                Context : Cairo_Context
-             )  is
-      This   : Abstract_Layer_Ptr := Widget.Bottom;
+     (Widget  : not null access Gtk_Layered_Record;
+      Context : Cairo.Cairo_Context)
+   is
+      This   : Abstract_Layer_Ptr := Widget.all.Bottom;
       From   : Integer            := 1;
-      Bottom : Abstract_Layer_Ptr := Widget.Bottom;
+      Bottom : Abstract_Layer_Ptr := Widget.all.Bottom;
       Area   : Gdk_Rectangle;
       Width  : Gdouble;
       Height : Gdouble;
    begin
-      Widget.Get_Allocation (Area);
+      Widget.all.Get_Allocation (Area);
 --        declare
 --           use Cairo.Region;
 --           use Gdk.Event;
@@ -717,64 +708,63 @@ package body Gtk.Layered is
 --        end;
       Width  := Gdouble (Area.Width);
       Height := Gdouble (Area.Height);
-      Widget.Center := (X => Width * 0.5, Y => Height * 0.5);
-      Widget.Size :=
-         Gdouble'Min (Width, Height * Widget.Aspect_Ratio);
-      Widget.Drawing := True;
-      Widget.Drawing_Time := Clock;
+      Widget.all.Center := (X => Width * 0.5, Y => Height * 0.5);
+      Widget.all.Size :=
+         Gdouble'Min (Width, Height * Widget.all.Aspect_Ratio);
+      Widget.all.Drawing := True;
+      Widget.all.Drawing_Time := Ada.Real_Time.Clock;
       --
       -- Prepare layers to draw
       --
       if This /= null then
-         for Layer in 1..Widget.Depth loop
-            This.Prepare (Context, Area);
-            This := This.Next;
+         for Layer in 1 .. Widget.all.Depth loop
+            This.all.Prepare (Context, Area);
+            This := This.all.Next;
          end loop;
          This := Bottom;
       end if;
-      if not Widget.Updated then
+      if not Widget.all.Updated then
          --
          -- Looking for the last opaque layer that was  not  updated.
          -- Since  anything under the layer is obscured, we can start
          -- drawing from this layer.
          --
-         for Layer in 1..Widget.Depth loop
-            exit when This.Is_Updated;
-            if This.Is_Caching then
+         for Layer in 1 .. Widget.all.Depth loop
+            exit when This.all.Is_Updated;
+            if This.all.Is_Caching then
                From   := Layer;
                Bottom := This;
             end if;
-            This := This.Next;
+            This := This.all.Next;
          end loop;
-         Widget.Updated := False;
+         Widget.all.Updated := False;
       end if;
       --
       -- Drawing updated layers
       --
       This := Bottom;
       if This /= null then
-         for Layer in From..Widget.Depth loop
-            if This /= Bottom and then This.Is_Caching then
-               This.Store (Context);
+         for Layer in From .. Widget.all.Depth loop
+            if This /= Bottom and then This.all.Is_Caching then
+               This.all.Store (Context);
             else
                -- Put_Line("   +" & Expanded_Name (This'Tag));
-               This.Draw (Context, Area);
+               This.all.Draw (Context, Area);
                -- Put_Line("   -" & Expanded_Name (This'Tag));
             end if;
-            This := This.Next;
+            This := This.all.Next;
          end loop;
       end if;
-      Widget.Drawing := False;
+      Widget.all.Drawing := False;
    exception
       when Error : others =>
-         Widget.Drawing := False;
-         Log
-         (  GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            (  "Fault: "
-            &  Exception_Information (Error)
-            &  Where ("Refresh")
-         )  );
+         Widget.all.Drawing := False;
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: "
+            & Ada.Exceptions.Exception_Information (Error)
+            & Where ("Refresh"));
    end Refresh;
 
    procedure Remove (Layer : in out Abstract_Layer) is
@@ -784,18 +774,18 @@ package body Gtk.Layered is
       if Layer.Next /= null then
          Position := Guint (Layer.Get_Position);
          if Layer.Next = Layer'Unchecked_Access then
-            Layer.Widget.Bottom := null;
+            Layer.Widget.all.Bottom := null;
          else
-            if Layer.Widget.Bottom = Layer'Unchecked_Access then
-               Layer.Widget.Bottom := Layer.Next;
+            if Layer.Widget.all.Bottom = Layer'Unchecked_Access then
+               Layer.Widget.all.Bottom := Layer.Next;
             end if;
-            Layer.Next.Prev := Layer.Prev;
-            Layer.Prev.Next := Layer.Next;
+            Layer.Next.all.Prev := Layer.Prev;
+            Layer.Prev.all.Next := Layer.Next;
          end if;
          Layer.Next           := null;
          Layer.Prev           := null;
-         Layer.Widget.Depth   := Layer.Widget.Depth - 1;
-         Layer.Widget.Updated := True;
+         Layer.Widget.all.Depth   := Layer.Widget.all.Depth - 1;
+         Layer.Widget.all.Updated := True;
          Widget               := Layer.Widget;
          Layer.Widget         := null;
          if Position > 0 then
@@ -805,16 +795,16 @@ package body Gtk.Layered is
    end Remove;
 
    procedure Remove
-             (  Widget : not null access Gtk_Layered_Record;
-                Layer  : Positive
-             )  is
-      This : Abstract_Layer_Ptr := Widget.Bottom;
+     (Widget : not null access Gtk_Layered_Record;
+      Layer  : Positive)
+   is
+      This : Abstract_Layer_Ptr := Widget.all.Bottom;
    begin
-      for Position in 2..Layer loop
-         if This.Next = Widget.Bottom then
+      for Position in 2 .. Layer loop
+         if This.all.Next = Widget.all.Bottom then
             return;
          end if;
-         This := This.Next;
+         This := This.all.Next;
       end loop;
       if This /= null then
          Remove (This.all);
@@ -824,152 +814,148 @@ package body Gtk.Layered is
    end Remove;
 
    procedure Set_Aspect_Ratio
-             (  Widget       : not null access Gtk_Layered_Record;
-                Aspect_Ratio : Gdouble
-             )  is
+     (Widget       : not null access Gtk_Layered_Record;
+      Aspect_Ratio : Gdouble) is
    begin
       if Aspect_Ratio < 0.0 then
          raise Constraint_Error with "Non-positive aspect ratio";
       end if;
-      Widget.Aspect_Ratio := Aspect_Ratio;
-      if Widget.Get_Realized then
+      Widget.all.Aspect_Ratio := Aspect_Ratio;
+      if Widget.all.Get_Realized then
          declare
             Width  : constant Gdouble :=
-                     Gdouble (Widget.Get_Allocated_Width);
+                     Gdouble (Widget.all.Get_Allocated_Width);
             Height : constant Gdouble :=
-                     Gdouble (Widget.Get_Allocated_Height);
+                     Gdouble (Widget.all.Get_Allocated_Height);
          begin
-            Widget.Size := Gdouble'Min (Width, Height * Aspect_Ratio);
+            Widget.all.Size := Gdouble'Min (Width, Height * Aspect_Ratio);
          end;
       end if;
    end Set_Aspect_Ratio;
 
    procedure Set_Texts
-             (  Layer  : in out Annotation_Layer'Class;
-                Texts  : Controlled_String_List;
-                Markup : Boolean := False
-             )  is
+     (Layer  : in out Annotation_Layer'Class;
+      Texts  : Controlled_String_List;
+      Markup : Boolean := False) is
    begin
       Layer.Set_Texts (Get_GList (Texts), Markup);
    end Set_Texts;
 
    procedure Size_Allocate
-             (  Widget     : access Gtk_Layered_Record'Class;
-                Allocation : Gtk_Allocation_Access
-             )  is
-      This : Abstract_Layer_Ptr := Widget.Bottom;
+     (Widget     : access Gtk_Layered_Record'Class;
+      Allocation : Gtk_Allocation_Access)
+   is
+      This : Abstract_Layer_Ptr := Widget.all.Bottom;
       Area : Gdk_Rectangle;
    begin
-      Widget.Get_Allocation (Area);
-      Widget.Center :=
-         (  X => Gdouble (Area.Width)  * 0.5,
-            Y => Gdouble (Area.Height) * 0.5
-         );
-      Widget.Size :=
+      Widget.all.Get_Allocation (Area);
+      Widget.all.Center :=
+        (X => Gdouble (Area.Width)  * 0.5,
+         Y => Gdouble (Area.Height) * 0.5);
+      Widget.all.Size :=
          Gdouble'Min
-         (  Gdouble (Area.Width),
-            Gdouble (Area.Height) * Widget.Aspect_Ratio
-         );
+          (Gdouble (Area.Width),
+           Gdouble (Area.Height) * Widget.all.Aspect_Ratio);
       Resized (Widget, Allocation.all);
-      for Position in 1..Widget.Depth loop
+      for Position in 1 .. Widget.all.Depth loop
          Resized (This.all, Area);
-         This := This.Next;
+         This := This.all.Next;
       end loop;
    exception
       when Error : others =>
-         Log
-         (  GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            (  "Fault: "
-            &  Exception_Information (Error)
-            &  Where ("Size_Allocate")
-         )  );
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: "
+            & Ada.Exceptions.Exception_Information (Error)
+            & Where ("Size_Allocate"));
    end Size_Allocate;
 
    procedure Snapshot
-             (  Widget : not null access Gtk_Layered_Record;
-                Target : Cairo_Context
-             )  is
-      This   : Abstract_Layer_Ptr := Widget.Bottom;
-      Bottom : Abstract_Layer_Ptr := Widget.Bottom;
+     (Widget : not null access Gtk_Layered_Record;
+      Target : Cairo.Cairo_Context)
+   is
+      This   : Abstract_Layer_Ptr := Widget.all.Bottom;
+      Bottom : Abstract_Layer_Ptr := Widget.all.Bottom;
+      pragma Unreferenced (Bottom);
       Area   : Gdk_Rectangle;
    begin
-      Widget.Drawing := True;
+      Widget.all.Drawing := True;
       Area.X      := 0;
       Area.Y      := 0;
-      Area.Width  := Widget.Get_Allocated_Width;
-      Area.Height := Widget.Get_Allocated_Height;
-      for Layer in 1..Widget.Depth loop
-         if not This.Is_Caching then
-            This.Draw (Target, Area);
+      Area.Width  := Widget.all.Get_Allocated_Width;
+      Area.Height := Widget.all.Get_Allocated_Height;
+      for Layer in 1 .. Widget.all.Depth loop
+         if not This.all.Is_Caching then
+            This.all.Draw (Target, Area);
          end if;
-         This := This.Next;
+         This := This.all.Next;
       end loop;
-      Widget.Drawing := False;
+      Widget.all.Drawing := False;
    exception
       when Error : others =>
-         Widget.Drawing := False;
-         Log
-         (  GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            (  "Fault: "
-            &  Exception_Information (Error)
-            &  Where ("Snapshot (context)")
-         )  );
+         Widget.all.Drawing := False;
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: "
+            & Ada.Exceptions.Exception_Information (Error)
+            & Where ("Snapshot (context)"));
    end Snapshot;
 
    procedure Snapshot
-             (  Widget : not null access Gtk_Layered_Record;
-                Target : Cairo_Surface
-             )  is
-      Context : constant Cairo_Context := Create (Target);
+     (Widget : not null access Gtk_Layered_Record;
+      Target : Cairo.Cairo_Surface)
+   is
+      Context : constant Cairo.Cairo_Context := Cairo.Create (Target);
    begin
-      Widget.Snapshot (Context);
-      Destroy (Context);
+      Widget.all.Snapshot (Context);
+      Cairo.Destroy (Context);
    exception
       when Error : others =>
-         Widget.Drawing := False;
-         Log
-         (  GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            (  "Fault: "
-            &  Exception_Information (Error)
-            &  Where ("Snapshot (surface)")
-         )  );
-         Destroy (Context);
+         Widget.all.Drawing := False;
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: "
+            & Ada.Exceptions.Exception_Information (Error)
+            & Where ("Snapshot (surface)"));
+         Cairo.Destroy (Context);
    end Snapshot;
 
    procedure Style_Updated
-             (  Widget : access Gtk_Layered_Record'Class
-             )  is
-      This : Abstract_Layer_Ptr := Widget.Bottom;
+     (Widget : access Gtk_Layered_Record'Class)
+   is
+      This : Abstract_Layer_Ptr := Widget.all.Bottom;
    begin
-      if Widget.Get_Realized then
+      if Widget.all.Get_Realized then
          Style_Changed (Widget);
-         for Position in 1..Widget.Depth loop
+         for Position in 1 .. Widget.all.Depth loop
             Style_Set (This.all);
-            This := This.Next;
+            This := This.all.Next;
          end loop;
       end if;
    exception
       when Error : others =>
-         Log
-         (  GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            (  "Fault: "
-            &  Exception_Information (Error)
-            &  Where ("Style_Updated")
-         )  );
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: "
+            & Ada.Exceptions.Exception_Information (Error)
+            & Where ("Style_Updated"));
    end Style_Updated;
 
    ---------------------------------------------------------------------
-   File    : File_Type;
+   File    : Ada.Text_IO.File_Type;
    Figures : constant String := "0123456789ABCDEF";
 
-   function Image (Location : Address) return String is
-      Buffer  : String (1..20);
+   function Image (Location : System.Address) return String
+   is
+      Buffer  : String (1 .. 20);
       Pointer : Integer := Buffer'Last;
-      Value   : Integer_Address := To_Integer (Location);
+      Value   : System.Storage_Elements.Integer_Address :=
+                  System.Storage_Elements.To_Integer (Location);
+      use type System.Storage_Elements.Integer_Address;
    begin
       loop
          Buffer (Pointer) := Figures (Natural (Value mod 16) + 1);
@@ -977,32 +963,38 @@ package body Gtk.Layered is
          Value := Value / 16;
          exit when Value = 0;
       end loop;
-      return Buffer (Pointer + 1..Buffer'Last);
+      return Buffer (Pointer + 1 .. Buffer'Last);
    end Image;
 
-   procedure Put (File : File_Type; Where : Address) is
+   procedure Put (File  : Ada.Text_IO.File_Type;
+                  Where : System.Address) is
    begin
-      Put (File, Image (Where));
+      Ada.Text_IO.Put (File, Image (Where));
    end Put;
 
-   procedure Trace (Data : System.Address; Text : String) is
+   procedure Trace (Data : System.Address; Text : String)
+   is
+      pragma Unreferenced (Data);
    begin
-      if not Is_Open (File) then
-         Create (File, Out_File, Trace_File);
+      if not Ada.Text_IO.Is_Open (File) then
+         Ada.Text_IO.Create (File, Ada.Text_IO.Out_File, Trace_File);
       end if;
-      Put (File, Text);
+      Ada.Text_IO.Put (File, Text);
    end Trace;
 
    procedure Trace_Line (Data : System.Address; Text : String) is
    begin
-      if not Is_Open (File) then
-         Create (File, Ada.Text_IO.Out_File, Trace_File);
+      if not Ada.Text_IO.Is_Open (File) then
+         Ada.Text_IO.Create (File, Ada.Text_IO.Out_File, Trace_File);
       end if;
-      New_Line (File);
+      Ada.Text_IO.New_Line (File);
       Put (File, Data);
-      Put (File, "# ");
-      Put (File, Text);
+      Ada.Text_IO.Put (File, "# ");
+      Ada.Text_IO.Put (File, Text);
    end Trace_Line;
    ---------------------------------------------------------------------
+
+   pragma Warnings (On, "declaration hides ""Widget""");
+   pragma Warnings (On, "declaration hides ""Left""");
 
 end Gtk.Layered;
