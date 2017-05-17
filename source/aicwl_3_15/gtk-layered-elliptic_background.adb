@@ -314,7 +314,7 @@ package body Gtk.Layered.Elliptic_Background is
    overriding procedure Draw_Contents
      (Layer   : in out Elliptic_Background_Layer;
       Context : Cairo_Context;
-      Area    : Gdk_Rectangle)
+      Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
       pragma Unreferenced (Area);
    begin
@@ -763,7 +763,7 @@ package body Gtk.Layered.Elliptic_Background is
    overriding procedure Set_Contents_Path
      (Layer   : in out Elliptic_Background_Layer;
       Context : Cairo_Context;
-      Area    : Gdk_Rectangle)
+      Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
       pragma Unreferenced (Area);
    begin

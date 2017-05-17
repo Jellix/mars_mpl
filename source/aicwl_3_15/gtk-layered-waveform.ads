@@ -25,11 +25,12 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Ada.Real_Time;            use Ada.Real_Time;
+with Ada.Calendar;
+with Ada.Real_Time;
+
 with Gtk.Handlers.References;  use Gtk.Handlers.References;
 with Gtk.Missed;
 
-with Ada.Calendar;
 with Strings_Edit.Float_Edit;
 with Strings_Edit.Generic_Scale;
 
@@ -331,7 +332,7 @@ package Gtk.Layered.Waveform is
    --
    procedure Set_Current_Time
      (Sweeper : not null access Waveform_Sweeper;
-      Stamp   : Time;
+      Stamp   : Ada.Real_Time.Time;
       Active  : Boolean := False) is abstract;
 
    --
@@ -402,32 +403,32 @@ package Gtk.Layered.Waveform is
    procedure Add_Waveform
      (Under     : not null access Layer_Location'Class;
       Box       : Cairo.Ellipses.Cairo_Box;
-      Width     : Gdouble                            := 1.0;
-      Color     : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Line_Cap  : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      Sweeper   : access Gtk_Adjustment_Record'Class := null;
-      Amplifier : access Gtk_Adjustment_Record'Class := null;
-      Mode      : Interpolation_Mode                 := Linear;
-      Left      : Boolean                            := False;
-      Right     : Boolean                            := False;
-      Opacity   : Fill_Opacity                       := 1.0;
-      Scaled    : Boolean                            := False;
-      Widened   : Boolean                            := False);
+      Width     : Gdouble                                           := 1.0;
+      Color     : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Line_Cap  : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      Sweeper   : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Amplifier : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Mode      : Interpolation_Mode                                := Linear;
+      Left      : Boolean                                           := False;
+      Right     : Boolean                                           := False;
+      Opacity   : Fill_Opacity                                      := 1.0;
+      Scaled    : Boolean                                           := False;
+      Widened   : Boolean                                           := False);
 
    function Add_Waveform
      (Under     : not null access Layer_Location'Class;
       Box       : Cairo.Ellipses.Cairo_Box;
-      Width     : Gdouble                            := 1.0;
-      Color     : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Line_Cap  : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      Sweeper   : access Gtk_Adjustment_Record'Class := null;
-      Amplifier : access Gtk_Adjustment_Record'Class := null;
-      Mode      : Interpolation_Mode                 := Linear;
-      Left      : Boolean                            := False;
-      Right     : Boolean                            := False;
-      Opacity   : Fill_Opacity                       := 1.0;
-      Scaled    : Boolean                            := False;
-      Widened   : Boolean                            := False)
+      Width     : Gdouble                                           := 1.0;
+      Color     : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Line_Cap  : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      Sweeper   : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Amplifier : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Mode      : Interpolation_Mode                                := Linear;
+      Left      : Boolean                                           := False;
+      Right     : Boolean                                           := False;
+      Opacity   : Fill_Opacity                                      := 1.0;
+      Scaled    : Boolean                                           := False;
+      Widened   : Boolean                                           := False)
       return not null access Waveform_Layer;
 
    --
@@ -513,8 +514,8 @@ package Gtk.Layered.Waveform is
    --
    --    The adjustment or null
    --
-   function Get_Amplifier (Layer : Waveform_Layer)
-                           return Gtk_Adjustment;
+   function Get_Amplifier
+     (Layer : Waveform_Layer) return Gtk.Adjustment.Gtk_Adjustment;
 
    --
    -- Get_Box -- The box bounding the waveform
@@ -673,7 +674,8 @@ package Gtk.Layered.Waveform is
    --
    --    The adjustment or null
    --
-   function Get_Sweeper (Layer : Waveform_Layer) return Gtk_Adjustment;
+   function Get_Sweeper
+     (Layer : Waveform_Layer) return Gtk.Adjustment.Gtk_Adjustment;
 
    --
    -- Get_{T|V} -- Convert widget coordinates to data source values
@@ -762,7 +764,7 @@ package Gtk.Layered.Waveform is
    --
    procedure Set_Amplifier
      (Layer     : in out Waveform_Layer;
-      Amplifier : access Gtk_Adjustment_Record'Class := null);
+      Amplifier : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null);
 
    --
    -- Set_Color -- Set curve color
@@ -844,7 +846,7 @@ package Gtk.Layered.Waveform is
    --
    procedure Set_Sweeper
      (Layer   : in out Waveform_Layer;
-      Sweeper : access Gtk_Adjustment_Record'Class := null);
+      Sweeper : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null);
 
    --
    -- Set_Visible -- Change visibility status
@@ -894,7 +896,7 @@ package Gtk.Layered.Waveform is
    overriding procedure Draw
      (Layer   : in out Waveform_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle);
+      Area    : Gdk.Rectangle.Gdk_Rectangle);
 
    overriding procedure Finalize (Layer : in out Waveform_Layer);
 
@@ -922,11 +924,11 @@ package Gtk.Layered.Waveform is
    overriding procedure Prepare
      (Layer   : in out Waveform_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle);
+      Area    : Gdk.Rectangle.Gdk_Rectangle);
 
    overriding procedure Resized
      (Layer : in out Waveform_Layer;
-      Area  : Gdk_Rectangle);
+      Area  : Gdk.Rectangle.Gdk_Rectangle);
 
    overriding procedure Restore
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
@@ -962,7 +964,7 @@ package Gtk.Layered.Waveform is
    --    The epoch time used in time to number conversions
    --
    function Get_Epoch return Ada.Calendar.Time;
-   function Get_Epoch return Time;
+   function Get_Epoch return Ada.Real_Time.Time;
 
    --
    -- To_Double -- Time to seconds count conversion
@@ -977,7 +979,7 @@ package Gtk.Layered.Waveform is
    --
    --    Constraint_Error - Value cannot be converted
    --
-   function To_Double (Value : Time) return Gdouble;
+   function To_Double (Value : Ada.Real_Time.Time) return Gdouble;
    function To_Double (Value : Ada.Calendar.Time) return Gdouble;
 
    --
@@ -993,7 +995,7 @@ package Gtk.Layered.Waveform is
    --
    --    Constraint_Error - Value cannot be converted
    --
-   function To_Time (Value : Gdouble) return Time;
+   function To_Time (Value : Gdouble) return Ada.Real_Time.Time;
    function To_Time (Value : Gdouble) return Ada.Calendar.Time;
 
    package Rasters is new Strings_Edit.Generic_Scale (GDouble);
@@ -1060,8 +1062,8 @@ private
          Widened              : Boolean  := False;
          Extrapolate_Left     : Boolean := False;
          Extrapolate_Right    : Boolean := False;
-         Sweeper_Adjustment   : Gtk_Adjustment;
-         Amplifier_Adjustment : Gtk_Adjustment;
+         Sweeper_Adjustment   : Gtk.Adjustment.Gtk_Adjustment;
+         Amplifier_Adjustment : Gtk.Adjustment.Gtk_Adjustment;
          Sweeper_Object       : access Waveform_Sweeper'Class;
          Amplifier_Object     : access Waveform_Amplifier'Class;
          Line_Data            : Line_Method_Data;  -- Stroke mode

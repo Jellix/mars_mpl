@@ -629,7 +629,7 @@ package body Gtk.Layered is
       This   : Abstract_Layer_Ptr := Widget.all.Bottom;
       From   : Integer            := 1;
       Bottom : Abstract_Layer_Ptr := Widget.all.Bottom;
-      Area   : Gdk_Rectangle;
+      Area   : Gdk.Rectangle.Gdk_Rectangle;
       Width  : Gdouble;
       Height : Gdouble;
    begin
@@ -643,7 +643,7 @@ package body Gtk.Layered is
 --        begin
 --           if Event.Any.The_Type = Expose then
 --              declare
---                 Exposed : constant Gdk_Rectangle := Event.Expose.Area;
+--                 Exposed : constant Gdk.Rectangle.Gdk_Rectangle := Event.Expose.Area;
 --                 Region  : Cairo_Rectangle_Int;
 --              begin
 --                 Get_Extents (Event.Expose.Region, Region);
@@ -835,18 +835,18 @@ package body Gtk.Layered is
 
    procedure Set_Texts
      (Layer  : in out Annotation_Layer'Class;
-      Texts  : Controlled_String_List;
+      Texts  : Gtk.Enums.String_Lists.Controlled_String_List;
       Markup : Boolean := False) is
    begin
-      Layer.Set_Texts (Get_GList (Texts), Markup);
+      Layer.Set_Texts (Gtk.Enums.String_Lists.Get_GList (Texts), Markup);
    end Set_Texts;
 
    procedure Size_Allocate
      (Widget     : access Gtk_Layered_Record'Class;
-      Allocation : Gtk_Allocation_Access)
+      Allocation : Gtk.Widget.Gtk_Allocation_Access)
    is
       This : Abstract_Layer_Ptr := Widget.all.Bottom;
-      Area : Gdk_Rectangle;
+      Area : Gdk.Rectangle.Gdk_Rectangle;
    begin
       Widget.all.Get_Allocation (Area);
       Widget.all.Center :=
@@ -878,7 +878,7 @@ package body Gtk.Layered is
       This   : Abstract_Layer_Ptr := Widget.all.Bottom;
       Bottom : Abstract_Layer_Ptr := Widget.all.Bottom;
       pragma Unreferenced (Bottom);
-      Area   : Gdk_Rectangle;
+      Area   : Gdk.Rectangle.Gdk_Rectangle;
    begin
       Widget.all.Drawing := True;
       Area.X      := 0;

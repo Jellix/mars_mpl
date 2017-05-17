@@ -25,7 +25,7 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Ada.IO_Exceptions;    use Ada.IO_Exceptions;
+with Ada.IO_Exceptions;
 
 package body Strings_Edit.UTF8 is
 
@@ -40,13 +40,13 @@ package body Strings_Edit.UTF8 is
       Last  : Boolean := False;
    begin
       if Index < Source'First then
-         raise Layout_Error;
+         raise Ada.IO_Exceptions.Layout_Error;
       end if;
       if Index > Source'Last then
          if Index = Source'Last + 1 then
-            raise End_Error;
+            raise Ada.IO_Exceptions.End_Error;
          else
-            raise Layout_Error;
+            raise Ada.IO_Exceptions.Layout_Error;
          end if;
       end if;
       Code := UTF8_Code_Point (Character'Pos (Source (Index)));
@@ -61,11 +61,11 @@ package body Strings_Edit.UTF8 is
          when 16#E0# => -- 3 bytes
             Index := Index + 1;
             if Index >= Source'Last then
-               raise Data_Error;
+               raise Ada.IO_Exceptions.Data_Error;
             end if;
             Code := UTF8_Code_Point (Character'Pos (Source (Index)));
             if Code not in 16#A0# .. 16#BF# then
-               raise Data_Error;
+               raise Ada.IO_Exceptions.Data_Error;
             end if;
             Accum := (Code and 16#3F#) * 2**6;
             Last  := True;
@@ -74,58 +74,58 @@ package body Strings_Edit.UTF8 is
          when 16#F0# => -- 4 bytes
             Index := Index + 1;
             if Index >= Source'Last then
-               raise Data_Error;
+               raise Ada.IO_Exceptions.Data_Error;
             end if;
             Code := UTF8_Code_Point (Character'Pos (Source (Index)));
             if Code not in 16#90# .. 16#BF# then
-               raise Data_Error;
+               raise Ada.IO_Exceptions.Data_Error;
             end if;
             Accum := (Code and 16#3F#) * 2**12;
          when 16#F1# .. 16#F3# => -- 4 bytes
             Accum := (Code and 16#07#) * 2**18;
             Index := Index + 1;
             if Index >= Source'Last then
-               raise Data_Error;
+               raise Ada.IO_Exceptions.Data_Error;
             end if;
             Code := UTF8_Code_Point (Character'Pos (Source (Index)));
             if Code not in 16#80# .. 16#BF# then
-               raise Data_Error;
+               raise Ada.IO_Exceptions.Data_Error;
             end if;
             Accum := Accum or (Code and 16#3F#) * 2**12;
          when 16#F4# => -- 4 bytes
             Accum := (Code and 16#07#) * 2**18;
             Index := Index + 1;
             if Index >= Source'Last then
-               raise Data_Error;
+               raise Ada.IO_Exceptions.Data_Error;
             end if;
             Code := UTF8_Code_Point (Character'Pos (Source (Index)));
             if Code not in 16#80# .. 16#8F# then
-               raise Data_Error;
+               raise Ada.IO_Exceptions.Data_Error;
             end if;
             Accum := Accum or (Code and 16#3F#) * 2**12;
          when others =>
-            raise Data_Error;
+            raise Ada.IO_Exceptions.Data_Error;
       end case;
 
       if not Last then
          Index := Index + 1;
          if Index >= Source'Last then
-            raise Data_Error;
+            raise Ada.IO_Exceptions.Data_Error;
          end if;
          Code := UTF8_Code_Point (Character'Pos (Source (Index)));
          if Code not in 16#80# .. 16#BF# then
-            raise Data_Error;
+            raise Ada.IO_Exceptions.Data_Error;
          end if;
          Accum := Accum or (Code and 16#3F#) * 2**6;
       end if;
 
       Index := Index + 1;
       if Index > Source'Last then
-         raise Data_Error;
+         raise Ada.IO_Exceptions.Data_Error;
       end if;
       Code := UTF8_Code_Point (Character'Pos (Source (Index)));
       if Code not in 16#80# .. 16#BF# then
-         raise Data_Error;
+         raise Ada.IO_Exceptions.Data_Error;
       end if;
       Value   := Accum or (Code and 16#3F#);
       Pointer := Index + 1;
@@ -142,25 +142,25 @@ package body Strings_Edit.UTF8 is
    begin
       if First <= Source'First then
          if First < Source'First then
-            raise Layout_Error;
+            raise Ada.IO_Exceptions.Layout_Error;
          else
-            raise End_Error;
+            raise Ada.IO_Exceptions.End_Error;
          end if;
       end if;
       if First > Source'Last + 1 then
-         raise Layout_Error;
+         raise Ada.IO_Exceptions.Layout_Error;
       end if;
       loop
          First := First - 1;
          exit when Character'Pos (Source (First)) not in 16#80# .. 16#BF#;
          if First = Source'First then
-            raise Data_Error;
+            raise Ada.IO_Exceptions.Data_Error;
          end if;
       end loop;
       Last := First;
       Get (Source, Last, Result);
       if Last /= Pointer then
-         raise Data_Error;
+         raise Ada.IO_Exceptions.Data_Error;
       end if;
       Pointer := First;
       Value   := Result;
@@ -192,14 +192,14 @@ package body Strings_Edit.UTF8 is
       Value       : UTF8_Code_Point) is
    begin
       if Pointer not in Destination'Range then
-         raise Layout_Error;
+         raise Ada.IO_Exceptions.Layout_Error;
       end if;
       if Value <= 16#7F# then
          Destination (Pointer) := Character'Val (Value);
          Pointer := Pointer + 1;
       elsif Value <= 16#7FF# then
          if Pointer >= Destination'Last then
-            raise Layout_Error;
+            raise Ada.IO_Exceptions.Layout_Error;
          end if;
          Destination (Pointer) :=
             Character'Val (16#C0# or Value / 2**6);
@@ -208,7 +208,7 @@ package body Strings_Edit.UTF8 is
          Pointer := Pointer + 2;
       elsif Value <= 16#FFFF# then
          if 1 >= Destination'Last - Pointer then
-            raise Layout_Error;
+            raise Ada.IO_Exceptions.Layout_Error;
          end if;
          Destination (Pointer) :=
             Character'Val (16#E0# or Value / 2**12);
@@ -219,7 +219,7 @@ package body Strings_Edit.UTF8 is
          Pointer := Pointer + 3;
       else
          if 2 >= Destination'Last - Pointer then
-            raise Layout_Error;
+            raise Ada.IO_Exceptions.Layout_Error;
          end if;
          Destination (Pointer) :=
             Character'Val (16#F0# or Value / 2**18);
@@ -243,7 +243,7 @@ package body Strings_Edit.UTF8 is
         Pointer not in Destination'Range or else
         Pointer - Destination'First < Prefix'Length
       then
-         raise Layout_Error;
+         raise Ada.IO_Exceptions.Layout_Error;
       end if;
       Destination (Pointer) := Character'Val (Position);
       Pointer := Pointer - 1;
@@ -272,7 +272,7 @@ package body Strings_Edit.UTF8 is
         Pointer < Source'First or else
         (Pointer > Source'Last and then Pointer - 1 > Source'Last)
       then
-         raise Layout_Error;
+         raise Ada.IO_Exceptions.Layout_Error;
       end if;
    end Skip;
 
@@ -282,7 +282,7 @@ package body Strings_Edit.UTF8 is
    begin
       Get (Source, Pointer, Result);
       if Pointer /= Source'Last + 1 then
-         raise Data_Error;
+         raise Ada.IO_Exceptions.Data_Error;
       end if;
       return Result;
    end Value;

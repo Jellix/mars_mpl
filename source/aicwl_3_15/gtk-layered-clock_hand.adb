@@ -68,11 +68,11 @@ package body Gtk.Layered.Clock_Hand is
              );
 
    procedure Add_Adjustment
-             (  Layer      : in out Clock_Hand_Layer;
-                Adjustment : not null access Gtk_Adjustment_Record'Class
-             )  is
+     (Layer      : in out Clock_Hand_Layer;
+      Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class)
+   is
    begin
-      Ref (Adjustment);
+      Gtk.Adjustment.Ref (Adjustment);
       Layer.Adjustment := Adjustment.all'Unchecked_Access;
       Layer.Changed :=
          Handlers.Connect
@@ -105,21 +105,21 @@ package body Gtk.Layered.Clock_Hand is
 
    procedure Add_Clock_Hand
      (Under         : not null access Layer_Location'Class;
-      Center        : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
-      From          : Gdouble                            := 3.0 * Pi / 4.0;
-      Length        : Gdouble                            := 3.0 * Pi / 2.0;
-      Tip_Length    : Gdouble                            := 20.0;
-      Tip_Width     : Gdouble                            := 2.0;
-      Tip_Cap       : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      Rear_Length   : Gdouble                            := 3.0;
-      Rear_Width    : Gdouble                            := 3.0;
-      Rear_Cap      : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      Bulb_Position : Gdouble                            := 13.0;
-      Bulb_Radius   : Gdouble                            := 5.0;
-      Bulb_Width    : Gdouble                            := 2.0;
-      Color         : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Adjustment    : access Gtk_Adjustment_Record'Class := null;
-      Scaled        : Boolean                            := False)
+      Center        : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 0.0);
+      From          : Gdouble                                           := 3.0 * Pi / 4.0;
+      Length        : Gdouble                                           := 3.0 * Pi / 2.0;
+      Tip_Length    : Gdouble                                           := 20.0;
+      Tip_Width     : Gdouble                                           := 2.0;
+      Tip_Cap       : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      Rear_Length   : Gdouble                                           := 3.0;
+      Rear_Width    : Gdouble                                           := 3.0;
+      Rear_Cap      : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      Bulb_Position : Gdouble                                           := 13.0;
+      Bulb_Radius   : Gdouble                                           := 5.0;
+      Bulb_Width    : Gdouble                                           := 2.0;
+      Color         : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Adjustment    : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled        : Boolean                                           := False)
    is
       Ptr   : Clock_Hand_Ptr := new Clock_Hand_Layer;
       Layer : Clock_Hand_Layer renames Ptr.all;
@@ -155,21 +155,21 @@ package body Gtk.Layered.Clock_Hand is
 
    function Add_Clock_Hand
      (Under         : not null access Layer_Location'Class;
-      Center        : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
-      From          : Gdouble                            := 3.0 * Pi / 4.0;
-      Length        : Gdouble                            := 3.0 * Pi / 2.0;
-      Tip_Length    : Gdouble                            := 20.0;
-      Tip_Width     : Gdouble                            := 2.0;
-      Tip_Cap       : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      Rear_Length   : Gdouble                            := 3.0;
-      Rear_Width    : Gdouble                            := 3.0;
-      Rear_Cap      : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      Bulb_Position : Gdouble                            := 13.0;
-      Bulb_Radius   : Gdouble                            := 5.0;
-      Bulb_Width    : Gdouble                            := 2.0;
-      Color         : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Adjustment    : access Gtk_Adjustment_Record'Class := null;
-      Scaled        : Boolean                            := False)
+      Center        : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 0.0);
+      From          : Gdouble                                           := 3.0 * Pi / 4.0;
+      Length        : Gdouble                                           := 3.0 * Pi / 2.0;
+      Tip_Length    : Gdouble                                           := 20.0;
+      Tip_Width     : Gdouble                                           := 2.0;
+      Tip_Cap       : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      Rear_Length   : Gdouble                                           := 3.0;
+      Rear_Width    : Gdouble                                           := 3.0;
+      Rear_Cap      : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      Bulb_Position : Gdouble                                           := 13.0;
+      Bulb_Radius   : Gdouble                                           := 5.0;
+      Bulb_Width    : Gdouble                                           := 2.0;
+      Color         : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Adjustment    : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled        : Boolean                                           := False)
       return not null access Clock_Hand_Layer
    is
       Ptr   : Clock_Hand_Ptr := new Clock_Hand_Layer;
@@ -225,9 +225,9 @@ package body Gtk.Layered.Clock_Hand is
              (  Adjustment : access GObject_Record'Class;
                 Needle     : Clock_Hand_Ptr
              )  is
-      Lower : constant Gdouble := Get_Lower (Needle.Adjustment);
-      Upper : constant Gdouble := Get_Upper (Needle.Adjustment);
-      Value : constant Gdouble := Get_Value (Needle.Adjustment);
+      Lower : constant Gdouble := Gtk.Adjustment.Get_Lower (Needle.Adjustment);
+      Upper : constant Gdouble := Gtk.Adjustment.Get_Upper (Needle.Adjustment);
+      Value : constant Gdouble := Gtk.Adjustment.Get_Value (Needle.Adjustment);
    begin
       if Upper <= Lower or else Value <= Lower then
          Needle.Set_Value (0.0);
@@ -244,7 +244,7 @@ package body Gtk.Layered.Clock_Hand is
    overriding procedure Draw
      (Layer   : in out Clock_Hand_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle)
+      Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
       Tip_Length     : Gdouble;
       Tip_Radius     : Gdouble;
@@ -409,19 +409,21 @@ package body Gtk.Layered.Clock_Hand is
       Layer.Updated := False;
    end Draw;
 
-   overriding procedure Finalize (Layer : in out Clock_Hand_Layer) is
+   overriding procedure Finalize (Layer : in out Clock_Hand_Layer)
+   is
+      use type Gtk.Adjustment.Gtk_Adjustment;
    begin
       Finalize (Abstract_Layer (Layer));
       if Layer.Adjustment /= null then
          Disconnect (Layer.Adjustment, Layer.Changed);
          Disconnect (Layer.Adjustment, Layer.Value_Changed);
-         Unref (Layer.Adjustment);
+         Gtk.Adjustment.Unref (Layer.Adjustment);
          Layer.Adjustment := null;
       end if;
    end Finalize;
 
-   overriding function Get_Adjustment (Layer : Clock_Hand_Layer)
-      return Gtk_Adjustment is
+   overriding function Get_Adjustment
+     (Layer : Clock_Hand_Layer) return Gtk.Adjustment.Gtk_Adjustment is
    begin
       return Layer.Adjustment;
    end Get_Adjustment;
@@ -788,7 +790,7 @@ package body Gtk.Layered.Clock_Hand is
       );
       if Adjustment then
          declare
-            Adjustment : Gtk_Adjustment;
+            Adjustment : Gtk.Adjustment.Gtk_Adjustment;
          begin
             Restore (Stream, Adjustment);
             Add_Adjustment (Layer, Adjustment);
@@ -985,7 +987,9 @@ package body Gtk.Layered.Clock_Hand is
 
    overriding procedure Store
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
-      Layer  : Clock_Hand_Layer) is
+      Layer  : Clock_Hand_Layer)
+   is
+      use type Gtk.Adjustment.Gtk_Adjustment;
    begin
       Store (Stream, Layer.Center);
       Store (Stream, Layer.From);

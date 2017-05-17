@@ -23,15 +23,16 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 separate (Strings_Edit)
 
 package body Text_Edit is
+
    function TrimCharacter
-            (  Source : in String;
-               Blank  : in Character := ' '
-            )  return String is
+     (Source : in String;
+      Blank  : in Character := ' ') return String
+   is
       First : Integer := Source'First;
       Last  : Integer := Source'Last;
    begin
@@ -41,100 +42,90 @@ package body Text_Edit is
       while First <= Last and then Source (Last) = Blank loop
          Last := Last - 1;
       end loop;
-      return Source (First..Last);
+      return Source (First .. Last);
    end TrimCharacter;
 
    function TrimSet
-            (  Source : in String;
-               Blanks : in Ada.Strings.Maps.Character_Set
-            )  return String is
+     (Source : in String;
+      Blanks : in Ada.Strings.Maps.Character_Set) return String
+   is
       First : Integer := Source'First;
       Last  : Integer := Source'Last;
    begin
-      while (  First <= Last
-            and then
-               Ada.Strings.Maps.Is_In (Source (First), Blanks)
-            )
+      while
+        First <= Last and then
+        Ada.Strings.Maps.Is_In (Source (First), Blanks)
       loop
          First := First + 1;
       end loop;
-      while (  First <= Last
-            and then
-               Ada.Strings.Maps.Is_In (Source (Last), Blanks)
-            )
+      while
+        First <= Last and then
+        Ada.Strings.Maps.Is_In (Source (Last), Blanks)
       loop
          Last := Last - 1;
       end loop;
-      return Source (First..Last);
+      return Source (First .. Last);
    end TrimSet;
 
    procedure GetCharacter
-             (  Source  : in String;
-                Pointer : in out Integer;
-                Blank   : in Character := ' '
-             )  is
+     (Source  : in String;
+      Pointer : in out Integer;
+      Blank   : in Character := ' ') is
    begin
-      if (  Pointer < Source'First
-         or else
-            (  Pointer > Source'Last
-            and then
-               Pointer - 1 > Source'Last
-         )  )
+      if
+        Pointer < Source'First or else
+        (Pointer > Source'Last and then
+         Pointer - 1 > Source'Last)
       then
-         raise Layout_Error;
+         raise Ada.IO_Exceptions.Layout_Error;
       end if;
-      for Index in Pointer..Source'Last loop
+      for Index in Pointer .. Source'Last loop
          exit when Source (Index) /= Blank;
          Pointer := Pointer + 1;
       end loop;
    end GetCharacter;
 
    procedure GetSet
-             (  Source  : in String;
-                Pointer : in out Integer;
-                Blanks  : in Ada.Strings.Maps.Character_Set
-             )  is
+     (Source  : in String;
+      Pointer : in out Integer;
+      Blanks  : in Ada.Strings.Maps.Character_Set) is
    begin
-      if (  Pointer < Source'First
-         or else
-            (  Pointer > Source'Last
-            and then
-               Pointer - 1 > Source'Last
-         )  )
+      if
+        Pointer < Source'First or else
+        (Pointer > Source'Last and then
+         Pointer - 1 > Source'Last)
       then
-         raise Layout_Error;
+         raise Ada.IO_Exceptions.Layout_Error;
       end if;
-      for Index in Pointer..Source'Last loop
+      for Index in Pointer .. Source'Last loop
          exit when not Ada.Strings.Maps.Is_In (Source (Index), Blanks);
          Pointer := Pointer + 1;
       end loop;
    end GetSet;
 
    procedure PutString
-             (  Destination : in out String;
-                Pointer     : in out Integer;
-                Value       : in String;
-                Field       : in Natural := 0;
-                Justify     : in Alignment := Left;
-                Fill        : in Character := ' '
-             )  is
+     (Destination : in out String;
+      Pointer     : in out Integer;
+      Value       : in String;
+      Field       : in Natural := 0;
+      Justify     : in Alignment := Left;
+      Fill        : in Character := ' ')
+   is
       OutField : Natural := Field;
    begin
       if OutField = 0 then
          OutField := Value'Length;
       end if;
-      if (  Pointer < Destination'First
-         or else
-            Pointer + OutField - 1 > Destination'Last
-         or else
-            OutField < Value'Length
-         )
+      if
+        Pointer < Destination'First or else
+        Pointer + OutField - 1 > Destination'Last or else
+        OutField < Value'Length
       then
-         raise Layout_Error;
+         raise Ada.IO_Exceptions.Layout_Error;
       end if;
       if OutField /= 0 then
          if OutField = Value'Length then
-            Destination (Pointer..Pointer + OutField - 1) := Value;
+            Destination (Pointer .. Pointer + OutField - 1) := Value;
          else
             declare
                First : Integer;
@@ -144,26 +135,26 @@ package body Text_Edit is
                   when Left =>
                      First := Pointer;
                      Next  := First + Value'Length;
-                     for Position in Next..Pointer + OutField - 1 loop
+                     for Position in Next .. Pointer + OutField - 1 loop
                         Destination (Position) := Fill;
                      end loop;
                   when Center =>
                      First := Pointer + (OutField - Value'Length) / 2;
                      Next  := First + Value'Length;
-                     for Position in Pointer..First - 1 loop
+                     for Position in Pointer .. First - 1 loop
                         Destination (Position) := Fill;
                      end loop;
-                     for Position in Next..Pointer + OutField - 1 loop
+                     for Position in Next .. Pointer + OutField - 1 loop
                         Destination (Position) := Fill;
                      end loop;
                   when Right =>
                      Next  := Pointer + OutField;
                      First := Next - Value'Length;
-                     for Position in Pointer..First - 1 loop
+                     for Position in Pointer .. First - 1 loop
                         Destination (Position) := Fill;
                      end loop;
                end case;
-               Destination (First..Next - 1) := Value;
+               Destination (First .. Next - 1) := Value;
             end;
          end if;
          Pointer := Pointer + OutField;
@@ -171,14 +162,14 @@ package body Text_Edit is
    end PutString;
 
    procedure PutCharacter
-             (  Destination : in out String;
-                Pointer     : in out Integer;
-                Value       : in Character;
-                Field       : in Natural := 0;
-                Justify     : in Alignment := Left;
-                Fill        : in Character := ' '
-             )  is
-      Text : constant String (1..1) := (1 => Value);
+     (Destination : in out String;
+      Pointer     : in out Integer;
+      Value       : in Character;
+      Field       : in Natural := 0;
+      Justify     : in Alignment := Left;
+      Fill        : in Character := ' ')
+   is
+      Text : constant String (1 .. 1) := (1 => Value);
    begin
       Put (Destination, Pointer, Text, Field, Justify, Fill);
    end PutCharacter;

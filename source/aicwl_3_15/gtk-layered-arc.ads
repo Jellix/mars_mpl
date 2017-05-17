@@ -180,7 +180,7 @@ package Gtk.Layered.Arc is
    overriding procedure Draw
      (Layer   : in out Arc_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle);
+      Area    : Gdk.Rectangle.Gdk_Rectangle);
 
    overriding function Is_Updated (Layer : Arc_Layer) return Boolean;
 

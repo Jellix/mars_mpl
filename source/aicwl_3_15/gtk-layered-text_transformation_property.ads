@@ -23,12 +23,11 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 with Glib.Generic_Properties;
 
 package Gtk.Layered.Text_Transformation_Property is
    new GLib.Generic_Properties.Generic_Enumeration_Property
-       (  "text-transformation",
-          Text_Transformation
-       );
+    ("text-transformation",
+     Text_Transformation);

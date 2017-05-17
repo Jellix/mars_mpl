@@ -177,7 +177,7 @@ package body Gtk.Layered.Cap is
    overriding procedure Draw_Contents
      (Layer   : in out Cap_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle)
+      Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
       Box     : constant Cairo.Ellipses.Cairo_Box :=
                   Cairo.Ellipses.Get_Path_Extents (Context);
@@ -407,7 +407,7 @@ package body Gtk.Layered.Cap is
    overriding procedure Set_Contents_Path
      (Layer   : in out Cap_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle) is
+      Area    : Gdk.Rectangle.Gdk_Rectangle) is
    begin
       if Get_Scaled (Layer) then
          declare

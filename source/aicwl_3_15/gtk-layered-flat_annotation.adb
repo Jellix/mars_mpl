@@ -25,9 +25,10 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
+with Ada.Numerics;
+
 with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
 with Glib.Properties.Creation;    use Glib.Properties.Creation;
-with Gtk.Layered.Label;           use Gtk.Layered.Label;
 with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
 
 with Ada.Unchecked_Deallocation;
@@ -37,6 +38,9 @@ with Pango.Enums.Weight_Property;
 with Gtk.Layered.Alignment_Property;
 
 package body Gtk.Layered.Flat_Annotation is
+
+   Pi : constant := Ada.Numerics.Pi;
+
    type Annotation_Ptr is access all Flat_Annotation_Layer;
 
    type Layer_Property is
@@ -70,39 +74,31 @@ package body Gtk.Layered.Flat_Annotation is
       end if;
    end "+";
 
-   function Where (Name : String) return String is
-   begin
-      return " in Gtk.Layered.Flat_Annotation." & Name;
-   end Where;
+   procedure Free is
+     new Ada.Unchecked_Deallocation
+       (Flat_Annotation_Layer,
+        Annotation_Ptr);
 
    procedure Free is
      new Ada.Unchecked_Deallocation
-       (  Flat_Annotation_Layer,
-          Annotation_Ptr
-         );
+       (Annotation_Text,
+        Annotation_Text_Ptr);
+
    procedure Free is
      new Ada.Unchecked_Deallocation
-       (  Annotation_Text,
-          Annotation_Text_Ptr
-         );
-   procedure Free is
-     new Ada.Unchecked_Deallocation
-       (  Annotation_List,
-          Annotation_List_Ptr
-         );
+       (Annotation_List,
+        Annotation_List_Ptr);
 
    function Get_List
-     (  Texts  : Gtk.Enums.String_List.Glist;
-        Ticks  : Tick_Parameters;
-        Markup : Boolean
-       )  return Annotation_List_Ptr;
+     (Texts  : Gtk.Enums.String_List.Glist;
+      Ticks  : Tick_Parameters;
+      Markup : Boolean) return Annotation_List_Ptr;
 
    function Get_List
-     (  Texts     : UTF8_String;
-        Delimiter : Character;
-        Ticks     : Tick_Parameters;
-        Markup    : Boolean
-       )  return Annotation_List_Ptr;
+     (Texts     : UTF8_String;
+      Delimiter : Character;
+      Ticks     : Tick_Parameters;
+      Markup    : Boolean) return Annotation_List_Ptr;
 
    procedure Delete (List : in out Annotation_List_Ptr);
 
@@ -131,7 +127,7 @@ package body Gtk.Layered.Flat_Annotation is
       From        : Cairo.Ellipses.Cairo_Tuple;
       Length      : Gdouble;
       Scale_Angle : Gdouble;
-      Face        : Pango_Cairo_Font;
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font;
       Height      : Gdouble;
       Stretch     : Gdouble;
       Color       : Gdk.Color.Gdk_Color;
@@ -146,18 +142,17 @@ package body Gtk.Layered.Flat_Annotation is
       Layer.Texts  := Texts;
       Add (Ptr, Under);
       Set
-        (  Layer     => Layer,
-           Ticks       => (Step, Get_First_Tick (First, Skipped), Skipped),
-           From        => From,
-           Length      => Length,
-           Scale_Angle => Scale_Angle,
-           Face        => Face,
-           Height      => Height,
-           Stretch     => Stretch,
-           Color       => Color,
-           Text_Angle  => Text_Angle,
-           Justify     => Justify
-          );
+        (Layer       => Layer,
+         Ticks       => (Step, Get_First_Tick (First, Skipped), Skipped),
+         From        => From,
+         Length      => Length,
+         Scale_Angle => Scale_Angle,
+         Face        => Face,
+         Height      => Height,
+         Stretch     => Stretch,
+         Color       => Color,
+         Text_Angle  => Text_Angle,
+         Justify     => Justify);
       return Ptr;
    exception
       when others =>
@@ -169,23 +164,23 @@ package body Gtk.Layered.Flat_Annotation is
      (Under       : not null access Layer_Location'Class;
       Texts       : Gtk.Enums.String_List.Glist;
       Step        : Gdouble;
-      First       : Tick_Number                := Tick_Number'Last;
-      Skipped     : Tick_Number                := Tick_Number'Last;
-      From        : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
-      Length      : Gdouble                    := 1.0;
-      Scale_Angle : Gdouble                    := 0.0;
-      Face        : Pango_Cairo_Font           :=
-        Create_Toy
+      First       : Tick_Number                        := Tick_Number'Last;
+      Skipped     : Tick_Number                        := Tick_Number'Last;
+      From        : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
+      Length      : Gdouble                            := 1.0;
+      Scale_Angle : Gdouble                            := 0.0;
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+        Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
            Slant  => Cairo.Cairo_Font_Slant_Normal,
            Weight => Cairo.Cairo_Font_Weight_Normal);
-      Height      : Gdouble                    := 12.0;
-      Stretch     : Gdouble                    := 1.0;
-      Color       : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Text_Angle  : Gdouble                    := 0.0;
-      Justify     : Alignment                  := Center;
-      Markup      : Boolean                    := False;
-      Scaled      : Boolean                    := False)
+      Height      : Gdouble                            := 12.0;
+      Stretch     : Gdouble                            := 1.0;
+      Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Text_Angle  : Gdouble                            := 0.0;
+      Justify     : Alignment                          := Center;
+      Markup      : Boolean                            := False;
+      Scaled      : Boolean                            := False)
    is
       Ptr : Annotation_Ptr;
    begin
@@ -215,28 +210,170 @@ package body Gtk.Layered.Flat_Annotation is
 
    procedure Add_Flat_Annotation
      (Under       : not null access Layer_Location'Class;
-      Texts       : Controlled_String_List;
+      Texts       : Gtk.Enums.String_Lists.Controlled_String_List;
       Step        : Gdouble;
-      First       : Tick_Number                := Tick_Number'Last;
-      Skipped     : Tick_Number                := Tick_Number'Last;
-      From        : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
-      Length      : Gdouble                    := 1.0;
-      Scale_Angle : Gdouble                    := 0.0;
-      Face        : Pango_Cairo_Font           :=
-        Create_Toy
+      First       : Tick_Number                        := Tick_Number'Last;
+      Skipped     : Tick_Number                        := Tick_Number'Last;
+      From        : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
+      Length      : Gdouble                            := 1.0;
+      Scale_Angle : Gdouble                            := 0.0;
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+        Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
            Slant  => Cairo.Cairo_Font_Slant_Normal,
            Weight => Cairo.Cairo_Font_Weight_Normal);
-      Height      : Gdouble                    := 12.0;
-      Stretch     : Gdouble                    := 1.0;
-      Color       : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Text_Angle  : Gdouble                    := 0.0;
-      Justify     : Alignment                  := Center;
-      Markup      : Boolean                    := False;
-      Scaled      : Boolean                    := False) is
+      Height      : Gdouble                            := 12.0;
+      Stretch     : Gdouble                            := 1.0;
+      Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Text_Angle  : Gdouble                            := 0.0;
+      Justify     : Alignment                          := Center;
+      Markup      : Boolean                            := False;
+      Scaled      : Boolean                            := False) is
    begin
       Add_Flat_Annotation
-        (  Under       => Under,
+        (Under       => Under,
+         Step        => Step,
+         First       => First,
+         Skipped     => Skipped,
+         From        => From,
+         Length      => Length,
+         Scale_Angle => Scale_Angle,
+         Face        => Face,
+         Height      => Height,
+         Stretch     => Stretch,
+         Text_Angle  => Text_Angle,
+         Justify     => Justify,
+         Color       => Color,
+         Scaled      => Scaled,
+         Markup      => Markup,
+         Texts       => Gtk.Enums.String_Lists.Get_GList (Texts));
+   end Add_Flat_Annotation;
+
+   procedure Add_Flat_Annotation
+     (Under       : not null access Layer_Location'Class;
+      Texts       : UTF8_String;
+      Step        : Gdouble;
+      First       : Tick_Number                        := Tick_Number'Last;
+      Skipped     : Tick_Number                        := Tick_Number'Last;
+      From        : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
+      Length      : Gdouble                            := 1.0;
+      Scale_Angle : Gdouble                            := 0.0;
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+        Pango.Cairo.Fonts.Create_Toy
+          (Family => "arial",
+           Slant  => Cairo.Cairo_Font_Slant_Normal,
+           Weight => Cairo.Cairo_Font_Weight_Normal);
+      Height      : Gdouble                            := 12.0;
+      Stretch     : Gdouble                            := 1.0;
+      Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Text_Angle  : Gdouble                            := 0.0;
+      Justify     : Alignment                          := Center;
+      Delimiter   : Character                          := ' ';
+      Markup      : Boolean                            := False;
+      Scaled      : Boolean                            := False)
+   is
+      Ptr : Annotation_Ptr;
+   begin
+      Ptr :=
+        Add_Annotation_Implementation
+          (Under       => Under,
+           Step        => Step,
+           First       => First,
+           Skipped     => Skipped,
+           From        => From,
+           Length      => Length,
+           Scale_Angle => Scale_Angle,
+           Face        => Face,
+           Height      => Height,
+           Stretch     => Stretch,
+           Text_Angle  => Text_Angle,
+           Justify     => Justify,
+           Color       => Color,
+           Scaled      => Scaled,
+           Texts       =>
+             Get_List
+               (Texts,
+                Delimiter,
+                (Step, First, Skipped),
+                Markup));
+      pragma Unreferenced (Ptr);
+   end Add_Flat_Annotation;
+
+   function Add_Flat_Annotation
+     (Under       : not null access Layer_Location'Class;
+      Texts       : Gtk.Enums.String_List.Glist;
+      Step        : Gdouble;
+      First       : Tick_Number                        := Tick_Number'Last;
+      Skipped     : Tick_Number                        := Tick_Number'Last;
+      From        : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
+      Length      : Gdouble                            := 1.0;
+      Scale_Angle : Gdouble                            := 0.0;
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+        Pango.Cairo.Fonts.Create_Toy
+          (Family => "arial",
+           Slant  => Cairo.Cairo_Font_Slant_Normal,
+           Weight => Cairo.Cairo_Font_Weight_Normal);
+      Height      : Gdouble                            := 12.0;
+      Stretch     : Gdouble                            := 1.0;
+      Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Text_Angle  : Gdouble                            := 0.0;
+      Justify     : Alignment                          := Center;
+      Markup      : Boolean                            := False;
+      Scaled      : Boolean                            := False)
+      return not null access Flat_Annotation_Layer
+   is
+      Ptr : Annotation_Ptr;
+   begin
+      Ptr :=
+        Add_Annotation_Implementation
+          (Under       => Under,
+           Step        => Step,
+           First       => First,
+           Skipped     => Skipped,
+           From        => From,
+           Length      => Length,
+           Scale_Angle => Scale_Angle,
+           Face        => Face,
+           Height      => Height,
+           Stretch     => Stretch,
+           Text_Angle  => Text_Angle,
+           Justify     => Justify,
+           Color       => Color,
+           Scaled      => Scaled,
+           Texts       =>
+             Get_List
+               (Texts,
+                (Step, First, Skipped),
+                Markup));
+      return Ptr.all'Unchecked_Access;
+   end Add_Flat_Annotation;
+
+   function Add_Flat_Annotation
+     (Under       : not null access Layer_Location'Class;
+      Texts       : Gtk.Enums.String_Lists.Controlled_String_List;
+      Step        : Gdouble;
+      First       : Tick_Number                        := Tick_Number'Last;
+      Skipped     : Tick_Number                        := Tick_Number'Last;
+      From        : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
+      Length      : Gdouble                            := 1.0;
+      Scale_Angle : Gdouble                            := 0.0;
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+        Pango.Cairo.Fonts.Create_Toy
+          (Family => "arial",
+           Slant  => Cairo.Cairo_Font_Slant_Normal,
+           Weight => Cairo.Cairo_Font_Weight_Normal);
+      Height      : Gdouble                            := 12.0;
+      Stretch     : Gdouble                            := 1.0;
+      Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Text_Angle  : Gdouble                            := 0.0;
+      Justify     : Alignment                          := Center;
+      Markup      : Boolean                            := False;
+      Scaled      : Boolean                            := False)
+      return not null access Flat_Annotation_Layer is
+   begin
+      return
+        Add_Flat_Annotation
+          (Under       => Under,
            Step        => Step,
            First       => First,
            Skipped     => Skipped,
@@ -251,32 +388,32 @@ package body Gtk.Layered.Flat_Annotation is
            Color       => Color,
            Scaled      => Scaled,
            Markup      => Markup,
-           Texts       => Get_GList (Texts)
-          );
+           Texts       => Gtk.Enums.String_Lists.Get_GList (Texts));
    end Add_Flat_Annotation;
 
-   procedure Add_Flat_Annotation
+   function Add_Flat_Annotation
      (Under       : not null access Layer_Location'Class;
       Texts       : UTF8_String;
       Step        : Gdouble;
-      First       : Tick_Number                := Tick_Number'Last;
-      Skipped     : Tick_Number                := Tick_Number'Last;
-      From        : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
-      Length      : Gdouble                    := 1.0;
-      Scale_Angle : Gdouble                    := 0.0;
-      Face        : Pango_Cairo_Font           :=
-        Create_Toy
+      First       : Tick_Number                        := Tick_Number'Last;
+      Skipped     : Tick_Number                        := Tick_Number'Last;
+      From        : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
+      Length      : Gdouble                            := 1.0;
+      Scale_Angle : Gdouble                            := 0.0;
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+        Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
            Slant  => Cairo.Cairo_Font_Slant_Normal,
            Weight => Cairo.Cairo_Font_Weight_Normal);
-      Height      : Gdouble                    := 12.0;
-      Stretch     : Gdouble                    := 1.0;
-      Color       : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Text_Angle  : Gdouble                    := 0.0;
-      Justify     : Alignment                  := Center;
-      Delimiter   : Character                  := ' ';
-      Markup      : Boolean                    := False;
-      Scaled      : Boolean                    := False)
+      Height      : Gdouble                            := 12.0;
+      Stretch     : Gdouble                            := 1.0;
+      Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Text_Angle  : Gdouble                            := 0.0;
+      Justify     : Alignment                          := Center;
+      Delimiter   : Character                          := ' ';
+      Markup      : Boolean                            := False;
+      Scaled      : Boolean                            := False)
+      return not null access Flat_Annotation_Layer
    is
       Ptr : Annotation_Ptr;
    begin
@@ -302,150 +439,6 @@ package body Gtk.Layered.Flat_Annotation is
                 Delimiter,
                 (Step, First, Skipped),
                 Markup));
-      pragma Unreferenced (Ptr);
-   end Add_Flat_Annotation;
-
-   function Add_Flat_Annotation
-     (Under       : not null access Layer_Location'Class;
-      Texts       : Gtk.Enums.String_List.Glist;
-      Step        : Gdouble;
-      First       : Tick_Number                := Tick_Number'Last;
-      Skipped     : Tick_Number                := Tick_Number'Last;
-      From        : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
-      Length      : Gdouble                    := 1.0;
-      Scale_Angle : Gdouble                    := 0.0;
-      Face        : Pango_Cairo_Font           :=
-        Create_Toy
-          (Family => "arial",
-           Slant  => Cairo.Cairo_Font_Slant_Normal,
-           Weight => Cairo.Cairo_Font_Weight_Normal);
-      Height      : Gdouble                    := 12.0;
-      Stretch     : Gdouble                    := 1.0;
-      Color       : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Text_Angle  : Gdouble                    := 0.0;
-      Justify     : Alignment                  := Center;
-      Markup      : Boolean                    := False;
-      Scaled      : Boolean                    := False)
-      return not null access Flat_Annotation_Layer
-   is
-      Ptr : Annotation_Ptr;
-   begin
-      Ptr :=
-        Add_Annotation_Implementation
-          (  Under       => Under,
-             Step        => Step,
-             First       => First,
-             Skipped     => Skipped,
-             From        => From,
-             Length      => Length,
-             Scale_Angle => Scale_Angle,
-             Face        => Face,
-             Height      => Height,
-             Stretch     => Stretch,
-             Text_Angle  => Text_Angle,
-             Justify     => Justify,
-             Color       => Color,
-             Scaled      => Scaled,
-             Texts       => Get_List
-               (  Texts,
-                (Step, First, Skipped),
-                Markup
-               )                 );
-      return Ptr.all'Unchecked_Access;
-   end Add_Flat_Annotation;
-
-   function Add_Flat_Annotation
-     (Under       : not null access Layer_Location'Class;
-      Texts       : Controlled_String_List;
-      Step        : Gdouble;
-      First       : Tick_Number                := Tick_Number'Last;
-      Skipped     : Tick_Number                := Tick_Number'Last;
-      From        : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
-      Length      : Gdouble                    := 1.0;
-      Scale_Angle : Gdouble                    := 0.0;
-      Face        : Pango_Cairo_Font           :=
-        Create_Toy
-          (Family => "arial",
-           Slant  => Cairo.Cairo_Font_Slant_Normal,
-           Weight => Cairo.Cairo_Font_Weight_Normal);
-      Height      : Gdouble                    := 12.0;
-      Stretch     : Gdouble                    := 1.0;
-      Color       : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Text_Angle  : Gdouble                    := 0.0;
-      Justify     : Alignment                  := Center;
-      Markup      : Boolean                    := False;
-      Scaled      : Boolean                    := False)
-      return not null access Flat_Annotation_Layer is
-   begin
-      return
-        Add_Flat_Annotation
-          (  Under       => Under,
-             Step        => Step,
-             First       => First,
-             Skipped     => Skipped,
-             From        => From,
-             Length      => Length,
-             Scale_Angle => Scale_Angle,
-             Face        => Face,
-             Height      => Height,
-             Stretch     => Stretch,
-             Text_Angle  => Text_Angle,
-             Justify     => Justify,
-             Color       => Color,
-             Scaled      => Scaled,
-             Markup      => Markup,
-             Texts       => Get_GList (Texts)
-            );
-   end Add_Flat_Annotation;
-
-   function Add_Flat_Annotation
-     (Under       : not null access Layer_Location'Class;
-      Texts       : UTF8_String;
-      Step        : Gdouble;
-      First       : Tick_Number                := Tick_Number'Last;
-      Skipped     : Tick_Number                := Tick_Number'Last;
-      From        : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
-      Length      : Gdouble                    := 1.0;
-      Scale_Angle : Gdouble                    := 0.0;
-      Face        : Pango_Cairo_Font           :=
-        Create_Toy
-          (Family => "arial",
-           Slant  => Cairo.Cairo_Font_Slant_Normal,
-           Weight => Cairo.Cairo_Font_Weight_Normal);
-      Height      : Gdouble                    := 12.0;
-      Stretch     : Gdouble                    := 1.0;
-      Color       : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Text_Angle  : Gdouble                    := 0.0;
-      Justify     : Alignment                  := Center;
-      Delimiter   : Character                  := ' ';
-      Markup      : Boolean                    := False;
-      Scaled      : Boolean                    := False)
-      return not null access Flat_Annotation_Layer
-   is
-      Ptr : Annotation_Ptr;
-   begin
-      Ptr :=
-        Add_Annotation_Implementation
-          (  Under       => Under,
-             Step        => Step,
-             First       => First,
-             Skipped     => Skipped,
-             From        => From,
-             Length      => Length,
-             Scale_Angle => Scale_Angle,
-             Face        => Face,
-             Height      => Height,
-             Stretch     => Stretch,
-             Text_Angle  => Text_Angle,
-             Justify     => Justify,
-             Color       => Color,
-             Scaled      => Scaled,
-             Texts       => Get_List
-               (  Texts,
-                Delimiter,
-                (Step, First, Skipped),
-                Markup
-               )                 );
       return Ptr.all'Unchecked_Access;
    end Add_Flat_Annotation;
 
@@ -462,8 +455,9 @@ package body Gtk.Layered.Flat_Annotation is
    overriding procedure Draw
      (Layer   : in out Flat_Annotation_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle)
+      Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
+      pragma Unreferenced (Area);
       X_Size  : Gdouble := Cos (Layer.Scale_Angle);
       Y_Size  : Gdouble := Sin (Layer.Scale_Angle);
       Gain    : Gdouble;
@@ -474,6 +468,7 @@ package body Gtk.Layered.Flat_Annotation is
       Length  : constant Gdouble := Layer.Length
                   + Layer.Ticks.Step * 0.05;
       State   : Cairo.Ellipses.Context_State := Cairo.Ellipses.Save (Context);
+      pragma Unreferenced (State);
    begin
       Cairo.New_Path (Context);
       Cairo.Set_Source_Rgb
@@ -501,22 +496,18 @@ package body Gtk.Layered.Flat_Annotation is
          else
             Thick := Thick + 1;
             exit when
-              (  Layer.Texts = null
-               or else
-               Index >= Layer.Texts'Length
-               or else
-               Layer.Texts.all (Index + 1) = null
-               or else
-               Layer.Texts.all (Index + 1).all.Length = 0
-              );
+              Layer.Texts = null or else
+              Index >= Layer.Texts'Length or else
+              Layer.Texts.all (Index + 1) = null or else
+              Layer.Texts.all (Index + 1).all.Length = 0;
             if Layer.Texts.all (Index + 1).all.Markup then
-               Get_Markup_Extents
+               Pango.Cairo.Fonts.Get_Markup_Extents
                  (Layer.Face,
                   Context,
                   +Layer.Texts.all (Index + 1),
                   Extents);
             else
-               Get_Text_Extents
+               Pango.Cairo.Fonts.Get_Text_Extents
                  (Layer.Face,
                   Context,
                   +Layer.Texts.all (Index + 1),
@@ -530,6 +521,7 @@ package body Gtk.Layered.Flat_Annotation is
                declare
                   State : Cairo.Ellipses.Context_State :=
                             Cairo.Ellipses.Save (Context);
+                  pragma Unreferenced (State);
                begin
                   Cairo.Translate
                     (Cr => Context,
@@ -554,18 +546,16 @@ package body Gtk.Layered.Flat_Annotation is
                            X  => -Extents.X_Bearing - Extents.Width * 0.5,
                            Y  => -Extents.Y_Bearing - Extents.Height * 0.5);
                   end case;
-                  if Layer.Texts.all (Index + 1).Markup then
-                     Show_Markup
-                       (  Layer.Face,
-                          Context,
-                          +Layer.Texts (Index + 1)
-                         );
+                  if Layer.Texts.all (Index + 1).all.Markup then
+                     Pango.Cairo.Fonts.Show_Markup
+                       (Layer.Face,
+                        Context,
+                        +Layer.Texts.all (Index + 1));
                   else
-                     Show_Text
-                       (  Layer.Face,
-                          Context,
-                          +Layer.Texts (Index + 1)
-                         );
+                     Pango.Cairo.Fonts.Show_Text
+                       (Layer.Face,
+                        Context,
+                        +Layer.Texts.all (Index + 1));
                   end if;
                end;
             end if;
@@ -586,8 +576,9 @@ package body Gtk.Layered.Flat_Annotation is
       return Layer.Color;
    end Get_Color;
 
-   overriding function Get_Face (Layer : Flat_Annotation_Layer)
-                                 return Pango_Cairo_Font is
+   overriding function Get_Face
+     (Layer : Flat_Annotation_Layer) return Pango.Cairo.Fonts.Pango_Cairo_Font
+   is
    begin
       return Layer.Face;
    end Get_Face;
@@ -642,11 +633,10 @@ package body Gtk.Layered.Flat_Annotation is
             begin
                List (Index) :=
                  new Annotation_Text'
-                   (  Size   => Text'Length,
-                      Markup => Markup,
-                      Length => Text'Length,
-                      Buffer => Text
-                     );
+                   (Size   => Text'Length,
+                    Markup => Markup,
+                    Length => Text'Length,
+                    Buffer => Text);
                This := Next (This);
             end;
          end loop;
@@ -655,11 +645,12 @@ package body Gtk.Layered.Flat_Annotation is
    end Get_List;
 
    function Get_List
-     (  Texts     : UTF8_String;
-        Delimiter : Character;
-        Ticks     : Tick_Parameters;
-        Markup    : Boolean
-       )  return Annotation_List_Ptr is
+     (Texts     : UTF8_String;
+      Delimiter : Character;
+      Ticks     : Tick_Parameters;
+      Markup    : Boolean) return Annotation_List_Ptr
+   is
+      pragma Unreferenced (Ticks);
       Count : Natural := 1;
    begin
       for Index in Texts'Range loop
@@ -682,11 +673,10 @@ package body Gtk.Layered.Flat_Annotation is
             end loop;
             List (Index) :=
               new Annotation_Text'
-                (  Size   => Stop - Start,
-                   Length => Stop - Start,
-                   Markup => Markup,
-                   Buffer => Texts (Start .. Stop - 1)
-                  );
+                (Size   => Stop - Start,
+                 Length => Stop - Start,
+                 Markup => Markup,
+                 Buffer => Texts (Start .. Stop - 1));
             Start := Stop + 1;
          end loop;
          return Result;
@@ -694,9 +684,8 @@ package body Gtk.Layered.Flat_Annotation is
    end Get_List;
 
    overriding function Get_Markup
-     (  Layer    : Flat_Annotation_Layer;
-        Position : Positive
-       )  return Boolean is
+     (Layer    : Flat_Annotation_Layer;
+      Position : Positive) return Boolean is
    begin
       if Layer.Texts = null or else Position > Layer.Texts'Last then
          raise Constraint_Error with "No such text";
@@ -708,20 +697,19 @@ package body Gtk.Layered.Flat_Annotation is
    end Get_Markup;
 
    overriding function Get_Properties_Number
-     (  Layer : Flat_Annotation_Layer
-       )  return Natural is
+     (Layer : Flat_Annotation_Layer) return Natural
+   is
+      pragma Unreferenced (Layer);
    begin
       return
-        (  Layer_Property'Pos (Layer_Property'Last)
-           -  Layer_Property'Pos (Layer_Property'First)
-           +  1
-          );
+        (Layer_Property'Pos (Layer_Property'Last)
+         -  Layer_Property'Pos (Layer_Property'First)
+         +  1);
    end Get_Properties_Number;
 
    overriding function Get_Property_Specification
-     (  Layer    : Flat_Annotation_Layer;
-        Property : Positive
-       )  return Param_Spec is
+     (Layer    : Flat_Annotation_Layer;
+      Property : Positive) return Param_Spec is
    begin
       if Property > Get_Properties_Number (Layer) then
          raise Constraint_Error;
@@ -730,147 +718,142 @@ package body Gtk.Layered.Flat_Annotation is
             when Property_Font_Type =>
                return
                  Pango.Cairo.Fonts.Font_Type_Property.Gnew_Enum
-                   (  Name    => "font-type",
-                      Nick    => "font type",
-                      Default => Pango_Font,
-                      Blurb   => "The backend used for the font, " &
-                        "e.g. toy font, pango font"
-                     );
+                   (Name    => "font-type",
+                    Nick    => "font type",
+                    Default => Pango.Cairo.Fonts.Pango_Font,
+                    Blurb   =>
+                       "The backend used for the font, " &
+                       "e.g. toy font, pango font");
             when Property_From_X =>
                return
                  Gnew_Double
-                   (  Name    => "x0",
-                      Nick    => "x0",
-                      Minimum => Gdouble'First,
-                      Maximum => Gdouble'Last,
-                      Default => 0.0,
-                      Blurb   => "The x-coordinate of the point " &
-                        "corresponding to the location of " &
-                        "the first annotation text"
-                     );
+                   (Name    => "x0",
+                    Nick    => "x0",
+                    Minimum => Gdouble'First,
+                    Maximum => Gdouble'Last,
+                    Default => 0.0,
+                    Blurb   =>
+                       "The x-coordinate of the point " &
+                       "corresponding to the location of " &
+                       "the first annotation text");
             when Property_From_Y =>
                return
                  Gnew_Double
-                   (  Name    => "y0",
-                      Nick    => "y0",
-                      Minimum => Gdouble'First,
-                      Maximum => Gdouble'Last,
-                      Default => 0.0,
-                      Blurb   => "The y-coordinate of the point " &
-                        "corresponding to the location of " &
-                        "the first annotation text"
-                     );
+                   (Name    => "y0",
+                    Nick    => "y0",
+                    Minimum => Gdouble'First,
+                    Maximum => Gdouble'Last,
+                    Default => 0.0,
+                    Blurb   =>
+                       "The y-coordinate of the point " &
+                       "corresponding to the location of " &
+                       "the first annotation text");
             when Property_Length =>
                return
                  Gnew_Double
-                   (  Name    => "length",
-                      Nick    => "length",
-                      Minimum => Gdouble'First,
-                      Maximum => Gdouble'Last,
-                      Default => 0.0,
-                      Blurb   => "The annotation length"
-                     );
+                   (Name    => "length",
+                    Nick    => "length",
+                    Minimum => Gdouble'First,
+                    Maximum => Gdouble'Last,
+                    Default => 0.0,
+                    Blurb   => "The annotation length");
             when Property_Scale_Angle =>
                return
                  Gnew_Double
-                   (  Name    => "annotation-angle",
-                      Nick    => "annotation line angle",
-                      Minimum => -2.0 * Pi,
-                      Maximum => 2.0 * Pi,
-                      Default => 0.0,
-                      Blurb   => "The angle of the line where " &
-                        "annotation texts are located"
-                     );
+                   (Name    => "annotation-angle",
+                    Nick    => "annotation line angle",
+                    Minimum => -2.0 * Pi,
+                    Maximum => 2.0 * Pi,
+                    Default => 0.0,
+                    Blurb   =>
+                       "The angle of the line where " &
+                       "annotation texts are located");
             when Property_Text_Angle =>
                return
                  Gnew_Double
-                   (  Name    => "text-angle",
-                      Nick    => "text angle",
-                      Minimum => -2.0 * Pi,
-                      Maximum => 2.0 * Pi,
-                      Default => 0.0,
-                      Blurb   => "The angle of the annotation texts " &
-                        "base line"
-                     );
+                   (Name    => "text-angle",
+                    Nick    => "text angle",
+                    Minimum => -2.0 * Pi,
+                    Maximum => 2.0 * Pi,
+                    Default => 0.0,
+                    Blurb   => "The angle of the annotation texts base line");
             when Property_Tick_Step =>
                return
                  Gnew_Double
-                   (  Name    => "step",
-                      Nick    => "step",
-                      Minimum => 1.0E-6,
-                      Maximum => Gdouble'Last,
-                      Default => 1.0,
-                      Blurb   => "The distance between two " &
-                        "consequent annotation texts"
-                     );
+                   (Name    => "step",
+                    Nick    => "step",
+                    Minimum => 1.0E-6,
+                    Maximum => Gdouble'Last,
+                    Default => 1.0,
+                    Blurb   =>
+                       "The distance between two " &
+                       "consequent annotation texts");
             when Property_Tick_First =>
                return
                  Gnew_Uint
-                   (  Name    => "first-tick",
-                      Nick    => "first tick",
-                      Minimum => Guint (Tick_Number'First),
-                      Maximum => Guint (Tick_Number'Last),
-                      Default => 1,
-                      Blurb   => "The number of the first tick. " &
-                        "The first tick is located at " &
-                        "the beginning of the scale to which " &
-                        "annotation texts are attached"
-                     );
+                   (Name    => "first-tick",
+                    Nick    => "first tick",
+                    Minimum => Guint (Tick_Number'First),
+                    Maximum => Guint (Tick_Number'Last),
+                    Default => 1,
+                    Blurb   => "The number of the first tick. " &
+                      "The first tick is located at " &
+                      "the beginning of the scale to which " &
+                      "annotation texts are attached");
             when Property_Tick_Skipped =>
                return
                  Gnew_Uint
-                   (  Name    => "skipped-tick",
-                      Nick    => "skipped tick",
-                      Minimum => 2,
-                      Maximum => Guint (Tick_Number'Last),
-                      Default => Guint (Tick_Number'Last),
-                      Blurb   => "The number of the skipped tick. " &
-                        "The ticks are numbered from 1 to " &
-                        "skipped-tick. For the ticks with " &
-                        "this number annotations are not drawn"
-                     );
+                   (Name    => "skipped-tick",
+                    Nick    => "skipped tick",
+                    Minimum => 2,
+                    Maximum => Guint (Tick_Number'Last),
+                    Default => Guint (Tick_Number'Last),
+                    Blurb   =>
+                       "The number of the skipped tick. " &
+                       "The ticks are numbered from 1 to " &
+                       "skipped-tick. For the ticks with " &
+                       "this number annotations are not drawn");
             when Property_Stretch =>
                return
                  Gnew_Double
-                   (  Name    => "stretch",
-                      Nick    => "stretch",
-                      Minimum => 0.0,
-                      Maximum => Gdouble'Last,
-                      Default => 1.0,
-                      Blurb   => "The relation of the rendered width " &
-                        "of an annotation text to its " &
-                        "original width. The stretch value " &
-                        "1 keeps texts unchanged"
-                     );
+                   (Name    => "stretch",
+                    Nick    => "stretch",
+                    Minimum => 0.0,
+                    Maximum => Gdouble'Last,
+                    Default => 1.0,
+                    Blurb   =>
+                       "The relation of the rendered width " &
+                       "of an annotation text to its " &
+                       "original width. The stretch value " &
+                       "1 keeps texts unchanged");
             when Property_Height =>
                return
                  Gnew_Double
-                   (  Name    => "height",
-                      Nick    => "height",
-                      Minimum => 0.0,
-                      Maximum => Gdouble'Last,
-                      Default => 12.0,
-                      Blurb   => "The annotation text font height"
-                     );
+                   (Name    => "height",
+                    Nick    => "height",
+                    Minimum => 0.0,
+                    Maximum => Gdouble'Last,
+                    Default => 12.0,
+                    Blurb   => "The annotation text font height");
             when Property_Family =>
                return
                  Gnew_String
-                   (  Name    => "font-familiy",
-                      Nick    => "font famility",
-                      Default => "arial",
-                      Blurb   => "The annotation text font family, " &
-                        "e.g. courier"
-                     );
+                   (Name    => "font-familiy",
+                    Nick    => "font famility",
+                    Default => "arial",
+                    Blurb   =>
+                       "The annotation text font family, " &
+                       "e.g. courier");
             when Property_Justify =>
                return
                  Gtk.Layered.Alignment_Property.Gnew_Enum
-                   (  Name    => "text-alignment",
-                      Nick    => "text alignment",
-                      Default => Center,
-                      Blurb   => "The text alignment " &
-                        "relatively to the annotation " &
-                        "line"
-                     );
+                   (Name    => "text-alignment",
+                    Nick    => "text alignment",
+                    Default => Center,
+                    Blurb   =>
+                       "The text alignment " &
+                       "relatively to the annotation " &
+                       "line");
             when Property_Slant =>
                return
                  Cairo.Font_Slant_Property.Gnew_Enum
@@ -881,46 +864,45 @@ package body Gtk.Layered.Flat_Annotation is
             when Property_Font_Size =>
                return
                  Gnew_Uint
-                   (  Name    => "font-size",
-                      Nick    => "font size",
-                      Minimum => 1,
-                      Maximum => Guint (Gint'Last),
-                      Default => 12,
-                      Blurb   => "The font size in points. " &
-                        "The value is only relevant for " &
-                        "pango fonts. For cairo toy size " &
-                        "is ignored"
-                     );
+                   (Name    => "font-size",
+                    Nick    => "font size",
+                    Minimum => 1,
+                    Maximum => Guint (Gint'Last),
+                    Default => 12,
+                    Blurb   =>
+                       "The font size in points. " &
+                       "The value is only relevant for " &
+                       "pango fonts. For cairo toy size " &
+                       "is ignored");
             when Property_Texts =>
                return
                  Gnew_String
-                   (  Name    => "texts",
-                      Nick    => "annotation texts",
-                      Default => "",
-                      Blurb   => "The list of annotation texts, " &
-                        "separated by LFs"
-                     );
+                   (Name    => "texts",
+                    Nick    => "annotation texts",
+                    Default => "",
+                    Blurb   =>
+                       "The list of annotation texts, " &
+                       "separated by LFs");
             when Property_Markup =>
                return
                  Gnew_String
-                   (  Name    => "markup-flags",
-                      Nick    => "annotation text markups",
-                      Default => "",
-                      Blurb   => "The list of annotation markup " &
-                        "text flags. " &
-                        "For each text it contains one " &
-                        "character, which is " &
-                        "T for plain text or " &
-                        "M for markup"
-                     );
+                   (Name    => "markup-flags",
+                    Nick    => "annotation text markups",
+                    Default => "",
+                    Blurb   =>
+                       "The list of annotation markup " &
+                       "text flags. " &
+                       "For each text it contains one " &
+                       "character, which is " &
+                       "T for plain text or " &
+                       "M for markup");
             when Property_Weight =>
                return
                  Pango.Enums.Weight_Property.Gnew_Enum
-                   (  Name    => "font-weight",
-                      Nick    => "font weight",
-                      Default => Pango.Enums.Pango_Weight_Normal,
-                      Blurb   => "The annotation text font weight"
-                     );
+                   (Name    => "font-weight",
+                    Nick    => "font weight",
+                    Default => Pango.Enums.Pango_Weight_Normal,
+                    Blurb   => "The annotation text font weight");
             when Property_Color =>
                return
                  Gnew_Boxed
@@ -931,12 +913,12 @@ package body Gtk.Layered.Flat_Annotation is
             when Property_Scaled =>
                return
                  Gnew_Boolean
-                   (  Name    => "scaled",
-                      Nick    => "scaled",
-                      Default => False,
-                      Blurb   => "The annotation size is changed when " &
-                        "the widget is resized"
-                     );
+                   (Name    => "scaled",
+                    Nick    => "scaled",
+                    Default => False,
+                    Blurb   =>
+                       "The annotation size is changed when " &
+                       "the widget is resized");
          end case;
       end if;
    end Get_Property_Specification;
@@ -955,7 +937,7 @@ package body Gtk.Layered.Flat_Annotation is
                when Property_Font_Type =>
                   Pango.Cairo.Fonts.Font_Type_Property.Set_Enum
                     (Value,
-                     Get_Type (Layer.Face));
+                     Pango.Cairo.Fonts.Get_Type (Layer.Face));
                when Property_From_X =>
                   Glib.Values.Init (Value, GType_Double);
                   Glib.Values.Set_Double (Value, Layer.From.X);
@@ -987,7 +969,9 @@ package body Gtk.Layered.Flat_Annotation is
                   Glib.Values.Set_Double (Value, Layer.Height);
                when Property_Family =>
                   Glib.Values.Init (Value, GType_String);
-                  Glib.Values.Set_String (Value, Get_Family (Layer.Face));
+                  Glib.Values.Set_String
+                    (Value,
+                     Pango.Cairo.Fonts.Get_Family (Layer.Face));
                when Property_Justify =>
                   Gtk.Layered.Alignment_Property.Set_Enum
                     (Value,
@@ -995,10 +979,12 @@ package body Gtk.Layered.Flat_Annotation is
                when Property_Slant =>
                   Cairo.Font_Slant_Property.Set_Enum
                     (Value,
-                     Get_Slant (Layer.Face));
+                     Pango.Cairo.Fonts.Get_Slant (Layer.Face));
                when Property_Font_Size =>
                   Glib.Values.Init (Value, GType_Uint);
-                  Glib.Values.Set_Uint (Value, Guint (Get_Size (Layer.Face)));
+                  Glib.Values.Set_Uint
+                    (Value,
+                     Guint (Pango.Cairo.Fonts.Get_Size (Layer.Face)));
                when Property_Stretch =>
                   Glib.Values.Init (Value, GType_Double);
                   Glib.Values.Set_Double (Value, Layer.Stretch);
@@ -1016,7 +1002,7 @@ package body Gtk.Layered.Flat_Annotation is
                            if Index > List'First then
                               Length := Length + 1;
                            end if;
-                           Length := Length + List (Index).Length;
+                           Length := Length + List (Index).all.Length;
                         end loop;
                         declare
                            Text    : String (1 .. Length);
@@ -1028,10 +1014,10 @@ package body Gtk.Layered.Flat_Annotation is
                                  Pointer := Pointer + 1;
                               end if;
                               Text
-                                (  Pointer
-                                   .. Pointer + List (Index).Length - 1
-                                  )  := +List (Index);
-                              Pointer := Pointer + List (Index).Length;
+                                (Pointer ..
+                                   Pointer + List (Index).all.Length - 1) :=
+                                  +List (Index);
+                              Pointer := Pointer + List (Index).all.Length;
                            end loop;
                            Glib.Values.Set_String (Value, Text);
                         end;
@@ -1047,7 +1033,7 @@ package body Gtk.Layered.Flat_Annotation is
                         Text : String (List'Range);
                      begin
                         for Index in Text'Range loop
-                           if List (Index).Markup then
+                           if List (Index).all.Markup then
                               Text (Index) := 'M';
                            else
                               Text (Index) := 'T';
@@ -1062,7 +1048,7 @@ package body Gtk.Layered.Flat_Annotation is
                when Property_Weight =>
                   Pango.Enums.Weight_Property.Set_Enum
                     (Value,
-                     Get_Weight (Layer.Face));
+                     Pango.Cairo.Fonts.Get_Weight (Layer.Face));
             end case;
             return Value;
          end;
@@ -1088,16 +1074,15 @@ package body Gtk.Layered.Flat_Annotation is
    end Get_Stretch;
 
    overriding function Get_Text
-     (  Layer    : Flat_Annotation_Layer;
-        Position : Positive
-       )  return UTF8_String is
+     (Layer    : Flat_Annotation_Layer;
+      Position : Positive) return UTF8_String is
    begin
       if Layer.Texts = null or else Position > Layer.Texts'Last then
          raise Constraint_Error with "No such text";
-      elsif Layer.Texts (Position) = null then
+      elsif Layer.Texts.all (Position) = null then
          return "";
       else
-         return +Layer.Texts (Position);
+         return +Layer.Texts.all (Position);
       end if;
    end Get_Text;
 
@@ -1142,7 +1127,7 @@ package body Gtk.Layered.Flat_Annotation is
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Layer  : in out Flat_Annotation_Layer)
    is
-      Face        : Pango_Cairo_Font;
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font;
       Height      : Gdouble;
       Stretch     : Gdouble;
       From        : Cairo.Ellipses.Cairo_Tuple;
@@ -1153,7 +1138,7 @@ package body Gtk.Layered.Flat_Annotation is
       Color       : Gdk.Color.Gdk_Color;
       Justify     : Alignment;
    begin
-      Restore (Stream, Face);
+      Pango.Cairo.Fonts.Restore (Stream, Face);
       Restore (Stream, Height);
       Restore (Stream, Stretch);
       Restore (Stream, From);
@@ -1165,18 +1150,17 @@ package body Gtk.Layered.Flat_Annotation is
       Restore (Stream, Justify);
       Restore (Stream, Layer.Scaled);
       Set
-        (  Layer       => Layer,
-           Ticks       => Ticks,
-           From        => From,
-           Length      => Length,
-           Scale_Angle => Scale_Angle,
-           Face        => Face,
-           Height      => Height,
-           Stretch     => Stretch,
-           Color       => Color,
-           Text_Angle  => Text_Angle,
-           Justify     => Justify
-          );
+        (Layer       => Layer,
+         Ticks       => Ticks,
+         From        => From,
+         Length      => Length,
+         Scale_Angle => Scale_Angle,
+         Face        => Face,
+         Height      => Height,
+         Stretch     => Stretch,
+         Color       => Color,
+         Text_Angle  => Text_Angle,
+         Justify     => Justify);
       declare
          use Gtk.Layered.Stream_IO;
          Markup : constant Bit_Array := Restore (Stream'Access);
@@ -1185,18 +1169,17 @@ package body Gtk.Layered.Flat_Annotation is
          Layer.Texts := new Annotation_List (Markup'Range);
          for Index in Markup'Range loop
             Layer.Set_Text
-              (  Index,
-                 Restore (Stream'Access),
-                 Markup (Index)
-                );
+              (Index,
+               Restore (Stream'Access),
+               Markup (Index));
          end loop;
       end;
    end Restore;
 
    overriding procedure Scale
-     (  Layer  : in out Flat_Annotation_Layer;
-        Factor : Gdouble
-       )  is
+     (Layer  : in out Flat_Annotation_Layer;
+      Factor : Gdouble)
+   is
       Ticks  : Tick_Parameters := Layer.Ticks;
       Height : constant Gdouble := Layer.Height * Factor;
    begin
@@ -1218,7 +1201,7 @@ package body Gtk.Layered.Flat_Annotation is
       From        : Cairo.Ellipses.Cairo_Tuple;
       Length      : Gdouble;
       Scale_Angle : Gdouble;
-      Face        : Pango_Cairo_Font;
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font;
       Height      : Gdouble;
       Stretch     : Gdouble;
       Color       : Gdk.Color.Gdk_Color;
@@ -1249,9 +1232,8 @@ package body Gtk.Layered.Flat_Annotation is
    end Set;
 
    overriding procedure Set_Face
-     (  Layer : in out Flat_Annotation_Layer;
-        Face  : Pango_Cairo_Font
-       )  is
+     (Layer : in out Flat_Annotation_Layer;
+      Face  : Pango.Cairo.Fonts.Pango_Cairo_Font) is
    begin
       Layer.Face    := Face;
       Layer.Updated := True;
@@ -1267,10 +1249,9 @@ package body Gtk.Layered.Flat_Annotation is
       else
          case Layer_Property'Val (Property - 1) is
             when Property_Font_Type =>
-               Set_Type
-                 (  Layer.Face,
-                    Pango.Cairo.Fonts.Font_Type_Property.Get_Enum (Value)
-                   );
+               Pango.Cairo.Fonts.Set_Type
+                 (Layer.Face,
+                  Pango.Cairo.Fonts.Font_Type_Property.Get_Enum (Value));
             when Property_From_X =>
                Layer.From.X := Glib.Values.Get_Double (Value);
             when Property_From_Y =>
@@ -1326,23 +1307,20 @@ package body Gtk.Layered.Flat_Annotation is
                   Layer.Ticks.Skipped := Tick_Number (Glib.Values.Get_Uint (Value));
                end if;
             when Property_Family =>
-               Set_Family (Layer.Face, Glib.Values.Get_String (Value));
+               Pango.Cairo.Fonts.Set_Family (Layer.Face, Glib.Values.Get_String (Value));
             when Property_Slant =>
-               Set_Slant
-                 (  Layer.Face,
-                    Cairo.Font_Slant_Property.Get_Enum (Value)
-                   );
+               Pango.Cairo.Fonts.Set_Slant
+                 (Layer.Face,
+                  Cairo.Font_Slant_Property.Get_Enum (Value));
             when Property_Font_Size =>
-               Set_Size
-                 (  Layer.Face,
-                    Gint
-                      (  Guint'Max
-                           (  Guint'Min
-                                (Glib.Values.Get_Uint (Value),
-                                 Guint (Gint'Last)
-                                ),
-                            1
-                           )  )  );
+               Pango.Cairo.Fonts.Set_Size
+                 (Layer.Face,
+                  Gint
+                    (Guint'Max
+                         (Guint'Min
+                              (Glib.Values.Get_Uint (Value),
+                               Guint (Gint'Last)),
+                          1)));
             when Property_Texts =>
                Set_Texts
                  (Layer,
@@ -1356,7 +1334,7 @@ package body Gtk.Layered.Flat_Annotation is
                   if Layer.Texts /= null then
                      for Index in Markup'Range loop
                         exit when Index not in Layer.Texts'Range;
-                        Layer.Texts (Index).Markup :=
+                        Layer.Texts.all (Index).all.Markup :=
                           Markup (Index) = 'M';
                      end loop;
                   end if;
@@ -1364,41 +1342,38 @@ package body Gtk.Layered.Flat_Annotation is
             when Property_Scaled =>
                Layer.Scaled := Glib.Values.Get_Boolean (Value);
             when Property_Weight =>
-               Set_Weight
-                 (  Layer.Face,
-                    Pango.Enums.Weight_Property.Get_Enum (Value)
-                   );
+               Pango.Cairo.Fonts.Set_Weight
+                 (Layer.Face,
+                  Pango.Enums.Weight_Property.Get_Enum (Value));
          end case;
       end if;
       Layer.Updated := True;
    end Set_Property_Value;
 
    overriding procedure Set_Scaled
-     (  Layer  : in out Flat_Annotation_Layer;
-        Scaled : Boolean
-       )  is
+     (Layer  : in out Flat_Annotation_Layer;
+      Scaled : Boolean) is
    begin
       Layer.Scaled  := Scaled;
       Layer.Updated := True;
    end Set_Scaled;
 
    overriding procedure Set_Text
-     (  Layer    : in out Flat_Annotation_Layer;
-        Position : Positive;
-        Text     : UTF8_String;
-        Markup   : Boolean := False
-       )  is
+     (Layer    : in out Flat_Annotation_Layer;
+      Position : Positive;
+      Text     : UTF8_String;
+      Markup   : Boolean := False)  is
    begin
       if Layer.Texts = null then
          if Position = 1 then
             Layer.Texts :=
               new Annotation_List'
-                (  1 .. 1 => new Annotation_Text'
-                     (  Size   => Text'Length,
-                        Length => Text'Length,
-                        Markup => Markup,
-                        Buffer => Text
-                       )              );
+                (1 .. 1 =>
+                    new Annotation_Text'
+                     (Size   => Text'Length,
+                      Length => Text'Length,
+                      Markup => Markup,
+                      Buffer => Text));
             Layer.Updated := True;
             return;
          end if;
@@ -1408,42 +1383,39 @@ package body Gtk.Layered.Flat_Annotation is
                Old_Texts : Annotation_List_Ptr := Layer.Texts;
             begin
                Layer.Texts := new Annotation_List (1 .. Position);
-               Layer.Texts (Old_Texts'Range) := Old_Texts.all;
-               Layer.Texts (Position) :=
+               Layer.Texts.all (Old_Texts'Range) := Old_Texts.all;
+               Layer.Texts.all (Position) :=
                  new Annotation_Text'
-                   (  Size   => Text'Length,
-                      Length => Text'Length,
-                      Markup => Markup,
-                      Buffer => Text
-                     );
+                   (Size   => Text'Length,
+                    Length => Text'Length,
+                    Markup => Markup,
+                    Buffer => Text);
                Free (Old_Texts);
                Layer.Updated := True;
                return;
             end;
          end if;
       else
-         if (  Layer.Texts (Position) /= null
-             and then
-             Layer.Texts (Position).Size >= Text'Length
-            )
+         if
+           Layer.Texts.all (Position) /= null and then
+           Layer.Texts.all (Position).all.Size >= Text'Length
          then
             declare
                This : Annotation_Text renames
-                        Layer.Texts (Position).all;
+                        Layer.Texts.all (Position).all;
             begin
                This.Buffer (1 .. Text'Length) := Text;
                This.Length := Text'Length;
                This.Markup := Markup;
             end;
          else
-            Free (Layer.Texts (Position));
-            Layer.Texts (Position) :=
+            Free (Layer.Texts.all (Position));
+            Layer.Texts.all (Position) :=
               new Annotation_Text'
-                (  Size   => Text'Length,
-                   Length => Text'Length,
-                   Markup => Markup,
-                   Buffer => Text
-                  );
+                (Size   => Text'Length,
+                 Length => Text'Length,
+                 Markup => Markup,
+                 Buffer => Text);
          end if;
          Layer.Updated := True;
          return;
@@ -1452,10 +1424,10 @@ package body Gtk.Layered.Flat_Annotation is
    end Set_Text;
 
    overriding procedure Set_Texts
-     (  Layer  : in out Flat_Annotation_Layer;
-        Texts  : Gtk.Enums.String_List.Glist;
-        Markup : Boolean := False
-       )  is
+     (Layer  : in out Flat_Annotation_Layer;
+      Texts  : Gtk.Enums.String_List.Glist;
+      Markup : Boolean := False)
+   is
       List : Annotation_List_Ptr :=
                Get_List (Texts, Layer.Ticks, Markup);
    begin
@@ -1468,11 +1440,11 @@ package body Gtk.Layered.Flat_Annotation is
    end Set_Texts;
 
    overriding procedure Set_Texts
-     (  Layer     : in out Flat_Annotation_Layer;
-        Texts     : UTF8_String;
-        Delimiter : Character := ' ';
-        Markup    : Boolean := False
-       )  is
+     (Layer     : in out Flat_Annotation_Layer;
+      Texts     : UTF8_String;
+      Delimiter : Character := ' ';
+      Markup    : Boolean := False)
+   is
       List : Annotation_List_Ptr :=
                Get_List (Texts, Delimiter, Layer.Ticks, Markup);
    begin
@@ -1488,7 +1460,7 @@ package body Gtk.Layered.Flat_Annotation is
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Layer  : Flat_Annotation_Layer) is
    begin
-      Store (Stream, Layer.Face);
+      Pango.Cairo.Fonts.Store (Stream, Layer.Face);
       Store (Stream, Layer.Height);
       Store (Stream, Layer.Stretch);
       Store (Stream, Layer.From);

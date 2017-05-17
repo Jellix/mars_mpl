@@ -25,38 +25,39 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Strings_Edit.UTF8.Maps;  use Strings_Edit.UTF8.Maps;
+with Strings_Edit.UTF8.Maps;
 
 package Strings_Edit.UTF8.Wildcards is
---
--- Match -- An UTF-8 encoded string by a pattern
---
---    Text       - The string to match
---    Pattern    - The pattern
---  [ Map ]      - Used to convert characters before comparison
---    Wide_Space - Spaces handled as a pattern for blank sequences
---    Blanks     - The list of blank characters
---
--- This function is used to match an UTF-8 encoded text  by  a  pattern.
--- The  pattern  is  an  UTF-8  string which may contain the character *
--- treated as a wildcard matching any (possibly empty) sequence of UTF-8
--- characters. When Wide_Space is True, then spaces in Pattern match any
--- non-empty  sequence  of  characters  from  the  set Blanks. Otherwise
--- Blanks is ignored. Note that when Blanks contain non-ASCII characters
--- (with  the code points 128..255), those will match any UTF-characters
--- starting with this octet. A typical use of this function is to filter
--- file names. For example:
---
---    *.txt - matches all files with the extension txt
---    A*B*C - names starting with A ending by C with B inside
---
--- The outcome  is  undefined  when  Text  and/or  Pattern  are  illegal
--- UTF-8 strings.
---
--- Returns :
---
---    True if Pattern matches Text
---
+
+   --
+   -- Match -- An UTF-8 encoded string by a pattern
+   --
+   --    Text       - The string to match
+   --    Pattern    - The pattern
+   --  [ Map ]      - Used to convert characters before comparison
+   --    Wide_Space - Spaces handled as a pattern for blank sequences
+   --    Blanks     - The list of blank characters
+   --
+   -- This function is used to match an UTF-8 encoded text  by  a  pattern.
+   -- The  pattern  is  an  UTF-8  string which may contain the character *
+   -- treated as a wildcard matching any (possibly empty) sequence of UTF-8
+   -- characters. When Wide_Space is True, then spaces in Pattern match any
+   -- non-empty  sequence  of  characters  from  the  set Blanks. Otherwise
+   -- Blanks is ignored. Note that when Blanks contain non-ASCII characters
+   -- (with  the code points 128..255), those will match any UTF-characters
+   -- starting with this octet. A typical use of this function is to filter
+   -- file names. For example:
+   --
+   --    *.txt - matches all files with the extension txt
+   --    A*B*C - names starting with A ending by C with B inside
+   --
+   -- The outcome  is  undefined  when  Text  and/or  Pattern  are  illegal
+   -- UTF-8 strings.
+   --
+   -- Returns :
+   --
+   --    True if Pattern matches Text
+   --
    function Match (Text       : String;
                    Pattern    : String;
                    Wide_Space : Boolean                        := False;
@@ -65,7 +66,7 @@ package Strings_Edit.UTF8.Wildcards is
 
    function Match (Text       : String;
                    Pattern    : String;
-                   Map        : Unicode_Mapping;
+                   Map        : Strings_Edit.UTF8.Maps.Unicode_Mapping;
                    Wide_Space : Boolean                        := False;
                    Blanks     : Ada.Strings.Maps.Character_Set := SpaceAndTab)
                    return Boolean;

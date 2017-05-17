@@ -26,7 +26,6 @@
 -- __________________________________________________________________ --
 
 with Strings_Edit.UTF8.Maps.Constants;
-use  Strings_Edit.UTF8.Maps.Constants;
 
 package body Strings_Edit.UTF8.Wildcards.Case_Insensitive is
 
@@ -37,7 +36,11 @@ package body Strings_Edit.UTF8.Wildcards.Case_Insensitive is
       Blanks     : Ada.Strings.Maps.Character_Set := SpaceAndTab)
       return Boolean is
    begin
-      return Match (Text, Pattern, Lower_Case_Map, Wide_Space, Blanks);
+      return Match (Text,
+                    Pattern,
+                    Strings_Edit.UTF8.Maps.Constants.Lower_Case_Map,
+                    Wide_Space,
+                    Blanks);
    end Match_Insensitive;
 
 end Strings_Edit.UTF8.Wildcards.Case_Insensitive;

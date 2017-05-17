@@ -22,41 +22,55 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Interfaces.C;          use Interfaces.C;
-with Interfaces.C.Strings;  use Interfaces.C.Strings;
-with System;                use System;
+with Interfaces.C.Strings;
+with System;
 
 package body GIO.Content_Type is
 
-   procedure Free (Ptr : Chars_Ptr);
+   procedure Free (Ptr : Interfaces.C.Strings.chars_ptr);
    pragma Import (C, Free, "g_free");
 
-   function Can_Be_Executable (Instance : UTF8_String) return Boolean is
-      function Internal (Instance : Char_Array) return GBoolean;
+   function Can_Be_Executable (Instance : Glib.UTF8_String) return Boolean
+   is
+      function Internal (Instance : Interfaces.C.char_array)
+                         return Glib.Gboolean;
       pragma Import (C, Internal, "g_content_type_can_be_executable");
+
+      use type Glib.Gboolean;
    begin
-      return 0 /= Internal (To_C (Instance));
+      return 0 /= Internal (Interfaces.C.To_C (Instance));
    end Can_Be_Executable;
 
-   function Equals (Type_1, Type_2 : UTF8_String) return Boolean is
-      function Internal (Type_1, Type_2 : Char_Array) return GBoolean;
+   function Equals (Type_1, Type_2 : Glib.UTF8_String) return Boolean
+   is
+      function Internal (Type_1, Type_2 : Interfaces.C.char_array)
+                         return Glib.Gboolean;
       pragma Import (C, Internal, "g_content_type_equals");
+
+      use type Glib.Gboolean;
    begin
-      return 0 /= Internal (To_C (Type_1), To_C (Type_2));
+      return 0 /= Internal (Interfaces.C.To_C (Type_1),
+                            Interfaces.C.To_C (Type_2));
    end Equals;
 
-   function From_MIME_Type (MIME : UTF8_String) return UTF8_String is
-      function Internal (Instance : Char_Array) return Chars_Ptr;
+   function From_MIME_Type (MIME : Glib.UTF8_String) return Glib.UTF8_String
+   is
+      function Internal (Instance : Interfaces.C.char_array)
+                         return Interfaces.C.Strings.chars_ptr;
       pragma Import (C, Internal, "g_content_type_from_mime_type");
-      Ptr : constant Chars_Ptr := Internal (To_C (MIME));
+      Ptr : constant Interfaces.C.Strings.chars_ptr :=
+              Internal (Interfaces.C.To_C (MIME));
+
+      use type Interfaces.C.Strings.chars_ptr;
    begin
-      if Ptr = Null_Ptr then
+      if Ptr = Interfaces.C.Strings.Null_Ptr then
          return "";
       else
          declare
-            Result : constant UTF8_String := Value (Ptr);
+            Result : constant Glib.UTF8_String :=
+                       Interfaces.C.Strings.Value (Ptr);
          begin
             Free (Ptr);
             return Result;
@@ -64,17 +78,23 @@ package body GIO.Content_Type is
       end if;
    end From_MIME_Type;
 
-   function Get_Description (Instance : UTF8_String)
-      return UTF8_String is
-      function Internal (Instance : Char_Array) return Chars_Ptr;
+   function Get_Description
+     (Instance : Glib.UTF8_String) return Glib.UTF8_String
+   is
+      function Internal (Instance : Interfaces.C.char_array)
+                         return Interfaces.C.Strings.chars_ptr;
       pragma Import (C, Internal, "g_content_type_get_description");
-      Ptr : constant Chars_Ptr := Internal (To_C (Instance));
+      Ptr : constant Interfaces.C.Strings.chars_ptr :=
+              Internal (Interfaces.C.To_C (Instance));
+
+      use type Interfaces.C.Strings.chars_ptr;
    begin
-      if Ptr = Null_Ptr then
+      if Ptr = Interfaces.C.Strings.Null_Ptr then
          return "";
       else
          declare
-            Result : constant UTF8_String := Value (Ptr);
+            Result : constant Glib.UTF8_String :=
+                       Interfaces.C.Strings.Value (Ptr);
          begin
             Free (Ptr);
             return Result;
@@ -82,40 +102,52 @@ package body GIO.Content_Type is
       end if;
    end Get_Description;
 
-   function Get_Icon (Instance : UTF8_String) return GObject is
-      function Internal (Instance : Char_Array) return Address;
+   function Get_Icon (Instance : Glib.UTF8_String) return Glib.Object.GObject
+   is
+      function Internal (Instance : Interfaces.C.char_array)
+                         return System.Address;
       pragma Import (C, Internal, "g_content_type_get_icon");
    begin
-      return Convert (Internal (To_C (Instance)));
+      return Glib.Object.Convert (Internal (Interfaces.C.To_C (Instance)));
    end Get_Icon;
 
-   function Get_MIME_Type (Instance : UTF8_String) return UTF8_String is
-      function Internal (Instance : Char_Array) return Chars_Ptr;
+   function Get_MIME_Type (Instance : Glib.UTF8_String) return Glib.UTF8_String
+   is
+      function Internal (Instance : Interfaces.C.char_array)
+                         return Interfaces.C.Strings.chars_ptr;
       pragma Import (C, Internal, "g_content_type_get_mime_type");
-      Ptr : constant Chars_Ptr := Internal (To_C (Instance));
+      Ptr : constant Interfaces.C.Strings.chars_ptr :=
+              Internal (Interfaces.C.To_C (Instance));
+
+      use type Interfaces.C.Strings.chars_ptr;
    begin
-      if Ptr = Null_Ptr then
+      if Ptr = Interfaces.C.Strings.Null_Ptr then
          return "";
       else
-         return Value (Ptr);
+         return Interfaces.C.Strings.Value (Ptr);
       end if;
    end Get_MIME_Type;
 
-   function Guess (File_Name : UTF8_String) return UTF8_String is
+   function Guess (File_Name : Glib.UTF8_String) return Glib.UTF8_String
+   is
       function Internal
-               (  File_Name : Char_Array;
-                  Data      : Address := Null_Address;
-                  Size      : GSize   := 0;
-                  Uncertain : Address := Null_Address
-               )  return Chars_Ptr;
+        (File_Name : Interfaces.C.char_array;
+         Data      : System.Address := System.Null_Address;
+         Size      : Glib.Gsize     := 0;
+         Uncertain : System.Address := System.Null_Address)
+         return Interfaces.C.Strings.chars_ptr;
       pragma Import (C, Internal, "g_content_type_guess");
-      Ptr : constant Chars_Ptr := Internal (To_C (File_Name));
+      Ptr : constant Interfaces.C.Strings.chars_ptr :=
+              Internal (Interfaces.C.To_C (File_Name));
+
+      use type Interfaces.C.Strings.chars_ptr;
    begin
-      if Ptr = Null_Ptr then
+      if Ptr = Interfaces.C.Strings.Null_Ptr then
          return "";
       else
          declare
-            Result : constant UTF8_String := Value (Ptr);
+            Result : constant Glib.UTF8_String :=
+                       Interfaces.C.Strings.Value (Ptr);
          begin
             Free (Ptr);
             return Result;
@@ -123,19 +155,27 @@ package body GIO.Content_Type is
       end if;
    end Guess;
 
-   function Is_A (Instance, Supertype : UTF8_String) return Boolean is
-      function Internal (Instance, Supertype : Char_Array)
-         return GBoolean;
+   function Is_A (Instance, Supertype : Glib.UTF8_String) return Boolean
+   is
+      function Internal (Instance, Supertype : Interfaces.C.char_array)
+         return Glib.Gboolean;
       pragma Import (C, Internal, "g_content_type_is_a");
+
+      use type Glib.Gboolean;
    begin
-      return 0 /= Internal (To_C (Instance), To_C (Supertype));
+      return 0 /= Internal (Interfaces.C.To_C (Instance),
+                            Interfaces.C.To_C (Supertype));
    end Is_A;
 
-   function Is_Unknown (Instance : UTF8_String) return Boolean is
-      function Internal (Instance : Char_Array) return GBoolean;
+   function Is_Unknown (Instance : Glib.UTF8_String) return Boolean
+   is
+      function Internal (Instance : Interfaces.C.char_array)
+                         return Glib.Gboolean;
       pragma Import (C, Internal, "g_content_type_is_unknown");
+
+      use type Glib.Gboolean;
    begin
-      return 0 /= Internal (To_C (Instance));
+      return 0 /= Internal (Interfaces.C.To_C (Instance));
    end Is_Unknown;
 
 end GIO.Content_Type;

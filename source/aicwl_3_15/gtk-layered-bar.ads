@@ -74,49 +74,51 @@ package Gtk.Layered.Bar is
    --
    procedure Add_Bar
      (Under      : not null access Layer_Location'Class;
-      From       : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
-      Angle      : Gdouble                            := 0.0;
-      Length     : Gdouble                            := 1.0;
-      Width      : Gdouble                            := 1.0;
-      Color      : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Line_Cap   : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      Adjustment : access Gtk_Adjustment_Record'Class := null;
-      Scaled     : Boolean                            := False;
-      Widened    : Boolean                            := False);
+      From       : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 0.0);
+      Angle      : Gdouble                                           := 0.0;
+      Length     : Gdouble                                           := 1.0;
+      Width      : Gdouble                                           := 1.0;
+      Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Line_Cap   : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled     : Boolean                                           := False;
+      Widened    : Boolean                                           := False);
 
    procedure Add_Bar
      (Under      : not null access Layer_Location'Class;
-      From       : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
-      To         : Cairo.Ellipses.Cairo_Tuple         := (0.0, 1.0);
-      Width      : Gdouble                            := 1.0;
-      Color      : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Line_Cap   : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      Adjustment : access Gtk_Adjustment_Record'Class := null;
-      Scaled     : Boolean                            := False;
-      Widened    : Boolean                            := False);
+      From       : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 0.0);
+      To         : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 1.0);
+      Width      : Gdouble                                           := 1.0;
+      Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Line_Cap   : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled     : Boolean                                           := False;
+      Widened    : Boolean                                           := False);
 
    function Add_Bar
      (Under      : not null access Layer_Location'Class;
-      From       : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
-      Angle      : Gdouble                            := 0.0;
-      Length     : Gdouble                            := 1.0;
-      Width      : Gdouble                            := 1.0;
-      Color      : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Line_Cap   : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      Adjustment : access Gtk_Adjustment_Record'Class := null;
-      Scaled     : Boolean                            := False;
-      Widened    : Boolean                            := False) return not null access Bar_Layer;
+      From       : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 0.0);
+      Angle      : Gdouble                                           := 0.0;
+      Length     : Gdouble                                           := 1.0;
+      Width      : Gdouble                                           := 1.0;
+      Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Line_Cap   : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled     : Boolean                                           := False;
+      Widened    : Boolean                                           := False)
+      return not null access Bar_Layer;
 
    function Add_Bar
      (Under      : not null access Layer_Location'Class;
-      From       : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
-      To         : Cairo.Ellipses.Cairo_Tuple         := (0.0, 1.0);
-      Width      : Gdouble                            := 1.0;
-      Color      : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Line_Cap   : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      Adjustment : access Gtk_Adjustment_Record'Class := null;
-      Scaled     : Boolean                            := False;
-      Widened    : Boolean                            := False) return not null access Bar_Layer;
+      From       : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 0.0);
+      To         : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 1.0);
+      Width      : Gdouble                                           := 1.0;
+      Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Line_Cap   : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled     : Boolean                                           := False;
+      Widened    : Boolean                                           := False)
+      return not null access Bar_Layer;
 
    --
    -- Get_Angle -- The line angle
@@ -206,11 +208,12 @@ package Gtk.Layered.Bar is
    overriding procedure Draw
      (Layer   : in out Bar_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle);
+      Area    : Gdk.Rectangle.Gdk_Rectangle);
 
    overriding procedure Finalize (Layer : in out Bar_Layer);
 
-   overriding function Get_Adjustment (Layer : Bar_Layer) return Gtk_Adjustment;
+   overriding function Get_Adjustment
+     (Layer : Bar_Layer) return Gtk.Adjustment.Gtk_Adjustment;
 
    overriding function Get_Properties_Number (Layer : Bar_Layer) return Natural;
 
@@ -275,7 +278,7 @@ private
          To            : Cairo.Ellipses.Cairo_Tuple;
          Line          : Line_Parameters;
          Value         : Gdouble := 0.0;
-         Adjustment    : Gtk_Adjustment;
+         Adjustment    : Gtk.Adjustment.Gtk_Adjustment;
          Changed       : Handler_Id;
          Value_Changed : Handler_Id;
          Scaled        : Boolean := False;

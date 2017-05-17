@@ -25,7 +25,7 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Ada.IO_Exceptions;  use Ada.IO_Exceptions;
+with Ada.IO_Exceptions;
 
 package body Strings_Edit is
 
@@ -55,32 +55,21 @@ package body Strings_Edit is
    function Is_Prefix (Prefix, Source : String) return Boolean is
    begin
       return
-      (  Prefix'Length = 0
-      or else
-         (  Prefix'Length <= Source'Length
-         and then
-            (  Prefix
-            =  Source
-               (  Source'First
-               .. Source'First + Prefix'Length - 1
-      )  )  )  );
+        (Prefix'Length = 0 or else
+           (Prefix'Length <= Source'Length and then
+                (Prefix =
+                     Source (Source'First ..
+                         Source'First + Prefix'Length - 1))));
    end Is_Prefix;
 
    function Is_Prefix (Prefix, Source : String; Pointer : Integer)
       return Boolean is
    begin
       return
-      (  Pointer >= Source'First
-      and then
-         (  Pointer <= Source'Last
-         or else
-            Pointer = Source'Last + 1
-         )
-      and then
-         Source'Last - Pointer + 1 >= Prefix'Length
-      and then
-         Prefix = Source (Pointer..Pointer + Prefix'Length - 1)
-      );
+        (Pointer >= Source'First and then
+           (Pointer <= Source'Last or else Pointer = Source'Last + 1) and then
+         Source'Last - Pointer + 1 >= Prefix'Length and then
+         Prefix = Source (Pointer .. Pointer + Prefix'Length - 1));
    end Is_Prefix;
 
    function Is_Prefix
@@ -125,7 +114,7 @@ package body Strings_Edit is
       declare
          J : Integer := Pointer;
       begin
-         for I in Prefix'First..Prefix'Last - 1 loop
+         for I in Prefix'First .. Prefix'Last - 1 loop
             if
               Ada.Strings.Maps.Value (Map, Prefix (I)) /=
                 Ada.Strings.Maps.Value (Map, Source (J))
@@ -145,54 +134,59 @@ package body Strings_Edit is
 -- This is an internal package containing  implementation  of  all  text
 -- editing subprograms.
 --
-   package Text_Edit is
+   package Text_Edit
+   is
       function TrimCharacter
-               (  Source : String;
-                  Blank  : Character := ' '
-               )  return String;
-      function TrimSet (Source : String;
-                        Blanks : Ada.Strings.Maps.Character_Set) return String;
+        (Source : String;
+         Blank  : Character := ' ') return String;
+
+      function TrimSet
+        (Source : String;
+         Blanks : Ada.Strings.Maps.Character_Set) return String;
+
       procedure GetCharacter
-                (  Source  : String;
-                   Pointer : in out Integer;
-                   Blank   : Character := ' '
-                );
+        (Source  : String;
+         Pointer : in out Integer;
+         Blank   : Character := ' ');
+
       procedure GetSet (Source  : String;
                         Pointer : in out Integer;
                         Blanks  : Ada.Strings.Maps.Character_Set);
+
       procedure PutString
-                (  Destination : in out String;
-                   Pointer     : in out Integer;
-                   Value       : String;
-                   Field       : Natural   := 0;
-                   Justify     : Alignment := Left;
-                   Fill        : Character := ' '
-                );
+        (Destination : in out String;
+         Pointer     : in out Integer;
+         Value       : String;
+         Field       : Natural   := 0;
+         Justify     : Alignment := Left;
+         Fill        : Character := ' ');
+
       procedure PutCharacter
-                (  Destination : in out String;
-                   Pointer     : in out Integer;
-                   Value       : Character;
-                   Field       : Natural   := 0;
-                   Justify     : Alignment := Left;
-                   Fill        : Character := ' '
-                );
+        (Destination : in out String;
+         Pointer     : in out Integer;
+         Value       : Character;
+         Field       : Natural   := 0;
+         Justify     : Alignment := Left;
+         Fill        : Character := ' ');
+
    end Text_Edit;
    package body Text_Edit is separate;
 
    function Trim
-            (  Source : String;
-               Blank  : Character := ' '
-              )  return String renames Text_Edit.TrimCharacter;
+     (Source : String;
+      Blank  : Character := ' ') return String
+      renames Text_Edit.TrimCharacter;
 
-   function Trim (Source : String;
-                  Blanks : Ada.Strings.Maps.Character_Set) return String
-                  renames Text_Edit.TrimSet;
+   function Trim
+     (Source : String;
+      Blanks : Ada.Strings.Maps.Character_Set) return String
+      renames Text_Edit.TrimSet;
 
    procedure Get
-             (  Source  : String;
-                Pointer : in out Integer;
-                Blank   : Character := ' '
-               )  renames Text_Edit.GetCharacter;
+     (Source  : String;
+      Pointer : in out Integer;
+      Blank   : Character := ' ')
+      renames Text_Edit.GetCharacter;
 
    procedure Get (Source  : String;
                   Pointer : in out Integer;
@@ -200,20 +194,21 @@ package body Strings_Edit is
                   renames Text_Edit.GetSet;
 
    procedure Put
-             (  Destination : in out String;
-                Pointer     : in out Integer;
-                Value       : String;
-                Field       : Natural   := 0;
-                Justify     : Alignment := Left;
-                Fill        : Character := ' '
-             )  renames Text_Edit.PutString;
+     (Destination : in out String;
+      Pointer     : in out Integer;
+      Value       : String;
+      Field       : Natural   := 0;
+      Justify     : Alignment := Left;
+      Fill        : Character := ' ')
+      renames Text_Edit.PutString;
+
    procedure Put
-             (  Destination : in out String;
-                Pointer     : in out Integer;
-                Value       : Character;
-                Field       : Natural   := 0;
-                Justify     : Alignment := Left;
-                Fill        : Character := ' '
-             )  renames Text_Edit.PutCharacter;
+     (Destination : in out String;
+      Pointer     : in out Integer;
+      Value       : Character;
+      Field       : Natural   := 0;
+      Justify     : Alignment := Left;
+      Fill        : Character := ' ')
+      renames Text_Edit.PutCharacter;
 
 end Strings_Edit;

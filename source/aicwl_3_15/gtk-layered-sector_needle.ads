@@ -77,63 +77,63 @@ package Gtk.Layered.Sector_Needle is
    --
    procedure Add_Sector_Needle
      (Under      : not null access Layer_Location'Class;
-      Outer      : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
+      Outer      : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
       Inner      : Cairo.Ellipses.Ellipse_Parameters;
-      From       : Gdouble                            := 3.0 * Pi / 4.0;
-      Length     : Gdouble                            := 3.0 * Pi / 2.0;
-      Color      : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Adjustment : access Gtk_Adjustment_Record'Class := null;
-      Scaled     : Boolean                            := False);
+      From       : Gdouble                                           := 3.0 * Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled     : Boolean                                           := False);
 
    procedure Add_Sector_Needle
      (Under      : not null access Layer_Location'Class;
-      Outer      : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
+      Outer      : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
       Center     : Cairo.Ellipses.Cairo_Tuple;
-      From       : Gdouble                            := 3.0 * Pi / 4.0;
-      Length     : Gdouble                            := 3.0 * Pi / 2.0;
-      Color      : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Adjustment : access Gtk_Adjustment_Record'Class := null;
-      Scaled     : Boolean                            := False);
+      From       : Gdouble                                           := 3.0 * Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled     : Boolean                                           := False);
 
    procedure Add_Sector_Needle
      (Under      : not null access Layer_Location'Class;
-      Outer      : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
-      From       : Gdouble                            := 3.0 * Pi / 4.0;
-      Length     : Gdouble                            := 3.0 * Pi / 2.0;
-      Color      : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Adjustment : access Gtk_Adjustment_Record'Class := null;
-      Scaled     : Boolean                            := False);
+      Outer      : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
+      From       : Gdouble                                           := 3.0 * Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled     : Boolean                                           := False);
 
    function Add_Sector_Needle
      (Under      : not null access Layer_Location'Class;
-      Outer      : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
+      Outer      : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
       Inner      : Cairo.Ellipses.Ellipse_Parameters;
-      From       : Gdouble                            := 3.0 * Pi / 4.0;
-      Length     : Gdouble                            := 3.0 * Pi / 2.0;
-      Color      : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Adjustment : access Gtk_Adjustment_Record'Class := null;
-      Scaled     : Boolean                            := False)
+      From       : Gdouble                                           := 3.0 * Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled     : Boolean                                           := False)
       return not null access Sector_Needle_Layer;
 
    function Add_Sector_Needle
      (Under      : not null access Layer_Location'Class;
-      Outer      : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
+      Outer      : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
       Center     : Cairo.Ellipses.Cairo_Tuple;
-      From       : Gdouble                            := 3.0 * Pi / 4.0;
-      Length     : Gdouble                            := 3.0 * Pi / 2.0;
-      Color      : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Adjustment : access Gtk_Adjustment_Record'Class := null;
-      Scaled     : Boolean                            := False)
+      From       : Gdouble                                           := 3.0 * Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled     : Boolean                                           := False)
       return not null access Sector_Needle_Layer;
 
    function Add_Sector_Needle
      (Under      : not null access Layer_Location'Class;
-      Outer      : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
-      From       : Gdouble                            := 3.0 * Pi / 4.0;
-      Length     : Gdouble                            := 3.0 * Pi / 2.0;
-      Color      : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Adjustment : access Gtk_Adjustment_Record'Class := null;
-      Scaled     : Boolean                            := False)
+      Outer      : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
+      From       : Gdouble                                           := 3.0 * Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled     : Boolean                                           := False)
       return not null access Sector_Needle_Layer;
 
    --
@@ -223,12 +223,12 @@ package Gtk.Layered.Sector_Needle is
    overriding procedure Draw
      (Layer   : in out Sector_Needle_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle);
+      Area    : Gdk.Rectangle.Gdk_Rectangle);
 
    overriding procedure Finalize (Layer : in out Sector_Needle_Layer);
 
-   overriding function Get_Adjustment (Layer : Sector_Needle_Layer)
-                                       return Gtk_Adjustment;
+   overriding function Get_Adjustment
+     (Layer : Sector_Needle_Layer) return Gtk.Adjustment.Gtk_Adjustment;
 
    overriding function Get_Properties_Number
      (Layer : Sector_Needle_Layer) return Natural;
@@ -287,7 +287,7 @@ private
          Length        : Gdouble;
          Value         : Gdouble := 0.0;
          Color         : Gdk.Color.Gdk_Color;
-         Adjustment    : Gtk_Adjustment;
+         Adjustment    : Gtk.Adjustment.Gtk_Adjustment;
          Changed       : Handler_Id;
          Value_Changed : Handler_Id;
          Scaled        : Boolean := False;

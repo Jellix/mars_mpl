@@ -199,7 +199,7 @@ package Gtk.Layered.Flat_Scale is
    overriding procedure Draw
      (Layer   : in out Flat_Scale_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle);
+      Area    : Gdk.Rectangle.Gdk_Rectangle);
 
    overriding function Get_Scaled (Layer : Flat_Scale_Layer) return Boolean;
 

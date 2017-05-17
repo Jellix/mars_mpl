@@ -122,7 +122,7 @@ package body Gtk.Layered.Rectangle is
    overriding procedure Draw
      (Layer   : in out Rectangle_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle)
+      Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
       pragma Unreferenced (Area);
       X      : Gdouble := Layer.Box.X1;

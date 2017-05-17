@@ -184,7 +184,7 @@ package body Gtk.Layered.Line is
    overriding procedure Draw
      (Layer   : in out Line_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle)
+      Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
       pragma Unreferenced (Area);
    begin

@@ -79,7 +79,7 @@ package Gtk.Layered.Stream_IO is
    --
    procedure Restore
      (Stream     : in out Ada.Streams.Root_Stream_Type'Class;
-      Adjustment : out Gtk_Adjustment);
+      Adjustment : out Gtk.Adjustment.Gtk_Adjustment);
 
    procedure Restore
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
@@ -241,7 +241,7 @@ package Gtk.Layered.Stream_IO is
 
    procedure Store
      (Stream     : in out Ada.Streams.Root_Stream_Type'Class;
-      Adjustment : Gtk_Adjustment);
+      Adjustment : Gtk.Adjustment.Gtk_Adjustment);
 
    procedure Store
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;

@@ -142,7 +142,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
      (Under       : not null access Layer_Location'Class;
       Paper       : access Graph_Paper_Layer'Class;
       Location    : Axis_Location;
-      Face        : Pango_Cairo_Font;
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font;
       Height      : Gdouble;
       Stretch     : Gdouble;
       Color       : Gdk.Color.Gdk_Color;
@@ -194,7 +194,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
      (Under       : not null access Layer_Location'Class;
       Paper       : access Graph_Paper_Layer'Class;
       Location    : Axis_Location;
-      Face        : Pango_Cairo_Font;
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font;
       Height      : Gdouble;
       Stretch     : Gdouble;
       Color       : Gdk.Color.Gdk_Color;
@@ -245,26 +245,27 @@ package body Gtk.Layered.Graph_Paper_Annotation is
    procedure Add_Graph_Paper_Annotation
      (Under       : not null access Layer_Location'Class;
       Paper       : not null access Graph_Paper_Layer'Class;
-      Location    : Axis_Location       :=
+      Location    : Axis_Location                      :=
         (Orientation => Vertical,
          Alignment   => Absolute,
          Top         => -0.5,
          Bottom      => -0.5,
          X_Position  =>  0.0);
-      Face        : Pango_Cairo_Font    := Create_Pango ("arial unicode ms");
-      Height      : Gdouble             := 12.0;
-      Stretch     : Gdouble             := 1.0;
-      Color       : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Text_Angle  : Gdouble             := 0.0;
-      Justify_X   : Alignment           := Center;
-      Justify_Y   : Vertical_Alignment  := Center;
-      Superscript : Boolean             := True;
-      Background  : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 1.0, 1.0);
-      Border      : Gdouble             := 2.0;
-      Overlap     : Gdouble             := -2.0;
-      Opacity     : Fill_Opacity        := 1.0;
-      Scaled      : Boolean             := False;
-      Enlarged    : Boolean             := False)
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+        Pango.Cairo.Fonts.Create_Pango ("arial unicode ms");
+      Height      : Gdouble                            := 12.0;
+      Stretch     : Gdouble                            := 1.0;
+      Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Text_Angle  : Gdouble                            := 0.0;
+      Justify_X   : Alignment                          := Center;
+      Justify_Y   : Vertical_Alignment                 := Center;
+      Superscript : Boolean                            := True;
+      Background  : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 1.0, 1.0);
+      Border      : Gdouble                            := 2.0;
+      Overlap     : Gdouble                            := -2.0;
+      Opacity     : Fill_Opacity                       := 1.0;
+      Scaled      : Boolean                            := False;
+      Enlarged    : Boolean                            := False)
    is
       Ptr : Graph_Paper_Annotation_Ptr;
    begin
@@ -293,26 +294,27 @@ package body Gtk.Layered.Graph_Paper_Annotation is
    function Add_Graph_Paper_Annotation
      (Under       : not null access Layer_Location'Class;
       Paper       : not null access Graph_Paper_Layer'Class;
-      Location    : Axis_Location       :=
+      Location    : Axis_Location                      :=
         (Orientation => Vertical,
          Alignment   => Absolute,
          Top         => -0.5,
          Bottom      =>  0.5,
          X_Position  =>  0.0);
-      Face        : Pango_Cairo_Font    := Create_Pango ("arial unicode ms");
-      Height      : Gdouble             := 12.0;
-      Stretch     : Gdouble             := 1.0;
-      Color       : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Text_Angle  : Gdouble             := 0.0;
-      Justify_X   : Alignment           := Center;
-      Justify_Y   : Vertical_Alignment  := Center;
-      Superscript : Boolean             := True;
-      Background  : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 1.0, 1.0);
-      Border      : Gdouble             := 2.0;
-      Overlap     : Gdouble             := -2.0;
-      Opacity     : Fill_Opacity        := 1.0;
-      Scaled      : Boolean             := False;
-      Enlarged    : Boolean             := False)
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+        Pango.Cairo.Fonts.Create_Pango ("arial unicode ms");
+      Height      : Gdouble                            := 12.0;
+      Stretch     : Gdouble                            := 1.0;
+      Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Text_Angle  : Gdouble                            := 0.0;
+      Justify_X   : Alignment                          := Center;
+      Justify_Y   : Vertical_Alignment                 := Center;
+      Superscript : Boolean                            := True;
+      Background  : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 1.0, 1.0);
+      Border      : Gdouble                            := 2.0;
+      Overlap     : Gdouble                            := -2.0;
+      Opacity     : Fill_Opacity                       := 1.0;
+      Scaled      : Boolean                            := False;
+      Enlarged    : Boolean                            := False)
       return not null access Graph_Paper_Annotation_Layer
    is
       Ptr : Graph_Paper_Annotation_Ptr;
@@ -342,26 +344,27 @@ package body Gtk.Layered.Graph_Paper_Annotation is
    procedure Add_Graph_Paper_Time_Annotation
      (Under       : not null access Layer_Location'Class;
       Paper       : not null access Graph_Paper_Layer'Class;
-      Location    : Axis_Location       :=
+      Location    : Axis_Location                      :=
         (Orientation => Horizontal,
          Alignment   => Absolute,
          Left        => -0.5,
          Right       => -0.5,
          Y_Position  =>  0.0);
-      Face        : Pango_Cairo_Font    := Create_Pango ("arial unicode ms");
-      Height      : Gdouble             := 12.0;
-      Stretch     : Gdouble             := 1.0;
-      Color       : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Text_Angle  : Gdouble             := 0.0;
-      Justify_X   : Alignment           := Center;
-      Justify_Y   : Vertical_Alignment  := Center;
-      Superscript : Boolean             := True;
-      Background  : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 1.0, 1.0);
-      Border      : Gdouble             := 2.0;
-      Overlap     : Gdouble             := -2.0;
-      Opacity     : Fill_Opacity        := 1.0;
-      Scaled      : Boolean             := False;
-      Enlarged    : Boolean             := False)
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+        Pango.Cairo.Fonts.Create_Pango ("arial unicode ms");
+      Height      : Gdouble                            := 12.0;
+      Stretch     : Gdouble                            := 1.0;
+      Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Text_Angle  : Gdouble                            := 0.0;
+      Justify_X   : Alignment                          := Center;
+      Justify_Y   : Vertical_Alignment                 := Center;
+      Superscript : Boolean                            := True;
+      Background  : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 1.0, 1.0);
+      Border      : Gdouble                            := 2.0;
+      Overlap     : Gdouble                            := -2.0;
+      Opacity     : Fill_Opacity                       := 1.0;
+      Scaled      : Boolean                            := False;
+      Enlarged    : Boolean                            := False)
    is
       Ptr : Graph_Paper_Time_Annotation_Ptr;
    begin
@@ -390,26 +393,27 @@ package body Gtk.Layered.Graph_Paper_Annotation is
    function Add_Graph_Paper_Time_Annotation
      (Under       : not null access Layer_Location'Class;
       Paper       : not null access Graph_Paper_Layer'Class;
-      Location    : Axis_Location       :=
+      Location    : Axis_Location                      :=
         (Orientation => Horizontal,
          Alignment   => Absolute,
          Left        => -0.5,
          Right       => -0.5,
          Y_Position  =>  0.0);
-      Face        : Pango_Cairo_Font    := Create_Pango ("arial unicode ms");
-      Height      : Gdouble             := 12.0;
-      Stretch     : Gdouble             := 1.0;
-      Color       : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Text_Angle  : Gdouble             := 0.0;
-      Justify_X   : Alignment           := Center;
-      Justify_Y   : Vertical_Alignment  := Center;
-      Superscript : Boolean             := True;
-      Background  : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 1.0, 1.0);
-      Border      : Gdouble             := 2.0;
-      Overlap     : Gdouble             := -2.0;
-      Opacity     : Fill_Opacity        := 1.0;
-      Scaled      : Boolean             := False;
-      Enlarged    : Boolean             := False)
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+        Pango.Cairo.Fonts.Create_Pango ("arial unicode ms");
+      Height      : Gdouble                            := 12.0;
+      Stretch     : Gdouble                            := 1.0;
+      Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Text_Angle  : Gdouble                            := 0.0;
+      Justify_X   : Alignment                          := Center;
+      Justify_Y   : Vertical_Alignment                 := Center;
+      Superscript : Boolean                            := True;
+      Background  : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 1.0, 1.0);
+      Border      : Gdouble                            := 2.0;
+      Overlap     : Gdouble                            := -2.0;
+      Opacity     : Fill_Opacity                       := 1.0;
+      Scaled      : Boolean                            := False;
+      Enlarged    : Boolean                            := False)
       return not null access Graph_Paper_Time_Annotation_Layer
    is
       Ptr : Graph_Paper_Time_Annotation_Ptr;
@@ -504,7 +508,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
    overriding procedure Draw
      (Layer   : in out Graph_Paper_Annotation_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle)
+      Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
       pragma Unreferenced (Area);
       dX : constant Gdouble := Layer.Box.X2 - Layer.Box.X1 + 1.0;
@@ -555,7 +559,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
          then
             return False;
          end if;
-         Get_Markup_Extents
+         Pango.Cairo.Fonts.Get_Markup_Extents
            (Layer.Face,
             Context,
             +Layer.Texts.all (Index),
@@ -648,7 +652,10 @@ package body Gtk.Layered.Graph_Paper_Annotation is
               (Cr => Context,
                X  => -Extents.X_Bearing - Extents.Width  * 0.5,
                Y  => -Extents.Y_Bearing - Extents.Height * 0.5);
-            Show_Markup (Layer.Face, Context, +Layer.Texts.all (Index));
+            Pango.Cairo.Fonts.Show_Markup
+              (Layer.Face,
+               Context,
+               +Layer.Texts.all (Index));
          end;
          return True;
       end Draw_Text;
@@ -990,8 +997,9 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       return Layer.Enlarged;
    end Get_Enlarged;
 
-   function Get_Face (Layer : Graph_Paper_Annotation_Layer)
-                      return Pango_Cairo_Font is
+   function Get_Face
+     (Layer : Graph_Paper_Annotation_Layer)
+      return Pango.Cairo.Fonts.Pango_Cairo_Font is
    begin
       return Layer.Face;
    end Get_Face;
@@ -1055,7 +1063,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                   Pango.Cairo.Fonts.Font_Type_Property.Gnew_Enum
                    (Name    => "font-type",
                     Nick    => "font type",
-                    Default => Pango_Font,
+                    Default => Pango.Cairo.Fonts.Pango_Font,
                     Blurb   =>
                        "The backend used for the font, e.g. toy font, pango " &
                        "font");
@@ -1309,7 +1317,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                when Property_Font_Type =>
                   Pango.Cairo.Fonts.Font_Type_Property.Set_Enum
                     (Value,
-                     Get_Type (Layer.Face));
+                     Pango.Cairo.Fonts.Get_Type (Layer.Face));
                when Property_Overlap =>
                   Glib.Values.Init (Value, GType_Double);
                   Glib.Values.Set_Double (Value, Layer.Overlap);
@@ -1370,18 +1378,22 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                   Glib.Values.Set_Double (Value, Layer.Height);
                when Property_Family =>
                   Glib.Values.Init (Value, GType_String);
-                  Glib.Values.Set_String (Value, Get_Family (Layer.Face));
+                  Glib.Values.Set_String
+                    (Value,
+                     Pango.Cairo.Fonts.Get_Family (Layer.Face));
                when Property_Slant =>
                   Cairo.Font_Slant_Property.Set_Enum
                     (Value,
-                     Get_Slant (Layer.Face));
+                     Pango.Cairo.Fonts.Get_Slant (Layer.Face));
                when Property_Font_Size =>
                   Glib.Values.Init (Value, GType_Uint);
-                  Glib.Values.Set_Uint (Value, Guint (Get_Size (Layer.Face)));
+                  Glib.Values.Set_Uint
+                    (Value,
+                     Guint (Pango.Cairo.Fonts.Get_Size (Layer.Face)));
                when Property_Weight =>
                   Pango.Enums.Weight_Property.Set_Enum
                     (Value,
-                     Get_Weight (Layer.Face));
+                     Pango.Cairo.Fonts.Get_Weight (Layer.Face));
                when Property_X_Justify =>
                   Gtk.Layered.Alignment_Property.Set_Enum
                     (Value,
@@ -1695,7 +1707,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Layer  : in out Graph_Paper_Annotation_Layer)
    is
-      Face        : Pango_Cairo_Font;
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font;
       Height      : Gdouble;
       Stretch     : Gdouble;
       From        : Gdouble;
@@ -1714,7 +1726,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       Alignment   : Boolean;
       Superscript : Boolean;
    begin
-      Restore (Stream, Face);
+      Pango.Cairo.Fonts.Restore (Stream, Face);
       Restore (Stream, Height);
       Restore (Stream, Stretch);
       Restore (Stream, From);
@@ -1802,7 +1814,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
    procedure Set
      (Layer       : in out Graph_Paper_Annotation_Layer;
       Location    : Axis_Location;
-      Face        : Pango_Cairo_Font;
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font;
       Height      : Gdouble;
       Stretch     : Gdouble;
       Color       : Gdk.Color.Gdk_Color;
@@ -1856,7 +1868,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
 
    procedure Set_Face
      (Layer : in out Graph_Paper_Annotation_Layer;
-      Face  : Pango_Cairo_Font) is
+      Face  : Pango.Cairo.Fonts.Pango_Cairo_Font) is
    begin
       Layer.Face    := Face;
       Layer.Updated := True;
@@ -1874,7 +1886,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
             when Property_Border =>
                Layer.Border := Glib.Values.Get_Double (Value);
             when Property_Font_Type =>
-               Set_Type
+               Pango.Cairo.Fonts.Set_Type
                  (Layer.Face,
                   Pango.Cairo.Fonts.Font_Type_Property.Get_Enum (Value));
             when Property_Overlap =>
@@ -1961,13 +1973,15 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                   Gtk.Layered.Vertical_Alignment_Property.Get_Enum
                    (Value);
             when Property_Family =>
-               Set_Family (Layer.Face, Glib.Values.Get_String (Value));
+               Pango.Cairo.Fonts.Set_Family
+                 (Layer.Face,
+                  Glib.Values.Get_String (Value));
             when Property_Slant =>
-               Set_Slant
+               Pango.Cairo.Fonts.Set_Slant
                  (Layer.Face,
                   Cairo.Font_Slant_Property.Get_Enum (Value));
             when Property_Font_Size =>
-               Set_Size
+               Pango.Cairo.Fonts.Set_Size
                  (Layer.Face,
                   Gint
                     (Guint'Max
@@ -1976,7 +1990,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                                Guint (Gint'Last)),
                           1)));
             when Property_Weight =>
-               Set_Weight
+               Pango.Cairo.Fonts.Set_Weight
                  (Layer.Face,
                   Pango.Enums.Weight_Property.Get_Enum (Value));
             when Property_Scaled =>
@@ -2182,7 +2196,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Layer  : Graph_Paper_Annotation_Layer) is
    begin
-      Store (Stream, Layer.Face);
+      Pango.Cairo.Fonts.Store (Stream, Layer.Face);
       Store (Stream, Layer.Height);
       Store (Stream, Layer.Stretch);
       case Layer.Location.Orientation is

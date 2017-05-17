@@ -173,10 +173,10 @@ package Gtk.Layered.Cap is
       Stream : not null access Ada.Streams.Root_Stream_Type'Class)
       return not null access Cap_Layer;
 
-   overriding
-   procedure Draw_Contents (Layer   : in out Cap_Layer;
-                            Context : Cairo.Cairo_Context;
-                            Area    : Gdk_Rectangle);
+   overriding procedure Draw_Contents
+     (Layer   : in out Cap_Layer;
+      Context : Cairo.Cairo_Context;
+      Area    : Gdk.Rectangle.Gdk_Rectangle);
 
    overriding
    procedure Finalize (Layer : in out Cap_Layer);
@@ -204,10 +204,10 @@ package Gtk.Layered.Cap is
    procedure Scale (Layer  : in out Cap_Layer;
                     Factor : Gdouble);
 
-   overriding
-   procedure Set_Contents_Path (Layer   : in out Cap_Layer;
-                                Context : Cairo.Cairo_Context;
-                                Area    : Gdk_Rectangle);
+   overriding procedure Set_Contents_Path
+     (Layer   : in out Cap_Layer;
+      Context : Cairo.Cairo_Context;
+      Area    : Gdk.Rectangle.Gdk_Rectangle);
 
    overriding procedure Set_Property_Value
      (Layer    : in out Cap_Layer;

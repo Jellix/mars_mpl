@@ -32,13 +32,13 @@ with Ada.Unchecked_Deallocation;
 with Cairo.Ellipses;
 with Glib.Values;
 with Gdk.Color;
-with Gdk.Rectangle;           use Gdk.Rectangle;
-with Gtk.Adjustment;          use Gtk.Adjustment;
-with Gtk.Drawing_Area;        use Gtk.Drawing_Area;
-with Gtk.Enums.String_Lists;  use Gtk.Enums.String_Lists;
+with Gdk.Rectangle;
+with Gtk.Adjustment;
+with Gtk.Drawing_Area;
+with Gtk.Enums.String_Lists;
 with Gtk.Handlers;
-with Gtk.Widget;              use Gtk.Widget;
-with Pango.Cairo.Fonts;       use Pango.Cairo.Fonts;
+with Gtk.Widget;
+with Pango.Cairo.Fonts;
 with System;
 
 package Gtk.Layered is
@@ -186,7 +186,7 @@ package Gtk.Layered is
    --    The adjustment object or else null
    --
    function Get_Adjustment (Layer : Gauge_Needle)
-                            return Gtk_Adjustment is abstract;
+                            return Gtk.Adjustment.Gtk_Adjustment is abstract;
 
    --
    -- Get_Value -- Get the value indicated by the needle
@@ -248,8 +248,9 @@ package Gtk.Layered is
    --
    --    The font face
    --
-   function Get_Face (Layer : Annotation_Layer)
-                      return Pango_Cairo_Font is abstract;
+   function Get_Face
+     (Layer : Annotation_Layer) return Pango.Cairo.Fonts.Pango_Cairo_Font is
+      abstract;
 
    --
    -- Get_Height -- The text height
@@ -350,7 +351,7 @@ package Gtk.Layered is
    --
    procedure Set_Face
      (Layer : in out Annotation_Layer;
-      Face  : Pango_Cairo_Font) is abstract;
+      Face  : Pango.Cairo.Fonts.Pango_Cairo_Font) is abstract;
 
    --
    -- Set_Text -- Set an annotation text
@@ -391,7 +392,7 @@ package Gtk.Layered is
 
    procedure Set_Texts
      (Layer  : in out Annotation_Layer'Class;
-      Texts  : Controlled_String_List;
+      Texts  : Gtk.Enums.String_Lists.Controlled_String_List;
       Markup : Boolean := False);
 
    procedure Set_Texts
@@ -464,7 +465,7 @@ package Gtk.Layered is
    --                    parameter is the position the removed layer had.
    --
    type Gtk_Layered_Record is
-     new Gtk_Widget_Record and Layer_Location with private;
+     new Gtk.Widget.Gtk_Widget_Record and Layer_Location with private;
    type Gtk_Layered is access all Gtk_Layered_Record'Class;
 
    --
@@ -680,7 +681,7 @@ package Gtk.Layered is
    --
    procedure Resized
      (Widget     : not null access Gtk_Layered_Record;
-      Allocation : Gtk_Allocation) is null;
+      Allocation : Gtk.Widget.Gtk_Allocation) is null;
 
    --
    -- Set_Aspect_Ratio -- Set the widget aspect ratio
@@ -808,7 +809,7 @@ package Gtk.Layered is
    procedure Draw
      (Layer   : in out Abstract_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle) is abstract;
+      Area    : Gdk.Rectangle.Gdk_Rectangle) is abstract;
 
    --
    -- Finalize -- Destruction
@@ -998,7 +999,7 @@ package Gtk.Layered is
    procedure Prepare
      (Layer   : in out Abstract_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle) is null;
+      Area    : Gdk.Rectangle.Gdk_Rectangle) is null;
 
    --
    -- Property_Set -- Called when a property of the layer's widget is set
@@ -1023,7 +1024,7 @@ package Gtk.Layered is
    --
    procedure Resized
      (Layer : in out Abstract_Layer;
-      Area  : Gdk_Rectangle) is null;
+      Area  : Gdk.Rectangle.Gdk_Rectangle) is null;
 
    --
    -- Restore -- The layer from streamed properties
@@ -1149,7 +1150,7 @@ private
    -- Gtk_Layered_Record -- The widget implementation
    --
    type Gtk_Layered_Record is
-     new Gtk_Drawing_Area_Record and Layer_Location with
+     new Gtk.Drawing_Area.Gtk_Drawing_Area_Record and Layer_Location with
       record
          Bottom        : Abstract_Layer_Ptr;
          Depth         : Natural                    := 0;
@@ -1194,7 +1195,7 @@ private
    --
    procedure Size_Allocate
      (Widget     : access Gtk_Layered_Record'Class;
-      Allocation : Gtk_Allocation_Access);
+      Allocation : Gtk.Widget.Gtk_Allocation_Access);
 
    --
    -- Style_Updated -- The style-updated event's callback
@@ -1215,8 +1216,8 @@ private
 
    package Allocation_Marshaller is
      new Widget_Callback.Marshallers.Generic_Marshaller
-       (Gtk_Allocation_Access,
-        Get_Allocation);
+       (Gtk.Widget.Gtk_Allocation_Access,
+        Gtk.Widget.Get_Allocation);
 
    pragma Inline (Get_Center);
    pragma Inline (Get_Size);

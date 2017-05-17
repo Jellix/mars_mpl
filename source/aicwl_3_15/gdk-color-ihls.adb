@@ -23,9 +23,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
-
-with Ada.Numerics;  use Ada.Numerics;
+-- __________________________________________________________________ --
 
 with Ada.Numerics.Generic_Elementary_Functions;
 
@@ -154,19 +152,17 @@ package body Gdk.Color.IHLS is
          Color  : Gdk_Color;
       begin
          Set_Rgb
-         (  Color,
+           (Color,
             Red   => To_RGB (R_Sum / Factor),
             Green => To_RGB (G_Sum / Factor),
-            Blue  => To_RGB (B_Sum / Factor)
-         );
+            Blue  => To_RGB (B_Sum / Factor));
          return Color;
       end;
    end Average;
 
    function Darken
-            (  Color : Gdk_IHLS_Color;
-               By    : Gdk_Luminance
-            )  return Gdk_IHLS_Color is
+     (Color : Gdk_IHLS_Color;
+      By    : Gdk_Luminance) return Gdk_IHLS_Color is
    begin
       if Color.Luminance <= By then
          return (Color.Hue, 0, Color.Saturation);
@@ -176,17 +172,15 @@ package body Gdk.Color.IHLS is
    end Darken;
 
    function Darken
-            (  Color : Gdk_Color;
-               By    : Gdk_Luminance
-            )  return Gdk_Color is
+     (Color : Gdk_Color;
+      By    : Gdk_Luminance) return Gdk_Color is
    begin
       return To_RGB (Darken (To_IHLS (Color), By));
    end Darken;
 
    function Lighten
-            (  Color : Gdk_IHLS_Color;
-               By    : Gdk_Luminance
-            )  return Gdk_IHLS_Color is
+     (Color : Gdk_IHLS_Color;
+      By    : Gdk_Luminance) return Gdk_IHLS_Color is
    begin
       if Color.Luminance + By < Color.Luminance then
          return (Color.Hue, Gdk_Luminance'Last, Color.Saturation);
@@ -196,18 +190,16 @@ package body Gdk.Color.IHLS is
    end Lighten;
 
    function Lighten
-            (  Color    : Gdk_Color;
-               By       : Gdk_Luminance;
-               Impurify : Boolean := False
-            )  return Gdk_Color is
+     (Color    : Gdk_Color;
+      By       : Gdk_Luminance;
+      Impurify : Boolean := False) return Gdk_Color is
    begin
       return To_RGB (Lighten (To_IHLS (Color), By), Impurify);
    end Lighten;
 
    function Impurify
-            (  Color : Gdk_IHLS_Color;
-               By    : Gdk_Saturation
-            )  return Gdk_IHLS_Color is
+     (Color : Gdk_IHLS_Color;
+      By    : Gdk_Saturation) return Gdk_IHLS_Color is
    begin
       if Color.Saturation <= By then
          return (Color.Hue, Color.Luminance, 0);
@@ -217,17 +209,15 @@ package body Gdk.Color.IHLS is
    end Impurify;
 
    function Impurify
-            (  Color : Gdk_Color;
-               By    : Gdk_Saturation
-            )  return Gdk_Color is
+     (Color : Gdk_Color;
+      By    : Gdk_Saturation) return Gdk_Color is
    begin
       return To_RGB (Impurify (To_IHLS (Color), By));
    end Impurify;
 
    function Purify
-            (  Color : Gdk_IHLS_Color;
-               By    : Gdk_Saturation
-            )  return Gdk_IHLS_Color is
+     (Color : Gdk_IHLS_Color;
+      By    : Gdk_Saturation) return Gdk_IHLS_Color is
    begin
       if Color.Saturation + By > Gdk_Saturation'Last then
          return (Color.Hue, Color.Luminance, Gdk_Saturation'Last);
@@ -237,9 +227,8 @@ package body Gdk.Color.IHLS is
    end Purify;
 
    function Purify
-            (  Color : Gdk_Color;
-               By    : Gdk_Saturation
-            )  return Gdk_Color is
+     (Color : Gdk_Color;
+      By    : Gdk_Saturation) return Gdk_Color is
    begin
       return To_RGB (Purify (To_IHLS (Color), By));
    end Purify;
@@ -278,11 +267,11 @@ package body Gdk.Color.IHLS is
    end To_RGB;
 
    procedure To_RGB
-             (  Color : Gdk_IHLS_Color;
-                Red   : out Gdk_Stimulus;
-                Green : out Gdk_Stimulus;
-                Blue  : out Gdk_Stimulus
-             )  is
+     (Color : Gdk_IHLS_Color;
+      Red   : out Gdk_Stimulus;
+      Green : out Gdk_Stimulus;
+      Blue  : out Gdk_Stimulus)
+   is
       Luminance : constant Gdk_Stimulus :=
                      Gdk_Stimulus (Color.Luminance);
       Hue : constant Gdk_Stimulus := Gdk_Stimulus (Color.Hue);
@@ -318,10 +307,10 @@ package body Gdk.Color.IHLS is
    end To_RGB;
 
    function To_RGB
-            (  Red   : Gdk_Stimulus;
-               Green : Gdk_Stimulus;
-               Blue  : Gdk_Stimulus
-            )  return Gdk_Color is
+     (Red   : Gdk_Stimulus;
+      Green : Gdk_Stimulus;
+      Blue  : Gdk_Stimulus) return Gdk_Color
+   is
       Scale : Gdk_Stimulus := 1.0;
       Color : Gdk_Color;
    begin
@@ -336,25 +325,23 @@ package body Gdk.Color.IHLS is
       end if;
       if Scale <= 1.0 then
          Set_Rgb
-         (  Color,
+           (Color,
             Red   => To_RGB (Red),
             Green => To_RGB (Green),
-            Blue  => To_RGB (Blue)
-         );
+            Blue  => To_RGB (Blue));
       else
          Set_Rgb
-         (  Color,
+           (Color,
             Red   => To_RGB (Red   * Scale),
             Green => To_RGB (Green * Scale),
-            Blue  => To_RGB (Blue  * Scale)
-         );
+            Blue  => To_RGB (Blue  * Scale));
       end if;
       return Color;
    end To_RGB;
 
    function To_RGB_Saturating
-            (  Color : Gdk_IHLS_Color
-            )  return Gdk_Color is
+     (Color : Gdk_IHLS_Color) return Gdk_Color
+   is
       Luminance : constant Gdk_Stimulus :=
                      Gdk_Stimulus (Color.Luminance);
       Hue   : constant Gdk_Stimulus := Gdk_Stimulus (Color.Hue);
@@ -407,9 +394,8 @@ package body Gdk.Color.IHLS is
    end To_RGB_Saturating;
 
    function To_RGB
-            (  Color    : Gdk_IHLS_Color;
-               Impurify : Boolean := False
-            )  return Gdk_Color is
+     (Color    : Gdk_IHLS_Color;
+      Impurify : Boolean := False) return Gdk_Color is
    begin
       if Impurify then
          return To_RGB_Saturating (Color);
@@ -426,10 +412,10 @@ package body Gdk.Color.IHLS is
    end To_RGB;
 
    function Val
-            (  First : Gdk_IHLS_Color;
-               Pos   : Natural;
-               Cycle : Color_Cycle := 3
-            )  return Gdk_IHLS_Color is
+     (First : Gdk_IHLS_Color;
+      Pos   : Natural;
+      Cycle : Color_Cycle := 3) return Gdk_IHLS_Color
+   is
       Power : constant Gdk_Stimulus := Gdk_Stimulus (Cycle);
       Hue   : Gdk_Stimulus := 0.0;
       Scale : Gdk_Stimulus := Gdk_Stimulus (Gdk_Hue'Modulus);
@@ -441,10 +427,9 @@ package body Gdk.Color.IHLS is
          Value := Value / Cycle;
       end loop;
       return
-      (  Hue        => To_Hue (Hue + Gdk_Stimulus (First.Hue)),
+        (Hue        => To_Hue (Hue + Gdk_Stimulus (First.Hue)),
          Saturation => First.Saturation,
-         Luminance  => First.Luminance
-      );
+         Luminance  => First.Luminance);
    end Val;
 
 end Gdk.Color.IHLS;

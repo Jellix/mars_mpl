@@ -197,7 +197,7 @@ package body Gtk.Layered.Label is
    overriding procedure Draw
      (Layer   : in out Label_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle)
+      Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
       pragma Unreferenced (Area);
       Size    : constant Gdouble             := Layer.Widget.all.Get_Size;

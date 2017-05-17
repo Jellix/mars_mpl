@@ -749,8 +749,10 @@ begin
    end case;
 exception
    when Error : others =>
-      Log
+      Glib.Messages.Log
         (Gtk.Missed.GtkAda_Contributions_Domain,
-         Log_Level_Critical,
-         "Fault: " & Exception_Information (Error) & Where ("Sample_Lines"));
+         Glib.Messages.Log_Level_Critical,
+         "Fault: "
+         & Ada.Exceptions.Exception_Information (Error)
+         & Where ("Sample_Lines"));
 end Sample_Lines;

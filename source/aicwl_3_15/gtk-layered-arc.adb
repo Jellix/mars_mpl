@@ -130,7 +130,7 @@ package body Gtk.Layered.Arc is
    overriding procedure Draw
      (Layer   : in out Arc_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle)
+      Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
       pragma Unreferenced (Area);
       use type Cairo.Ellipses.Ellipse_Parameters;

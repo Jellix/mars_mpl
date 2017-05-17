@@ -145,7 +145,7 @@ package body Gtk.Layered.Flat_Scale is
    overriding procedure Draw
      (Layer   : in out Flat_Scale_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle)
+      Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
       pragma Unreferenced (Area);
       X_Size : Gdouble := Cos (Layer.Angle);

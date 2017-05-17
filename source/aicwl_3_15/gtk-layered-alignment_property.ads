@@ -30,6 +30,5 @@ with Glib.Generic_Properties;
 
 package Gtk.Layered.Alignment_Property is
    new GLib.Generic_Properties.Generic_Enumeration_Property
-       (  "text-alignment",
-          Ada.Strings.Alignment
-       );
+    ("text-alignment",
+     Ada.Strings.Alignment);

@@ -22,7 +22,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 --
 -- GtkAda  2.14.2  introduced  a  backward  incompatibility  by   making
 -- Gdk_Pixbuf a tagged type rather than plain pointer.  This package  is
@@ -30,46 +30,52 @@
 --
 -- !!WARNING!! Use only with GtkAda >= 2.14.2
 --
-with Gdk.Pixbuf;   use Gdk.Pixbuf;
-with GLib.Object;  use GLib.Object;
-with System;       use System;
 
+with Gdk.Pixbuf;
+
+with Glib.Object;
 with Glib.Properties;
+
 with Gtk.Cell_Renderer_Pixbuf;
 
+with System;
+
 package Gdk.Pixbuf.Conversions is
---
--- From_Address -- Ada object creation
---
---    Object - Obtained from a GDK call
---
--- Returns :
---
---    The Ada object
---
-   function From_Address (Object : Address) return Gdk_Pixbuf
+
+   --
+   -- From_Address -- Ada object creation
+   --
+   --    Object - Obtained from a GDK call
+   --
+   -- Returns :
+   --
+   --    The Ada object
+   --
+   function From_Address
+     (Object : System.Address) return Gdk_Pixbuf
       renames Convert;
---
--- To_Address -- Getting C object address
---
---    Object - An Ada object
---
--- Returns :
---
---    The C object's address
---
+
+   --
+   -- To_Address -- Getting C object address
+   --
+   --    Object - An Ada object
+   --
+   -- Returns :
+   --
+   --    The C object's address
+   --
    function To_Address
-            (  Object : access GObject_Record'Class
-            )  return Address renames GLib.Object.Get_Object;
---
--- Set_Pixbuf_Property -- Set pixbuf property
---
+     (Object : access Glib.Object.GObject_Record'Class) return System.Address
+      renames Glib.Object.Get_Object;
+
+   --
+   -- Set_Pixbuf_Property -- Set pixbuf property
+   --
    procedure Set_Pixbuf_Property
-             (  Object : access GObject_Record'Class;
-                Name   : Glib.Properties.Property_Object :=
-                            Gtk.Cell_Renderer_Pixbuf.Pixbuf_Property;
-                Value  : access GObject_Record'Class
-             )  renames Glib.Properties.Set_Property;
+     (Object : access Glib.Object.GObject_Record'Class;
+      Name   : Glib.Properties.Property_Object := Gtk.Cell_Renderer_Pixbuf.Pixbuf_Property;
+      Value  : access Glib.Object.GObject_Record'Class)
+      renames Glib.Properties.Set_Property;
 
    subtype To_Value is Gdk_Pixbuf;
 

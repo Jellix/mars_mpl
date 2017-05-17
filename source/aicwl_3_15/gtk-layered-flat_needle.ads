@@ -77,62 +77,62 @@ package Gtk.Layered.Flat_Needle is
    --
    procedure Add_Flat_Needle
      (Under       : not null access Layer_Location'Class;
-      From        : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
-      Angle       : Gdouble                            := 0.0;
-      Length      : Gdouble                            := 1.0;
-      Tip_Length  : Gdouble                            := 20.0;
-      Tip_Width   : Gdouble                            := 2.0;
-      Tip_Cap     : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      Rear_Length : Gdouble                            := 3.0;
-      Rear_Width  : Gdouble                            := 3.0;
-      Rear_Cap    : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Adjustment  : access Gtk_Adjustment_Record'Class := null;
-      Scaled      : Boolean                            := False);
+      From        : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 0.0);
+      Angle       : Gdouble                                           := 0.0;
+      Length      : Gdouble                                           := 1.0;
+      Tip_Length  : Gdouble                                           := 20.0;
+      Tip_Width   : Gdouble                                           := 2.0;
+      Tip_Cap     : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      Rear_Length : Gdouble                                           := 3.0;
+      Rear_Width  : Gdouble                                           := 3.0;
+      Rear_Cap    : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      Color       : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Adjustment  : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled      : Boolean                                           := False);
 
    function Add_Flat_Needle
      (Under       : not null access Layer_Location'Class;
-      From        : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
-      Angle       : Gdouble                            := 0.0;
-      Length      : Gdouble                            := 1.0;
-      Tip_Length  : Gdouble                            := 20.0;
-      Tip_Width   : Gdouble                            := 2.0;
-      Tip_Cap     : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      Rear_Length : Gdouble                            := 3.0;
-      Rear_Width  : Gdouble                            := 3.0;
-      Rear_Cap    : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Adjustment  : access Gtk_Adjustment_Record'Class := null;
-      Scaled      : Boolean                            := False)
+      From        : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 0.0);
+      Angle       : Gdouble                                           := 0.0;
+      Length      : Gdouble                                           := 1.0;
+      Tip_Length  : Gdouble                                           := 20.0;
+      Tip_Width   : Gdouble                                           := 2.0;
+      Tip_Cap     : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      Rear_Length : Gdouble                                           := 3.0;
+      Rear_Width  : Gdouble                                           := 3.0;
+      Rear_Cap    : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      Color       : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Adjustment  : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled      : Boolean                                           := False)
       return not null access Flat_Needle_Layer;
 
    procedure Add_Flat_Needle
      (Under       : not null access Layer_Location'Class;
-      From        : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
-      To          : Cairo.Ellipses.Cairo_Tuple         := (0.0, 1.0);
-      Tip_Length  : Gdouble                            := 20.0;
-      Tip_Width   : Gdouble                            := 2.0;
-      Tip_Cap     : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      Rear_Length : Gdouble                            := 3.0;
-      Rear_Width  : Gdouble                            := 3.0;
-      Rear_Cap    : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Adjustment  : access Gtk_Adjustment_Record'Class := null;
-      Scaled      : Boolean                            := False);
+      From        : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 0.0);
+      To          : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 1.0);
+      Tip_Length  : Gdouble                                           := 20.0;
+      Tip_Width   : Gdouble                                           := 2.0;
+      Tip_Cap     : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      Rear_Length : Gdouble                                           := 3.0;
+      Rear_Width  : Gdouble                                           := 3.0;
+      Rear_Cap    : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      Color       : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Adjustment  : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled      : Boolean                                           := False);
 
    function Add_Flat_Needle
      (Under       : not null access Layer_Location'Class;
-      From        : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
-      To          : Cairo.Ellipses.Cairo_Tuple         := (0.0, 1.0);
-      Tip_Length  : Gdouble                            := 20.0;
-      Tip_Width   : Gdouble                            := 2.0;
-      Tip_Cap     : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      Rear_Length : Gdouble                            := 3.0;
-      Rear_Width  : Gdouble                            := 3.0;
-      Rear_Cap    : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Adjustment  : access Gtk_Adjustment_Record'Class := null;
-      Scaled      : Boolean                            := False)
+      From        : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 0.0);
+      To          : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 1.0);
+      Tip_Length  : Gdouble                                           := 20.0;
+      Tip_Width   : Gdouble                                           := 2.0;
+      Tip_Cap     : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      Rear_Length : Gdouble                                           := 3.0;
+      Rear_Width  : Gdouble                                           := 3.0;
+      Rear_Cap    : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      Color       : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Adjustment  : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled      : Boolean                                           := False)
       return not null access Flat_Needle_Layer;
 
    --
@@ -247,14 +247,13 @@ package Gtk.Layered.Flat_Needle is
       Stream : not null access Ada.Streams.Root_Stream_Type'Class)
       return not null access Flat_Needle_Layer;
 
-   overriding
-   function Get_Adjustment (Layer : Flat_Needle_Layer)
-                            return Gtk_Adjustment;
+   overriding function Get_Adjustment
+     (Layer : Flat_Needle_Layer) return Gtk.Adjustment.Gtk_Adjustment;
 
    overriding procedure Draw
      (Layer   : in out Flat_Needle_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle);
+      Area    : Gdk.Rectangle.Gdk_Rectangle);
 
    overriding procedure Finalize (Layer : in out Flat_Needle_Layer);
 
@@ -316,7 +315,7 @@ private
          Tip           : End_Parameters;
          Rear          : End_Parameters;
          Color         : Gdk.Color.Gdk_Color;
-         Adjustment    : Gtk_Adjustment;
+         Adjustment    : Gtk.Adjustment.Gtk_Adjustment;
          Changed       : Handler_Id;
          Value_Changed : Handler_Id;
          Scaled        : Boolean := False;

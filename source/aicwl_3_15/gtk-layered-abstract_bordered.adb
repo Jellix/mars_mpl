@@ -95,7 +95,7 @@ package body Gtk.Layered.Abstract_Bordered is
    overriding procedure Draw
      (Layer   : in out Abstract_Bordered_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle)
+      Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
       Background_Known : Boolean := False;
       Background_Color : Gdk.Color.Gdk_Color;
@@ -104,9 +104,10 @@ package body Gtk.Layered.Abstract_Bordered is
       begin
          if not Background_Known then
             declare
-               Widget : Gtk_Widget := Layer.Widget.all'Unchecked_Access;
-               Parent : Gtk_Widget;
+               Widget : Gtk.Widget.Gtk_Widget := Layer.Widget.all'Unchecked_Access;
+               Parent : Gtk.Widget.Gtk_Widget;
                Color  : Gdk_RGBA;
+               use type Gtk.Widget.Gtk_Widget;
             begin
                loop
                   Get_Style_Context (Widget).all.Get_Background_Color
@@ -392,7 +393,7 @@ package body Gtk.Layered.Abstract_Bordered is
    overriding procedure Draw
      (Layer   : in out Foreground_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle)
+      Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
       pragma Unreferenced (Area);
       pragma Unreferenced (Context);

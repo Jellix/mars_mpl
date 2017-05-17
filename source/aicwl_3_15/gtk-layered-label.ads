@@ -291,7 +291,7 @@ package Gtk.Layered.Label is
    overriding procedure Draw
      (Layer   : in out Label_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle);
+      Area    : Gdk.Rectangle.Gdk_Rectangle);
 
    overriding procedure Finalize (Layer : in out Label_Layer);
 

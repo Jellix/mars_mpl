@@ -98,7 +98,8 @@ package body Gtk.Layered.Graph_Paper is
 
    procedure Add_X_Adjustment
      (Layer      : in out Graph_Paper_Layer;
-      Adjustment : not null access Gtk_Adjustment_Record'Class) is
+      Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class)
+   is
    begin
       Adjustment.all.Ref;
       Layer.X_Axis := Adjustment.all'Unchecked_Access;
@@ -124,7 +125,8 @@ package body Gtk.Layered.Graph_Paper is
 
    procedure Add_Y_Adjustment
      (Layer      : in out Graph_Paper_Layer;
-      Adjustment : not null access Gtk_Adjustment_Record'Class) is
+      Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class)
+   is
    begin
       Adjustment.all.Ref;
       Layer.Y_Axis := Adjustment.all'Unchecked_Access;
@@ -151,18 +153,18 @@ package body Gtk.Layered.Graph_Paper is
    procedure Add_Graph_Paper
      (Under          : not null access Layer_Location'Class;
       Box            : Cairo.Ellipses.Cairo_Box;
-      X_Tick_Length  : Positive                           := 50;
-      Y_Tick_Length  : Positive                           := 50;
-      Major_Width    : Gdouble                            := 1.0;
-      Minor_Width    : Gdouble                            := 1.0;
-      Major_Color    : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Minor_Color    : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.5, 0.5, 0.5);
-      Major_Line_Cap : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      Minor_Line_Cap : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      X_Axis         : access Gtk_Adjustment_Record'Class := null;
-      Y_Axis         : access Gtk_Adjustment_Record'Class := null;
-      Scaled         : Boolean                            := False;
-      Widened        : Boolean                            := False)
+      X_Tick_Length  : Positive                                          := 50;
+      Y_Tick_Length  : Positive                                          := 50;
+      Major_Width    : Gdouble                                           := 1.0;
+      Minor_Width    : Gdouble                                           := 1.0;
+      Major_Color    : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Minor_Color    : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (0.5, 0.5, 0.5);
+      Major_Line_Cap : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      Minor_Line_Cap : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      X_Axis         : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Y_Axis         : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled         : Boolean                                           := False;
+      Widened        : Boolean                                           := False)
    is
       Ptr   : Graph_Paper_Ptr := new Graph_Paper_Layer;
       Layer : Graph_Paper_Layer renames Ptr.all;
@@ -192,18 +194,18 @@ package body Gtk.Layered.Graph_Paper is
    function Add_Graph_Paper
      (Under          : not null access Layer_Location'Class;
       Box            : Cairo.Ellipses.Cairo_Box;
-      X_Tick_Length  : Positive                           := 50;
-      Y_Tick_Length  : Positive                           := 50;
-      Major_Width    : Gdouble                            := 1.0;
-      Minor_Width    : Gdouble                            := 1.0;
-      Major_Color    : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Minor_Color    : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.5, 0.5, 0.5);
-      Major_Line_Cap : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      Minor_Line_Cap : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      X_Axis         : access Gtk_Adjustment_Record'Class := null;
-      Y_Axis         : access Gtk_Adjustment_Record'Class := null;
-      Scaled         : Boolean                            := False;
-      Widened        : Boolean                            := False)
+      X_Tick_Length  : Positive                                          := 50;
+      Y_Tick_Length  : Positive                                          := 50;
+      Major_Width    : Gdouble                                           := 1.0;
+      Minor_Width    : Gdouble                                           := 1.0;
+      Major_Color    : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Minor_Color    : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (0.5, 0.5, 0.5);
+      Major_Line_Cap : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      Minor_Line_Cap : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      X_Axis         : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Y_Axis         : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled         : Boolean                                           := False;
+      Widened        : Boolean                                           := False)
       return not null access Graph_Paper_Layer
    is
       Ptr   : Graph_Paper_Ptr := new Graph_Paper_Layer;
@@ -324,7 +326,7 @@ package body Gtk.Layered.Graph_Paper is
    overriding procedure Draw
      (Layer   : in out Graph_Paper_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle)
+      Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
       pragma Unreferenced (Area);
       use Gtk.Layered.Waveform.Rasters;
@@ -409,6 +411,7 @@ package body Gtk.Layered.Graph_Paper is
       end Draw_Y;
 
       use type Interfaces.C.long_double;
+      use type Gtk.Adjustment.Gtk_Adjustment;
    begin
       if Layer.Scaled then
          declare
@@ -437,8 +440,8 @@ package body Gtk.Layered.Graph_Paper is
             return;
          end if;
       else
-         T1 := Get_Value (Layer.X_Axis);
-         T2 := T1 + Get_Page_Size (Layer.X_Axis);
+         T1 := Gtk.Adjustment.Get_Value (Layer.X_Axis);
+         T2 := T1 + Gtk.Adjustment.Get_Page_Size (Layer.X_Axis);
          if X2 <= X1 or else T2 <= T1 then
             return;
          end if;
@@ -453,8 +456,8 @@ package body Gtk.Layered.Graph_Paper is
          FX := Interfaces.C.long_double (X2 - X1 + 1.0) / Interfaces.C.long_double (T2 - T1);
       end if;
       if Layer.Y_Axis /= null then
-         V1 := Get_Value (Layer.Y_Axis);
-         V2 := V1 + Get_Page_Size (Layer.Y_Axis);
+         V1 := Gtk.Adjustment.Get_Value (Layer.Y_Axis);
+         V2 := V1 + Gtk.Adjustment.Get_Page_Size (Layer.Y_Axis);
          if Y2 <= Y1 or else V2 <= V1 then
             return;
          end if;
@@ -571,7 +574,9 @@ package body Gtk.Layered.Graph_Paper is
       end if;
    end Find;
 
-   overriding procedure Finalize (Layer : in out Graph_Paper_Layer) is
+   overriding procedure Finalize (Layer : in out Graph_Paper_Layer)
+   is
+      use type Gtk.Adjustment.Gtk_Adjustment;
    begin
       while Layer.Annotations /= null loop
          Detach (Layer, Layer.Annotations.all.Annotation.all);
@@ -838,14 +843,16 @@ package body Gtk.Layered.Graph_Paper is
       return Layer.Widened;
    end Get_Widened;
 
-   function Get_X_Axis (Layer : Graph_Paper_Layer)
-      return Gtk_Adjustment is
+   function Get_X_Axis
+     (Layer : Graph_Paper_Layer) return Gtk.Adjustment.Gtk_Adjustment is
    begin
       return Layer.X_Axis;
    end Get_X_Axis;
 
-   function Get_X_Raster (Layer : Graph_Paper_Layer)
-      return Gtk.Layered.Waveform.Rasters.Scale is
+   function Get_X_Raster
+     (Layer : Graph_Paper_Layer) return Gtk.Layered.Waveform.Rasters.Scale
+   is
+      use type Gtk.Adjustment.Gtk_Adjustment;
    begin
       if Layer.Changed then
          raise Use_Error with "The graph paper is not yet drawn";
@@ -861,14 +868,16 @@ package body Gtk.Layered.Graph_Paper is
       return Positive (Layer.X_Tick_Length);
    end Get_X_Tick_Length;
 
-   function Get_Y_Axis (Layer : Graph_Paper_Layer)
-      return Gtk_Adjustment is
+   function Get_Y_Axis
+     (Layer : Graph_Paper_Layer) return Gtk.Adjustment.Gtk_Adjustment is
    begin
       return Layer.Y_Axis;
    end Get_Y_Axis;
 
-   function Get_Y_Raster (Layer : Graph_Paper_Layer)
-      return Gtk.Layered.Waveform.Rasters.Scale is
+   function Get_Y_Raster
+     (Layer : Graph_Paper_Layer) return Gtk.Layered.Waveform.Rasters.Scale
+   is
+      use type Gtk.Adjustment.Gtk_Adjustment;
    begin
       if Layer.Changed then
          raise Use_Error with "The graph paper is not yet drawn";
@@ -903,7 +912,7 @@ package body Gtk.Layered.Graph_Paper is
    overriding procedure Prepare
      (Layer   : in out Graph_Paper_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle)
+      Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
       pragma Unreferenced (Area);
       pragma Unreferenced (Context);
@@ -928,7 +937,7 @@ package body Gtk.Layered.Graph_Paper is
 
    overriding procedure Resized
      (Layer : in out Graph_Paper_Layer;
-      Area  : Gdk_Rectangle)
+      Area  : Gdk.Rectangle.Gdk_Rectangle)
    is
       pragma Unreferenced (Area);
    begin
@@ -967,7 +976,7 @@ package body Gtk.Layered.Graph_Paper is
            Positive (Guint'Min (Max_Tick, Y_Tick_Length)));
       if X_Axis then
          declare
-            Adjustment : Gtk_Adjustment;
+            Adjustment : Gtk.Adjustment.Gtk_Adjustment;
          begin
             Restore (Stream, Adjustment);
             Add_X_Adjustment (Layer, Adjustment);
@@ -975,7 +984,7 @@ package body Gtk.Layered.Graph_Paper is
       end if;
       if Y_Axis then
          declare
-            Adjustment : Gtk_Adjustment;
+            Adjustment : Gtk.Adjustment.Gtk_Adjustment;
          begin
             Restore (Stream, Adjustment);
             Add_Y_Adjustment (Layer, Adjustment);
@@ -1161,7 +1170,7 @@ package body Gtk.Layered.Graph_Paper is
 
    procedure Set_X_Axis
      (Layer      : not null access Graph_Paper_Layer;
-      Adjustment : access Gtk_Adjustment_Record'Class)
+      Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class)
    is
       procedure Reset_Axis is
       begin
@@ -1170,6 +1179,8 @@ package body Gtk.Layered.Graph_Paper is
          Layer.all.X_Axis.all.Unref;
          Layer.all.X_Axis := null;
       end Reset_Axis;
+
+      use type Gtk.Adjustment.Gtk_Adjustment;
    begin
       if Adjustment = null then
          if Layer.all.X_Axis /= null then
@@ -1204,7 +1215,7 @@ package body Gtk.Layered.Graph_Paper is
 
    procedure Set_Y_Axis
      (Layer      : not null access Graph_Paper_Layer;
-      Adjustment : access Gtk_Adjustment_Record'Class)
+      Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class)
    is
       procedure Reset_Axis is
       begin
@@ -1213,6 +1224,8 @@ package body Gtk.Layered.Graph_Paper is
          Layer.all.Y_Axis.all.Unref;
          Layer.all.Y_Axis := null;
       end Reset_Axis;
+
+      use type Gtk.Adjustment.Gtk_Adjustment;
    begin
       if Adjustment = null then
          if Layer.all.Y_Axis /= null then
@@ -1255,7 +1268,9 @@ package body Gtk.Layered.Graph_Paper is
 
    overriding procedure Store
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
-      Layer  : Graph_Paper_Layer) is
+      Layer  : Graph_Paper_Layer)
+   is
+      use type Gtk.Adjustment.Gtk_Adjustment;
    begin
       Store (Stream, Layer.Box.X1);
       Store (Stream, Layer.Box.X2);

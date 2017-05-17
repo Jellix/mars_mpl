@@ -141,7 +141,7 @@ package body Strings_Edit.UTF8.Wildcards is
    function Match
      (Text       : String;
       Pattern    : String;
-      Map        : Unicode_Mapping;
+      Map        : Strings_Edit.UTF8.Maps.Unicode_Mapping;
       Wide_Space : Boolean                        := False;
       Blanks     : Ada.Strings.Maps.Character_Set := SpaceAndTab) return Boolean
    is
@@ -217,7 +217,10 @@ package body Strings_Edit.UTF8.Wildcards is
                begin
                   Get (Text, Pointer,  Code_1);
                   Get (Pattern, Index, Code_2);
-                  if Value (Map, Code_1) /= Value (Map, Code_2) then
+                  if
+                    Strings_Edit.UTF8.Maps.Value (Map, Code_1) /=
+                    Strings_Edit.UTF8.Maps.Value (Map, Code_2)
+                  then
                      return Mismatch;
                   end if;
                end;

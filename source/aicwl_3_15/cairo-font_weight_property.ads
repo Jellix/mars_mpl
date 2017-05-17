@@ -23,12 +23,11 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with GLib.Generic_Properties;
+with Glib.Generic_Properties;
 
 package Cairo.Font_Weight_Property is
-   new GLib.Generic_Properties.Generic_Enumeration_Property
-       (  "cairo-font-weight",
-          Cairo_Font_Weight
-       );
+  new GLib.Generic_Properties.Generic_Enumeration_Property
+    ("cairo-font-weight",
+     Cairo_Font_Weight);

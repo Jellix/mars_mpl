@@ -268,7 +268,7 @@ package Gtk.Layered.Elliptic_Background is
    overriding procedure Draw_Contents
      (Layer   : in out Elliptic_Background_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle);
+      Area    : Gdk.Rectangle.Gdk_Rectangle);
 
    overriding function Get_Properties_Number
      (Layer : Elliptic_Background_Layer) return Natural;
@@ -301,7 +301,7 @@ package Gtk.Layered.Elliptic_Background is
    overriding procedure Set_Contents_Path
      (Layer   : in out Elliptic_Background_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle);
+      Area    : Gdk.Rectangle.Gdk_Rectangle);
 
    overriding procedure Store
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;

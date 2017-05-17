@@ -25,8 +25,8 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Gtk.Enums;                      use Gtk.Enums;
-with Gtk.Layered.Abstract_Bordered;  use Gtk.Layered.Abstract_Bordered;
+with Gtk.Enums;
+with Gtk.Layered.Abstract_Bordered;
 with Gtk.Missed;
 
 package Gtk.Layered.Rectangular_Background is
@@ -35,7 +35,7 @@ package Gtk.Layered.Rectangular_Background is
    -- Rectangular_Background_Layer -- A filled rectangle
    --
    type Rectangular_Background_Layer (<>) is
-     new Abstract_Bordered_Layer with private;
+     new Gtk.Layered.Abstract_Bordered.Abstract_Bordered_Layer with private;
    --
    -- Add_Rectangular_Background -- Add a filled rectangle
    --
@@ -77,35 +77,35 @@ package Gtk.Layered.Rectangular_Background is
    --
    procedure Add_Rectangular_Background
      (Under          : not null access Layer_Location'Class;
-      Height         : Gdouble                    := 1.0;
-      Width          : Gdouble                    := 1.0;
-      Center         : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
-      Rotation_Angle : Gdouble                    := 0.0;
-      Corner_Radius  : Gdouble                    := 0.0;
-      Color          : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Border_Width   : Gdouble                    := 0.0;
-      Border_Depth   : Gdouble                    := 1.0;
-      Border_Color   : Border_Color_Type          := Default_Color;
-      Border_Shadow  : Gtk_Shadow_Type            := Shadow_In;
-      Deepened       : Boolean                    := False;
-      Scaled         : Boolean                    := False;
-      Widened        : Boolean                    := False);
+      Height         : Gdouble                                         := 1.0;
+      Width          : Gdouble                                         := 1.0;
+      Center         : Cairo.Ellipses.Cairo_Tuple                      := (0.0, 0.0);
+      Rotation_Angle : Gdouble                                         := 0.0;
+      Corner_Radius  : Gdouble                                         := 0.0;
+      Color          : Gdk.Color.Gdk_Color                             := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Border_Width   : Gdouble                                         := 0.0;
+      Border_Depth   : Gdouble                                         := 1.0;
+      Border_Color   : Gtk.Layered.Abstract_Bordered.Border_Color_Type := Gtk.Layered.Abstract_Bordered.Default_Color;
+      Border_Shadow  : Gtk.Enums.Gtk_Shadow_Type                       := Gtk.Enums.Shadow_In;
+      Deepened       : Boolean                                         := False;
+      Scaled         : Boolean                                         := False;
+      Widened        : Boolean                                         := False);
 
    function Add_Rectangular_Background
      (Under          : not null access Layer_Location'Class;
-      Height         : Gdouble                    := 1.0;
-      Width          : Gdouble                    := 1.0;
-      Center         : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
-      Rotation_Angle : Gdouble                    := 0.0;
-      Corner_Radius  : Gdouble                    := 0.0;
-      Color          : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Border_Width   : Gdouble                    := 0.0;
-      Border_Depth   : Gdouble                    := 1.0;
-      Border_Color   : Border_Color_Type          := Default_Color;
-      Border_Shadow  : Gtk_Shadow_Type            := Shadow_In;
-      Deepened       : Boolean                    := False;
-      Scaled         : Boolean                    := False;
-      Widened        : Boolean                    := False)
+      Height         : Gdouble                                         := 1.0;
+      Width          : Gdouble                                         := 1.0;
+      Center         : Cairo.Ellipses.Cairo_Tuple                      := (0.0, 0.0);
+      Rotation_Angle : Gdouble                                         := 0.0;
+      Corner_Radius  : Gdouble                                         := 0.0;
+      Color          : Gdk.Color.Gdk_Color                             := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Border_Width   : Gdouble                                         := 0.0;
+      Border_Depth   : Gdouble                                         := 1.0;
+      Border_Color   : Gtk.Layered.Abstract_Bordered.Border_Color_Type := Gtk.Layered.Abstract_Bordered.Default_Color;
+      Border_Shadow  : Gtk.Enums.Gtk_Shadow_Type                       := Gtk.Enums.Shadow_In;
+      Deepened       : Boolean                                         := False;
+      Scaled         : Boolean                                         := False;
+      Widened        : Boolean                                         := False)
       return not null access Rectangular_Background_Layer;
 
    --
@@ -205,8 +205,8 @@ package Gtk.Layered.Rectangular_Background is
       Color          : Gdk.Color.Gdk_Color;
       Border_Width   : Gdouble;
       Border_Depth   : Gdouble;
-      Border_Color   : Border_Color_Type;
-      Border_Shadow  : Gtk_Shadow_Type);
+      Border_Color   : Gtk.Layered.Abstract_Bordered.Border_Color_Type;
+      Border_Shadow  : Gtk.Enums.Gtk_Shadow_Type);
 
    overriding function Add
      (Under  : not null access Layer_Location'Class;
@@ -216,7 +216,7 @@ package Gtk.Layered.Rectangular_Background is
    overriding procedure Draw_Contents
      (Layer   : in out Rectangular_Background_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle);
+      Area    : Gdk.Rectangle.Gdk_Rectangle);
 
    overriding function Get_Properties_Number
      (Layer : Rectangular_Background_Layer) return Natural;
@@ -244,7 +244,7 @@ package Gtk.Layered.Rectangular_Background is
    overriding procedure Set_Contents_Path
      (Layer   : in out Rectangular_Background_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle);
+      Area    : Gdk.Rectangle.Gdk_Rectangle);
 
    overriding procedure Set_Property_Value
      (Layer    : in out Rectangular_Background_Layer;
@@ -258,7 +258,7 @@ package Gtk.Layered.Rectangular_Background is
 private
 
    type Rectangular_Background_Layer is
-     new Abstract_Bordered_Layer with
+     new Gtk.Layered.Abstract_Bordered.Abstract_Bordered_Layer with
       record
          Height : Gdouble;
          Width  : Gdouble;

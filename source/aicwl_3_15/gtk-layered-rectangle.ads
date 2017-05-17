@@ -156,7 +156,7 @@ package Gtk.Layered.Rectangle is
    overriding procedure Draw
      (Layer   : in out Rectangle_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle);
+      Area    : Gdk.Rectangle.Gdk_Rectangle);
 
    overriding function Get_Properties_Number
      (Layer : Rectangle_Layer) return Natural;

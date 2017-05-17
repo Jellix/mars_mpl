@@ -25,7 +25,6 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Ada.Numerics;  use Ada.Numerics;
 with Ada.Strings;   use Ada.Strings;
 
 with Gtk.Missed;
@@ -86,137 +85,137 @@ package Gtk.Layered.Flat_Annotation is
      (Under       : not null access Layer_Location'Class;
       Texts       : Gtk.Enums.String_List.Glist;
       Step        : Gdouble;
-      First       : Tick_Number                := Tick_Number'Last;
-      Skipped     : Tick_Number                := Tick_Number'Last;
-      From        : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
-      Length      : Gdouble                    := 1.0;
-      Scale_Angle : Gdouble                    := 0.0;
-      Face        : Pango_Cairo_Font           :=
-        Create_Toy
+      First       : Tick_Number                        := Tick_Number'Last;
+      Skipped     : Tick_Number                        := Tick_Number'Last;
+      From        : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
+      Length      : Gdouble                            := 1.0;
+      Scale_Angle : Gdouble                            := 0.0;
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+        Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
            Slant  => Cairo.Cairo_Font_Slant_Normal,
            Weight => Cairo.Cairo_Font_Weight_Normal);
-      Height      : Gdouble                    := 12.0;
-      Stretch     : Gdouble                    := 1.0;
-      Color       : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Text_Angle  : Gdouble                    := 0.0;
-      Justify     : Alignment                  := Center;
-      Markup      : Boolean                    := False;
-      Scaled      : Boolean                    := False);
+      Height      : Gdouble                            := 12.0;
+      Stretch     : Gdouble                            := 1.0;
+      Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Text_Angle  : Gdouble                            := 0.0;
+      Justify     : Alignment                          := Center;
+      Markup      : Boolean                            := False;
+      Scaled      : Boolean                            := False);
 
    procedure Add_Flat_Annotation
      (Under       : not null access Layer_Location'Class;
-      Texts       : Controlled_String_List;
+      Texts       : Gtk.Enums.String_Lists.Controlled_String_List;
       Step        : Gdouble;
-      First       : Tick_Number                := Tick_Number'Last;
-      Skipped     : Tick_Number                := Tick_Number'Last;
-      From        : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
-      Length      : Gdouble                    := 1.0;
-      Scale_Angle : Gdouble                    := 0.0;
-      Face        : Pango_Cairo_Font           :=
-        Create_Toy
+      First       : Tick_Number                        := Tick_Number'Last;
+      Skipped     : Tick_Number                        := Tick_Number'Last;
+      From        : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
+      Length      : Gdouble                            := 1.0;
+      Scale_Angle : Gdouble                            := 0.0;
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+        Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
            Slant  => Cairo.Cairo_Font_Slant_Normal,
            Weight => Cairo.Cairo_Font_Weight_Normal);
-      Height      : Gdouble                    := 12.0;
-      Stretch     : Gdouble                    := 1.0;
-      Color       : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Text_Angle  : Gdouble                    := 0.0;
-      Justify     : Alignment                  := Center;
-      Markup      : Boolean                    := False;
-      Scaled      : Boolean                    := False);
+      Height      : Gdouble                            := 12.0;
+      Stretch     : Gdouble                            := 1.0;
+      Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Text_Angle  : Gdouble                            := 0.0;
+      Justify     : Alignment                          := Center;
+      Markup      : Boolean                            := False;
+      Scaled      : Boolean                            := False);
 
    procedure Add_Flat_Annotation
      (Under       : not null access Layer_Location'Class;
       Texts       : UTF8_String;
       Step        : Gdouble;
-      First       : Tick_Number                := Tick_Number'Last;
-      Skipped     : Tick_Number                := Tick_Number'Last;
-      From        : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
-      Length      : Gdouble                    := 1.0;
-      Scale_Angle : Gdouble                    := 0.0;
-      Face        : Pango_Cairo_Font           :=
-        Create_Toy
+      First       : Tick_Number                        := Tick_Number'Last;
+      Skipped     : Tick_Number                        := Tick_Number'Last;
+      From        : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
+      Length      : Gdouble                            := 1.0;
+      Scale_Angle : Gdouble                            := 0.0;
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+        Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
            Slant  => Cairo.Cairo_Font_Slant_Normal,
            Weight => Cairo.Cairo_Font_Weight_Normal);
-      Height      : Gdouble                    := 12.0;
-      Stretch     : Gdouble                    := 1.0;
-      Color       : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Text_Angle  : Gdouble                    := 0.0;
-      Justify     : Alignment                  := Center;
-      Delimiter   : Character                  := ' ';
-      Markup      : Boolean                    := False;
-      Scaled      : Boolean                    := False);
+      Height      : Gdouble                            := 12.0;
+      Stretch     : Gdouble                            := 1.0;
+      Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Text_Angle  : Gdouble                            := 0.0;
+      Justify     : Alignment                          := Center;
+      Delimiter   : Character                          := ' ';
+      Markup      : Boolean                            := False;
+      Scaled      : Boolean                            := False);
 
    function Add_Flat_Annotation
      (Under       : not null access Layer_Location'Class;
       Texts       : Gtk.Enums.String_List.Glist;
       Step        : Gdouble;
-      First       : Tick_Number                := Tick_Number'Last;
-      Skipped     : Tick_Number                := Tick_Number'Last;
-      From        : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
-      Length      : Gdouble                    := 1.0;
-      Scale_Angle : Gdouble                    := 0.0;
-      Face        : Pango_Cairo_Font           :=
-        Create_Toy
+      First       : Tick_Number                        := Tick_Number'Last;
+      Skipped     : Tick_Number                        := Tick_Number'Last;
+      From        : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
+      Length      : Gdouble                            := 1.0;
+      Scale_Angle : Gdouble                            := 0.0;
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+        Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
            Slant  => Cairo.Cairo_Font_Slant_Normal,
            Weight => Cairo.Cairo_Font_Weight_Normal);
-      Height      : Gdouble                    := 12.0;
-      Stretch     : Gdouble                    := 1.0;
-      Color       : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Text_Angle  : Gdouble                    := 0.0;
-      Justify     : Alignment                  := Center;
-      Markup      : Boolean                    := False;
-      Scaled      : Boolean                    := False)
+      Height      : Gdouble                            := 12.0;
+      Stretch     : Gdouble                            := 1.0;
+      Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Text_Angle  : Gdouble                            := 0.0;
+      Justify     : Alignment                          := Center;
+      Markup      : Boolean                            := False;
+      Scaled      : Boolean                            := False)
       return not null access Flat_Annotation_Layer;
 
    function Add_Flat_Annotation
      (Under       : not null access Layer_Location'Class;
-      Texts       : Controlled_String_List;
+      Texts       : Gtk.Enums.String_Lists.Controlled_String_List;
       Step        : Gdouble;
-      First       : Tick_Number                := Tick_Number'Last;
-      Skipped     : Tick_Number                := Tick_Number'Last;
-      From        : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
-      Length      : Gdouble                    := 1.0;
-      Scale_Angle : Gdouble                    := 0.0;
-      Face        : Pango_Cairo_Font           :=
-        Create_Toy
+      First       : Tick_Number                        := Tick_Number'Last;
+      Skipped     : Tick_Number                        := Tick_Number'Last;
+      From        : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
+      Length      : Gdouble                            := 1.0;
+      Scale_Angle : Gdouble                            := 0.0;
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+        Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
            Slant  => Cairo.Cairo_Font_Slant_Normal,
            Weight => Cairo.Cairo_Font_Weight_Normal);
-      Height      : Gdouble                    := 12.0;
-      Stretch     : Gdouble                    := 1.0;
-      Color       : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Text_Angle  : Gdouble                    := 0.0;
-      Justify     : Alignment                  := Center;
-      Markup      : Boolean                    := False;
-      Scaled      : Boolean                    := False)
+      Height      : Gdouble                            := 12.0;
+      Stretch     : Gdouble                            := 1.0;
+      Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Text_Angle  : Gdouble                            := 0.0;
+      Justify     : Alignment                          := Center;
+      Markup      : Boolean                            := False;
+      Scaled      : Boolean                            := False)
       return not null access Flat_Annotation_Layer;
 
    function Add_Flat_Annotation
      (Under       : not null access Layer_Location'Class;
       Texts       : UTF8_String;
       Step        : Gdouble;
-      First       : Tick_Number                := Tick_Number'Last;
-      Skipped     : Tick_Number                := Tick_Number'Last;
-      From        : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
-      Length      : Gdouble                    := 1.0;
-      Scale_Angle : Gdouble                    := 0.0;
-      Face        : Pango_Cairo_Font           :=
-        Create_Toy
+      First       : Tick_Number                        := Tick_Number'Last;
+      Skipped     : Tick_Number                        := Tick_Number'Last;
+      From        : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
+      Length      : Gdouble                            := 1.0;
+      Scale_Angle : Gdouble                            := 0.0;
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+        Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
            Slant  => Cairo.Cairo_Font_Slant_Normal,
            Weight => Cairo.Cairo_Font_Weight_Normal);
-      Height      : Gdouble                    := 12.0;
-      Stretch     : Gdouble                    := 1.0;
-      Color       : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Text_Angle  : Gdouble                    := 0.0;
-      Justify     : Alignment                  := Center;
-      Delimiter   : Character                  := ' ';
-      Markup      : Boolean                    := False;
-      Scaled      : Boolean                    := False)
+      Height      : Gdouble                            := 12.0;
+      Stretch     : Gdouble                            := 1.0;
+      Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Text_Angle  : Gdouble                            := 0.0;
+      Justify     : Alignment                          := Center;
+      Delimiter   : Character                          := ' ';
+      Markup      : Boolean                            := False;
+      Scaled      : Boolean                            := False)
       return not null access Flat_Annotation_Layer;
 
    --
@@ -311,7 +310,7 @@ package Gtk.Layered.Flat_Annotation is
       From        : Cairo.Ellipses.Cairo_Tuple;
       Length      : Gdouble;
       Scale_Angle : Gdouble;
-      Face        : Pango_Cairo_Font;
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font;
       Height      : Gdouble;
       Stretch     : Gdouble;
       Color       : Gdk.Color.Gdk_Color;
@@ -326,30 +325,27 @@ package Gtk.Layered.Flat_Annotation is
    overriding procedure Draw
      (Layer   : in out Flat_Annotation_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle);
+      Area    : Gdk.Rectangle.Gdk_Rectangle);
 
-   overriding
-   procedure Finalize (Layer : in out Flat_Annotation_Layer);
-   overriding
-   function Get_Face (Layer : Flat_Annotation_Layer)
-                      return Pango_Cairo_Font;
+   overriding procedure Finalize (Layer : in out Flat_Annotation_Layer);
+
+   overriding function Get_Face
+     (Layer : Flat_Annotation_Layer) return Pango.Cairo.Fonts.Pango_Cairo_Font;
+
    overriding
    function Get_Height (Layer : Flat_Annotation_Layer)
                         return Gdouble;
-   overriding
-   function Get_Markup
-     (  Layer    : Flat_Annotation_Layer;
-        Position : Positive
-       )  return Boolean;
-   overriding
-   function Get_Properties_Number
-     (  Layer : Flat_Annotation_Layer
-       )  return Natural;
-   overriding
-   function Get_Property_Specification
-     (  Layer    : Flat_Annotation_Layer;
-        Property : Positive
-       )  return Param_Spec;
+
+   overriding function Get_Markup
+     (Layer    : Flat_Annotation_Layer;
+      Position : Positive) return Boolean;
+
+   overriding function Get_Properties_Number
+     (Layer : Flat_Annotation_Layer) return Natural;
+
+   overriding function Get_Property_Specification
+     (Layer    : Flat_Annotation_Layer;
+      Property : Positive) return Param_Spec;
 
    overriding function Get_Property_Value
      (Layer    : Flat_Annotation_Layer;
@@ -361,20 +357,19 @@ package Gtk.Layered.Flat_Annotation is
    overriding
    function Get_Stretch (Layer : Flat_Annotation_Layer)
                          return Gdouble;
-   overriding
-   function Get_Text
-     (  Layer    : Flat_Annotation_Layer;
-        Position : Positive
-       )  return UTF8_String;
-   overriding
-   function Get_Texts_Number (Layer : Flat_Annotation_Layer)
-                              return Natural;
-   overriding
-   function Get_Ticks (Layer : Flat_Annotation_Layer)
-                       return Tick_Parameters;
-   overriding
-   function Is_Updated (Layer : Flat_Annotation_Layer)
-                        return Boolean;
+
+   overriding function Get_Text
+     (Layer    : Flat_Annotation_Layer;
+      Position : Positive) return UTF8_String;
+
+   overriding function Get_Texts_Number
+     (Layer : Flat_Annotation_Layer) return Natural;
+
+   overriding function Get_Ticks
+     (Layer : Flat_Annotation_Layer) return Tick_Parameters;
+
+   overriding function Is_Updated
+     (Layer : Flat_Annotation_Layer) return Boolean;
 
    overriding procedure Move
      (Layer  : in out Flat_Annotation_Layer;
@@ -384,47 +379,39 @@ package Gtk.Layered.Flat_Annotation is
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Layer  : in out Flat_Annotation_Layer);
 
-   overriding
-   procedure Scale
-     (  Layer  : in out Flat_Annotation_Layer;
-        Factor : Gdouble
-       );
-   overriding
-   procedure Set_Face
-     (  Layer : in out Flat_Annotation_Layer;
-        Face  : Pango_Cairo_Font
-       );
+   overriding procedure Scale
+     (Layer  : in out Flat_Annotation_Layer;
+      Factor : Gdouble);
+
+   overriding procedure Set_Face
+     (Layer : in out Flat_Annotation_Layer;
+      Face  : Pango.Cairo.Fonts.Pango_Cairo_Font);
 
    overriding procedure Set_Property_Value
      (Layer    : in out Flat_Annotation_Layer;
       Property : Positive;
       Value    : Glib.Values.GValue);
 
-   overriding
-   procedure Set_Scaled
-     (  Layer  : in out Flat_Annotation_Layer;
-        Scaled : Boolean
-       );
-   overriding
-   procedure Set_Text
-     (  Layer    : in out Flat_Annotation_Layer;
-        Position : Positive;
-        Text     : UTF8_String;
-        Markup   : Boolean := False
-       );
-   overriding
-   procedure Set_Texts
-     (  Layer  : in out Flat_Annotation_Layer;
-        Texts  : Gtk.Enums.String_List.Glist;
-        Markup : Boolean := False
-       );
-   overriding
-   procedure Set_Texts
-     (  Layer     : in out Flat_Annotation_Layer;
-        Texts     : UTF8_String;
-        Delimiter : Character := ' ';
-        Markup    : Boolean := False
-       );
+   overriding procedure Set_Scaled
+     (Layer  : in out Flat_Annotation_Layer;
+      Scaled : Boolean);
+
+   overriding procedure Set_Text
+     (Layer    : in out Flat_Annotation_Layer;
+      Position : Positive;
+      Text     : UTF8_String;
+      Markup   : Boolean := False);
+
+   overriding procedure Set_Texts
+     (Layer  : in out Flat_Annotation_Layer;
+      Texts  : Gtk.Enums.String_List.Glist;
+      Markup : Boolean := False);
+
+   overriding procedure Set_Texts
+     (Layer     : in out Flat_Annotation_Layer;
+      Texts     : UTF8_String;
+      Delimiter : Character := ' ';
+      Markup    : Boolean := False);
 
    overriding procedure Store
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
@@ -449,7 +436,7 @@ private
    type Flat_Annotation_Layer is
      new Abstract_Layer and Annotation_Layer and Scalable_Layer with
       record
-         Face        : Pango_Cairo_Font;
+         Face        : Pango.Cairo.Fonts.Pango_Cairo_Font;
          Height      : Gdouble;
          Stretch     : Gdouble;
          From        : Cairo.Ellipses.Cairo_Tuple;

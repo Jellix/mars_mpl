@@ -205,7 +205,7 @@ package body Gtk.Layered.Stream_IO is
 
    procedure Restore
      (Stream     : in out Ada.Streams.Root_Stream_Type'Class;
-      Adjustment : out Gtk_Adjustment)
+      Adjustment : out Gtk.Adjustment.Gtk_Adjustment)
    is
       Value          : Gdouble;
       Lower          : Gdouble;
@@ -218,7 +218,7 @@ package body Gtk.Layered.Stream_IO is
       Restore (Stream, Gdouble (Upper));
       Restore (Stream, Gdouble (Step_Increment));
       Restore (Stream, Gdouble (Page_Increment));
-      Gtk_New
+      Gtk.Adjustment.Gtk_New
         (Adjustment,
          Value,
          Lower,
@@ -693,13 +693,13 @@ package body Gtk.Layered.Stream_IO is
 
    procedure Store
      (Stream     : in out Ada.Streams.Root_Stream_Type'Class;
-      Adjustment : Gtk_Adjustment) is
+      Adjustment : Gtk.Adjustment.Gtk_Adjustment) is
    begin
-      Store (Stream, Get_Value (Adjustment));
-      Store (Stream, Get_Lower (Adjustment));
-      Store (Stream, Get_Upper (Adjustment));
-      Store (Stream, Get_Step_Increment (Adjustment));
-      Store (Stream, Get_Page_Increment (Adjustment));
+      Store (Stream, Gtk.Adjustment.Get_Value (Adjustment));
+      Store (Stream, Gtk.Adjustment.Get_Lower (Adjustment));
+      Store (Stream, Gtk.Adjustment.Get_Upper (Adjustment));
+      Store (Stream, Gtk.Adjustment.Get_Step_Increment (Adjustment));
+      Store (Stream, Gtk.Adjustment.Get_Page_Increment (Adjustment));
    end Store;
 
    procedure Store

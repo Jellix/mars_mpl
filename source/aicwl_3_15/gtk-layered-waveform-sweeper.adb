@@ -80,12 +80,12 @@ package body Gtk.Layered.Waveform.Sweeper is
           Gtk_Waveform_Sweeper_Record
        )  return Boolean is
    begin
-      return Sweeper.Frozen;
+      return Sweeper.all.Frozen;
    end Get_Frozen;
 
    function Get_From
-     (  Sweeper : not null access Gtk_Waveform_Sweeper_Record
-       )  return Time is
+     (Sweeper : not null access Gtk_Waveform_Sweeper_Record)
+      return Ada.Real_Time.Time is
    begin
       return To_Time (Get_Lower (Sweeper));
    end Get_From;
@@ -103,20 +103,20 @@ package body Gtk.Layered.Waveform.Sweeper is
    begin
       return
         Duration
-          (  Sweeper.Get_Upper
-             -  Sweeper.Get_Value
-             -  Sweeper.Get_Page_Size
+          (  Sweeper.all.Get_Upper
+             -  Sweeper.all.Get_Value
+             -  Sweeper.all.Get_Page_Size
             );
    end Get_Offset;
 
    function Get_Time
-     (  Sweeper : not null access Gtk_Waveform_Sweeper_Record
-       )  return Time is
+     (Sweeper : not null access Gtk_Waveform_Sweeper_Record)
+      return Ada.Real_Time.Time is
    begin
       return To_Time
         (  Gdouble
              (  Get_Value (Sweeper)
-              +  Sweeper.Get_Page_Size
+              +  Sweeper.all.Get_Page_Size
              )  );
    end Get_Time;
 
@@ -127,22 +127,22 @@ package body Gtk.Layered.Waveform.Sweeper is
       return To_Time
         (  Gdouble
              (  Get_Value (Sweeper)
-              +  Sweeper.Get_Page_Size
+              +  Sweeper.all.Get_Page_Size
              )  );
    end Get_Time;
 
    function Get_To
-     (  Sweeper : not null access Gtk_Waveform_Sweeper_Record
-       )  return Time is
+     (Sweeper : not null access Gtk_Waveform_Sweeper_Record)
+      return Ada.Real_Time.Time is
    begin
-      return To_Time (Sweeper.Get_Upper);
+      return To_Time (Sweeper.all.Get_Upper);
    end Get_To;
 
    function Get_To
-     (  Sweeper : not null access Gtk_Waveform_Sweeper_Record
-       )  return Ada.Calendar.Time is
+     (Sweeper : not null access Gtk_Waveform_Sweeper_Record)
+      return Ada.Calendar.Time is
    begin
-      return To_Time (Sweeper.Get_Upper);
+      return To_Time (Sweeper.all.Get_Upper);
    end Get_To;
 
    function Get_Type return GType is
@@ -155,7 +155,7 @@ package body Gtk.Layered.Waveform.Sweeper is
            Parameters   => (  0 => (0 => GType_None),
                               1 => (0 => GType_None)
                              )                  );
-      return Class_Record.The_Type;
+      return Class_Record.all.The_Type;
    end Get_Type;
 
    procedure Gtk_New (Sweeper : out Gtk_Waveform_Sweeper) is
@@ -168,7 +168,7 @@ package body Gtk.Layered.Waveform.Sweeper is
      (  Sweeper : not null access
           Gtk_Waveform_Sweeper_Record'Class
        )  is
-      To : constant Gdouble := To_Double (Clock);
+      To : constant Gdouble := To_Double (Ada.Real_Time.Clock);
    begin
       G_New (Sweeper, Get_Type);
       Gtk.Adjustment.Initialize
@@ -186,7 +186,7 @@ package body Gtk.Layered.Waveform.Sweeper is
       -- workaround is to call Configure yet again in order to force the
       -- parameters. Normally Configure would be not necessary
       --
-      Sweeper.Configure
+      Sweeper.all.Configure
         (  Value          => To - Gdouble (Def_Page),
            Lower          => To - Gdouble (Def_Page),
            Upper          => To,
@@ -208,20 +208,19 @@ package body Gtk.Layered.Waveform.Sweeper is
      (  Sweeper : not null access Gtk_Waveform_Sweeper_Record
        )  return Duration is
    begin
-      return Duration (Sweeper.Get_Page_Size);
+      return Duration (Sweeper.all.Get_Page_Size);
    end Get_Page_Span;
 
    procedure Set
-     (  Sweeper      : not null access Gtk_Waveform_Sweeper_Record;
-        Date           : Time;
-        From           : Time;
-        To             : Time;
-        Step_Increment : Duration;
-        Page_Increment : Duration;
-        Page_Span      : Duration
-       )  is
+     (Sweeper      : not null access Gtk_Waveform_Sweeper_Record;
+      Date           : Ada.Real_Time.Time;
+      From           : Ada.Real_Time.Time;
+      To             : Ada.Real_Time.Time;
+      Step_Increment : Duration;
+      Page_Increment : Duration;
+      Page_Span      : Duration) is
    begin
-      Sweeper.Configure
+      Sweeper.all.Configure
         (  Value          => To_Double (Date) - Gdouble (Page_Span),
            Lower          => To_Double (From),
            Upper          => To_Double (To),
@@ -241,7 +240,7 @@ package body Gtk.Layered.Waveform.Sweeper is
         Page_Span      : Duration
        )  is
    begin
-      Sweeper.Configure
+      Sweeper.all.Configure
         (  Value          => To_Double (Date) - Gdouble (Page_Span),
            Lower          => To_Double (From),
            Upper          => To_Double (To),
@@ -252,35 +251,35 @@ package body Gtk.Layered.Waveform.Sweeper is
    end Set;
 
    procedure Set_Current_Time
-     (  Sweeper : not null access Gtk_Waveform_Sweeper_Record;
-        Stamp   : Time;
-        Active  : Boolean := False
-       )  is
+     (Sweeper : not null access Gtk_Waveform_Sweeper_Record;
+      Stamp   : Ada.Real_Time.Time;
+      Active  : Boolean := False)
+   is
       Value : constant Gdouble := To_Double (Stamp);
-      Upper : constant Gdouble := Sweeper.Get_Upper;
-      Lower : constant Gdouble := Sweeper.Get_Lower;
+      Upper : constant Gdouble := Sweeper.all.Get_Upper;
+      Lower : constant Gdouble := Sweeper.all.Get_Lower;
    begin
       if Active then
-         Sweeper.Active := Sweeper.Active + 1;
+         Sweeper.all.Active := Sweeper.all.Active + 1;
       end if;
-      if Sweeper.Frozen then
+      if Sweeper.all.Frozen then
          if Lower > Value then
-            Sweeper.Set_Lower (Value);
+            Sweeper.all.Set_Lower (Value);
          end if;
          if Upper < Value then
-            Sweeper.Set_Upper (Value);
+            Sweeper.all.Set_Upper (Value);
          end if;
       else
          if Lower > Value then
-            Sweeper.Set_Lower (Value);
+            Sweeper.all.Set_Lower (Value);
          end if;
          if Upper < Value then
-            Sweeper.Set_Upper (Value);
-            Set_Value (Sweeper, Value - Upper + Sweeper.Get_Value);
+            Sweeper.all.Set_Upper (Value);
+            Set_Value (Sweeper, Value - Upper + Sweeper.all.Get_Value);
          end if;
       end if;
       if Active then
-         Sweeper.Active := Sweeper.Active - 1;
+         Sweeper.all.Active := Sweeper.all.Active - 1;
       end if;
    end Set_Current_Time;
 
@@ -288,7 +287,7 @@ package body Gtk.Layered.Waveform.Sweeper is
      (  Sweeper : not null access Gtk_Waveform_Sweeper_Record
        )  return Boolean is
    begin
-      return Sweeper.Active > 0;
+      return Sweeper.all.Active > 0;
    end Is_Active;
 
    procedure Set_Frozen
@@ -296,8 +295,8 @@ package body Gtk.Layered.Waveform.Sweeper is
         Frozen  : Boolean
        )  is
    begin
-      if Sweeper.Frozen /= Frozen then
-         Sweeper.Frozen := Frozen;
+      if Sweeper.all.Frozen /= Frozen then
+         Sweeper.all.Frozen := Frozen;
          Emit (Sweeper, Freezing_Changed_ID);
       end if;
    end Set_Frozen;
@@ -306,9 +305,9 @@ package body Gtk.Layered.Waveform.Sweeper is
      (  Sweeper   : not null access Gtk_Waveform_Sweeper_Record;
         Page_Span : Duration
        )  is
-      Upper : Gdouble := Sweeper.Get_Upper;
-      Lower : Gdouble := Sweeper.Get_Lower;
-      Value : Gdouble := Sweeper.Get_Value + Sweeper.Get_Page_Size;
+      Upper : Gdouble := Sweeper.all.Get_Upper;
+      Lower : Gdouble := Sweeper.all.Get_Lower;
+      Value : Gdouble := Sweeper.all.Get_Value + Sweeper.all.Get_Page_Size;
       Page  : Gdouble;
    begin
       if Page_Span < Min_Page then
@@ -325,20 +324,19 @@ package body Gtk.Layered.Waveform.Sweeper is
       if Value > Upper then
          Upper := Value;
       end if;
-      Sweeper.Configure
+      Sweeper.all.Configure
         (  Value          => Value,
            Lower          => Lower,
            Upper          => Upper,
            Page_Size      => Page,
-           Step_Increment => Sweeper.Get_Step_Increment,
-           Page_Increment => Sweeper.Get_Page_Increment
+           Step_Increment => Sweeper.all.Get_Step_Increment,
+           Page_Increment => Sweeper.all.Get_Page_Increment
           );
    end Set_Page_Span;
 
    procedure Set_Time
-     (  Sweeper : not null access Gtk_Waveform_Sweeper_Record;
-        Stamp   : Time
-       )  is
+     (Sweeper : not null access Gtk_Waveform_Sweeper_Record;
+      Stamp   : Ada.Real_Time.Time) is
    begin
       Sweeper.Set_Time (To_Double (Stamp));
    end Set_Time;
@@ -355,16 +353,16 @@ package body Gtk.Layered.Waveform.Sweeper is
      (  Sweeper : not null access Gtk_Waveform_Sweeper_Record;
         Stamp   : Gdouble
        )  is
-      Upper : constant Gdouble := Sweeper.Get_Upper;
-      Lower : constant Gdouble := Sweeper.Get_Lower;
-      Page  : constant Gdouble := Sweeper.Get_Page_Size;
+      Upper : constant Gdouble := Sweeper.all.Get_Upper;
+      Lower : constant Gdouble := Sweeper.all.Get_Lower;
+      Page  : constant Gdouble := Sweeper.all.Get_Page_Size;
    begin
       if Stamp > Upper then
-         Sweeper.Set_Value (Upper - Page);
+         Sweeper.all.Set_Value (Upper - Page);
       elsif Stamp < Lower + Page then
-         Sweeper.Set_Value (Lower);
+         Sweeper.all.Set_Value (Lower);
       else
-         Sweeper.Set_Value (Stamp - Page);
+         Sweeper.all.Set_Value (Stamp - Page);
       end if;
    end Set_Time;
 

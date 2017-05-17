@@ -124,7 +124,7 @@ package body Gtk.Layered.Elliptic_Annotation is
       Ellipse : Cairo.Ellipses.Ellipse_Parameters;
       From    : Gdouble;
       Length  : Gdouble;
-      Face    : Pango_Cairo_Font;
+      Face    : Pango.Cairo.Fonts.Pango_Cairo_Font;
       Mode    : Text_Transformation;
       Color   : Gdk.Color.Gdk_Color;
       Scaled  : Boolean) return Annotation_Ptr
@@ -157,22 +157,22 @@ package body Gtk.Layered.Elliptic_Annotation is
      (Under   : not null access Layer_Location'Class;
       Texts   : Gtk.Enums.String_List.Glist;
       Step    : Gdouble;
-      First   : Tick_Number                       := Tick_Number'Last;
-      Skipped : Tick_Number                       := Tick_Number'Last;
-      Ellipse : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle;
-      From    : Gdouble                           := 0.0;
-      Length  : Gdouble                           := 2.0 * Pi;
-      Face    : Pango_Cairo_Font                  :=
-        Create_Toy
+      First   : Tick_Number                        := Tick_Number'Last;
+      Skipped : Tick_Number                        := Tick_Number'Last;
+      Ellipse : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
+      From    : Gdouble                            := 0.0;
+      Length  : Gdouble                            := 2.0 * Pi;
+      Face    : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+        Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
            Slant  => Cairo.Cairo_Font_Slant_Normal,
            Weight => Cairo.Cairo_Font_Weight_Normal);
-      Height  : Gdouble                           := 12.0;
-      Stretch : Gdouble                           := 1.0;
-      Mode    : Text_Transformation               := Moved_Centered;
-      Color   : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Markup  : Boolean                           := False;
-      Scaled  : Boolean                           := False)
+      Height  : Gdouble                            := 12.0;
+      Stretch : Gdouble                            := 1.0;
+      Mode    : Text_Transformation                := Moved_Centered;
+      Color   : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Markup  : Boolean                            := False;
+      Scaled  : Boolean                            := False)
    is
       Ptr : Annotation_Ptr;
    begin
@@ -199,22 +199,22 @@ package body Gtk.Layered.Elliptic_Annotation is
      (Under   : not null access Layer_Location'Class;
       Texts   : Gtk.Enums.String_List.Glist;
       Step    : Gdouble;
-      First   : Tick_Number                       := Tick_Number'Last;
-      Skipped : Tick_Number                       := Tick_Number'Last;
-      Ellipse : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle;
-      From    : Gdouble                           := 0.0;
-      Length  : Gdouble                           := 2.0 * Pi;
-      Face    : Pango_Cairo_Font                  :=
-        Create_Toy
+      First   : Tick_Number                        := Tick_Number'Last;
+      Skipped : Tick_Number                        := Tick_Number'Last;
+      Ellipse : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
+      From    : Gdouble                            := 0.0;
+      Length  : Gdouble                            := 2.0 * Pi;
+      Face    : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+        Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
            Slant  => Cairo.Cairo_Font_Slant_Normal,
            Weight => Cairo.Cairo_Font_Weight_Normal);
-      Height  : Gdouble                           := 12.0;
-      Stretch : Gdouble                           := 1.0;
-      Mode    : Text_Transformation               := Moved_Centered;
-      Color   : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Markup  : Boolean                           := False;
-      Scaled  : Boolean                           := False)
+      Height  : Gdouble                            := 12.0;
+      Stretch : Gdouble                            := 1.0;
+      Mode    : Text_Transformation                := Moved_Centered;
+      Color   : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Markup  : Boolean                            := False;
+      Scaled  : Boolean                            := False)
       return not null access Elliptic_Annotation_Layer
    is
       Ptr : Annotation_Ptr;
@@ -240,28 +240,28 @@ package body Gtk.Layered.Elliptic_Annotation is
 
    procedure Add_Elliptic_Annotation
      (Under   : not null access Layer_Location'Class;
-      Texts   : Controlled_String_List;
+      Texts   : Gtk.Enums.String_Lists.Controlled_String_List;
       Step    : Gdouble;
-      First   : Tick_Number                       := Tick_Number'Last;
-      Skipped : Tick_Number                       := Tick_Number'Last;
-      Ellipse : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle;
-      From    : Gdouble                           := 0.0;
-      Length  : Gdouble                           := 2.0 * Pi;
-      Face    : Pango_Cairo_Font                  :=
-        Create_Toy
+      First   : Tick_Number                        := Tick_Number'Last;
+      Skipped : Tick_Number                        := Tick_Number'Last;
+      Ellipse : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
+      From    : Gdouble                            := 0.0;
+      Length  : Gdouble                            := 2.0 * Pi;
+      Face    : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+        Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
            Slant  => Cairo.Cairo_Font_Slant_Normal,
            Weight => Cairo.Cairo_Font_Weight_Normal);
-      Height  : Gdouble                           := 12.0;
-      Stretch : Gdouble                           := 1.0;
-      Mode    : Text_Transformation               := Moved_Centered;
-      Color   : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Markup  : Boolean                           := False;
-      Scaled  : Boolean                           := False) is
+      Height  : Gdouble                            := 12.0;
+      Stretch : Gdouble                            := 1.0;
+      Mode    : Text_Transformation                := Moved_Centered;
+      Color   : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Markup  : Boolean                            := False;
+      Scaled  : Boolean                            := False) is
    begin
       Add_Elliptic_Annotation
         (Under   => Under,
-         Texts   => Get_GList (Texts),
+         Texts   => Gtk.Enums.String_Lists.Get_GList (Texts),
          Step    => Step,
          First   => First,
          Skipped => Skipped,
@@ -279,30 +279,30 @@ package body Gtk.Layered.Elliptic_Annotation is
 
    function Add_Elliptic_Annotation
      (Under   : not null access Layer_Location'Class;
-      Texts   : Controlled_String_List;
+      Texts   : Gtk.Enums.String_Lists.Controlled_String_List;
       Step    : Gdouble;
-      First   : Tick_Number                       := Tick_Number'Last;
-      Skipped : Tick_Number                       := Tick_Number'Last;
-      Ellipse : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle;
-      From    : Gdouble                           := 0.0;
-      Length  : Gdouble                           := 2.0 * Pi;
-      Face    : Pango_Cairo_Font                  :=
-        Create_Toy
+      First   : Tick_Number                        := Tick_Number'Last;
+      Skipped : Tick_Number                        := Tick_Number'Last;
+      Ellipse : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
+      From    : Gdouble                            := 0.0;
+      Length  : Gdouble                            := 2.0 * Pi;
+      Face    : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+        Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
            Slant  => Cairo.Cairo_Font_Slant_Normal,
            Weight => Cairo.Cairo_Font_Weight_Normal);
-      Height  : Gdouble                           := 12.0;
-      Stretch : Gdouble                           := 1.0;
-      Mode    : Text_Transformation               := Moved_Centered;
-      Color   : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Markup  : Boolean                           := False;
-      Scaled  : Boolean                           := False)
+      Height  : Gdouble                            := 12.0;
+      Stretch : Gdouble                            := 1.0;
+      Mode    : Text_Transformation                := Moved_Centered;
+      Color   : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Markup  : Boolean                            := False;
+      Scaled  : Boolean                            := False)
       return not null access Elliptic_Annotation_Layer is
    begin
       return
         Add_Elliptic_Annotation
           (Under   => Under,
-           Texts   => Get_GList (Texts),
+           Texts   => Gtk.Enums.String_Lists.Get_GList (Texts),
            Step    => Step,
            First   => First,
            Skipped => Skipped,
@@ -322,23 +322,23 @@ package body Gtk.Layered.Elliptic_Annotation is
      (Under     : not null access Layer_Location'Class;
       Texts     : UTF8_String;
       Step      : Gdouble;
-      First     : Tick_Number                       := Tick_Number'Last;
-      Skipped   : Tick_Number                       := Tick_Number'Last;
-      Ellipse   : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle;
-      From      : Gdouble                           := 0.0;
-      Length    : Gdouble                           := 2.0 * Pi;
-      Face      : Pango_Cairo_Font                  :=
-        Create_Toy
+      First     : Tick_Number                        := Tick_Number'Last;
+      Skipped   : Tick_Number                        := Tick_Number'Last;
+      Ellipse   : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
+      From      : Gdouble                            := 0.0;
+      Length    : Gdouble                            := 2.0 * Pi;
+      Face      : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+        Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
            Slant  => Cairo.Cairo_Font_Slant_Normal,
            Weight => Cairo.Cairo_Font_Weight_Normal);
-      Height    : Gdouble                           := 12.0;
-      Stretch   : Gdouble                           := 1.0;
-      Mode      : Text_Transformation               := Moved_Centered;
-      Color     : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Delimiter : Character                         := ' ';
-      Markup    : Boolean                           := False;
-      Scaled    : Boolean                           := False)
+      Height    : Gdouble                            := 12.0;
+      Stretch   : Gdouble                            := 1.0;
+      Mode      : Text_Transformation                := Moved_Centered;
+      Color     : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Delimiter : Character                          := ' ';
+      Markup    : Boolean                            := False;
+      Scaled    : Boolean                            := False)
    is
       Ptr : Annotation_Ptr;
    begin
@@ -369,23 +369,23 @@ package body Gtk.Layered.Elliptic_Annotation is
      (Under     : not null access Layer_Location'Class;
       Texts     : UTF8_String;
       Step      : Gdouble;
-      First     : Tick_Number                       := Tick_Number'Last;
-      Skipped   : Tick_Number                       := Tick_Number'Last;
-      Ellipse   : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle;
-      From      : Gdouble                           := 0.0;
-      Length    : Gdouble                           := 2.0 * Pi;
-      Face      : Pango_Cairo_Font                  :=
-        Create_Toy
+      First     : Tick_Number                        := Tick_Number'Last;
+      Skipped   : Tick_Number                        := Tick_Number'Last;
+      Ellipse   : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
+      From      : Gdouble                            := 0.0;
+      Length    : Gdouble                            := 2.0 * Pi;
+      Face      : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+        Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
            Slant  => Cairo.Cairo_Font_Slant_Normal,
            Weight => Cairo.Cairo_Font_Weight_Normal);
-      Height    : Gdouble                           := 12.0;
-      Stretch   : Gdouble                           := 1.0;
-      Mode      : Text_Transformation               := Moved_Centered;
-      Color     : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Delimiter : Character                         := ' ';
-      Markup    : Boolean                           := False;
-      Scaled    : Boolean                           := False)
+      Height    : Gdouble                            := 12.0;
+      Stretch   : Gdouble                            := 1.0;
+      Mode      : Text_Transformation                := Moved_Centered;
+      Color     : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Delimiter : Character                          := ' ';
+      Markup    : Boolean                            := False;
+      Scaled    : Boolean                            := False)
       return not null access Elliptic_Annotation_Layer
    is
       Ptr : Annotation_Ptr;
@@ -426,7 +426,7 @@ package body Gtk.Layered.Elliptic_Annotation is
    overriding procedure Draw
      (Layer   : in out Elliptic_Annotation_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle)
+      Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
       pragma Unreferenced (Area);
       Angle   : Gdouble;
@@ -469,13 +469,13 @@ package body Gtk.Layered.Elliptic_Annotation is
               Layer.Texts.all (Index + 1) = null or else
               Layer.Texts.all (Index + 1).all.Length = 0;
             if Layer.Texts.all (Index + 1).all.Markup then
-               Get_Markup_Extents
+               Pango.Cairo.Fonts.Get_Markup_Extents
                  (Layer.Face,
                   Context,
                   +Layer.Texts.all (Index + 1),
                   Extents);
             else
-               Get_Text_Extents
+               Pango.Cairo.Fonts.Get_Text_Extents
                  (Layer.Face,
                   Context,
                   +Layer.Texts.all (Index + 1),
@@ -546,12 +546,12 @@ package body Gtk.Layered.Elliptic_Annotation is
                      X  => -(Extents.X_Bearing + Extents.Width  * 0.5),
                      Y  => -(Extents.Y_Bearing + Extents.Height * 0.5));
                   if Layer.Texts.all (Index + 1).all.Markup then
-                     Show_Markup
+                     Pango.Cairo.Fonts.Show_Markup
                        (Layer.Face,
                         Context,
                         +Layer.Texts.all (Index + 1));
                   else
-                     Show_Text
+                     Pango.Cairo.Fonts.Show_Text
                        (Layer.Face,
                         Context,
                         +Layer.Texts.all (Index + 1));
@@ -582,8 +582,9 @@ package body Gtk.Layered.Elliptic_Annotation is
       return Layer.Ellipse;
    end Get_Ellipse;
 
-   overriding function Get_Face (Layer : Elliptic_Annotation_Layer)
-                      return Pango_Cairo_Font is
+   overriding function Get_Face
+     (Layer : Elliptic_Annotation_Layer)
+      return Pango.Cairo.Fonts.Pango_Cairo_Font is
    begin
       return Layer.Face;
    end Get_Face;
@@ -827,7 +828,7 @@ package body Gtk.Layered.Elliptic_Annotation is
                  Pango.Cairo.Fonts.Font_Type_Property.Gnew_Enum
                    (Name    => "font-type",
                     Nick    => "font type",
-                    Default => Pango_Font,
+                    Default => Pango.Cairo.Fonts.Pango_Font,
                     Blurb   =>
                        "The backend used for the font, e.g. toy font, pango " &
                        "font");
@@ -989,21 +990,25 @@ package body Gtk.Layered.Elliptic_Annotation is
                when Property_Font_Type =>
                   Pango.Cairo.Fonts.Font_Type_Property.Set_Enum
                     (Value,
-                     Get_Type (Layer.Face));
+                     Pango.Cairo.Fonts.Get_Type (Layer.Face));
                when Property_Family =>
                   Glib.Values.Init (Value, GType_String);
-                  Glib.Values.Set_String (Value, Get_Family (Layer.Face));
+                  Glib.Values.Set_String
+                    (Value,
+                     Pango.Cairo.Fonts.Get_Family (Layer.Face));
                when Property_Slant =>
                   Cairo.Font_Slant_Property.Set_Enum
                     (Value,
-                     Get_Slant (Layer.Face));
+                     Pango.Cairo.Fonts.Get_Slant (Layer.Face));
                when Property_Font_Size =>
                   Glib.Values.Init (Value, GType_Uint);
-                  Glib.Values.Set_Uint (Value, Guint (Get_Size (Layer.Face)));
+                  Glib.Values.Set_Uint
+                    (Value,
+                     Guint (Pango.Cairo.Fonts.Get_Size (Layer.Face)));
                when Property_Weight =>
                   Pango.Enums.Weight_Property.Set_Enum
                     (Value,
-                     Get_Weight (Layer.Face));
+                     Pango.Cairo.Fonts.Get_Weight (Layer.Face));
                when Property_Stretch =>
                   Glib.Values.Init (Value, GType_Double);
                   Glib.Values.Set_Double (Value, Layer.Stretch);
@@ -1141,7 +1146,7 @@ package body Gtk.Layered.Elliptic_Annotation is
       Layer  : in out Elliptic_Annotation_Layer)
    is
       Ellipse : Cairo.Ellipses.Ellipse_Parameters;
-      Face    : Pango_Cairo_Font;
+      Face    : Pango.Cairo.Fonts.Pango_Cairo_Font;
       Height  : Gdouble;
       Stretch : Gdouble;
       From    : Gdouble;
@@ -1151,7 +1156,7 @@ package body Gtk.Layered.Elliptic_Annotation is
       Color   : Gdk.Color.Gdk_Color;
    begin
       Restore (Stream, Ellipse);
-      Restore (Stream, Face);
+      Pango.Cairo.Fonts.Restore (Stream, Face);
       Restore (Stream, Height);
       Restore (Stream, Stretch);
       Restore (Stream, From);
@@ -1211,7 +1216,7 @@ package body Gtk.Layered.Elliptic_Annotation is
       Ticks   : Tick_Parameters;
       From    : Gdouble;
       Length  : Gdouble;
-      Face    : Pango_Cairo_Font;
+      Face    : Pango.Cairo.Fonts.Pango_Cairo_Font;
       Mode    : Text_Transformation;
       Height  : Gdouble;
       Stretch : Gdouble;
@@ -1245,7 +1250,7 @@ package body Gtk.Layered.Elliptic_Annotation is
 
    overriding procedure Set_Face
      (Layer : in out Elliptic_Annotation_Layer;
-      Face  : Pango_Cairo_Font) is
+      Face  : Pango.Cairo.Fonts.Pango_Cairo_Font) is
    begin
       Layer.Face    := Face;
       Layer.Updated := True;
@@ -1306,17 +1311,19 @@ package body Gtk.Layered.Elliptic_Annotation is
                  Gtk.Layered.Text_Transformation_Property.Get_Enum
                    (Value);
             when Property_Font_Type =>
-               Set_Type
+               Pango.Cairo.Fonts.Set_Type
                  (Layer.Face,
                   Pango.Cairo.Fonts.Font_Type_Property.Get_Enum (Value));
             when Property_Family =>
-               Set_Family (Layer.Face, Glib.Values.Get_String (Value));
+               Pango.Cairo.Fonts.Set_Family
+                 (Layer.Face,
+                  Glib.Values.Get_String (Value));
             when Property_Slant =>
-               Set_Slant
+               Pango.Cairo.Fonts.Set_Slant
                  (Layer.Face,
                   Cairo.Font_Slant_Property.Get_Enum (Value));
             when Property_Font_Size =>
-               Set_Size
+               Pango.Cairo.Fonts.Set_Size
                  (Layer.Face,
                   Gint
                     (Guint'Max
@@ -1325,7 +1332,7 @@ package body Gtk.Layered.Elliptic_Annotation is
                                Guint (Gint'Last)),
                           1)));
             when Property_Weight =>
-               Set_Weight
+               Pango.Cairo.Fonts.Set_Weight
                  (Layer.Face,
                   Pango.Enums.Weight_Property.Get_Enum (Value));
             when Property_Tick_Step =>
@@ -1466,10 +1473,10 @@ package body Gtk.Layered.Elliptic_Annotation is
 
    --     procedure Set_Texts
    --       (Layer  : in out Elliptic_Annotation_Layer;
-   --        Texts  : Controlled_String_List;
+   --        Texts  : Gtk.Enums.String_Lists.Controlled_String_List;
    --        Markup : Boolean := False) is
    --     begin
-   --        Set_Texts (Layer, Get_GList (Texts), Markup);
+   --        Set_Texts (Layer, Gtk.Enums.String_Lists.Get_GList (Texts), Markup);
    --     end Set_Texts;
 
    overriding procedure Set_Texts
@@ -1494,7 +1501,7 @@ package body Gtk.Layered.Elliptic_Annotation is
       Layer  : Elliptic_Annotation_Layer) is
    begin
       Store (Stream, Layer.Ellipse);
-      Store (Stream, Layer.Face);
+      Pango.Cairo.Fonts.Store (Stream, Layer.Face);
       Store (Stream, Layer.Height);
       Store (Stream, Layer.Stretch);
       Store (Stream, Layer.From);

@@ -25,12 +25,13 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
-with Glib.Properties.Creation;    use Glib.Properties.Creation;
-with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
-
 with Ada.Unchecked_Deallocation;
+
+with Cairo.Elementary_Functions;
 with Cairo.Line_Cap_Property;
+
+with Glib.Properties.Creation;
+with Gtk.Layered.Stream_IO;
 
 package body Gtk.Layered.Needle is
 
@@ -39,7 +40,7 @@ package body Gtk.Layered.Needle is
    pragma Warnings (Off, "declaration hides ""Handlers""");
    pragma Warnings (Off, "declaration hides ""Needle""");
 
-   Sqrt_2 : constant Gdouble := Sqrt (2.0);
+   Sqrt_2 : constant Gdouble := Cairo.Elementary_Functions.Sqrt (2.0);
 
    type Needle_Ptr is access all Needle_Layer;
 
@@ -86,9 +87,10 @@ package body Gtk.Layered.Needle is
 
    procedure Add_Adjustment
      (Layer      : in out Needle_Layer;
-      Adjustment : not null access Gtk_Adjustment_Record'Class) is
+      Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class)
+   is
    begin
-      Ref (Adjustment);
+      Gtk.Adjustment.Ref (Adjustment);
       Layer.Adjustment := Adjustment.all'Unchecked_Access;
       Layer.Changed :=
         Handlers.Connect
@@ -119,18 +121,18 @@ package body Gtk.Layered.Needle is
 
    procedure Add_Needle
      (Under       : not null access Layer_Location'Class;
-      Center      : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
-      From        : Gdouble                            := 3.0 * Pi / 4.0;
-      Length      : Gdouble                            := 3.0 * Pi / 2.0;
-      Tip_Length  : Gdouble                            := 20.0;
-      Tip_Width   : Gdouble                            := 2.0;
-      Tip_Cap     : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      Rear_Length : Gdouble                            := 3.0;
-      Rear_Width  : Gdouble                            := 3.0;
-      Rear_Cap    : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Adjustment  : access Gtk_Adjustment_Record'Class := null;
-      Scaled      : Boolean                            := False)
+      Center      : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 0.0);
+      From        : Gdouble                                           := 3.0 * Pi / 4.0;
+      Length      : Gdouble                                           := 3.0 * Pi / 2.0;
+      Tip_Length  : Gdouble                                           := 20.0;
+      Tip_Width   : Gdouble                                           := 2.0;
+      Tip_Cap     : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      Rear_Length : Gdouble                                           := 3.0;
+      Rear_Width  : Gdouble                                           := 3.0;
+      Rear_Cap    : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      Color       : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Adjustment  : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled      : Boolean                                           := False)
    is
       Ptr   : Needle_Ptr := new Needle_Layer;
       Layer : Needle_Layer renames Ptr.all;
@@ -160,18 +162,18 @@ package body Gtk.Layered.Needle is
 
    function Add_Needle
      (Under       : not null access Layer_Location'Class;
-      Center      : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
-      From        : Gdouble                            := 3.0 * Pi / 4.0;
-      Length      : Gdouble                            := 3.0 * Pi / 2.0;
-      Tip_Length  : Gdouble                            := 20.0;
-      Tip_Width   : Gdouble                            := 2.0;
-      Tip_Cap     : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      Rear_Length : Gdouble                            := 3.0;
-      Rear_Width  : Gdouble                            := 3.0;
-      Rear_Cap    : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Adjustment  : access Gtk_Adjustment_Record'Class := null;
-      Scaled      : Boolean                            := False)
+      Center      : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 0.0);
+      From        : Gdouble                                           := 3.0 * Pi / 4.0;
+      Length      : Gdouble                                           := 3.0 * Pi / 2.0;
+      Tip_Length  : Gdouble                                           := 20.0;
+      Tip_Width   : Gdouble                                           := 2.0;
+      Tip_Cap     : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      Rear_Length : Gdouble                                           := 3.0;
+      Rear_Width  : Gdouble                                           := 3.0;
+      Rear_Cap    : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      Color       : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Adjustment  : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled      : Boolean                                           := False)
       return not null access Needle_Layer
    is
       Ptr   : Needle_Ptr := new Needle_Layer;
@@ -206,9 +208,12 @@ package body Gtk.Layered.Needle is
       Needle      : Needle_Ptr)
    is
       pragma Unreferenced (Adjustment);
-      Lower : constant Gdouble := Get_Lower (Needle.all.Adjustment);
-      Upper : constant Gdouble := Get_Upper (Needle.all.Adjustment);
-      Value : constant Gdouble := Get_Value (Needle.all.Adjustment);
+      Lower : constant Gdouble :=
+                Gtk.Adjustment.Get_Lower (Needle.all.Adjustment);
+      Upper : constant Gdouble :=
+                Gtk.Adjustment.Get_Upper (Needle.all.Adjustment);
+      Value : constant Gdouble :=
+                Gtk.Adjustment.Get_Value (Needle.all.Adjustment);
    begin
       if Upper <= Lower or else Value <= Lower then
          Needle.all.Set_Value (0.0);
@@ -225,7 +230,7 @@ package body Gtk.Layered.Needle is
    overriding procedure Draw
      (Layer   : in out Needle_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle)
+      Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
       pragma Unreferenced (Area);
       Tip_Length  : Gdouble;
@@ -266,11 +271,13 @@ package body Gtk.Layered.Needle is
          when Cairo.Cairo_Line_Cap_Round =>
             declare
                Angle     : constant Gdouble :=
-                             Arctan
+                             Cairo.Elementary_Functions.Arctan
                                (X => Tip_Length + Rear_Length,
                                 Y => Tip_Radius - Rear_Radius);
-               Cos_Angle : constant Gdouble := Cos (Angle);
-               Sin_Angle : constant Gdouble := Sin (Angle);
+               Cos_Angle : constant Gdouble :=
+                             Cairo.Elementary_Functions.Cos (Angle);
+               Sin_Angle : constant Gdouble :=
+                             Cairo.Elementary_Functions.Sin (Angle);
             begin
                Cairo.Move_To
                  (Context,
@@ -303,11 +310,13 @@ package body Gtk.Layered.Needle is
          when Cairo.Cairo_Line_Cap_Round =>
             declare
                Angle     : constant Gdouble :=
-                             Arctan
+                             Cairo.Elementary_Functions.Arctan
                                (X => Tip_Length + Rear_Length,
                                 Y => Rear_Radius - Tip_Radius);
-               Cos_Angle : constant Gdouble := Cos (Angle);
-               Sin_Angle : constant Gdouble := Sin (Angle);
+               Cos_Angle : constant Gdouble :=
+                             Cairo.Elementary_Functions.Cos (Angle);
+               Sin_Angle : constant Gdouble :=
+                             Cairo.Elementary_Functions.Sin (Angle);
             begin
                Cairo.Line_To
                  (Context,
@@ -343,19 +352,21 @@ package body Gtk.Layered.Needle is
       Layer.Updated := False;
    end Draw;
 
-   overriding procedure Finalize (Layer : in out Needle_Layer) is
+   overriding procedure Finalize (Layer : in out Needle_Layer)
+   is
+      use type Gtk.Adjustment.Gtk_Adjustment;
    begin
       Finalize (Abstract_Layer (Layer));
       if Layer.Adjustment /= null then
-         Disconnect (Layer.Adjustment, Layer.Changed);
-         Disconnect (Layer.Adjustment, Layer.Value_Changed);
-         Unref (Layer.Adjustment);
+         Gtk.Handlers.Disconnect (Layer.Adjustment, Layer.Changed);
+         Gtk.Handlers.Disconnect (Layer.Adjustment, Layer.Value_Changed);
+         Gtk.Adjustment.Unref (Layer.Adjustment);
          Layer.Adjustment := null;
       end if;
    end Finalize;
 
-   overriding function Get_Adjustment (Layer : Needle_Layer)
-                            return Gtk_Adjustment is
+   overriding function Get_Adjustment
+     (Layer : Needle_Layer) return Gtk.Adjustment.Gtk_Adjustment is
    begin
       return Layer.Adjustment;
    end Get_Adjustment;
@@ -401,7 +412,7 @@ package body Gtk.Layered.Needle is
          case Layer_Property'Val (Property - 1) is
             when Property_Center_X =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "x",
                     Nick    => "x",
                     Minimum => Gdouble'First,
@@ -410,7 +421,7 @@ package body Gtk.Layered.Needle is
                     Blurb   => "The x-coordinate of the needle's center");
             when Property_Center_Y =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "y",
                     Nick    => "y",
                     Minimum => Gdouble'First,
@@ -419,7 +430,7 @@ package body Gtk.Layered.Needle is
                     Blurb   => "The y-coordinate of the needle's center");
             when Property_Value =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "value",
                     Nick    => "value",
                     Minimum => 0.0,
@@ -428,7 +439,7 @@ package body Gtk.Layered.Needle is
                     Blurb   => "The indicated value");
             when Property_From =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "from",
                     Nick    => "from",
                     Minimum => -2.0 * Pi,
@@ -437,7 +448,7 @@ package body Gtk.Layered.Needle is
                     Blurb   => "The angle of corresponding to the value 0");
             when Property_Length =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "length",
                     Nick    => "length",
                     Minimum => -2.0 * Pi,
@@ -449,7 +460,7 @@ package body Gtk.Layered.Needle is
                        "corresponding to the value 1");
             when Property_Tip_Length =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "tip-length",
                     Nick    => "tip length",
                     Minimum => 0.0,
@@ -458,7 +469,7 @@ package body Gtk.Layered.Needle is
                     Blurb   => "The length of the needle's tip");
             when Property_Rear_Length =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "rear-length",
                     Nick    => "rear length",
                     Minimum => Gdouble'First,
@@ -467,7 +478,7 @@ package body Gtk.Layered.Needle is
                     Blurb   => "The length of the rear needle's end");
             when Property_Tip_Width =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "tip-width",
                     Nick    => "tip width",
                     Minimum => 0.0,
@@ -476,7 +487,7 @@ package body Gtk.Layered.Needle is
                     Blurb   => "The needle width at its tip");
             when Property_Rear_Width =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "rear-width",
                     Nick    => "read width",
                     Minimum => 0.0,
@@ -485,7 +496,7 @@ package body Gtk.Layered.Needle is
                     Blurb   => "The needle width at its rear end");
             when Property_Color =>
                return
-                 Gnew_Boxed
+                 Glib.Properties.Creation.Gnew_Boxed
                    (Name       => "color",
                     Boxed_Type => Gdk.Color.Gdk_Color_Type,
                     Nick       => "color",
@@ -506,7 +517,7 @@ package body Gtk.Layered.Needle is
                     Blurb   => "The cap style of the needle's rear end");
             when Property_Scaled =>
                return
-                 Gnew_Boolean
+                 Glib.Properties.Creation.Gnew_Boolean
                    (Name    => "scaled",
                     Nick    => "scaled",
                     Default => False,
@@ -620,13 +631,13 @@ package body Gtk.Layered.Needle is
       Color      : Gdk.Color.Gdk_Color;
       Adjustment : Boolean;
    begin
-      Restore (Stream, Center);
-      Restore (Stream, From);
-      Restore (Stream, Length);
-      Restore (Stream, Tip);
-      Restore (Stream, Rear);
-      Restore (Stream, Color);
-      Restore (Stream, Layer.Scaled, Adjustment);
+      Gtk.Layered.Stream_IO.Restore (Stream, Center);
+      Gtk.Layered.Stream_IO.Restore (Stream, From);
+      Gtk.Layered.Stream_IO.Restore (Stream, Length);
+      Gtk.Layered.Stream_IO.Restore (Stream, Tip);
+      Gtk.Layered.Stream_IO.Restore (Stream, Rear);
+      Gtk.Layered.Stream_IO.Restore (Stream, Color);
+      Gtk.Layered.Stream_IO.Restore (Stream, Layer.Scaled, Adjustment);
       Set
         (Layer  => Layer,
          Center => Center,
@@ -637,16 +648,16 @@ package body Gtk.Layered.Needle is
          Color  => Color);
       if Adjustment then
          declare
-            Adjustment : Gtk_Adjustment;
+            Adjustment : Gtk.Adjustment.Gtk_Adjustment;
          begin
-            Restore (Stream, Adjustment);
+            Gtk.Layered.Stream_IO.Restore (Stream, Adjustment);
             Add_Adjustment (Layer, Adjustment);
          end;
       else
          declare
             Value : Gdouble;
          begin
-            Restore (Stream, Value);
+            Gtk.Layered.Stream_IO.Restore (Stream, Value);
             Set_Value (Layer, Value);
          end;
       end if;
@@ -654,10 +665,7 @@ package body Gtk.Layered.Needle is
 
    overriding procedure Scale
      (Layer  : in out Needle_Layer;
-      Factor : Gdouble)
-   is
-      Tip_Length  : Gdouble := Layer.Tip.Length  * Factor;
-      Rear_Length : Gdouble := Layer.Rear.Length * Factor;
+      Factor : Gdouble) is
    begin
       Set
         (Layer  => Layer,
@@ -793,19 +801,21 @@ package body Gtk.Layered.Needle is
 
    overriding procedure Store
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
-      Layer  : Needle_Layer) is
+      Layer  : Needle_Layer)
+   is
+      use type Gtk.Adjustment.Gtk_Adjustment;
    begin
-      Store (Stream, Layer.Center);
-      Store (Stream, Layer.From);
-      Store (Stream, Layer.Length);
-      Store (Stream, Layer.Tip);
-      Store (Stream, Layer.Rear);
-      Store (Stream, Layer.Color);
-      Store (Stream, Layer.Scaled, Layer.Adjustment /= null);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Center);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.From);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Length);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Tip);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Rear);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Color);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Scaled, Layer.Adjustment /= null);
       if Layer.Adjustment = null then
-         Store (Stream, Layer.Value);
+         Gtk.Layered.Stream_IO.Store (Stream, Layer.Value);
       else
-         Store (Stream, Layer.Adjustment);
+         Gtk.Layered.Stream_IO.Store (Stream, Layer.Adjustment);
       end if;
    end Store;
 

@@ -83,27 +83,27 @@ package Gtk.Layered.Elliptic_Bar is
    --
    procedure Add_Elliptic_Bar
      (Under      : not null access Layer_Location'Class;
-      Ellipse    : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
-      From       : Gdouble                            := 3.0 * Pi / 4.0;
-      Length     : Gdouble                            := 3.0 * Pi / 2.0;
-      Width      : Gdouble                            := 1.0;
-      Color      : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Line_Cap   : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      Adjustment : access Gtk_Adjustment_Record'Class := null;
-      Scaled     : Boolean                            := False;
-      Widened    : Boolean                            := False);
+      Ellipse    : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
+      From       : Gdouble                                           := 3.0 * Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      Width      : Gdouble                                           := 1.0;
+      Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Line_Cap   : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled     : Boolean                                           := False;
+      Widened    : Boolean                                           := False);
 
    function Add_Elliptic_Bar
      (Under      : not null access Layer_Location'Class;
-      Ellipse    : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
-      From       : Gdouble                            := 3.0 * Pi / 4.0;
-      Length     : Gdouble                            := 3.0 * Pi / 2.0;
-      Width      : Gdouble                            := 1.0;
-      Color      : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Line_Cap   : Cairo.Cairo_Line_Cap               := Cairo.Cairo_Line_Cap_Butt;
-      Adjustment : access Gtk_Adjustment_Record'Class := null;
-      Scaled     : Boolean                            := False;
-      Widened    : Boolean                            := False)
+      Ellipse    : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
+      From       : Gdouble                                           := 3.0 * Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      Width      : Gdouble                                           := 1.0;
+      Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Line_Cap   : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
+      Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled     : Boolean                                           := False;
+      Widened    : Boolean                                           := False)
       return not null access Elliptic_Bar_Layer;
 
    --
@@ -177,8 +177,8 @@ package Gtk.Layered.Elliptic_Bar is
       Stream : not null access Ada.Streams.Root_Stream_Type'Class)
       return not null access Elliptic_Bar_Layer;
 
-   overriding function Get_Adjustment (Layer : Elliptic_Bar_Layer)
-                                       return Gtk_Adjustment;
+   overriding function Get_Adjustment
+     (Layer : Elliptic_Bar_Layer) return Gtk.Adjustment.Gtk_Adjustment;
 
    overriding function Get_Properties_Number
      (Layer : Elliptic_Bar_Layer) return Natural;
@@ -198,7 +198,7 @@ package Gtk.Layered.Elliptic_Bar is
    overriding procedure Draw
      (Layer   : in out Elliptic_Bar_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle);
+      Area    : Gdk.Rectangle.Gdk_Rectangle);
 
    overriding procedure Finalize (Layer : in out Elliptic_Bar_Layer);
 
@@ -252,7 +252,7 @@ private
          Length        : Gdouble;
          Line          : Line_Parameters;
          Value         : Gdouble := 0.0;
-         Adjustment    : Gtk_Adjustment;
+         Adjustment    : Gtk.Adjustment.Gtk_Adjustment;
          Changed       : Handler_Id;
          Value_Changed : Handler_Id;
          Scaled        : Boolean := False;

@@ -81,9 +81,10 @@ package body Gtk.Layered.Sector_Needle is
 
    procedure Add_Adjustment
      (Layer      : in out Sector_Needle_Layer;
-      Adjustment : not null access Gtk_Adjustment_Record'Class) is
+      Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class)
+   is
    begin
-      Ref (Adjustment);
+      Gtk.Adjustment.Ref (Adjustment);
       Layer.Adjustment := Adjustment.all'Unchecked_Access;
       Layer.Changed :=
          Handlers.Connect
@@ -114,13 +115,13 @@ package body Gtk.Layered.Sector_Needle is
 
    procedure Add_Sector_Needle
      (Under      : not null access Layer_Location'Class;
-      Outer      : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
+      Outer      : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
       Inner      : Cairo.Ellipses.Ellipse_Parameters;
-      From       : Gdouble                            := 3.0 * Pi / 4.0;
-      Length     : Gdouble                            := 3.0 * Pi / 2.0;
-      Color      : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Adjustment : access Gtk_Adjustment_Record'Class := null;
-      Scaled     : Boolean                            := False)
+      From       : Gdouble                                           := 3.0 * Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled     : Boolean                                           := False)
    is
       Ptr   : Needle_Ptr := new Sector_Needle_Layer;
       Layer : Sector_Needle_Layer renames Ptr.all;
@@ -145,13 +146,13 @@ package body Gtk.Layered.Sector_Needle is
 
    procedure Add_Sector_Needle
      (Under      : not null access Layer_Location'Class;
-      Outer      : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
+      Outer      : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
       Center     : Cairo.Ellipses.Cairo_Tuple;
-      From       : Gdouble                            := 3.0 * Pi / 4.0;
-      Length     : Gdouble                            := 3.0 * Pi / 2.0;
-      Color      : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Adjustment : access Gtk_Adjustment_Record'Class := null;
-      Scaled     : Boolean                            := False)
+      From       : Gdouble                                           := 3.0 * Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled     : Boolean                                           := False)
    is
       Ptr   : Needle_Ptr := new Sector_Needle_Layer;
       Layer : Sector_Needle_Layer renames Ptr.all;
@@ -176,12 +177,12 @@ package body Gtk.Layered.Sector_Needle is
 
    procedure Add_Sector_Needle
      (Under      : not null access Layer_Location'Class;
-      Outer      : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
-      From       : Gdouble                            := 3.0 * Pi / 4.0;
-      Length     : Gdouble                            := 3.0 * Pi / 2.0;
-      Color      : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Adjustment : access Gtk_Adjustment_Record'Class := null;
-      Scaled     : Boolean                            := False)
+      Outer      : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
+      From       : Gdouble                                           := 3.0 * Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled     : Boolean                                           := False)
    is
       Ptr   : Needle_Ptr := new Sector_Needle_Layer;
       Layer : Sector_Needle_Layer renames Ptr.all;
@@ -206,13 +207,13 @@ package body Gtk.Layered.Sector_Needle is
 
    function Add_Sector_Needle
      (Under      : not null access Layer_Location'Class;
-      Outer      : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
+      Outer      : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
       Inner      : Cairo.Ellipses.Ellipse_Parameters;
-      From       : Gdouble                            := 3.0 * Pi / 4.0;
-      Length     : Gdouble                            := 3.0 * Pi / 2.0;
-      Color      : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Adjustment : access Gtk_Adjustment_Record'Class := null;
-      Scaled     : Boolean                            := False)
+      From       : Gdouble                                           := 3.0 * Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled     : Boolean                                           := False)
       return not null access Sector_Needle_Layer
    is
       Ptr   : Needle_Ptr := new Sector_Needle_Layer;
@@ -239,13 +240,13 @@ package body Gtk.Layered.Sector_Needle is
 
    function Add_Sector_Needle
      (Under      : not null access Layer_Location'Class;
-      Outer      : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
+      Outer      : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
       Center     : Cairo.Ellipses.Cairo_Tuple;
-      From       : Gdouble                            := 3.0 * Pi / 4.0;
-      Length     : Gdouble                            := 3.0 * Pi / 2.0;
-      Color      : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Adjustment : access Gtk_Adjustment_Record'Class := null;
-      Scaled     : Boolean                            := False)
+      From       : Gdouble                                           := 3.0 * Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled     : Boolean                                           := False)
       return not null access Sector_Needle_Layer
    is
       Ptr   : Needle_Ptr := new Sector_Needle_Layer;
@@ -272,12 +273,12 @@ package body Gtk.Layered.Sector_Needle is
 
    function Add_Sector_Needle
      (Under      : not null access Layer_Location'Class;
-      Outer      : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
-      From       : Gdouble                            := 3.0 * Pi / 4.0;
-      Length     : Gdouble                            := 3.0 * Pi / 2.0;
-      Color      : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 0.0, 0.0);
-      Adjustment : access Gtk_Adjustment_Record'Class := null;
-      Scaled     : Boolean                            := False)
+      Outer      : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
+      From       : Gdouble                                           := 3.0 * Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+      Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled     : Boolean                                           := False)
       return not null access Sector_Needle_Layer
    is
       Ptr   : Needle_Ptr := new Sector_Needle_Layer;
@@ -307,9 +308,9 @@ package body Gtk.Layered.Sector_Needle is
       Needle      : Needle_Ptr)
    is
       pragma Unreferenced (Adjustment);
-      Lower : constant Gdouble := Get_Lower (Needle.all.Adjustment);
-      Upper : constant Gdouble := Get_Upper (Needle.all.Adjustment);
-      Value : constant Gdouble := Get_Value (Needle.all.Adjustment);
+      Lower : constant Gdouble := Gtk.Adjustment.Get_Lower (Needle.all.Adjustment);
+      Upper : constant Gdouble := Gtk.Adjustment.Get_Upper (Needle.all.Adjustment);
+      Value : constant Gdouble := Gtk.Adjustment.Get_Value (Needle.all.Adjustment);
    begin
       if Upper <= Lower or else Value <= Lower then
          Needle.all.Set_Value (0.0);
@@ -326,7 +327,7 @@ package body Gtk.Layered.Sector_Needle is
    overriding procedure Draw
      (Layer   : in out Sector_Needle_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle)
+      Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
       pragma Unreferenced (Area);
       Length : constant Gdouble := Layer.Length * Layer.Value;
@@ -396,19 +397,21 @@ package body Gtk.Layered.Sector_Needle is
       Layer.Updated := False;
    end Draw;
 
-   overriding procedure Finalize (Layer : in out Sector_Needle_Layer) is
+   overriding procedure Finalize (Layer : in out Sector_Needle_Layer)
+   is
+      use type Gtk.Adjustment.Gtk_Adjustment;
    begin
       Finalize (Abstract_Layer (Layer));
       if Layer.Adjustment /= null then
          Disconnect (Layer.Adjustment, Layer.Changed);
          Disconnect (Layer.Adjustment, Layer.Value_Changed);
-         Unref (Layer.Adjustment);
+         Gtk.Adjustment.Unref (Layer.Adjustment);
          Layer.Adjustment := null;
       end if;
    end Finalize;
 
-   overriding function Get_Adjustment (Layer : Sector_Needle_Layer)
-      return Gtk_Adjustment is
+   overriding function Get_Adjustment
+     (Layer : Sector_Needle_Layer) return Gtk.Adjustment.Gtk_Adjustment is
    begin
       return Layer.Adjustment;
    end Get_Adjustment;
@@ -803,7 +806,7 @@ package body Gtk.Layered.Sector_Needle is
       );
       if Adjustment then
          declare
-            Adjustment : Gtk_Adjustment;
+            Adjustment : Gtk.Adjustment.Gtk_Adjustment;
          begin
             Restore (Stream, Adjustment);
             Add_Adjustment (Layer, Adjustment);
@@ -1034,7 +1037,9 @@ package body Gtk.Layered.Sector_Needle is
 
    overriding procedure Store
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
-      Layer  : Sector_Needle_Layer) is
+      Layer  : Sector_Needle_Layer)
+   is
+      use type Gtk.Adjustment.Gtk_Adjustment;
    begin
       Store (Stream, Layer.Outer);
       Store (Stream, Layer.Inner);

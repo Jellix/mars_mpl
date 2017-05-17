@@ -75,7 +75,7 @@ package Gtk.Layered.Abstract_Bordered is
    procedure Draw_Contents
      (Layer   : in out Abstract_Bordered_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle) is abstract;
+      Area    : Gdk.Rectangle.Gdk_Rectangle) is abstract;
 
    --
    -- Get_Aspected -- The border behavior when the parent widget is resized
@@ -214,7 +214,7 @@ package Gtk.Layered.Abstract_Bordered is
    procedure Set_Contents_Path
      (Layer   : in out Abstract_Bordered_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle) is abstract;
+      Area    : Gdk.Rectangle.Gdk_Rectangle) is abstract;
 
    --
    -- Set_Deepened -- Change the behavior when the parent widget is resized
@@ -240,12 +240,12 @@ package Gtk.Layered.Abstract_Bordered is
    overriding procedure Draw
      (Layer   : in out Abstract_Bordered_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle);
+      Area    : Gdk.Rectangle.Gdk_Rectangle);
 
    overriding procedure Draw
      (Layer   : in out Foreground_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle);
+      Area    : Gdk.Rectangle.Gdk_Rectangle);
 
    overriding procedure Finalize (Layer : in out Abstract_Bordered_Layer);
 

@@ -22,114 +22,123 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with GLib;         use GLib;
-with GLib.Object;  use GLib.Object;
+with Glib.Object;
 
 package GIO.Content_Type is
---
--- Can_Be_Executable -- A guess
---
---    Instance - A content type
---
--- This function checks if a content type can be executable.  Note  that
--- for instance things like text files can be executables (i.e.  scripts
--- and batch files).
---
--- Returns :
---
---    The if the file type corresponds to a type that can be executable
---
-   function Can_Be_Executable (Instance : UTF8_String) return Boolean;
---
--- Equals -- Compares two content types for equality
---
---    Type_1 - A content type
---    Type_2 - A content type
---
--- Returns :
---
---    True if Type_1 is equal to Type_2
---
-   function Equals (Type_1, Type_2 : UTF8_String) return Boolean;
---
--- From_MIME_Type -- Find a content type based on the MIME type name
---
---    MIME - A MIME type
---
--- This  function  tries  to  find a content type based on the MIME type
--- name.
---
--- Returns :
---
---    The content type or an empty string
---
-   function From_MIME_Type (MIME : UTF8_String) return UTF8_String;
---
--- Get_Description -- Gets the human readable description of a type
---
---    Instance - A content type
---
--- Returns :
---
---    The description
---
-   function Get_Description (Instance : UTF8_String) return UTF8_String;
---
--- Get_Icon -- Gets an icon for the content type
---
---    Instance - A content type
---
--- Returns :
---
---    The icon object (Unref is required when no more used)
---
-   function Get_Icon (Instance : UTF8_String) return GObject;
---
--- Get_MIME_Type -- Gets the MIME-type for the content type
---
---    Instance - A content type
---
--- Returns :
---
---    The type if registered, empty string otherwise
---
-   function Get_MIME_Type (Instance : UTF8_String) return UTF8_String;
---
--- Guess -- Content type
---
---    File_Name - The file name
---
--- Returns :
---
---    The content type
---
-   function Guess (File_Name : UTF8_String) return UTF8_String;
---
--- Is_A -- Determines if type is a subset of supertype.
---
---    Instance  - A content type
---    Supertype - A content type
---
--- Returns :
---
---    True if Instance is a kind of Supertype
---
-   function Is_A (Instance, Supertype : UTF8_String) return Boolean;
---
--- Is_Unknown -- Checks if the content type is the generic "unknown"
---
---    Instance - A content type
---
--- This  function  checks  if  the content type is the generic "unknown"
--- type. On Unix this is the "application/octet-stream" mimetype,  while
--- on win32 it is "*".
---
--- Returns :
---
---    True if Instance is unknown type
---
-   function Is_Unknown (Instance : UTF8_String) return Boolean;
+
+   --
+   -- Can_Be_Executable -- A guess
+   --
+   --    Instance - A content type
+   --
+   -- This function checks if a content type can be executable.  Note  that
+   -- for instance things like text files can be executables (i.e.  scripts
+   -- and batch files).
+   --
+   -- Returns :
+   --
+   --    The if the file type corresponds to a type that can be executable
+   --
+   function Can_Be_Executable (Instance : Glib.UTF8_String) return Boolean;
+
+   --
+   -- Equals -- Compares two content types for equality
+   --
+   --    Type_1 - A content type
+   --    Type_2 - A content type
+   --
+   -- Returns :
+   --
+   --    True if Type_1 is equal to Type_2
+   --
+   function Equals (Type_1, Type_2 : Glib.UTF8_String) return Boolean;
+
+   --
+   -- From_MIME_Type -- Find a content type based on the MIME type name
+   --
+   --    MIME - A MIME type
+   --
+   -- This  function  tries  to  find a content type based on the MIME type
+   -- name.
+   --
+   -- Returns :
+   --
+   --    The content type or an empty string
+   --
+   function From_MIME_Type (MIME : Glib.UTF8_String) return Glib.UTF8_String;
+
+   --
+   -- Get_Description -- Gets the human readable description of a type
+   --
+   --    Instance - A content type
+   --
+   -- Returns :
+   --
+   --    The description
+   --
+   function Get_Description
+     (Instance : Glib.UTF8_String) return Glib.UTF8_String;
+
+   --
+   -- Get_Icon -- Gets an icon for the content type
+   --
+   --    Instance - A content type
+   --
+   -- Returns :
+   --
+   --    The icon object (Unref is required when no more used)
+   --
+   function Get_Icon (Instance : Glib.UTF8_String) return Glib.Object.GObject;
+
+   --
+   -- Get_MIME_Type -- Gets the MIME-type for the content type
+   --
+   --    Instance - A content type
+   --
+   -- Returns :
+   --
+   --    The type if registered, empty string otherwise
+   --
+   function Get_MIME_Type (Instance : Glib.UTF8_String) return Glib.UTF8_String;
+
+   --
+   -- Guess -- Content type
+   --
+   --    File_Name - The file name
+   --
+   -- Returns :
+   --
+   --    The content type
+   --
+   function Guess (File_Name : Glib.UTF8_String) return Glib.UTF8_String;
+
+   --
+   -- Is_A -- Determines if type is a subset of supertype.
+   --
+   --    Instance  - A content type
+   --    Supertype - A content type
+   --
+   -- Returns :
+   --
+   --    True if Instance is a kind of Supertype
+   --
+   function Is_A (Instance, Supertype : Glib.UTF8_String) return Boolean;
+
+   --
+   -- Is_Unknown -- Checks if the content type is the generic "unknown"
+   --
+   --    Instance - A content type
+   --
+   -- This  function  checks  if  the content type is the generic "unknown"
+   -- type. On Unix this is the "application/octet-stream" mimetype,  while
+   -- on win32 it is "*".
+   --
+   -- Returns :
+   --
+   --    True if Instance is unknown type
+   --
+   function Is_Unknown (Instance : Glib.UTF8_String) return Boolean;
 
 end GIO.Content_Type;

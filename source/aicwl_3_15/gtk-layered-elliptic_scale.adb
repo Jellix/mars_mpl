@@ -149,7 +149,7 @@ package body Gtk.Layered.Elliptic_Scale is
    overriding procedure Draw
      (Layer   : in out Elliptic_Scale_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk_Rectangle)
+      Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
       pragma Unreferenced (Area);
       This     : Gdouble;
