@@ -23,16 +23,17 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 package body Glib.Values.Handling is
 
-   function Copy (Src_Value : GValue) return GValue is
+   function Copy (Src_Value : GValue) return GValue
+   is
       procedure Internal
-                 (  Src_Value  : access GValue;
-                    Dest_Value : in out GValue
-                 );
+        (Src  : access GValue;
+         Dest : in out GValue);
       pragma Import (C, Internal, "g_value_copy");
+
       Result : GValue;
       Temp   : aliased GValue := Src_Value;
    begin
@@ -41,11 +42,11 @@ package body Glib.Values.Handling is
       return Result;
    end Copy;
 
-   procedure Copy (Src_Value : GValue; Dest_Value : in out GValue) is
+   procedure Copy (Src_Value : GValue; Dest_Value : in out GValue)
+   is
       procedure Internal
-                 (  Src_Value  : access GValue;
-                    Dest_Value : in out GValue
-                 );
+        (Src  : access GValue;
+         Dest : in out GValue);
       pragma Import (C, Internal, "g_value_copy");
       Temp : aliased GValue := Src_Value;
    begin

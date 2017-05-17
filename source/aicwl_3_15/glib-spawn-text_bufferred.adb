@@ -23,86 +23,93 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Gtk.Missed;  use Gtk.Missed;
+with Gtk.Missed;
+with Gtk.Text_Iter;
 
 with System.Address_To_Access_Conversions;
 
-package body GLib.Spawn.Text_Bufferred is
+package body Glib.Spawn.Text_Bufferred is
 
-   procedure Error
-             (  Process : in out Text_Bufferred_Process;
-                Data    : UTF8_String
-             )  is
+   overriding procedure Error
+     (Process : in out Text_Bufferred_Process;
+      Data    : UTF8_String)
+   is
+      use type Gtk.Text_Buffer.Gtk_Text_Buffer;
    begin
       if Process.Error /= null or else Data'Length > 0 then
          declare
-            Write : Request_Write
-                    (  Process'Access,
-                       True,
-                       Data'Length
-                    );
+            Write :
+            Request_Write
+              (Process'Access,
+               True,
+               Data'Length);
          begin
             Write.Text := Data'Address;
-            Request (Write);
+            Gtk.Main.Router.Request (Write);
          end;
       end if;
    end Error;
 
-   procedure Finalize (Process : in out Text_Bufferred_Process) is
+   overriding procedure Finalize (Process : in out Text_Bufferred_Process)
+   is
+      use type Gtk.Text_Buffer.Gtk_Text_Buffer;
    begin
       if Process.Input /= null then
-         Unref (Process.Input);
+         Gtk.Text_Buffer.Unref (Process.Input);
          Process.Input := null;
       end if;
       if Process.Output /= null then
-         Unref (Process.Output);
+         Gtk.Text_Buffer.Unref (Process.Output);
          Process.Output := null;
       end if;
       if Process.Error /= null then
-         Unref (Process.Error);
+         Gtk.Text_Buffer.Unref (Process.Error);
          Process.Error := null;
       end if;
-      Finalize (Asynchronous_Process (Process));
+      Glib.Spawn.Asynchronous.Finalize
+        (Glib.Spawn.Asynchronous.Asynchronous_Process (Process));
    end Finalize;
 
    procedure Initiate
-             (  Process : in out Text_Bufferred_Process;
-                Input   : Gtk_Text_Buffer;
-                Output  : Gtk_Text_Buffer;
-                Error   : Gtk_Text_Buffer
-             )  is
+     (Process : in out Text_Bufferred_Process;
+      Input   : Gtk.Text_Buffer.Gtk_Text_Buffer;
+      Output  : Gtk.Text_Buffer.Gtk_Text_Buffer;
+      Error   : Gtk.Text_Buffer.Gtk_Text_Buffer)
+   is
+      use type Gtk.Text_Buffer.Gtk_Text_Buffer;
    begin
       if Process.Input /= null then
-         Unref (Process.Input);
+         Gtk.Text_Buffer.Unref (Process.Input);
       end if;
       Process.Input := Input;
       if Process.Input /= null then
-         Ref (Process.Input);
+         Gtk.Text_Buffer.Ref (Process.Input);
          Process.Position := 0;
       end if;
       if Process.Output /= null then
-         Unref (Process.Output);
+         Gtk.Text_Buffer.Unref (Process.Output);
       end if;
       Process.Output := Output;
       if Process.Output /= null then
-         Ref (Process.Output);
+         Gtk.Text_Buffer.Ref (Process.Output);
       end if;
       if Process.Error /= null then
-         Unref (Process.Error);
+         Gtk.Text_Buffer.Unref (Process.Error);
       end if;
       Process.Error := Error;
       if Process.Error /= null then
-         Ref (Process.Error);
+         Gtk.Text_Buffer.Ref (Process.Error);
       end if;
    end Initiate;
 
-   procedure Input
-             (  Process : in out Text_Bufferred_Process;
-                Data    : out UTF8_String;
-                Count   : out Natural
-             )  is
+   overriding procedure Input
+     (Process : in out Text_Bufferred_Process;
+      Data    : out UTF8_String;
+      Count   : out Natural)
+   is
+      use type Gtk.Text_Buffer.Gtk_Text_Buffer;
    begin
       if Process.Input = null or else Data'Length = 0 then
          Count := 0;
@@ -111,249 +118,238 @@ package body GLib.Spawn.Text_Bufferred is
             Read : Request_Read (Process'Access, Data'Length);
          begin
             Read.Text := Data'Address;
-            Request (Read);
+            Gtk.Main.Router.Request (Read);
             Count := Read.Count;
          end;
       end if;
    end Input;
 
    procedure Insert
-             (  Process : in out Text_Bufferred_Process;
-                Buffer  : access Gtk_Text_Buffer_Record'Class;
-                Error   : Boolean;
-                Text    : String
-             )  is
-      End_Iter : Gtk_Text_Iter;
+     (Process : in out Text_Bufferred_Process;
+      Buffer  : access Gtk.Text_Buffer.Gtk_Text_Buffer_Record'Class;
+      Error   : Boolean;
+      Text    : String)
+   is
+      pragma Unreferenced (Error, Process);
+
+      End_Iter : Gtk.Text_Iter.Gtk_Text_Iter;
    begin
-      Get_End_Iter (Buffer, End_Iter);
-      Insert_Alt (Buffer, End_Iter, Text);
+      Gtk.Text_Buffer.Get_End_Iter (Buffer, End_Iter);
+      Gtk.Missed.Insert_Alt (Buffer, End_Iter, Text);
+      pragma Unreferenced (End_Iter);
    end Insert;
 
-   procedure Output
-             (  Process : in out Text_Bufferred_Process;
-                Data    : UTF8_String
-             )  is
+   overriding procedure Output
+     (Process : in out Text_Bufferred_Process;
+      Data    : UTF8_String)
+   is
+      use type Gtk.Text_Buffer.Gtk_Text_Buffer;
    begin
       if Process.Output /= null or else Data'Length > 0 then
          declare
-            Write : Request_Write
-                    (  Process'Access,
-                       False,
-                       Data'Length
-                    );
+            Write :
+            Request_Write
+              (Process'Access,
+               False,
+               Data'Length);
          begin
             Write.Text := Data'Address;
-            Request (Write);
+            Gtk.Main.Router.Request (Write);
          end;
       end if;
    end Output;
 
    procedure Run
-             (  Process           : in out Text_Bufferred_Process;
-                Name              : UTF8_String;
-                Working_Directory : UTF8_String;
-                ArgV              : Chars_Ptr_Array;
-                EnvP              : Chars_Ptr_Array;
-                Input             : Gtk_Text_Buffer := null;
-                Output            : Gtk_Text_Buffer := null;
-                Error             : Gtk_Text_Buffer := null
-             )  is
+     (Process           : in out Text_Bufferred_Process;
+      Name              : UTF8_String;
+      Working_Directory : UTF8_String;
+      ArgV              : Chars_Ptr_Array;
+      EnvP              : Chars_Ptr_Array;
+      Input             : Gtk.Text_Buffer.Gtk_Text_Buffer := null;
+      Output            : Gtk.Text_Buffer.Gtk_Text_Buffer := null;
+      Error             : Gtk.Text_Buffer.Gtk_Text_Buffer := null) is
    begin
       Initiate (Process, Input, Output, Error);
-      Run
-      (  Process           => Asynchronous_Process (Process),
+      Glib.Spawn.Asynchronous.Run
+        (Process           =>
+           Glib.Spawn.Asynchronous.Asynchronous_Process (Process),
          Name              => Name,
          Working_Directory => Working_Directory,
          ArgV              => ArgV,
-         EnvP              => EnvP
-      );
+         EnvP              => EnvP);
    end Run;
 
    procedure Run
-             (  Process           : in out Text_Bufferred_Process;
-                Name              : UTF8_String;
-                Working_Directory : UTF8_String;
-                ArgV              : GList;
-                EnvP              : GList;
-                Input             : Gtk_Text_Buffer := null;
-                Output            : Gtk_Text_Buffer := null;
-                Error             : Gtk_Text_Buffer := null
-             )  is
+     (Process           : in out Text_Bufferred_Process;
+      Name              : UTF8_String;
+      Working_Directory : UTF8_String;
+      ArgV              : Gtk.Enums.String_List.Glist;
+      EnvP              : Gtk.Enums.String_List.Glist;
+      Input             : Gtk.Text_Buffer.Gtk_Text_Buffer := null;
+      Output            : Gtk.Text_Buffer.Gtk_Text_Buffer := null;
+      Error             : Gtk.Text_Buffer.Gtk_Text_Buffer := null) is
    begin
       Initiate (Process, Input, Output, Error);
-      Run
-      (  Process           => Asynchronous_Process (Process),
+      Glib.Spawn.Asynchronous.Run
+        (Process           =>
+           Glib.Spawn.Asynchronous.Asynchronous_Process (Process),
          Name              => Name,
          Working_Directory => Working_Directory,
          ArgV              => ArgV,
-         EnvP              => EnvP
-      );
+         EnvP              => EnvP);
    end Run;
 
    procedure Run
-             (  Process           : in out Text_Bufferred_Process;
-                Name              : UTF8_String;
-                Working_Directory : UTF8_String;
-                ArgV              : Chars_Ptr_Array;
-                Input             : Gtk_Text_Buffer := null;
-                Output            : Gtk_Text_Buffer := null;
-                Error             : Gtk_Text_Buffer := null
-             )  is
+     (Process           : in out Text_Bufferred_Process;
+      Name              : UTF8_String;
+      Working_Directory : UTF8_String;
+      ArgV              : Chars_Ptr_Array;
+      Input             : Gtk.Text_Buffer.Gtk_Text_Buffer := null;
+      Output            : Gtk.Text_Buffer.Gtk_Text_Buffer := null;
+      Error             : Gtk.Text_Buffer.Gtk_Text_Buffer := null) is
    begin
       Initiate (Process, Input, Output, Error);
-      Run
-      (  Process           => Asynchronous_Process (Process),
+      Glib.Spawn.Asynchronous.Run
+        (Process           =>
+           Glib.Spawn.Asynchronous.Asynchronous_Process (Process),
          Name              => Name,
          Working_Directory => Working_Directory,
-         ArgV              => ArgV
-      );
+         ArgV              => ArgV);
    end Run;
 
    procedure Run
-             (  Process           : in out Text_Bufferred_Process;
-                Name              : UTF8_String;
-                Working_Directory : UTF8_String;
-                ArgV              : GList;
-                Input             : Gtk_Text_Buffer := null;
-                Output            : Gtk_Text_Buffer := null;
-                Error             : Gtk_Text_Buffer := null
-             )  is
+     (Process           : in out Text_Bufferred_Process;
+      Name              : UTF8_String;
+      Working_Directory : UTF8_String;
+      ArgV              : Gtk.Enums.String_List.Glist;
+      Input             : Gtk.Text_Buffer.Gtk_Text_Buffer := null;
+      Output            : Gtk.Text_Buffer.Gtk_Text_Buffer := null;
+      Error             : Gtk.Text_Buffer.Gtk_Text_Buffer := null) is
    begin
       Initiate (Process, Input, Output, Error);
-      Run
-      (  Process           => Asynchronous_Process (Process),
+      Glib.Spawn.Asynchronous.Run
+        (Process           =>
+           Glib.Spawn.Asynchronous.Asynchronous_Process (Process),
          Name              => Name,
          Working_Directory => Working_Directory,
-         ArgV              => ArgV
-      );
+         ArgV              => ArgV);
    end Run;
 
    procedure Run
-             (  Process : in out Text_Bufferred_Process;
-                Name    : UTF8_String;
-                ArgV    : Chars_Ptr_Array;
-                EnvP    : Chars_Ptr_Array;
-                Input   : Gtk_Text_Buffer := null;
-                Output  : Gtk_Text_Buffer := null;
-                Error   : Gtk_Text_Buffer := null
-             )  is
+     (Process : in out Text_Bufferred_Process;
+      Name    : UTF8_String;
+      ArgV    : Chars_Ptr_Array;
+      EnvP    : Chars_Ptr_Array;
+      Input   : Gtk.Text_Buffer.Gtk_Text_Buffer := null;
+      Output  : Gtk.Text_Buffer.Gtk_Text_Buffer := null;
+      Error   : Gtk.Text_Buffer.Gtk_Text_Buffer := null) is
    begin
       Initiate (Process, Input, Output, Error);
-      Run
-      (  Process => Asynchronous_Process (Process),
+      Glib.Spawn.Asynchronous.Run
+        (Process => Glib.Spawn.Asynchronous.Asynchronous_Process (Process),
          Name    => Name,
          ArgV    => ArgV,
-         EnvP    => EnvP
-      );
+         EnvP    => EnvP);
    end Run;
 
    procedure Run
-             (  Process : in out Text_Bufferred_Process;
-                Name    : UTF8_String;
-                ArgV    : GList;
-                EnvP    : GList;
-                Input   : Gtk_Text_Buffer := null;
-                Output  : Gtk_Text_Buffer := null;
-                Error   : Gtk_Text_Buffer := null
-             )  is
+     (Process : in out Text_Bufferred_Process;
+      Name    : UTF8_String;
+      ArgV    : Gtk.Enums.String_List.Glist;
+      EnvP    : Gtk.Enums.String_List.Glist;
+      Input   : Gtk.Text_Buffer.Gtk_Text_Buffer := null;
+      Output  : Gtk.Text_Buffer.Gtk_Text_Buffer := null;
+      Error   : Gtk.Text_Buffer.Gtk_Text_Buffer := null) is
    begin
       Initiate (Process, Input, Output, Error);
-      Run
-      (  Process => Asynchronous_Process (Process),
+      Glib.Spawn.Asynchronous.Run
+        (Process => Glib.Spawn.Asynchronous.Asynchronous_Process (Process),
          Name    => Name,
          ArgV    => ArgV,
-         EnvP    => EnvP
-      );
+         EnvP    => EnvP);
    end Run;
 
    procedure Run
-             (  Process : in out Text_Bufferred_Process;
-                Name    : UTF8_String;
-                ArgV    : Chars_Ptr_Array;
-                Input   : Gtk_Text_Buffer := null;
-                Output  : Gtk_Text_Buffer := null;
-                Error   : Gtk_Text_Buffer := null
-             )  is
+     (Process : in out Text_Bufferred_Process;
+      Name    : UTF8_String;
+      ArgV    : Chars_Ptr_Array;
+      Input   : Gtk.Text_Buffer.Gtk_Text_Buffer := null;
+      Output  : Gtk.Text_Buffer.Gtk_Text_Buffer := null;
+      Error   : Gtk.Text_Buffer.Gtk_Text_Buffer := null) is
    begin
       Initiate (Process, Input, Output, Error);
-      Run
-      (  Process => Asynchronous_Process (Process),
+      Glib.Spawn.Asynchronous.Run
+        (Process => Glib.Spawn.Asynchronous.Asynchronous_Process (Process),
          Name    => Name,
-         ArgV    => ArgV
-      );
+         ArgV    => ArgV);
    end Run;
 
    procedure Run
-             (  Process : in out Text_Bufferred_Process;
-                Name    : UTF8_String;
-                ArgV    : GList;
-                Input   : Gtk_Text_Buffer := null;
-                Output  : Gtk_Text_Buffer := null;
-                Error   : Gtk_Text_Buffer := null
-             )  is
+     (Process : in out Text_Bufferred_Process;
+      Name    : UTF8_String;
+      ArgV    : Gtk.Enums.String_List.Glist;
+      Input   : Gtk.Text_Buffer.Gtk_Text_Buffer := null;
+      Output  : Gtk.Text_Buffer.Gtk_Text_Buffer := null;
+      Error   : Gtk.Text_Buffer.Gtk_Text_Buffer := null) is
    begin
       Initiate (Process, Input, Output, Error);
-      Run
-      (  Process => Asynchronous_Process (Process),
+      Glib.Spawn.Asynchronous.Run
+        (Process => Glib.Spawn.Asynchronous.Asynchronous_Process (Process),
          Name    => Name,
-         ArgV    => ArgV
-      );
+         ArgV    => ArgV);
    end Run;
 
-   procedure Service (Data : in out Request_Read) is
-      subtype Text is UTF8_String (1..Data.Length);
+   overriding procedure Service (Data : in out Request_Read) is
+      subtype Text is UTF8_String (1 .. Data.Length);
       package Conversion is
          new System.Address_To_Access_Conversions (Text);
       Buffer : Text renames Conversion.To_Pointer (Data.Text).all;
-      From   : Gtk_Text_Iter;
-      To     : Gtk_Text_Iter;
+      From   : Gtk.Text_Iter.Gtk_Text_Iter;
+      To     : Gtk.Text_Iter.Gtk_Text_Iter;
       Got_It : Boolean;
    begin
       Data.Count := 0;
-      Get_Iter_At_Offset
-      (  Data.Process.Input,
+      Gtk.Text_Buffer.Get_Iter_At_Offset
+        (Data.Process.all.Input,
          From,
-         Data.Process.Position
-      );
-      if Is_End (From) then
+         Data.Process.all.Position);
+      if Gtk.Text_Iter.Is_End (From) then
          return;
       end if;
       loop
-         Copy (From, To);
-         Forward_Char (To, Got_It);
+         Gtk.Text_Iter.Copy (From, To);
+         Gtk.Text_Iter.Forward_Char (To, Got_It);
          exit when not Got_It;
          declare
-            Slice : constant String := Get_Text (From, To);
+            Slice : constant String := Gtk.Text_Iter.Get_Text (From, To);
          begin
             exit when Slice'Length > Data.Length - Data.Count;
-            Buffer (Data.Count..Data.Count + Slice'Length) := Slice;
+            Buffer (Data.Count .. Data.Count + Slice'Length) := Slice;
             Data.Count := Data.Count + Slice'Length;
-            Copy (To, From);
+            Gtk.Text_Iter.Copy (To, From);
          end;
       end loop;
-      Data.Process.Position := Get_Offset (From);
+      Data.Process.all.Position := Gtk.Text_Iter.Get_Offset (From);
    end Service;
 
-   procedure Service (Data : in out Request_Write) is
-      subtype Text is UTF8_String (1..Data.Length);
+   overriding procedure Service (Data : in out Request_Write) is
+      subtype Text is UTF8_String (1 .. Data.Length);
       package Conversion is
          new System.Address_To_Access_Conversions (Text);
    begin
       if Data.Error then
          Insert
-         (  Data.Process.all,
-            Data.Process.Error,
+           (Data.Process.all,
+            Data.Process.all.Error,
             True,
-            Conversion.To_Pointer (Data.Text).all
-         );
+            Conversion.To_Pointer (Data.Text).all);
       else
          Insert
-         (  Data.Process.all,
-            Data.Process.Output,
+           (Data.Process.all,
+            Data.Process.all.Output,
             False,
-            Conversion.To_Pointer (Data.Text).all
-         );
+            Conversion.To_Pointer (Data.Text).all);
       end if;
    end Service;
 
-end GLib.Spawn.Text_Bufferred;
+end Glib.Spawn.Text_Bufferred;

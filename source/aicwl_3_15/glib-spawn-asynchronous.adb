@@ -23,21 +23,24 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Ada.Calendar;       use Ada.Calendar;
-with Ada.Exceptions;     use Ada.Exceptions;
-with Ada.IO_Exceptions;  use Ada.IO_Exceptions;
-with Glib.Messages;      use Glib.Messages;
-with GNAT.OS_Lib;        use GNAT.OS_Lib;
-with Gtk.Missed;         use Gtk.Missed;
-with System;             use System;
+with Ada.Calendar;
+with Ada.Exceptions;
+with Ada.IO_Exceptions;
 
+with Glib.Messages;
+
+with GNAT.OS_Lib;
 with GNAT.Traceback.Symbolic;
+
+with Gtk.Missed;
+
 with Interfaces.C.Strings;
+
 with System.Address_To_Access_Conversions;
 
-package body GLib.Spawn.Asynchronous is
+package body Glib.Spawn.Asynchronous is
 
    function Where (Text : String) return String is
    begin
@@ -53,22 +56,20 @@ package body GLib.Spawn.Asynchronous is
    procedure Free (List : in out Chars_Ptr_Array_Ptr);
 
    procedure On_Exit
-             (  PID    : GPid;
-                Status : GInt;
-                Data   : Address
-             );
+     (PID    : GPID;
+      Status : Gint;
+      Data   : System.Address);
    pragma Convention (C, On_Exit);
 
    package Conversions is
-      new System.Address_To_Access_Conversions
-          (  Asynchronous_Process'Class
-          );
-   use Conversions;
+     new System.Address_To_Access_Conversions
+       (Asynchronous_Process'Class);
 
    procedure Completed
-             (  Process : in out Asynchronous_Process;
-                Status  : GInt
-             )  is
+     (Process : in out Asynchronous_Process;
+      Status  : Gint)
+   is
+      pragma Unreferenced (Status);
    begin
       Free (Process.ArgV);
       Free (Process.EnvP);
@@ -76,122 +77,136 @@ package body GLib.Spawn.Asynchronous is
 
    function Copy (List : Chars_Ptr_Array) return Chars_Ptr_Array_Ptr is
       Result : constant Chars_Ptr_Array_Ptr :=
-               new Chars_Ptr_Array (List'First..List'Last + 1);
+                 new Chars_Ptr_Array (List'First .. List'Last + 1);
    begin
       for Index in Result'Range loop
-         Result (Index) := New_Char_Array (Value (List (Index)));
+         Result.all (Index) :=
+           Interfaces.C.Strings.New_Char_Array (Interfaces.C.Strings.Value (List (Index)));
       end loop;
-      Result (Result'Last) := Interfaces.C.Strings.Null_Ptr;
+      Result.all (Result'Last) := Interfaces.C.Strings.Null_Ptr;
       return Result;
    end Copy;
 
    function Copy
-            (  Name : UTF8_String;
-               List : Chars_Ptr_Array
-            )  return Chars_Ptr_Array_Ptr is
+     (Name : UTF8_String;
+      List : Chars_Ptr_Array) return Chars_Ptr_Array_Ptr
+   is
       Result : constant Chars_Ptr_Array_Ptr :=
-               new Chars_Ptr_Array (List'First..List'Last + 2);
+                 new Chars_Ptr_Array (List'First .. List'Last + 2);
    begin
-      Result (List'First) := New_String (Name);
+      Result.all (List'First) := Interfaces.C.Strings.New_String (Name);
       for Index in List'Range loop
-         Result (Index + 1) := New_Char_Array (Value (List (Index)));
+         Result.all (Index + 1) :=
+           Interfaces.C.Strings.New_Char_Array
+             (Interfaces.C.Strings.Value (List (Index)));
       end loop;
-      Result (Result'Last) := Interfaces.C.Strings.Null_Ptr;
+      Result.all (Result'Last) := Interfaces.C.Strings.Null_Ptr;
       return Result;
    end Copy;
 
-   function Copy (List : GList) return Chars_Ptr_Array_Ptr is
-      Ptr   : GList   := List;
-      Count : Natural := 0;
+   function Copy (List : Gtk.Enums.String_List.Glist)
+                  return Chars_Ptr_Array_Ptr
+   is
+      Ptr   : Gtk.Enums.String_List.Glist := List;
+      Count : Natural                     := 0;
+
+      use type Gtk.Enums.String_List.Glist;
    begin
-      while Ptr /= Null_List loop
+      while Ptr /= Gtk.Enums.String_List.Null_List loop
          Count := Count + 1;
-         Ptr   := Next (Ptr);
+         Ptr   := Gtk.Enums.String_List.Next (Ptr);
       end loop;
       declare
          Result : constant Chars_Ptr_Array_Ptr :=
-                  new Chars_Ptr_Array (1..Count + 1);
+                    new Chars_Ptr_Array (1 .. Count + 1);
       begin
          Ptr := List;
-         for Index in 1..Count loop
-            Result (Index) := New_String (Get_Data (Ptr));
-            Ptr := Next (Ptr);
+         for Index in 1 .. Count loop
+            Result.all (Index) :=
+              Interfaces.C.Strings.New_String
+                (Gtk.Enums.String_List.Get_Data (Ptr));
+            Ptr := Gtk.Enums.String_List.Next (Ptr);
          end loop;
-         Result (Result'Last) := Interfaces.C.Strings.Null_Ptr;
+         Result.all (Result'Last) := Interfaces.C.Strings.Null_Ptr;
          return Result;
       end;
    end Copy;
 
    function Copy
-            (  Name : UTF8_String;
-               List : GList
-            )  return Chars_Ptr_Array_Ptr is
-      Ptr   : GList   := List;
-      Count : Natural := 0;
+     (Name : UTF8_String;
+      List : Gtk.Enums.String_List.Glist) return Chars_Ptr_Array_Ptr
+   is
+      Ptr   : Gtk.Enums.String_List.Glist := List;
+      Count : Natural                     := 0;
+
+      use type Gtk.Enums.String_List.Glist;
    begin
-      while Ptr /= Null_List loop
+      while Ptr /= Gtk.Enums.String_List.Null_List loop
          Count := Count + 1;
-         Ptr   := Next (Ptr);
+         Ptr   := Gtk.Enums.String_List.Next (Ptr);
       end loop;
       declare
          Result : constant Chars_Ptr_Array_Ptr :=
-                  new Chars_Ptr_Array (1..Count + 2);
+                    new Chars_Ptr_Array (1 .. Count + 2);
       begin
-         Result (1) := New_String (Name);
+         Result.all (1) := Interfaces.C.Strings.New_String (Name);
          Ptr := List;
-         for Index in 2..Count + 1  loop
-            Result (Index) := New_String (Get_Data (Ptr));
-            Ptr := Next (Ptr);
+         for Index in 2 .. Count + 1  loop
+            Result.all (Index) :=
+              Interfaces.C.Strings.New_String
+                (Gtk.Enums.String_List.Get_Data (Ptr));
+            Ptr := Gtk.Enums.String_List.Next (Ptr);
          end loop;
-         Result (Result'Last) := Interfaces.C.Strings.Null_Ptr;
+         Result.all (Result'Last) := Interfaces.C.Strings.Null_Ptr;
          return Result;
       end;
    end Copy;
 
    procedure Error
-             (  Process : in out Asynchronous_Process;
-                Data    : UTF8_String
-             )  is
+     (Process : in out Asynchronous_Process;
+      Data    : UTF8_String) is
    begin
       null;
    end Error;
 
    procedure Failed
-             (  Process : in out Asynchronous_Process;
-                Error   : GError
-             )  is
+     (Process : in out Asynchronous_Process;
+      Error   : Glib.Error.GError) is
    begin
       null;
    end Failed;
 
-   procedure Finalize (Process : in out Asynchronous_Process) is
+   overriding procedure Finalize (Process : in out Asynchronous_Process)
+   is
+      use type Glib.Error.GError;
    begin
       select
          Process.Status.Wait_All;
       or delay 1.0;
       end select;
       if Process.Error /= null then
-         Error_Free (Process.Error);
+         Glib.Error.Error_Free (Process.Error);
          Process.Error := null;
       end if;
    end Finalize;
 
-   procedure Free (List : in out Chars_Ptr_Array_Ptr) is
+   procedure Free (List : in out Chars_Ptr_Array_Ptr)
+   is
       procedure Release is
-         new Ada.Unchecked_Deallocation
-             (  Chars_Ptr_Array,
-                Chars_Ptr_Array_Ptr
-             );
+        new Ada.Unchecked_Deallocation
+          (Chars_Ptr_Array,
+           Chars_Ptr_Array_Ptr);
    begin
       if List /= null then
          for Index in List'Range loop
-            Free (List (Index));
+            Interfaces.C.Strings.Free (List.all (Index));
          end loop;
          Release (List);
       end if;
    end Free;
 
-   function Get_Error (Process : Asynchronous_Process) return GError is
+   function Get_Error
+     (Process : Asynchronous_Process) return Glib.Error.GError is
    begin
       return Process.Error;
    end Get_Error;
@@ -203,33 +218,34 @@ package body GLib.Spawn.Asynchronous is
    end Get_State;
 
    function Get_Exit_Status (Process : Asynchronous_Process)
-      return GInt is
+      return Gint is
    begin
       return Process.Status.Get;
    end Get_Exit_Status;
 
    procedure Input
-             (  Process : in out Asynchronous_Process;
-                Data    : out UTF8_String;
-                Count   : out Natural
-             )  is
+     (Process : in out Asynchronous_Process;
+      Data    : out UTF8_String;
+      Count   : out Natural)
+   is
+      pragma Unreferenced (Count, Data, Process);
    begin
       Count := 0;
    end Input;
 
    procedure On_Exit
-             (  PID    : GPid;
-                Status : GInt;
-                Data   : Address
-             )  is
+     (PID    : GPID;
+      Status : Gint;
+      Data   : System.Address)
+   is
+      pragma Unreferenced (PID);
    begin
-      To_Pointer (Data).Status.Set (Process_Completed, Status);
+      Conversions.To_Pointer (Data).all.Status.Set (Process_Completed, Status);
    end On_Exit;
 
    procedure Output
-             (  Process : in out Asynchronous_Process;
-                Data    : UTF8_String
-             )  is
+     (Process : in out Asynchronous_Process;
+      Data    : UTF8_String) is
    begin
       null;
    end Output;
@@ -245,19 +261,18 @@ package body GLib.Spawn.Asynchronous is
          return State;
       end Get;
 
-      function Get return GInt is
+      function Get return Gint is
       begin
          return Status;
       end Get;
 
       procedure Set (State : Process_State) is
       begin
-         if (  Process_Status.State = Process_Running
-            and then
-               State = Process_Completed
-            and then
-               Count < 3
-            )  then
+         if
+           Process_Status.State = Process_Running and then
+           State = Process_Completed and then
+           Count < 3
+         then
             Count := Count + 1;
          else
             Process_Status.State := State;
@@ -265,7 +280,7 @@ package body GLib.Spawn.Asynchronous is
          end if;
       end Set;
 
-      procedure Set (State : Process_State; Status : GInt) is
+      procedure Set (State : Process_State; Status : Gint) is
       begin
          Process_Status.Status := Status;
          Set (State);
@@ -284,289 +299,290 @@ package body GLib.Spawn.Asynchronous is
    end Process_Status;
 
    task body Reader is
-      Buffer : UTF8_String (1..1024);
+      Buffer : UTF8_String (1 .. 1024);
       Byte   : aliased Character;
       Count  : Natural := 0;
    begin
       begin
-         while 0 < Read (File_Descriptor (Pipe), Byte'Address, 1) loop
+         while
+           0 < GNAT.OS_Lib.Read (GNAT.OS_Lib.File_Descriptor (Pipe),
+                                 Byte'Address,
+                                 1)
+         loop
             Count := Count + 1;
             Buffer (Count) := Byte;
-            if (  Count = Buffer'Length
-               or else
-                  Buffer (Count) = Character'Val (10)
-               )
+            if
+              Count = Buffer'Length or else
+              Buffer (Count) = Character'Val (10)
             then
-               if Pipe = Process.Standard_Output then
-                  Output (Process.all, Buffer (1..Count));
+               if Pipe = Process.all.Standard_Output then
+                  Output (Process.all, Buffer (1 .. Count));
                else
-                  Error (Process.all, Buffer (1..Count));
+                  Error (Process.all, Buffer (1 .. Count));
                end if;
                Count := 0;
             end if;
          end loop;
          if Count > 0 then
-            if Pipe = Process.Standard_Output then
-               Output (Process.all, Buffer (1..Count));
+            if Pipe = Process.all.Standard_Output then
+               Output (Process.all, Buffer (1 .. Count));
             else
-               Error (Process.all, Buffer (1..Count));
+               Error (Process.all, Buffer (1 .. Count));
             end if;
          end if;
       exception
          when Error : others =>
-            Log
-            (  GtkAda_Contributions_Domain,
-               Log_Level_Critical,
-               (  Exception_Message (Error)
-               &  Where ("task Reader")
-            )  );
-            Log
-            (  GtkAda_Contributions_Domain,
-               Log_Level_Critical,
-               GNAT.Traceback.Symbolic.Symbolic_Traceback (Error)
-            );
+            Glib.Messages.Log
+              (Gtk.Missed.GtkAda_Contributions_Domain,
+               Glib.Messages.Log_Level_Critical,
+               Ada.Exceptions.Exception_Message (Error)
+               &  Where ("task Reader"));
+            Glib.Messages.Log
+              (Gtk.Missed.GtkAda_Contributions_Domain,
+               Glib.Messages.Log_Level_Critical,
+               GNAT.Traceback.Symbolic.Symbolic_Traceback (Error));
       end;
-      Process.Status.Set (Process_Completed);
+      Process.all.Status.Set (Process_Completed);
    end Reader;
 
    procedure Run
-             (  Process           : in out Asynchronous_Process;
-                Name              : UTF8_String;
-                Working_Directory : UTF8_String;
-                ArgV              : Chars_Ptr_Array;
-                EnvP              : Chars_Ptr_Array
-             )  is
+     (Process           : in out Asynchronous_Process;
+      Name              : UTF8_String;
+      Working_Directory : UTF8_String;
+      ArgV              : Chars_Ptr_Array;
+      EnvP              : Chars_Ptr_Array)
+   is
+      use type Glib.Error.GError;
    begin
       if Process.Status.Get = Process_Running then
-         raise Use_Error;
+         raise Ada.IO_Exceptions.Use_Error;
       end if;
       if Process.Error /= null then
          Process.Status.Set (Process_Completed);
-         Error_Free (Process.Error);
+         Glib.Error.Error_Free (Process.Error);
          Process.Error := null;
       end if;
       Process.ArgV := Copy (Name, ArgV);
       Process.EnvP := Copy (EnvP);
       Start
-      (  Process,
+        (Process,
          Async_With_Pipes
-         (  Working_Directory => Working_Directory,
-            ArgV              => Process.ArgV (1)'Access,
-            EnvP        => Process.EnvP (1)'Access,
-            Flags       => SPAWN_DO_NOT_REAP_CHILD or SPAWN_SEARCH_PATH
-      )  );
+         (Working_Directory => Working_Directory,
+          ArgV              => Process.ArgV.all (1)'Access,
+          EnvP              => Process.EnvP.all (1)'Access,
+          Flags             => Spawn_Do_Not_Reap_Child or Spawn_Search_Path));
    end Run;
 
    procedure Run
-             (  Process           : in out Asynchronous_Process;
-                Name              : UTF8_String;
-                Working_Directory : UTF8_String;
-                ArgV              : GList;
-                EnvP              : GList
-            )   is
+     (Process           : in out Asynchronous_Process;
+      Name              : UTF8_String;
+      Working_Directory : UTF8_String;
+      ArgV              : Gtk.Enums.String_List.Glist;
+      EnvP              : Gtk.Enums.String_List.Glist)
+   is
+      use type Glib.Error.GError;
    begin
       if Process.Status.Get = Process_Running then
-         raise Use_Error;
+         raise Ada.IO_Exceptions.Use_Error;
       end if;
       if Process.Error /= null then
          Process.Status.Set (Process_Completed);
-         Error_Free (Process.Error);
+         Glib.Error.Error_Free (Process.Error);
          Process.Error := null;
       end if;
       Process.ArgV := Copy (Name, ArgV);
       Process.EnvP := Copy (EnvP);
       Start
-      (  Process,
+        (Process,
          Async_With_Pipes
-         (  Working_Directory => Working_Directory,
-            ArgV              => Process.ArgV (1)'Access,
-            EnvP        => Process.EnvP (1)'Access,
-            Flags       => SPAWN_DO_NOT_REAP_CHILD or SPAWN_SEARCH_PATH
-      )  );
+           (Working_Directory => Working_Directory,
+            ArgV              => Process.ArgV.all (1)'Access,
+            EnvP              => Process.EnvP.all (1)'Access,
+            Flags             => Spawn_Do_Not_Reap_Child or Spawn_Search_Path));
    end Run;
 
    procedure Run
-             (  Process           : in out Asynchronous_Process;
-                Name              : UTF8_String;
-                Working_Directory : UTF8_String;
-                ArgV              : Chars_Ptr_Array
-             )  is
+     (Process           : in out Asynchronous_Process;
+      Name              : UTF8_String;
+      Working_Directory : UTF8_String;
+      ArgV              : Chars_Ptr_Array)
+   is
+      use type Glib.Error.GError;
    begin
       if Process.Status.Get = Process_Running then
-         raise Use_Error;
+         raise Ada.IO_Exceptions.Use_Error;
       end if;
       if Process.Error /= null then
          Process.Status.Set (Process_Completed);
-         Error_Free (Process.Error);
+         Glib.Error.Error_Free (Process.Error);
          Process.Error := null;
       end if;
       Process.ArgV := Copy (Name, ArgV);
       Start
-      (  Process,
+        (Process,
          Async_With_Pipes
-         (  Working_Directory => Working_Directory,
-            ArgV              => Process.ArgV (1)'Access,
-            Flags       => SPAWN_DO_NOT_REAP_CHILD or SPAWN_SEARCH_PATH
-      )  );
+           (Working_Directory => Working_Directory,
+            ArgV              => Process.ArgV.all (1)'Access,
+            Flags             => Spawn_Do_Not_Reap_Child or Spawn_Search_Path));
    end Run;
 
    procedure Run
-             (  Process           : in out Asynchronous_Process;
-                Name              : UTF8_String;
-                Working_Directory : UTF8_String;
-                ArgV              : GList
-            )   is
+     (Process           : in out Asynchronous_Process;
+      Name              : UTF8_String;
+      Working_Directory : UTF8_String;
+      ArgV              : Gtk.Enums.String_List.Glist)
+   is
+      use type Glib.Error.GError;
    begin
       if Process.Status.Get = Process_Running then
-         raise Use_Error;
+         raise Ada.IO_Exceptions.Use_Error;
       end if;
       if Process.Error /= null then
          Process.Status.Set (Process_Completed);
-         Error_Free (Process.Error);
+         Glib.Error.Error_Free (Process.Error);
          Process.Error := null;
       end if;
       Process.ArgV := Copy (Name, ArgV);
       Start
-      (  Process,
+        (Process,
          Async_With_Pipes
-         (  Working_Directory => Working_Directory,
-            ArgV              => Process.ArgV (1)'Access,
-            Flags       => SPAWN_DO_NOT_REAP_CHILD or SPAWN_SEARCH_PATH
-      )  );
+           (Working_Directory => Working_Directory,
+            ArgV              => Process.ArgV.all (1)'Access,
+            Flags             => Spawn_Do_Not_Reap_Child or Spawn_Search_Path));
    end Run;
 
    procedure Run
-             (  Process : in out Asynchronous_Process;
-                Name    : UTF8_String;
-                ArgV    : Chars_Ptr_Array;
-                EnvP    : Chars_Ptr_Array
-             )  is
+     (Process : in out Asynchronous_Process;
+      Name    : UTF8_String;
+      ArgV    : Chars_Ptr_Array;
+      EnvP    : Chars_Ptr_Array)
+   is
+      use type Glib.Error.GError;
    begin
       if Process.Status.Get = Process_Running then
-         raise Use_Error;
+         raise Ada.IO_Exceptions.Use_Error;
       end if;
       if Process.Error /= null then
          Process.Status.Set (Process_Completed);
-         Error_Free (Process.Error);
-         Process.Error := null;
-      end if;
-      Process.ArgV := Copy (Name, ArgV);
-      Process.EnvP := Copy (EnvP);
-      Start
-      (  Process,
-         Async_With_Pipes
-         (  ArgV        => Process.ArgV (1)'Access,
-            EnvP        => Process.EnvP (1)'Access,
-            Flags       => SPAWN_DO_NOT_REAP_CHILD or SPAWN_SEARCH_PATH
-      )  );
-   end Run;
-
-   procedure Run
-             (  Process : in out Asynchronous_Process;
-                Name    : UTF8_String;
-                ArgV    : GList;
-                EnvP    : GList
-             )  is
-   begin
-      if Process.Status.Get = Process_Running then
-         raise Use_Error;
-      end if;
-      if Process.Error /= null then
-         Process.Status.Set (Process_Completed);
-         Error_Free (Process.Error);
+         Glib.Error.Error_Free (Process.Error);
          Process.Error := null;
       end if;
       Process.ArgV := Copy (Name, ArgV);
       Process.EnvP := Copy (EnvP);
       Start
-      (  Process,
+        (Process,
          Async_With_Pipes
-         (  ArgV  => Process.ArgV (1)'Access,
-            EnvP  => Process.EnvP (1)'Access,
-            Flags => SPAWN_DO_NOT_REAP_CHILD or SPAWN_SEARCH_PATH
-      )  );
+           (ArgV        => Process.ArgV.all (1)'Access,
+            EnvP        => Process.EnvP.all (1)'Access,
+            Flags       => Spawn_Do_Not_Reap_Child or Spawn_Search_Path));
    end Run;
 
    procedure Run
-             (  Process : in out Asynchronous_Process;
-                Name    : UTF8_String;
-                ArgV    : Chars_Ptr_Array
-             )  is
+     (Process : in out Asynchronous_Process;
+      Name    : UTF8_String;
+      ArgV    : Gtk.Enums.String_List.Glist;
+      EnvP    : Gtk.Enums.String_List.Glist)
+   is
+      use type Glib.Error.GError;
    begin
       if Process.Status.Get = Process_Running then
-         raise Use_Error;
+         raise Ada.IO_Exceptions.Use_Error;
       end if;
       if Process.Error /= null then
          Process.Status.Set (Process_Completed);
-         Error_Free (Process.Error);
+         Glib.Error.Error_Free (Process.Error);
+         Process.Error := null;
+      end if;
+      Process.ArgV := Copy (Name, ArgV);
+      Process.EnvP := Copy (EnvP);
+      Start
+        (Process,
+         Async_With_Pipes
+           (ArgV  => Process.ArgV.all (1)'Access,
+            EnvP  => Process.EnvP.all (1)'Access,
+            Flags => Spawn_Do_Not_Reap_Child or Spawn_Search_Path));
+   end Run;
+
+   procedure Run
+     (Process : in out Asynchronous_Process;
+      Name    : UTF8_String;
+      ArgV    : Chars_Ptr_Array)
+   is
+      use type Glib.Error.GError;
+   begin
+      if Process.Status.Get = Process_Running then
+         raise Ada.IO_Exceptions.Use_Error;
+      end if;
+      if Process.Error /= null then
+         Process.Status.Set (Process_Completed);
+         Glib.Error.Error_Free (Process.Error);
          Process.Error := null;
       end if;
       Process.ArgV := Copy (Name, ArgV);
       Start
-      (  Process,
+        (Process,
          Async_With_Pipes
-         (  ArgV  => Process.ArgV (1)'Access,
-            Flags => SPAWN_DO_NOT_REAP_CHILD or SPAWN_SEARCH_PATH
-      )  );
+           (ArgV  => Process.ArgV.all (1)'Access,
+            Flags => Spawn_Do_Not_Reap_Child or Spawn_Search_Path));
    end Run;
 
    procedure Run
-             (  Process : in out Asynchronous_Process;
-                Name    : UTF8_String;
-                ArgV    : GList
-            )   is
+     (Process : in out Asynchronous_Process;
+      Name    : UTF8_String;
+      ArgV    : Gtk.Enums.String_List.Glist)
+   is
+      use type Glib.Error.GError;
    begin
       if Process.Status.Get = Process_Running then
-         raise Use_Error;
+         raise Ada.IO_Exceptions.Use_Error;
       end if;
       if Process.Error /= null then
          Process.Status.Set (Process_Completed);
-         Error_Free (Process.Error);
+         Glib.Error.Error_Free (Process.Error);
          Process.Error := null;
       end if;
       Process.ArgV := Copy (Name, ArgV);
       Start
-      (  Process,
+        (Process,
          Async_With_Pipes
-         (  ArgV  => Process.ArgV (1)'Access,
-            Flags => SPAWN_DO_NOT_REAP_CHILD or SPAWN_SEARCH_PATH
-      )  );
+           (ArgV  => Process.ArgV.all (1)'Access,
+            Flags => Spawn_Do_Not_Reap_Child or Spawn_Search_Path));
    end Run;
 
    procedure Service_Exit (Process : in out Asynchronous_Process_Ptr) is
    begin
-      Free (Process.Input_Writer);
-      Free (Process.Output_Reader);
-      Free (Process.Error_Reader);
-      Close (File_Descriptor (Process.Standard_Error));
-      Close (File_Descriptor (Process.Standard_Input));
-      Close (File_Descriptor (Process.Standard_Output));
-      Free (Process.ArgV);
-      Free (Process.EnvP);
-      Close_PID (Process.PID);
+      Free (Process.all.Input_Writer);
+      Free (Process.all.Output_Reader);
+      Free (Process.all.Error_Reader);
+      GNAT.OS_Lib.Close
+        (GNAT.OS_Lib.File_Descriptor (Process.all.Standard_Error));
+      GNAT.OS_Lib.Close
+        (GNAT.OS_Lib.File_Descriptor (Process.all.Standard_Input));
+      GNAT.OS_Lib.Close
+        (GNAT.OS_Lib.File_Descriptor (Process.all.Standard_Output));
+      Free (Process.all.ArgV);
+      Free (Process.all.EnvP);
+      Close_PID (Process.all.PID);
       begin
-         Completed (Process.all, Process.Status.Get);
+         Completed (Process.all, Process.all.Status.Get);
       exception
          when Error : others =>
-            Log
-            (  GtkAda_Contributions_Domain,
-               Log_Level_Critical,
-               (  Exception_Message (Error)
-               &  Where ("Service_Exit")
-            )  );
-            Log
-            (  GtkAda_Contributions_Domain,
-               Log_Level_Critical,
-               GNAT.Traceback.Symbolic.Symbolic_Traceback (Error)
-            );
+            Glib.Messages.Log
+              (Gtk.Missed.GtkAda_Contributions_Domain,
+               Glib.Messages.Log_Level_Critical,
+               Ada.Exceptions.Exception_Message (Error)
+               &  Where ("Service_Exit"));
+            Glib.Messages.Log
+              (Gtk.Missed.GtkAda_Contributions_Domain,
+               Glib.Messages.Log_Level_Critical,
+               GNAT.Traceback.Symbolic.Symbolic_Traceback (Error));
       end;
-      Process.Status.Set (Process_Completed);
+      Process.all.Status.Set (Process_Completed);
    end Service_Exit;
 
    procedure Start
-             (  Process : in out Asynchronous_Process'Class;
-                Result  : Async_Result
-             )  is
+     (Process : in out Asynchronous_Process'Class;
+      Result  : Async_Result) is
    begin
       if Result.Running then
          Process.Status.Set (Process_Running);
@@ -575,25 +591,21 @@ package body GLib.Spawn.Asynchronous is
          Process.Standard_Output := Result.Standard_Output;
          Process.Standard_Error  := Result.Standard_Error;
          Process.Input_Writer :=
-            new Writer
-                (  Process'Unchecked_Access,
-                   Process.Standard_Input
-                );
+           new Writer
+             (Process'Unchecked_Access,
+              Process.Standard_Input);
          Process.Output_Reader :=
-            new Reader
-                (  Process'Unchecked_Access,
-                   Process.Standard_Output
-                );
+           new Reader
+             (Process'Unchecked_Access,
+              Process.Standard_Output);
          Process.Error_Reader :=
-            new Reader
-                (  Process'Unchecked_Access,
-                   Process.Standard_Error
-                );
+           new Reader
+             (Process'Unchecked_Access,
+              Process.Standard_Error);
          Child_Watch_Add
-         (  Process.PID,
+           (Process.PID,
             On_Exit'Access,
-            Process'Address
-         );
+            Process'Address);
       else
          Process.Error := Result.Error;
          Process.Status.Set (Process_Failed_To_Start);
@@ -604,9 +616,8 @@ package body GLib.Spawn.Asynchronous is
    end Start;
 
    procedure Wait
-             (  Process  : in out Asynchronous_Process;
-                Time_Out : Duration := Duration'Last
-             )  is
+     (Process  : in out Asynchronous_Process;
+      Time_Out : Duration := Duration'Last) is
    begin
       if Time_Out = Duration'Last then
          Process.Status.Wait_All;
@@ -614,14 +625,14 @@ package body GLib.Spawn.Asynchronous is
          select
             Process.Status.Wait_All;
          or delay Time_Out;
-            raise Time_Error;
+            raise Ada.Calendar.Time_Error;
          end select;
       end if;
    end Wait;
 
    task body Writer is
       Bytes  : Integer;
-      Buffer : UTF8_String (1..1024*10);
+      Buffer : UTF8_String (1 .. 1024 * 10);
       Count  : Natural;
    begin
       begin
@@ -629,29 +640,26 @@ package body GLib.Spawn.Asynchronous is
             Input (Process.all, Buffer, Count);
             exit when Count = 0;
             Bytes :=
-               Write
-               (  File_Descriptor (Pipe),
-                  Buffer'Address,
-                  Integer (Count)
-               );
+               GNAT.OS_Lib.Write
+                (GNAT.OS_Lib.File_Descriptor (Pipe),
+                 Buffer'Address,
+                 Integer (Count));
             exit when Bytes /= Integer (Count);
          end loop;
       exception
          when Error : others =>
-            Log
-            (  GtkAda_Contributions_Domain,
-               Log_Level_Critical,
-               (  Exception_Message (Error)
-               &  Where ("task Writer")
-            )  );
-            Log
-            (  GtkAda_Contributions_Domain,
-               Log_Level_Critical,
-               GNAT.Traceback.Symbolic.Symbolic_Traceback (Error)
-            );
+            Glib.Messages.Log
+              (Gtk.Missed.GtkAda_Contributions_Domain,
+               Glib.Messages.Log_Level_Critical,
+               Ada.Exceptions.Exception_Message (Error)
+               &  Where ("task Writer"));
+            Glib.Messages.Log
+              (Gtk.Missed.GtkAda_Contributions_Domain,
+               Glib.Messages.Log_Level_Critical,
+               GNAT.Traceback.Symbolic.Symbolic_Traceback (Error));
       end;
-      Process.Status.Wait_IO;
-      Send (Service_Exit'Access, Process.all'Unchecked_Access);
+      Process.all.Status.Wait_IO;
+      Messages.Send (Service_Exit'Access, Process.all'Unchecked_Access);
    end Writer;
 
-end GLib.Spawn.Asynchronous;
+end Glib.Spawn.Asynchronous;

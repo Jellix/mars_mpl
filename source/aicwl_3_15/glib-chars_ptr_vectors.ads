@@ -23,56 +23,57 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Gtkada.Types;  use Gtkada.Types;
+with Gtkada.Types;
 
 with Interfaces.C.Pointers;
 
-package GLib.Chars_Ptr_Vectors is
+package Glib.Chars_Ptr_Vectors is
 
    type Chars_Ptr_Vector is
-      array (Interfaces.C.Size_t range <>) of aliased Chars_Ptr;
+     array (Interfaces.C.size_t range <>) of aliased Gtkada.Types.Chars_Ptr;
 
    package Chars_Ptr_Pointers is
-      new Interfaces.C.Pointers
-          (  Interfaces.C.Size_t,
-             Chars_Ptr,
-             Chars_Ptr_Vector,
-             null
-          );
+     new Interfaces.C.Pointers
+       (Interfaces.C.Size_t,
+        Gtkada.Types.Chars_Ptr,
+        Chars_Ptr_Vector,
+        null);
    use Chars_Ptr_Pointers;
    type Chars_Ptr_Ptr is new Pointer;
---
--- Convert_And_Free -- Conversion of  an object of gchar **  as returned
---                     from some subprograms
---
---    Vector - Array of C-strings allocated by GTK+
---
--- This function creates an equivalent Chars_Ptr_Array  and  then  frees
--- the  argument  using  g_strfreev.  The  result   does   not   contain
--- terminating NUL. The caller is responsible to free array elements.
---
--- Returns :
---
---    An equivalent of Chars_Ptr_Array type
---
+
+   --
+   -- Convert_And_Free -- Conversion of  an object of gchar **  as returned
+   --                     from some subprograms
+   --
+   --    Vector - Array of C-strings allocated by GTK+
+   --
+   -- This function creates an equivalent Chars_Ptr_Array  and  then  frees
+   -- the  argument  using  g_strfreev.  The  result   does   not   contain
+   -- terminating NUL. The caller is responsible to free array elements.
+   --
+   -- Returns :
+   --
+   --    An equivalent of Chars_Ptr_Array type
+   --
    function Convert_And_Free (Vector : Chars_Ptr_Ptr)
-      return Chars_Ptr_Array;
---
--- Convert -- Conversion of an object of const gchar * const *
---
---    Vector - Array of C-strings from GTK+
---
--- The elements of the result shall not be freed.
---
--- Returns :
---
---    An equivalent of Chars_Ptr_Array type
---
-   function Convert (Vector : Chars_Ptr_Ptr) return Chars_Ptr_Array;
+                              return Gtkada.Types.Chars_Ptr_Array;
+
+   --
+   -- Convert -- Conversion of an object of const gchar * const *
+   --
+   --    Vector - Array of C-strings from GTK+
+   --
+   -- The elements of the result shall not be freed.
+   --
+   -- Returns :
+   --
+   --    An equivalent of Chars_Ptr_Array type
+   --
+   function Convert (Vector : Chars_Ptr_Ptr) return Gtkada.Types.Chars_Ptr_Array;
 
    procedure Free (Vector : Chars_Ptr_Ptr);
    pragma Import (C, Free, "g_strfreev");
 
-end GLib.Chars_Ptr_Vectors;
+end Glib.Chars_Ptr_Vectors;

@@ -23,18 +23,18 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-package body GLib.Object.Strong_References is
+package body Glib.Object.Strong_References is
 
-   procedure Adjust (Reference : in out Strong_Reference) is
+   overriding procedure Adjust (Reference : in out Strong_Reference) is
    begin
       if Reference.Object /= null then
-         Reference.Object.Ref;
+         Reference.Object.all.Ref;
       end if;
    end Adjust;
 
-   procedure Finalize (Reference : in out Strong_Reference)
+   overriding procedure Finalize (Reference : in out Strong_Reference)
       renames Invalidate;
 
    function Get (Reference : Strong_Reference)
@@ -46,7 +46,7 @@ package body GLib.Object.Strong_References is
    procedure Invalidate (Reference : in out Strong_Reference) is
    begin
       if Reference.Object /= null then
-         Reference.Object.Unref;
+         Reference.Object.all.Unref;
          Reference.Object := null;
       end if;
    end Invalidate;
@@ -60,23 +60,22 @@ package body GLib.Object.Strong_References is
       return Strong_Reference is
    begin
       return Result : Strong_Reference do
-         Object.Ref;
+         Object.all.Ref;
          Result.Object := Object.all'Unchecked_Access;
       end return;
    end Ref;
 
    procedure Set
-             (  Reference : in out Strong_Reference;
-                Object    : access Object_Type'Class
-             )  is
+     (Reference : in out Strong_Reference;
+      Object    : access Object_Type'Class) is
    begin
       if Object /= Reference.Object then
          Reference.Invalidate;
          if Object /= null then
-            Object.Ref;
+            Object.all.Ref;
             Reference.Object := Object.all'Unchecked_Access;
          end if;
       end if;
    end Set;
 
-end GLib.Object.Strong_References;
+end Glib.Object.Strong_References;

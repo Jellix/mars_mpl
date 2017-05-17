@@ -22,68 +22,73 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Interfaces.C;          use Interfaces.C;
-with Interfaces.C.Strings;  use Interfaces.C.Strings;
+with Interfaces.C.Strings;
 
 package body GIO.Volume is
 
-   function Convert (Volume  : GVolume ) return Address is
+   function Convert (Volume  : GVolume) return System.Address is
    begin
-      return Get_Object (Volume);
+      return Glib.Object.Get_Object (Volume);
    end Convert;
 
-   function Convert (Pointer : Address) return GVolume is
+   function Convert (Pointer : System.Address) return GVolume is
       Stub : GVolume_Record;
    begin
-      return GVolume  (Get_User_Data (Pointer, Stub));
+      return GVolume  (Glib.Object.Get_User_Data (Pointer, Stub));
    end Convert;
 
    function Get_Icon
-            (  Volume : not null access GVolume_Record
-            )  return GObject is
-      function Internal (Volume : Address) return Address;
+     (Volume : not null access GVolume_Record) return Glib.Object.GObject
+   is
+      function Internal (Volume : System.Address) return System.Address;
       pragma Import (C, Internal, "g_volume_get_icon");
    begin
-      return Convert (Internal (Get_Object (Volume)));
+      return Glib.Object.Convert (Internal (Glib.Object.Get_Object (Volume)));
    end Get_Icon;
 
    function Get_Name
-            (  Volume : not null access GVolume_Record
-            )  return UTF8_String is
-      function Internal (Volume : Address) return Chars_Ptr;
+     (Volume : not null access GVolume_Record) return Glib.UTF8_String
+   is
+      function Internal (Volume : System.Address)
+                         return Interfaces.C.Strings.chars_ptr;
       pragma Import (C, Internal, "g_volume_get_name");
-      Ptr : Chars_Ptr := Internal (Get_Object (Volume));
+      Ptr : Interfaces.C.Strings.chars_ptr := Internal (Glib.Object.Get_Object (Volume));
+
+      use type Interfaces.C.Strings.chars_ptr;
    begin
-      if Ptr = Null_Ptr then
+      if Ptr = Interfaces.C.Strings.Null_Ptr then
          return "";
       else
          declare
-            Result : constant UTF8_String := Value (Ptr);
+            Result : constant Glib.UTF8_String :=
+                       Interfaces.C.Strings.Value (Ptr);
          begin
-            Free (Ptr);
+            Interfaces.C.Strings.Free (Ptr);
             return Result;
          end;
       end if;
    end Get_Name;
 
    function Get_Volume
-            (  Mount : not null access GMount_Record'Class
-            )  return GVolume is
-      function Internal (Volume : Address) return Address;
+     (Mount : not null access GIO.Mount.GMount_Record'Class) return GVolume
+   is
+      function Internal (Volume : System.Address) return System.Address;
       pragma Import (C, Internal, "g_mount_get_volume");
    begin
-      return Convert (Internal (Get_Object (Mount)));
+      return Convert (Internal (Glib.Object.Get_Object (Mount)));
    end Get_Volume;
 
    function Should_Automount
-            (  Volume : not null access GVolume_Record
-            )  return Boolean is
-      function Internal (Volume : Address) return GBoolean;
+     (Volume : not null access GVolume_Record) return Boolean
+   is
+      function Internal (Volume : System.Address) return Glib.Gboolean;
       pragma Import (C, Internal, "g_volume_should_automount");
+
+      use type Glib.Gboolean;
    begin
-      return 0 /= Internal (Get_Object (Volume));
+      return 0 /= Internal (Glib.Object.Get_Object (Volume));
    end Should_Automount;
 
 end GIO.Volume;

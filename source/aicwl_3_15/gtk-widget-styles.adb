@@ -26,7 +26,6 @@
 --____________________________________________________________________--
 
 with Glib.Properties.Creation;  use Glib.Properties.Creation;
-with Glib.Values.Handling;      use Glib.Values.Handling;
 with Gtk.Missed;                use Gtk.Missed;
 
 with System.Address_To_Access_Conversions;

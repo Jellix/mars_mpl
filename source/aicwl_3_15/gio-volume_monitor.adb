@@ -22,110 +22,102 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Interfaces.C;          use Interfaces.C;
-with Interfaces.C.Strings;  use Interfaces.C.Strings;
-with System;                use System;
+with Interfaces.C;
+with System;
 
 package body GIO.Volume_Monitor is
 
    function Get return GVolume_Monitor is
-      function Internal return Address;
+      function Internal return System.Address;
       pragma Import (C, Internal, "g_volume_monitor_get");
       Stub : GVolume_Monitor_Record;
    begin
-      return GVolume_Monitor (Get_User_Data (Internal, Stub));
+      return GVolume_Monitor (Glib.Object.Get_User_Data (Internal, Stub));
    end Get;
 
    function Get_Connected_Drives
-            (  Monitor : not null access GVolume_Monitor_Record
-            )  return Drive_List.GList is
-      function Internal (Monitor : Address) return Address;
-      pragma Import
-             (  C,
-                Internal,
-                "g_volume_monitor_get_connected_drives"
-             );
-      List : Drive_List.Glist;
+     (Monitor : not null access GVolume_Monitor_Record)
+      return GIO.Drive.Drive_List.Glist
+   is
+      function Internal (Monitor : System.Address) return System.Address;
+      pragma Import (C, Internal, "g_volume_monitor_get_connected_drives");
+      List : GIO.Drive.Drive_List.Glist;
    begin
-      Drive_List.Set_Object (List, Internal (Get_Object (Monitor)));
+      GIO.Drive.Drive_List.Set_Object
+        (List,
+         Internal (Glib.Object.Get_Object (Monitor)));
       return List;
    end Get_Connected_Drives;
 
    function Get_Mounts
-            (  Monitor : not null access GVolume_Monitor_Record
-            )  return Mount_List.GList is
-      function Internal (Monitor : Address) return Address;
-      pragma Import
-             (  C,
-                Internal,
-                "g_volume_monitor_get_mounts"
-             );
-      List : Mount_List.Glist;
+     (Monitor : not null access GVolume_Monitor_Record)
+      return GIO.Mount.Mount_List.Glist
+   is
+      function Internal (Monitor : System.Address) return System.Address;
+      pragma Import (C, Internal, "g_volume_monitor_get_mounts");
+      List : GIO.Mount.Mount_List.Glist;
    begin
-      Mount_List.Set_Object (List, Internal (Get_Object (Monitor)));
+      GIO.Mount.Mount_List.Set_Object
+        (List,
+         Internal (Glib.Object.Get_Object (Monitor)));
       return List;
    end Get_Mounts;
 
    function Get_Mount_For_UUID
-            (  Monitor : not null access GVolume_Monitor_Record;
-               UUID    : UTF8_String
-            )  return GMount is
+     (Monitor : not null access GVolume_Monitor_Record;
+      UUID    : Glib.UTF8_String) return GIO.Mount.GMount
+   is
       function Internal
-               (  Monitor : Address;
-                  UUID    : Char_Array
-               )  return Address;
-      pragma Import
-             (  C,
-                Internal,
-                "g_volume_monitor_get_mount_for_uuid"
-             );
-      Ptr : constant Address :=
-            Internal (Get_Object (Monitor), To_C (UUID));
+        (Monitor : System.Address;
+         UUID    : Interfaces.C.char_array) return System.Address;
+      pragma Import (C, Internal, "g_volume_monitor_get_mount_for_uuid");
+      Ptr : constant System.Address :=
+              Internal (Glib.Object.Get_Object (Monitor),
+                        Interfaces.C.To_C (UUID));
+
+      use type System.Address;
    begin
-      if Ptr = Null_Address then
+      if Ptr = System.Null_Address then
          return null;
       else
-         return Convert (Ptr);
+         return GIO.Mount.Convert (Ptr);
       end if;
    end Get_Mount_For_UUID;
 
    function Get_Volumes
-            (  Monitor : not null access GVolume_Monitor_Record
-            )  return Volume_List.GList is
-      function Internal (Monitor : Address) return Address;
-      pragma Import
-             (  C,
-                Internal,
-                "g_volume_monitor_get_volumes"
-             );
-      List : Volume_List.Glist;
+     (Monitor : not null access GVolume_Monitor_Record)
+      return GIO.Volume.Volume_List.Glist
+   is
+      function Internal (Monitor : System.Address) return System.Address;
+      pragma Import (C, Internal, "g_volume_monitor_get_volumes");
+      List : GIO.Volume.Volume_List.Glist;
    begin
-      Volume_List.Set_Object (List, Internal (Get_Object (Monitor)));
+      GIO.Volume.Volume_List.Set_Object
+        (List,
+         Internal (Glib.Object.Get_Object (Monitor)));
       return List;
    end Get_Volumes;
 
    function Get_Volume_For_UUID
-            (  Monitor : not null access GVolume_Monitor_Record;
-               UUID    : UTF8_String
-            )  return GVolume is
+     (Monitor : not null access GVolume_Monitor_Record;
+      UUID    : Glib.UTF8_String) return GIO.Volume.GVolume
+   is
       function Internal
-               (  Monitor : Address;
-                  UUID    : Char_Array
-               )  return Address;
-      pragma Import
-             (  C,
-                Internal,
-                "g_volume_monitor_get_volume_for_uuid"
-             );
-      Ptr : constant Address :=
-            Internal (Get_Object (Monitor), To_C (UUID));
+        (Monitor : System.Address;
+         UUID    : Interfaces.C.char_array) return System.Address;
+      pragma Import (C, Internal, "g_volume_monitor_get_volume_for_uuid");
+      Ptr : constant System.Address :=
+              Internal (Glib.Object.Get_Object (Monitor),
+                        Interfaces.C.To_C (UUID));
+
+      use type System.Address;
    begin
-      if Ptr = Null_Address then
+      if Ptr = System.Null_Address then
          return null;
       else
-         return Convert (Ptr);
+         return GIO.Volume.Convert (Ptr);
       end if;
    end Get_Volume_For_UUID;
 

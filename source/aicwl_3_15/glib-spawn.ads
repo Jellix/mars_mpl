@@ -23,261 +23,271 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Interfaces.C;          use Interfaces.C;
-with Interfaces.C.Strings;  use Interfaces.C.Strings;
-with Glib.Error;            use Glib.Error;
-with Gtk.Enums;             use Gtk.Enums.String_List;
-with System;                use System;
+with Glib.Error;
 
 with Interfaces.C.Pointers;
+with Interfaces.C.Strings;
 
-package GLib.Spawn is
+with System;
 
-   type GSpawnFlags is new GUInt;
+package Glib.Spawn is
 
-   Spawn_Leave_Descriptors_Open : constant GSpawnFlags := 2**0;
-   Spawn_Do_Not_Reap_Child      : constant GSpawnFlags := 2**1;
-   Spawn_Search_Path            : constant GSpawnFlags := 2**2;
-   Spawn_Stdout_To_Dev_Null     : constant GSpawnFlags := 2**3;
-   Spawn_Stderr_To_Dev_Null     : constant GSpawnFlags := 2**4;
-   Spawn_Child_Inherits_Stdin   : constant GSpawnFlags := 2**5;
-   Spawn_File_And_ArgV_Zero     : constant GSpawnFlags := 2**6;
+   type GSpawnFlags is new Guint;
 
-   type GPID is new Interfaces.C.Int;
---
--- Child_Setup -- A procedure used to set up the child
---
-   type GSpawnChildSetupFunc is access procedure (Data : Address);
+   Spawn_Leave_Descriptors_Open : constant GSpawnFlags := 2 ** 0;
+   Spawn_Do_Not_Reap_Child      : constant GSpawnFlags := 2 ** 1;
+   Spawn_Search_Path            : constant GSpawnFlags := 2 ** 2;
+   Spawn_Stdout_To_Dev_Null     : constant GSpawnFlags := 2 ** 3;
+   Spawn_Stderr_To_Dev_Null     : constant GSpawnFlags := 2 ** 4;
+   Spawn_Child_Inherits_Stdin   : constant GSpawnFlags := 2 ** 5;
+   Spawn_File_And_ArgV_Zero     : constant GSpawnFlags := 2 ** 6;
+
+   type GPID is new Interfaces.C.int;
+
+   --
+   -- Child_Setup -- A procedure used to set up the child
+   --
+   type GSpawnChildSetupFunc is access procedure (Data : System.Address);
    pragma Convention (C, GSpawnChildSetupFunc);
---
--- Child_Watch_Func -- A procedure to be called upon child completion
---
+
+   --
+   -- Child_Watch_Func -- A procedure to be called upon child completion
+   --
    type Child_Watch_Func is access procedure
-        (  PID    : GPid;
-           Status : GInt;
-           Data   : System.Address
-        );
+     (PID    : GPID;
+      Status : Gint;
+      Data   : System.Address);
    pragma Convention (C, Child_Watch_Func);
 
    type Chars_Ptr_Array is
-      array (Positive range <>) of aliased Chars_Ptr;
+     array (Positive range <>) of aliased Interfaces.C.Strings.chars_ptr;
    package Chars_Ptr_Lists is
-      new Interfaces.C.Pointers
-          (  Index              => Positive,
-             Element            => Chars_Ptr,
-             Element_Array      => Chars_Ptr_Array,
-             Default_Terminator => Null_Ptr
-          );
---
--- Async_Result -- Result of a synchronous spawn
---
---   Running    - True if the process has been spawned
---   Pipelined  - True if pipes were created
---
+     new Interfaces.C.Pointers
+       (Index              => Positive,
+        Element            => Interfaces.C.Strings.Chars_Ptr,
+        Element_Array      => Chars_Ptr_Array,
+        Default_Terminator => Interfaces.C.Strings.Null_Ptr);
+
+   --
+   -- Async_Result -- Result of a synchronous spawn
+   --
+   --   Running    - True if the process has been spawned
+   --   Pipelined  - True if pipes were created
+   --
    type Async_Result
-        (  Running   : Boolean := False;
-           Pipelined : Boolean := False
-        )  is record
-      case Running is
-         when True =>
-            PID : GPID;
-            case Pipelined is
-               when True =>
-                  Standard_Input  : GInt;
-                  Standard_Output : GInt;
-                  Standard_Error  : GInt;
-               when False =>
-                  null;
-            end case;
-         when False =>
-            Error : GError;
-      end case;
-   end record;
---
--- Sync_Result -- Result of a synchronous spawn
---
---   Executed - True if the process was spawned
---
-   type Sync_Result (Executed : Boolean := False) is record
-      case Executed is
-         when True =>
-            Exit_Status     : GInt;
-            Standard_Output : Chars_Ptr;
-            Standard_Error  : Chars_Ptr;
-         when False =>
-            Error : GError;
-      end case;
-   end record;
---
--- Async -- Spawns a process asynchronously
---
---  [ Working_Directory ] - The working directory name
---    ArgV                - Arguments list (null terminated)
---    EnvP                - Environment (null terminated)
---    Flags               - Spawn flags
---    Child_Setup         - Setup data object
---
--- Upon process invokation Setup  procedure  is  called  on  Child_Setup
--- object. Child_Setup and user_data are a function and  user  data.  On
--- POSIX platforms, the function is called in the child after  GLib  has
--- performed all the setup  it  plans  to  perform  (including  creating
--- pipes,  closing  file  descriptors,  etc.) but before calling exec().
--- That is, Child_Setup is called just  before  calling  exec()  in  the
--- child. Obviously actions taken in this function will only affect  the
--- child, not the parent.  EnvP can be null when current environment has
--- to be used.
---
--- Returns :
---
---    Spawning result
---
+     (Running   : Boolean := False;
+      Pipelined : Boolean := False) is
+      record
+         case Running is
+            when True =>
+               PID : GPID;
+               case Pipelined is
+                  when True =>
+                     Standard_Input  : Gint;
+                     Standard_Output : Gint;
+                     Standard_Error  : Gint;
+                  when False =>
+                     null;
+               end case;
+            when False =>
+               Error : Glib.Error.GError;
+         end case;
+      end record;
+
+   --
+   -- Sync_Result -- Result of a synchronous spawn
+   --
+   --   Executed - True if the process was spawned
+   --
+   type Sync_Result (Executed : Boolean := False) is
+      record
+         case Executed is
+            when True =>
+               Exit_Status     : Gint;
+               Standard_Output : Interfaces.C.Strings.chars_ptr;
+               Standard_Error  : Interfaces.C.Strings.chars_ptr;
+            when False =>
+               Error           : Glib.Error.GError;
+         end case;
+      end record;
+
+   --
+   -- Async -- Spawns a process asynchronously
+   --
+   --  [ Working_Directory ] - The working directory name
+   --    ArgV                - Arguments list (null terminated)
+   --    EnvP                - Environment (null terminated)
+   --    Flags               - Spawn flags
+   --    Child_Setup         - Setup data object
+   --
+   -- Upon process invokation Setup  procedure  is  called  on  Child_Setup
+   -- object. Child_Setup and user_data are a function and  user  data.  On
+   -- POSIX platforms, the function is called in the child after  GLib  has
+   -- performed all the setup  it  plans  to  perform  (including  creating
+   -- pipes,  closing  file  descriptors,  etc.) but before calling exec().
+   -- That is, Child_Setup is called just  before  calling  exec()  in  the
+   -- child. Obviously actions taken in this function will only affect  the
+   -- child, not the parent.  EnvP can be null when current environment has
+   -- to be used.
+   --
+   -- Returns :
+   --
+   --    Spawning result
+   --
    function Async
-            (  Working_Directory : UTF8_String;
-               ArgV              : Chars_Ptr_Lists.Pointer;
-               EnvP              : Chars_Ptr_Lists.Pointer := null;
-               Flags             : GSpawnFlags;
-               Child_Setup       : GSpawnChildSetupFunc := null;
-               Data              : Address := Null_Address
-            )  return Async_Result;
+     (Working_Directory : UTF8_String;
+      ArgV              : Chars_Ptr_Lists.Pointer;
+      EnvP              : Chars_Ptr_Lists.Pointer := null;
+      Flags             : GSpawnFlags;
+      Child_Setup       : GSpawnChildSetupFunc    := null;
+      Data              : System.Address          := System.Null_Address)
+      return Async_Result;
+
    function Async
-            (  ArgV              : Chars_Ptr_Lists.Pointer;
-               EnvP              : Chars_Ptr_Lists.Pointer := null;
-               Flags             : GSpawnFlags;
-               Child_Setup       : GSpawnChildSetupFunc := null;
-               Data              : Address := Null_Address
-            )  return Async_Result;
---
--- Async_With_Pipes -- Spawns a process asynchronously
---
---  [ Working_Directory ] - The working directory name
---    ArgV                - Arguments list (null terminated)
---  [ EnvP ]              - Environment (null terminated)
---    Flags               - Spawn flags
---    Child_Setup         - Setup procedure
---    User_Data           - Data for the setup procedure
---
--- Upon process invokation Setup  procedure  is  called  on  Child_Setup
--- object. Child_Setup and user_data are a function and  user  data.  On
--- POSIX platforms, the function is called in the child after  GLib  has
--- performed all the setup  it  plans  to  perform  (including  creating
--- pipes,  closing  file  descriptors,  etc.) but before calling exec().
--- That is, Child_Setup is called just  before  calling  exec()  in  the
--- child. Obviously actions taken in this function will only affect  the
--- child, not the parent.  EnvP can be null when current environment has
--- to be used.
---
--- Returns :
---
---    Spawning result
---
+     (ArgV              : Chars_Ptr_Lists.Pointer;
+      EnvP              : Chars_Ptr_Lists.Pointer := null;
+      Flags             : GSpawnFlags;
+      Child_Setup       : GSpawnChildSetupFunc    := null;
+      Data              : System.Address          := System.Null_Address)
+      return Async_Result;
+
+   --
+   -- Async_With_Pipes -- Spawns a process asynchronously
+   --
+   --  [ Working_Directory ] - The working directory name
+   --    ArgV                - Arguments list (null terminated)
+   --  [ EnvP ]              - Environment (null terminated)
+   --    Flags               - Spawn flags
+   --    Child_Setup         - Setup procedure
+   --    User_Data           - Data for the setup procedure
+   --
+   -- Upon process invokation Setup  procedure  is  called  on  Child_Setup
+   -- object. Child_Setup and user_data are a function and  user  data.  On
+   -- POSIX platforms, the function is called in the child after  GLib  has
+   -- performed all the setup  it  plans  to  perform  (including  creating
+   -- pipes,  closing  file  descriptors,  etc.) but before calling exec().
+   -- That is, Child_Setup is called just  before  calling  exec()  in  the
+   -- child. Obviously actions taken in this function will only affect  the
+   -- child, not the parent.  EnvP can be null when current environment has
+   -- to be used.
+   --
+   -- Returns :
+   --
+   --    Spawning result
+   --
    function Async_With_Pipes
-            (  Working_Directory : UTF8_String;
-               ArgV              : Chars_Ptr_Lists.Pointer;
-               EnvP              : Chars_Ptr_Lists.Pointer := null;
-               Flags             : GSpawnFlags;
-               Child_Setup       : GSpawnChildSetupFunc := null;
-               User_Data         : Address              := Null_Address
-            )  return Async_Result;
+     (Working_Directory : UTF8_String;
+      ArgV              : Chars_Ptr_Lists.Pointer;
+      EnvP              : Chars_Ptr_Lists.Pointer := null;
+      Flags             : GSpawnFlags;
+      Child_Setup       : GSpawnChildSetupFunc    := null;
+      User_Data         : System.Address          := System.Null_Address)
+      return Async_Result;
+
    function Async_With_Pipes
-            (  ArgV              : Chars_Ptr_Lists.Pointer;
-               EnvP              : Chars_Ptr_Lists.Pointer := null;
-               Flags             : GSpawnFlags;
-               Child_Setup       : GSpawnChildSetupFunc := null;
-               User_Data         : Address              := Null_Address
-            )  return Async_Result;
---
--- Child_Watch_Add -- Child process completion callback
---
---    PID  - Process ID
---    Func - To call
---    Data - User data to pass
---
+     (ArgV              : Chars_Ptr_Lists.Pointer;
+      EnvP              : Chars_Ptr_Lists.Pointer := null;
+      Flags             : GSpawnFlags;
+      Child_Setup       : GSpawnChildSetupFunc    := null;
+      User_Data         : System.Address          := System.Null_Address)
+      return Async_Result;
+
+   --
+   -- Child_Watch_Add -- Child process completion callback
+   --
+   --    PID  - Process ID
+   --    Func - To call
+   --    Data - User data to pass
+   --
    procedure Child_Watch_Add
-             (  PID  : GPid;
-                Func : Child_Watch_Func;
-                Data : Address
-             );
---
--- Close_PID -- Process identifier
---
---    PID - Process ID
---
--- On  some  platforms,  notably  Windows,  the  GPid  type represents a
--- resource  which  must  be  closed  to   prevent   resource   leaking.
--- g_spawn_close_pid() is provided for this purpose. It should  be  used
--- on all platforms, even though it doesn't do anything under UNIX.
---
+     (PID  : GPID;
+      Func : Child_Watch_Func;
+      Data : System.Address);
+
+   --
+   -- Close_PID -- Process identifier
+   --
+   --    PID - Process ID
+   --
+   -- On  some  platforms,  notably  Windows,  the  GPid  type represents a
+   -- resource  which  must  be  closed  to   prevent   resource   leaking.
+   -- g_spawn_close_pid() is provided for this purpose. It should  be  used
+   -- on all platforms, even though it doesn't do anything under UNIX.
+   --
    procedure Close_PID (PID : GPID);
---
--- Command_Line_Async -- Spawns a process asynchronously
---
---    Command_Line - The command line
---
--- When the result is not null, it has to be freed using Error_Free.
---
--- Returns :
---
---    null on success, error otherwise.
---
+
+   --
+   -- Command_Line_Async -- Spawns a process asynchronously
+   --
+   --    Command_Line - The command line
+   --
+   -- When the result is not null, it has to be freed using Error_Free.
+   --
+   -- Returns :
+   --
+   --    null on success, error otherwise.
+   --
    function Command_Line_Async
-            (  Command_Line : UTF8_String
-            )  return GError;
---
--- Command_Line_Sync -- Spawns a process synchronously
---
---    Command_Line - The command line
---
--- Returns :
---
---    Execution result
---
+     (Command_Line : UTF8_String) return Glib.Error.GError;
+
+   --
+   -- Command_Line_Sync -- Spawns a process synchronously
+   --
+   --    Command_Line - The command line
+   --
+   -- Returns :
+   --
+   --    Execution result
+   --
    function Command_Line_Sync
-            (  Command_Line : UTF8_String
-            )  return Sync_Result;
---
--- Sync -- Spawns a process synchronously
---
---  [ Working_Directory ] - The working directory name
---    ArgV                - Arguments list (null terminated)
---  [ EnvP ]              - Environment (null terminated)
---    Flags               - Spawn flags
---    Child_Setup         - Setup procedure
---    User_Data           - Data for the setup procedure
---
--- Upon process invokation Setup  procedure  is  called  on  Child_Setup
--- object. Child_Setup and user_data are a function and  user  data.  On
--- POSIX platforms, the function is called in the child after  GLib  has
--- performed all the setup  it  plans  to  perform  (including  creating
--- pipes,  closing  file  descriptors,  etc.) but before calling exec().
--- That is, Child_Setup is called just  before  calling  exec()  in  the
--- child. Obviously actions taken in this function will only affect  the
--- child, not the parent.  EnvP can be null when current environment has
--- to be used.
---
--- Returns :
---
---    Execution result
---
+     (Command_Line : UTF8_String) return Sync_Result;
+
+   --
+   -- Sync -- Spawns a process synchronously
+   --
+   --  [ Working_Directory ] - The working directory name
+   --    ArgV                - Arguments list (null terminated)
+   --  [ EnvP ]              - Environment (null terminated)
+   --    Flags               - Spawn flags
+   --    Child_Setup         - Setup procedure
+   --    User_Data           - Data for the setup procedure
+   --
+   -- Upon process invokation Setup  procedure  is  called  on  Child_Setup
+   -- object. Child_Setup and user_data are a function and  user  data.  On
+   -- POSIX platforms, the function is called in the child after  GLib  has
+   -- performed all the setup  it  plans  to  perform  (including  creating
+   -- pipes,  closing  file  descriptors,  etc.) but before calling exec().
+   -- That is, Child_Setup is called just  before  calling  exec()  in  the
+   -- child. Obviously actions taken in this function will only affect  the
+   -- child, not the parent.  EnvP can be null when current environment has
+   -- to be used.
+   --
+   -- Returns :
+   --
+   --    Execution result
+   --
    function Sync
-            (  Working_Directory : UTF8_String;
-               ArgV              : Chars_Ptr_Lists.Pointer;
-               EnvP              : Chars_Ptr_Lists.Pointer := null;
-               Flags             : GSpawnFlags;
-               Child_Setup       : GSpawnChildSetupFunc := null;
-               User_Data         : Address := Null_Address
-            )  return Sync_Result;
+     (Working_Directory : UTF8_String;
+      ArgV              : Chars_Ptr_Lists.Pointer;
+      EnvP              : Chars_Ptr_Lists.Pointer := null;
+      Flags             : GSpawnFlags;
+      Child_Setup       : GSpawnChildSetupFunc    := null;
+      User_Data         : System.Address          := System.Null_Address)
+      return Sync_Result;
+
    function Sync
-            (  ArgV              : Chars_Ptr_Lists.Pointer;
-               EnvP              : Chars_Ptr_Lists.Pointer := null;
-               Flags             : GSpawnFlags;
-               Child_Setup       : GSpawnChildSetupFunc := null;
-               User_Data         : Address := Null_Address
-            )  return Sync_Result;
+     (ArgV              : Chars_Ptr_Lists.Pointer;
+      EnvP              : Chars_Ptr_Lists.Pointer := null;
+      Flags             : GSpawnFlags;
+      Child_Setup       : GSpawnChildSetupFunc    := null;
+      User_Data         : System.Address          := System.Null_Address)
+      return Sync_Result;
 
 private
+
    pragma Import (C, Child_Watch_Add, "g_child_watch_add");
    pragma Import (C, Close_PID, "g_spawn_close_pid");
 
-end GLib.Spawn;
+end Glib.Spawn;

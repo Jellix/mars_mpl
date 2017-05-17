@@ -23,7 +23,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- ___________________________________________________________________ --
 --
 --  This   package   declares  an  Ada  and  a  GTK+  enumeration  types
 --  corresponding to Gtk_Relief_Style. For  the  latter  properties  are
@@ -33,9 +33,10 @@ with Glib.Generic_Properties;
 with Gtk.Enums;
 
 package Glib.Properties.Relief_Style is
+
    package Property is
-      new GLib.Generic_Properties.Generic_Enumeration_Property
-          (  "relief-style",
-             Gtk.Enums.Gtk_Relief_Style
-          );
+     new GLib.Generic_Properties.Generic_Enumeration_Property
+       ("relief-style",
+        Gtk.Enums.Gtk_Relief_Style);
+
 end Glib.Properties.Relief_Style;

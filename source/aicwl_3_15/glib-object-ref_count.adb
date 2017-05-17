@@ -23,25 +23,25 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 with Ada.Unchecked_Conversion;
 
-with System;  use System;
+with System;
 
-function GLib.Object.Ref_Count
-         (  Object : access GObject_Record'Class
-         )  return GUInt is
+function Glib.Object.Ref_Count
+  (Object : access GObject_Record'Class) return Guint
+is
    type C_GObject_Record is record -- The layout of a GObject
-      G_Type_Interface : Address;
-      Ref_Count        : GUInt;
+      G_Type_Interface : System.Address;
+      Ref_Count        : Guint;
       pragma Volatile (Ref_Count);
    end record;
    pragma Pack (C_GObject_Record);
    pragma Convention (C, C_GObject_Record);
    type C_GObject_Record_Ptr is access all C_GObject_Record;
    function To_GObject is
-      new Ada.Unchecked_Conversion (Address, C_GObject_Record_Ptr);
+      new Ada.Unchecked_Conversion (System.Address, C_GObject_Record_Ptr);
 begin
-   return To_GObject (Get_Object (Object)).Ref_Count;
-end GLib.Object.Ref_Count;
+   return To_GObject (Get_Object (Object)).all.Ref_Count;
+end Glib.Object.Ref_Count;

@@ -63,7 +63,7 @@ with Ada.Calendar;                   use Ada.Calendar;
 with Gdk.Event;                      use Gdk.Event;
 with Gdk.Pixbuf;                     use Gdk.Pixbuf;
 with Gdk.Types;                      use Gdk.Types;
-with GLib.Values;                    use GLib.Values;
+with Glib.Values;                    use Glib.Values;
 with Gtk.Paned;                      use Gtk.Paned;
 with Gtk.Cell_Layout;                use Gtk.Cell_Layout;
 with Gtk.Cell_Renderer;              use Gtk.Cell_Renderer;
@@ -137,8 +137,8 @@ package Gtk.Abstract_Browser is
    record
       Policy    : Caching_Policy;
       Directory : Boolean;
-      Name      : Item_Name (1..Name_Length);
-      Kind      : Item_Type (1..Kind_Length);
+         Name      : Item_Name (1 .. Name_Length);
+         Kind      : Item_Type (1 .. Kind_Length);
    end record;
 --
 -- Directory_Entered -- Constand  usualy  returned  by  Rewind (see), to
@@ -168,7 +168,7 @@ package Gtk.Abstract_Browser is
    type Icon_Data (Kind : Icon_Type; Length : Natural) is record
       case Kind is
          when Stock_ID | Themed =>
-            Name : String (1..Length);
+            Name : String (1 .. Length);
          when GIcon =>
             Icon : GObject;
          when Pixbuf =>
@@ -470,7 +470,7 @@ package Gtk.Abstract_Browser is
              (  Store     : not null access
                             Gtk_Abstract_Directory_Record;
                 Directory : Item_Path;
-                State     : GDouble
+                State     : Gdouble
              );
 --
 -- Read -- The next item of a directory
@@ -1325,7 +1325,7 @@ package Gtk.Abstract_Browser is
 --
    function Locate
             (  Widget : not null access Gtk_Directory_Items_View_Record;
-               X, Y   : GDouble
+               X, Y   : Gdouble
             )  return Natural;
 --
 -- Move -- To an item by position
@@ -1537,7 +1537,7 @@ package Gtk.Abstract_Browser is
    overriding
    function Get_Column_Type
             (  Model : not null access Gtk_Abstract_Directory_Record;
-               Index : GInt
+               Index : Gint
             )  return GType;
    overriding
    function Get_Flags
@@ -1551,7 +1551,7 @@ package Gtk.Abstract_Browser is
    overriding
    function Get_N_Columns
             (  Model : not null access Gtk_Abstract_Directory_Record
-            )  return GInt;
+            )  return Gint;
    overriding
    function Get_Path
             (  Model : not null access Gtk_Abstract_Directory_Record;
@@ -1578,13 +1578,13 @@ package Gtk.Abstract_Browser is
    function Nth_Child
             (  Model  : not null access Gtk_Abstract_Directory_Record;
                Parent : Gtk_Tree_Iter;
-               N      : GInt
+               N      : Gint
             )  return Gtk_Tree_Iter;
    overriding
    function N_Children
             (  Model  : not null access Gtk_Abstract_Directory_Record;
                Iter  : Gtk_Tree_Iter := Null_Iter
-            )  return GInt;
+            )  return Gint;
    overriding
    function Parent
             (  Model : not null access Gtk_Abstract_Directory_Record;
@@ -1616,7 +1616,7 @@ private
 --
    type Item_Path_Object (Length : Natural) is record
       Count : Natural := 1;
-      Path  : Item_Path (1..Length);
+      Path  : Item_Path (1 .. Length);
    end record;
    type Item_Path_Object_Ptr is access Item_Path_Object;
    type Item_Path_Reference is
@@ -1633,13 +1633,13 @@ private
 --
 --    True if left and right are same
 --
-   function "=" (Left, Right : Item_Path_Reference) return Boolean;
+   overriding function "=" (Left, Right : Item_Path_Reference) return Boolean;
    function "=" (Left : Item_Path_Reference; Right : Item_Path)
       return Boolean;
    function "=" (Left : Item_Path; Right : Item_Path_Reference)
       return Boolean;
-   procedure Adjust (Object : in out Item_Path_Reference);
-   procedure Finalize (Object : in out Item_Path_Reference);
+   overriding procedure Adjust (Object : in out Item_Path_Reference);
+   overriding procedure Finalize (Object : in out Item_Path_Reference);
 --
 -- Get -- Path from reference object
 --
@@ -1674,7 +1674,7 @@ private
       Depth      : Natural := 0;        -- Cache recursion depth
       Tracing    : Traced_Actions := 0; -- Cache tracing enabled
       Tree       : Gtk_Tree_Store;      -- Unfiltered store
-      Low, High  : GDouble;             -- Caching progress range
+      Low, High  : Gdouble;             -- Caching progress range
       Last_Time  : Time;                -- Progress was signaled
    end record;
 --
@@ -1717,7 +1717,7 @@ private
                 Item      : Directory_Item;
                 Update    : Boolean;
                 Result    : out Gtk_Tree_Iter;
-                Size      : out GInt
+                Size      : out Gint
              );
 --
 -- Cache -- A path
@@ -1752,14 +1752,14 @@ private
    procedure Emit
              (  Store  : not null access
                          Gtk_Abstract_Directory_Record'Class;
-                Signal : Signal_ID;
+                Signal : Signal_Id;
                 Text   : UTF8_String;
                 Path   : Item_Path
              );
    procedure Emit
              (  Store  : not null access
                          Gtk_Abstract_Directory_Record'Class;
-                Signal : Signal_ID;
+                Signal : Signal_Id;
                 Text   : UTF8_String
              );
 --
@@ -1773,14 +1773,14 @@ private
    procedure Emit
              (  Store  : not null access
                          Gtk_Abstract_Directory_Record'Class;
-                Signal : Signal_ID;
+                Signal : Signal_Id;
                 Path   : Item_Path;
-                Value  : GDouble
+                Value  : Gdouble
              );
    procedure Emit
              (  Store  : not null access
                          Gtk_Abstract_Directory_Record'Class;
-                Signal : Signal_ID;
+                Signal : Signal_Id;
                 Path   : Item_Path
              );
 --
@@ -1794,14 +1794,14 @@ private
    procedure Emit
              (  Store  : not null access
                          Gtk_Abstract_Directory_Record'Class;
-                Signal : Signal_ID;
+                Signal : Signal_Id;
                 Row    : Gtk_Tree_Iter;
                 Path   : Gtk_Tree_Path
              );
    procedure Emit
              (  Store  : not null access
                          Gtk_Abstract_Directory_Record'Class;
-                Signal : Signal_ID;
+                Signal : Signal_Id;
                 Row    : Gtk_Tree_Iter;
                 Text   : String
              );
@@ -1907,8 +1907,8 @@ private
                 Row       : Gtk_Tree_Iter;
                 Directory : Item_Path;
                 Item      : Directory_Item;
-                Position  : out GInt;
-                Size      : out GInt
+                Position  : out Gint;
+                Size      : out Gint
              );
 --
 -- From_Item -- From unfiltered model conversion
@@ -2143,8 +2143,8 @@ private
       Cache   : Gtk_Abstract_Directory;
       View    : Gtk_Directory_Items_View;
       Root    : Gtk_Tree_Path; -- Current root unfiltered
-      Deleted : GInt := -1;    -- Row being deleted, filtered zero based
-      Count   : GInt := 0;     -- Number of items found
+      Deleted : Gint := -1;    -- Row being deleted, filtered zero based
+      Count   : Gint := 0;     -- Number of items found
    end record;
    type Gtk_Directory_Items_Store is
       access all Gtk_Directory_Items_Store_Record'Class;
@@ -2201,7 +2201,7 @@ private
    overriding
    function Get_Column_Type
             (  Model : not null access Gtk_Directory_Items_Store_Record;
-               Index : GInt
+               Index : Gint
             )  return GType;
    overriding
    function Get_Flags
@@ -2215,7 +2215,7 @@ private
    overriding
    function Get_N_Columns
             (  Model : not null access Gtk_Directory_Items_Store_Record
-            )  return GInt;
+            )  return Gint;
    overriding
    function Get_Path
             (  Model : not null access Gtk_Directory_Items_Store_Record;
@@ -2249,13 +2249,13 @@ private
             (  Model  : not null access
                         Gtk_Directory_Items_Store_Record;
                Parent : Gtk_Tree_Iter;
-               N      : GInt
+               N      : Gint
             )  return Gtk_Tree_Iter;
    overriding
    function N_Children
             (  Model : not null access Gtk_Directory_Items_Store_Record;
                Iter  : Gtk_Tree_Iter := Null_Iter
-            )  return GInt;
+            )  return Gint;
    overriding
    function Parent
             (  Model : not null access Gtk_Directory_Items_Store_Record;
@@ -2281,7 +2281,7 @@ private
             (  Model      : not null access
                             Gtk_Directory_Items_Store_Record;
                Unfiltered : Gtk_Tree_Path
-            )  return GInt;
+            )  return Gint;
 --
 -- To_Filtered -- Iterator conversion
 --
@@ -2296,7 +2296,7 @@ private
             (  Model      : not null access
                             Gtk_Directory_Items_Store_Record;
                Unfiltered : Gtk_Tree_Iter
-            )  return GInt;
+            )  return Gint;
 --
 -- To_Filtered -- Iterator conversion
 --
@@ -2387,7 +2387,7 @@ private
       Markup         : Gtk_Selection_Store;
       Columns        : Gtk_Columned_Store;
       Directories    : Gtk_Directory_Tree_View;
-      Last_Key       : GUnichar;
+      Last_Key       : Gunichar;
       Last_Position  : Natural := 0;
       Name_Renderers : Gtk_Cell_Renderer_Text_Array_Ptr;
    end record;
@@ -2624,16 +2624,16 @@ private
              (  Cell : not null access Gtk_Cell_Renderer_Record'Class
              );
 
-   Cached_New                : constant GInt := 0;
-   Cached_Never_Directory    : constant GInt := 1;
-   Cached_Ahead_Directory    : constant GInt := 2;
-   Cached_Expanded_Directory : constant GInt := 3;
-   Cached_Item               : constant GInt := 4;
-   subtype Cached_Directory is GInt
-      range Cached_Never_Directory..Cached_Expanded_Directory;
-   subtype Cached_Children is GInt
-      range Cached_Ahead_Directory..Cached_Expanded_Directory;
-   subtype Cached_Node is GInt range Cached_New..Cached_Item;
+   Cached_New                : constant Gint := 0;
+   Cached_Never_Directory    : constant Gint := 1;
+   Cached_Ahead_Directory    : constant Gint := 2;
+   Cached_Expanded_Directory : constant Gint := 3;
+   Cached_Item               : constant Gint := 4;
+   subtype Cached_Directory is Gint
+   range Cached_Never_Directory .. Cached_Expanded_Directory;
+   subtype Cached_Children is Gint
+   range Cached_Ahead_Directory .. Cached_Expanded_Directory;
+   subtype Cached_Node is Gint range Cached_New .. Cached_Item;
 --
 -- Get_Abstract_Directory_Type -- Type of the store
 --

@@ -23,32 +23,36 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Interfaces.C.Strings;  use Interfaces.C;
+with Interfaces.C.Strings;
 
-package body GLib.Chars_Ptr_Vectors is
+package body Glib.Chars_Ptr_Vectors is
 
    function Convert_And_Free (Vector : Chars_Ptr_Ptr)
-      return Chars_Ptr_Array is
+      return Gtkada.Types.Chars_Ptr_Array is
    begin
       if Vector = null then
-         return Null_Array;
+         return Gtkada.Types.Null_Array;
       else
          declare
-            Size : constant Size_T := Size_T (Virtual_Length (Vector));
+            Size : constant Interfaces.C.size_t :=
+                     Interfaces.C.size_t (Virtual_Length (Vector));
+
+            use type Interfaces.C.size_t;
          begin
             if Size = 0 then
                Free (Vector);
-               return Null_Array;
+               return Gtkada.Types.Null_Array;
             else
                declare
-                  Result : Chars_Ptr_Array (0..Size - 1);
+                  Result : Gtkada.Types.Chars_Ptr_Array (0 .. Size - 1);
                   Ptr    : Chars_Ptr_Ptr := Vector;
-                  use Interfaces.C.Strings;
                begin
                   for Index in Result'Range loop
-                     Result (Index) := New_String (Value (Ptr.all));
+                     Result (Index) :=
+                       Interfaces.C.Strings.New_String
+                         (Interfaces.C.Strings.Value (Ptr.all));
                      Increment (Ptr);
                   end loop;
                   Free (Vector);
@@ -59,21 +63,24 @@ package body GLib.Chars_Ptr_Vectors is
       end if;
    end Convert_And_Free;
 
-   function Convert (Vector : Chars_Ptr_Ptr) return Chars_Ptr_Array is
+   function Convert
+     (Vector : Chars_Ptr_Ptr) return Gtkada.Types.Chars_Ptr_Array is
    begin
       if Vector = null then
-         return Null_Array;
+         return Gtkada.Types.Null_Array;
       else
          declare
-            Size : constant Size_T := Size_T (Virtual_Length (Vector));
+            Size : constant Interfaces.C.size_t :=
+                     Interfaces.C.size_t (Virtual_Length (Vector));
+
+            use type Interfaces.C.size_t;
          begin
             if Size = 0 then
-               return Null_Array;
+               return Gtkada.Types.Null_Array;
             else
                declare
-                  Result : Chars_Ptr_Array (0..Size - 1);
+                  Result : Gtkada.Types.Chars_Ptr_Array (0 .. Size - 1);
                   Ptr    : Chars_Ptr_Ptr := Vector;
---                  use Interfaces.C.Strings;
                begin
                   for Index in Result'Range loop
                      Result (Index) := Ptr.all;
@@ -86,4 +93,4 @@ package body GLib.Chars_Ptr_Vectors is
       end if;
    end Convert;
 
-end GLib.Chars_Ptr_Vectors;
+end Glib.Chars_Ptr_Vectors;

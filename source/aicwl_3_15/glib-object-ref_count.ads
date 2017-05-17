@@ -23,7 +23,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 --
 --  Ref_Count -- Get reference count of an object
 --
@@ -37,6 +37,5 @@
 --
 --     The reference count of
 --
-function GLib.Object.Ref_Count
-         (  Object : access GObject_Record'Class
-         )  return GUInt;
+function Glib.Object.Ref_Count
+  (Object : access GObject_Record'Class) return Guint;

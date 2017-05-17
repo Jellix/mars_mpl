@@ -23,7 +23,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 --
 --  This generic package provides a easier way of using GTK  references.
 --  It  provides  a  controlled type Strong_Reference encapsulating GTK+
@@ -38,83 +38,93 @@ with Ada.Finalization;
 
 generic
    type Object_Type is new GObject_Record with private;
-package GLib.Object.Strong_References is
---
--- Strong_Reference -- Strong reference to an object
---
+
+package Glib.Object.Strong_References is
+
+   --
+   -- Strong_Reference -- Strong reference to an object
+   --
    type Strong_Reference is
-      new Ada.Finalization.Controlled with private;
---
--- Adjust -- Assignment
---
---    Reference - Being copied
---
--- When overridden, it must be called from the override.
---
-   procedure Adjust (Reference : in out Strong_Reference);
---
--- Finalize -- Destruction
---
---    Reference - To destroy
---
--- A derived type is responsible to call to  Finalize  if  it  overrides
--- this procedure.
---
-   procedure Finalize (Reference : in out Strong_Reference);
---
--- Get -- Get the referenced object
---
---    Reference - Object reference
---
--- Returns :
---
---    A pointer to the object, or null, if the reference is invalid
---
+     new Ada.Finalization.Controlled with private;
+
+   --
+   -- Adjust -- Assignment
+   --
+   --    Reference - Being copied
+   --
+   -- When overridden, it must be called from the override.
+   --
+   overriding procedure Adjust (Reference : in out Strong_Reference);
+
+   --
+   -- Finalize -- Destruction
+   --
+   --    Reference - To destroy
+   --
+   -- A derived type is responsible to call to  Finalize  if  it  overrides
+   -- this procedure.
+   --
+   overriding procedure Finalize (Reference : in out Strong_Reference);
+
+   --
+   -- Get -- Get the referenced object
+   --
+   --    Reference - Object reference
+   --
+   -- Returns :
+   --
+   --    A pointer to the object, or null, if the reference is invalid
+   --
    function Get (Reference : Strong_Reference)
-      return access Object_Type'Class;
---
--- Invalidate -- Reset reference
---
---    Reference - Object reference
---
--- The reference becomes invalid. As a result the referenced object  can
--- be destroyed.
---
+                 return access Object_Type'Class;
+
+   --
+   -- Invalidate -- Reset reference
+   --
+   --    Reference - Object reference
+   --
+   -- The reference becomes invalid. As a result the referenced object  can
+   -- be destroyed.
+   --
    procedure Invalidate (Reference : in out Strong_Reference);
---
--- Is_Invalid -- Check if the reference points to an object
---
---    Reference - Object reference
---
--- Returns :
---
---    True if the reference is valid
---
+
+   --
+   -- Is_Invalid -- Check if the reference points to an object
+   --
+   --    Reference - Object reference
+   --
+   -- Returns :
+   --
+   --    True if the reference is valid
+   --
    function Is_Valid (Reference : Strong_Reference) return Boolean;
---
--- Ref -- Get a reference to the object
---
---    Object - The object to reference
---
--- Returns :
---
---    A strong reference to the object
---
+
+   --
+   -- Ref -- Get a reference to the object
+   --
+   --    Object - The object to reference
+   --
+   -- Returns :
+   --
+   --    A strong reference to the object
+   --
    function Ref (Object : not null access Object_Type'Class)
-      return Strong_Reference;
---
--- Set -- To another object
---
---    Reference - Object reference
---    Object    - The object to reference
---
--- Nothing happens if Object is already referenced by Reference.
---
+                 return Strong_Reference;
+
+   --
+   -- Set -- To another object
+   --
+   --    Reference - Object reference
+   --    Object    - The object to reference
+   --
+   -- Nothing happens if Object is already referenced by Reference.
+   --
    procedure Set
-             (  Reference : in out Strong_Reference;
-                Object    : access Object_Type'Class
-             );
+     (Reference : in out Strong_Reference;
+      Object    : access Object_Type'Class);
+
 private
+
    pragma Inline (Get, Invalidate, Is_Valid, Ref, Set);
 
    type Object_Ptr is access all Object_Type'Class;
@@ -123,4 +133,4 @@ private
       Object : Object_Ptr;
    end record;
 
-end GLib.Object.Strong_References;
+end Glib.Object.Strong_References;

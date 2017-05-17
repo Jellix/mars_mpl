@@ -22,119 +22,139 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Interfaces.C;          use Interfaces.C;
-with Interfaces.C.Strings;  use Interfaces.C.Strings;
+with Interfaces.C.Strings;
 
 package body GIO.Mount is
 
-   function Get_Root (Mount : Address) return Address;
+   function Get_Root (Mount : System.Address) return System.Address;
    pragma Import (C, Get_Root, "g_mount_get_root");
 
-   procedure Unref (File : Address);
+   procedure Unref (File : System.Address);
    pragma Import (C, Unref, "g_object_unref");
 
    function Can_Eject
-            (  Mount : not null access GMount_Record
-            )  return Boolean is
-      function Internal (Mount : Address) return GBoolean;
+     (Mount : not null access GMount_Record) return Boolean
+   is
+      function Internal (Mount : System.Address) return Glib.Gboolean;
       pragma Import (C, Internal, "g_mount_can_eject");
+
+      use type Glib.Gboolean;
    begin
-      return 0 /= Internal (Get_Object (Mount));
+      return 0 /= Internal (Glib.Object.Get_Object (Mount));
    end Can_Eject;
 
    function Can_Unmount
-            (  Mount : not null access GMount_Record
-            )  return Boolean is
-      function Internal (Mount : Address) return GBoolean;
+     (Mount : not null access GMount_Record) return Boolean
+   is
+      function Internal (Mount : System.Address) return Glib.Gboolean;
       pragma Import (C, Internal, "g_mount_can_unmount");
+
+      use type Glib.Gboolean;
    begin
-      return 0 /= Internal (Get_Object (Mount));
+      return 0 /= Internal (Glib.Object.Get_Object (Mount));
    end Can_Unmount;
 
-   function Convert (Mount : GMount) return Address is
+   function Convert (Mount : GMount) return System.Address is
    begin
-      return Get_Object (Mount);
+      return Glib.Object.Get_Object (Mount);
    end Convert;
 
-   function Convert (Pointer : Address) return GMount is
+   function Convert (Pointer : System.Address) return GMount is
       Stub : GMount_Record;
    begin
-      return GMount (Get_User_Data (Pointer, Stub));
+      return GMount (Glib.Object.Get_User_Data (Pointer, Stub));
    end Convert;
 
    function Get_Name
-            (  Mount : not null access GMount_Record
-            )  return UTF8_String is
-      function Internal (Mount : Address) return Chars_Ptr;
+     (Mount : not null access GMount_Record) return Glib.UTF8_String
+   is
+      function Internal (Mount : System.Address)
+                         return Interfaces.C.Strings.chars_ptr;
       pragma Import (C, Internal, "g_mount_get_name");
-      Ptr : Chars_Ptr := Internal (Get_Object (Mount));
+      Ptr : Interfaces.C.Strings.chars_ptr :=
+              Internal (Glib.Object.Get_Object (Mount));
+
+      use type Interfaces.C.Strings.chars_ptr;
    begin
-      if Ptr = Null_Ptr then
+      if Ptr = Interfaces.C.Strings.Null_Ptr then
          return "";
       else
          declare
-            Result : constant UTF8_String := Value (Ptr);
+            Result : constant Glib.UTF8_String :=
+                       Interfaces.C.Strings.Value (Ptr);
          begin
-            Free (Ptr);
+            Interfaces.C.Strings.Free (Ptr);
             return Result;
          end;
       end if;
    end Get_Name;
 
    function Get_Icon
-            (  Mount : not null access GMount_Record
-            )  return GObject is
-      function Internal (Mount : Address) return Address;
+     (Mount : not null access GMount_Record) return Glib.Object.GObject
+   is
+      function Internal (Mount : System.Address) return System.Address;
       pragma Import (C, Internal, "g_mount_get_icon");
    begin
-      return Convert (Internal (Get_Object (Mount)));
+      return Glib.Object.Convert (Internal (Glib.Object.Get_Object (Mount)));
    end Get_Icon;
 
    function Get_Root
-            (  Mount : not null access GMount_Record
-            )  return UTF8_String is
-      File : constant Address := Get_Root (Get_Object (Mount));
+     (Mount : not null access GMount_Record) return Glib.UTF8_String
+   is
+      File : constant System.Address :=
+               Get_Root (Glib.Object.Get_Object (Mount));
+
+      use type System.Address;
    begin
-      if File = Null_Address then
+      if File = System.Null_Address then
          return "";
       else
          declare
-            function Internal (File : Address) return Chars_Ptr;
+            function Internal (File : System.Address)
+                               return Interfaces.C.Strings.chars_ptr;
             pragma Import (C, Internal, "g_file_get_path");
-            Ptr : Chars_Ptr := Internal (File);
+            Ptr : Interfaces.C.Strings.chars_ptr := Internal (File);
+
+            use type Interfaces.C.Strings.chars_ptr;
          begin
-            if Ptr = Null_Ptr then
+            if Ptr = Interfaces.C.Strings.Null_Ptr then
                Unref (File);
                return "";
             else
-                declare
-                   Result : constant UTF8_String := Value (Ptr);
-                begin
-                   Unref (File);
-                   Free (Ptr);
-                   return Result;
-                end;
+               declare
+                  Result : constant Glib.UTF8_String :=
+                             Interfaces.C.Strings.Value (Ptr);
+               begin
+                  Unref (File);
+                  Interfaces.C.Strings.Free (Ptr);
+                  return Result;
+               end;
             end if;
          end;
       end if;
    end Get_Root;
 
    function Get_UUID
-            (  Mount : not null access GMount_Record
-            )  return UTF8_String is
-      function Internal (Mount : Address) return Chars_Ptr;
+     (Mount : not null access GMount_Record) return Glib.UTF8_String
+   is
+      function Internal (Mount : System.Address)
+                         return Interfaces.C.Strings.chars_ptr;
       pragma Import (C, Internal, "g_mount_get_uuid");
-      Ptr : Chars_Ptr := Internal (Get_Object (Mount));
+      Ptr : Interfaces.C.Strings.chars_ptr :=
+              Internal (Glib.Object.Get_Object (Mount));
+
+      use type Interfaces.C.Strings.chars_ptr;
    begin
-      if Ptr = Null_Ptr then
+      if Ptr = Interfaces.C.Strings.Null_Ptr then
          return "";
       else
          declare
-            Result : constant UTF8_String := Value (Ptr);
+            Result : constant Glib.UTF8_String :=
+                       Interfaces.C.Strings.Value (Ptr);
          begin
-            Free (Ptr);
+            Interfaces.C.Strings.Free (Ptr);
             return Result;
          end;
       end if;
@@ -153,18 +173,18 @@ package body GIO.Mount is
 --
 --   function Query_Exists (Mount : access GMount_Record)
 --      return Boolean is
---      File : Address := Get_Root (Get_Object (Mount));
+--      File : System.Address := Get_Root (Glib.Object.Get_Object (Mount));
 --   begin
 --      if File = Null_Address then
 --         return False;
 --      else
 --         declare
 --            function Internal
---                     (  File        : Address;
---                        Cancellable : Address := Null_Address
---                     )  return GBoolean;
+--                     (  File        : System.Address;
+--                        Cancellable : System.Address := Null_Address
+--                     )  return Glib.GBoolean;
 --            pragma Import (C, Internal, "g_file_query_exists");
---            Result : GBoolean := Internal (File);
+--            Result : Glib.GBoolean := Internal (File);
 --         begin
 --            Unref (File);
 --            return Result /= 0;

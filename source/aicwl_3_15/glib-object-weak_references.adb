@@ -23,7 +23,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 with System.Address_To_Access_Conversions;
 
@@ -33,19 +33,18 @@ package body Glib.Object.Weak_References is
       new System.Address_To_Access_Conversions (Weak_Reference'Class);
    use Address_To_Access;
 
-   procedure Adjust (Reference : in out Weak_Reference) is
+   overriding procedure Adjust (Reference : in out Weak_Reference) is
    begin
       if Reference.Object /= null then
          Weak_Ref
-         (  Reference.Object,
+           (Reference.Object,
             Notifier_Ptr,
-            Weak_Reference'Class (Reference)'Address
-         );
+            Weak_Reference'Class (Reference)'Address);
       end if;
    end Adjust;
 
-   procedure Finalize (Reference : in out Weak_Reference)
-      renames Invalidate;
+   overriding procedure Finalize (Reference : in out Weak_Reference)
+                                  renames Invalidate;
 
    function Get (Reference : Weak_Reference)
       return access Object_Type'Class is
@@ -57,10 +56,9 @@ package body Glib.Object.Weak_References is
    begin
       if Reference.Object /= null then
          Weak_Unref
-         (  Reference.Object,
+           (Reference.Object,
             Notifier_Ptr,
-            Weak_Reference'Class (Reference)'Address
-         );
+            Weak_Reference'Class (Reference)'Address);
          Reference.Object := null;
       end if;
    end Invalidate;
@@ -75,39 +73,37 @@ package body Glib.Object.Weak_References is
       Reference : Weak_Reference;
    begin
       Weak_Ref
-      (  Object,
+        (Object,
          Notifier_Ptr,
-         Weak_Reference'Class (Reference)'Address
-      );
+         Weak_Reference'Class (Reference)'Address);
       Reference.Object := Object.all'Access;
       return Reference;
    end Ref;
 
    procedure Notifier
-             (  Data                 : System.Address;
-                Where_The_Object_Was : System.Address
-             )  is
+     (Data                 : System.Address;
+      Where_The_Object_Was : System.Address)
+   is
+      pragma Unreferenced (Where_The_Object_Was);
       Ptr : constant Object_Pointer := To_Pointer (Data);
    begin
       if Ptr /= null then
-         Ptr.Object := null;
-         Ptr.Notify;
+         Ptr.all.Object := null;
+         Ptr.all.Notify;
       end if;
    end Notifier;
 
    procedure Set
-             (  Reference : in out Weak_Reference;
-                Object    : not null access Object_Type'Class
-             )  is
+     (Reference : in out Weak_Reference;
+      Object    : not null access Object_Type'Class) is
    begin
       if Object /= Reference.Object then
          Invalidate (Reference);
       end if;
       Weak_Ref
-      (  Object,
+        (Object,
          Notifier_Ptr,
-         Weak_Reference'Class (Reference)'Address
-      );
+         Weak_Reference'Class (Reference)'Address);
       Reference.Object := Object.all'Access;
    end Set;
 

@@ -23,7 +23,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 --
 --  This   package   declares  an  Ada  and  a  GTK+  enumeration  types
 --  corresponding  to  Gtk_Icon_Size.  For  the  latter  properties  are
@@ -38,27 +38,27 @@ package Glib.Properties.Icon_Size is
    -- Therefore we have to declare an enumeration type here.
    --
    type Gtk_Icon_Size_Enum is
-        (  Invalid,
-           Menu,
-           Small_Toolbar,
-           Large_Toolbar,
-           Button,
-           DND,
-           Dialog
-        );
+     (Invalid,
+      Menu,
+      Small_Toolbar,
+      Large_Toolbar,
+      Button,
+      DND,
+      Dialog);
+
    for Gtk_Icon_Size_Enum use
-       (  Invalid       => Gtk.Enums.Icon_Size_Invalid,
-          Menu          => Gtk.Enums.Icon_Size_Menu,
-          Small_Toolbar => Gtk.Enums.Icon_Size_Small_Toolbar,
-          Large_Toolbar => Gtk.Enums.Icon_Size_Large_Toolbar,
-          Button        => Gtk.Enums.Icon_Size_Button,
-          DND           => Gtk.Enums.Icon_Size_Dnd,
-          Dialog        => Gtk.Enums.Icon_Size_Dialog
-       );
+     (Invalid       => Gtk.Enums.Icon_Size_Invalid,
+      Menu          => Gtk.Enums.Icon_Size_Menu,
+      Small_Toolbar => Gtk.Enums.Icon_Size_Small_Toolbar,
+      Large_Toolbar => Gtk.Enums.Icon_Size_Large_Toolbar,
+      Button        => Gtk.Enums.Icon_Size_Button,
+      DND           => Gtk.Enums.Icon_Size_Dnd,
+      Dialog        => Gtk.Enums.Icon_Size_Dialog);
    for Gtk_Icon_Size_Enum'Size use Gint'Size;
+
    package Property is
-      new GLib.Generic_Properties.Generic_Enumeration_Property
-          (  "icon-size",
-             Gtk_Icon_Size_Enum
-          );
+     new GLib.Generic_Properties.Generic_Enumeration_Property
+       ("icon-size",
+        Gtk_Icon_Size_Enum);
+
 end Glib.Properties.Icon_Size;

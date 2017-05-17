@@ -22,102 +22,108 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with GIO.Drive;    use GIO.Drive;
-with GIO.Mount;    use GIO.Mount;
-with GIO.Volume;   use GIO.Volume;
-with GLib;         use GLib;
-with GLib.Object;  use GLib.Object;
+with GIO.Drive;
+with GIO.Mount;
+with GIO.Volume;
+
+with Glib.Object;
 
 package GIO.Volume_Monitor is
 
-   type GVolume_Monitor_Record is new GObject_Record with null record;
+   type GVolume_Monitor_Record is
+     new Glib.Object.GObject_Record with null record;
+
    type GVolume_Monitor is access all GVolume_Monitor_Record'Class;
---
--- Get -- Get GIO monitor
---
--- The result must released using Unref.
---
--- Returns :
---
---    The monitor
---
+
+   --
+   -- Get -- Get GIO monitor
+   --
+   -- The result must released using Unref.
+   --
+   -- Returns :
+   --
+   --    The monitor
+   --
    function Get return GVolume_Monitor;
---
--- Get_Connected_Drives -- Drives connected
---
---    Monitor - The volume monitor
---
--- The  elements  of  result  must released using Unref. The list itself
--- must be freed using Free.
---
--- Returns :
---
---    A list of drives connected to the system
---
+
+   --
+   -- Get_Connected_Drives -- Drives connected
+   --
+   --    Monitor - The volume monitor
+   --
+   -- The  elements  of  result  must released using Unref. The list itself
+   -- must be freed using Free.
+   --
+   -- Returns :
+   --
+   --    A list of drives connected to the system
+   --
    function Get_Connected_Drives
-            (  Monitor : not null access GVolume_Monitor_Record
-            )  return Drive_List.GList;
---
--- Get_Mounts -- Gets a list of the mounts on the system
---
---    Monitor - The volume monitor
---
--- The  elements  of  result  must released using Unref. The list itself
--- must be freed using Free.
---
--- Returns :
---
---    A list of mounts
---
+     (Monitor : not null access GVolume_Monitor_Record)
+      return GIO.Drive.Drive_List.Glist;
+
+   --
+   -- Get_Mounts -- Gets a list of the mounts on the system
+   --
+   --    Monitor - The volume monitor
+   --
+   -- The  elements  of  result  must released using Unref. The list itself
+   -- must be freed using Free.
+   --
+   -- Returns :
+   --
+   --    A list of mounts
+   --
    function Get_Mounts
-            (  Monitor : not null access GVolume_Monitor_Record
-            )  return Mount_List.GList;
---
--- Get_Mount_For_UUID -- Finds a mount object by its UUID
---
---    Monitor - The volume monitor
---
--- When not null, free the returned object with Unref.
---
--- Returns :
---
---    The mount our null
---
+     (Monitor : not null access GVolume_Monitor_Record)
+      return GIO.Mount.Mount_List.Glist;
+
+   --
+   -- Get_Mount_For_UUID -- Finds a mount object by its UUID
+   --
+   --    Monitor - The volume monitor
+   --
+   -- When not null, free the returned object with Unref.
+   --
+   -- Returns :
+   --
+   --    The mount our null
+   --
    function Get_Mount_For_UUID
-            (  Monitor : not null access GVolume_Monitor_Record;
-               UUID    : UTF8_String
-            )  return GMount;
---
--- Get_Volumes -- Gets a list of the volumes on the system
---
---    Monitor - The volume monitor
---
--- The  elements  of  result  must released using Unref. The list itself
--- must be freed using Free.
---
--- Returns :
---
---    A list of volumes
---
+     (Monitor : not null access GVolume_Monitor_Record;
+      UUID    : Glib.UTF8_String) return GIO.Mount.GMount;
+
+   --
+   -- Get_Volumes -- Gets a list of the volumes on the system
+   --
+   --    Monitor - The volume monitor
+   --
+   -- The  elements  of  result  must released using Unref. The list itself
+   -- must be freed using Free.
+   --
+   -- Returns :
+   --
+   --    A list of volumes
+   --
    function Get_Volumes
-            (  Monitor : not null access GVolume_Monitor_Record
-            )  return Volume_List.GList;
---
--- Get_Volume_For_UUID -- Finds a volume object by its UUID
---
---    Monitor - The volume monitor
---
--- When not null, free the returned object with Unref.
---
--- Returns :
---
---    The mount our null
---
+     (Monitor : not null access GVolume_Monitor_Record)
+      return GIO.Volume.Volume_List.Glist;
+
+   --
+   -- Get_Volume_For_UUID -- Finds a volume object by its UUID
+   --
+   --    Monitor - The volume monitor
+   --
+   -- When not null, free the returned object with Unref.
+   --
+   -- Returns :
+   --
+   --    The mount our null
+   --
    function Get_Volume_For_UUID
-            (  Monitor : not null access GVolume_Monitor_Record;
-               UUID    : UTF8_String
-            )  return GVolume;
+     (Monitor : not null access GVolume_Monitor_Record;
+      UUID    : Glib.UTF8_String) return GIO.Volume.GVolume;
 
 end GIO.Volume_Monitor;

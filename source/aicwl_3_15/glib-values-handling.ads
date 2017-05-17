@@ -23,44 +23,44 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
-
-with Glib.Object;  use Glib.Object;
+-- __________________________________________________________________ --
 
 package Glib.Values.Handling is
---
--- Copy -- A value
---
---    Src_Value - The value to copy
---
--- This function creates a copy of  the  value.  For  reference  counted
--- objects it increases the count.
---
--- Returns :
---
---    A copy of the argument
---
+
+   --
+   -- Copy -- A value
+   --
+   --    Src_Value - The value to copy
+   --
+   -- This function creates a copy of  the  value.  For  reference  counted
+   -- objects it increases the count.
+   --
+   -- Returns :
+   --
+   --    A copy of the argument
+   --
    function Copy (Src_Value : GValue) return GValue;
---
--- Copy -- A value
---
---    Src_Value  - The value to copy
---    Dest_Value - The value to set
---
--- This  procedure  makes  a  copy  of  Src_Value  and  stores  it  into
--- Dest_Value.
---
+
+   --
+   -- Copy -- A value
+   --
+   --    Src_Value  - The value to copy
+   --    Dest_Value - The value to set
+   --
+   -- This  procedure  makes  a  copy  of  Src_Value  and  stores  it  into
+   -- Dest_Value.
+   --
    procedure Copy (Src_Value : GValue; Dest_Value : in out GValue);
---
--- Get_Type -- Of a value
---
---    Value - The value
---
--- Returns :
---
---    The GTK+ type of
---
-   function Get_Type (Value : GValue) return GType;
-   pragma Inline (Get_Type);
+
+   --
+   -- Get_Type -- Of a value
+   --
+   --    Value - The value
+   --
+   -- Returns :
+   --
+   --    The GTK+ type of
+   --
+   function Get_Type (Value : GValue) return GType with Inline;
 
 end Glib.Values.Handling;

@@ -22,103 +22,104 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 --
 --  The interface represents user-visible mounts.
 --
-with GLib;             use GLib;
-with GLib.Object;      use GLib.Object;
-with Glib.Properties;  use Glib.Properties;
-with System;           use System;
 
 with Glib.Glist;
+with Glib.Object;
+
+with System;
 
 package GIO.Mount is
 
-   type GMount_Record is new GObject_Record with null record;
+   type GMount_Record is new Glib.Object.GObject_Record with null record;
    type GMount is access all GMount_Record'Class;
---
--- Can_Eject -- Checks if mount can be ejected
---
---    Mount - A mount
---
--- Returns :
---
---    True if Mount can be ejected
---
-   function Can_Eject
-            (  Mount : not null access GMount_Record
-            )  return Boolean;
---
--- Can_Unmount -- Checks if mount can be mounted
---
---    Mount - A mount
---
--- Returns :
---
---    True if mount can be unmounted
---
-   function Can_Unmount
-            (  Mount : not null access GMount_Record
-            )  return Boolean;
---
--- Get_Icon -- Get icon of a mount
---
---    Mount - To get the icon of
---
--- The returned object should be unreffed  with  Unref  when  no  longer
--- needed.
---
--- Returns :
---
---    The icon or null
---
-   function Get_Icon
-            (  Mount : not null access GMount_Record
-            )  return GObject;
---
--- Get_Name -- Get name of a mount
---
---    Mount - To get the name of
---
--- Returns :
---
---    The name
---
-   function Get_Name
-            (  Mount : not null access GMount_Record
-            )  return UTF8_String;
---
--- Get_Root -- Get root path of a mount
---
---    Mount - To get the root of
---
--- Returns :
---
---    The local path of the mount root or an empty string
---
-   function Get_Root
-            (  Mount : not null access GMount_Record
-            )  return UTF8_String;
---
--- Get_UUID -- Get UUID for a mount
---
---    Mount - To get the UUID of
---
--- This function sets the UUID for the mount. The reference is typically
--- based on the file system UUID for the mount in question and should be
--- considered an opaque string.
---
--- Returns :
---
---    The UUID or empty string if not available
---
-   function Get_UUID
-            (  Mount : not null access GMount_Record
-            )  return UTF8_String;
 
-   function Convert (Mount : GMount) return Address;
-   function Convert (Pointer : Address) return GMount;
+   --
+   -- Can_Eject -- Checks if mount can be ejected
+   --
+   --    Mount - A mount
+   --
+   -- Returns :
+   --
+   --    True if Mount can be ejected
+   --
+   function Can_Eject
+     (Mount : not null access GMount_Record) return Boolean;
+
+   --
+   -- Can_Unmount -- Checks if mount can be mounted
+   --
+   --    Mount - A mount
+   --
+   -- Returns :
+   --
+   --    True if mount can be unmounted
+   --
+   function Can_Unmount
+     (Mount : not null access GMount_Record) return Boolean;
+
+   --
+   -- Get_Icon -- Get icon of a mount
+   --
+   --    Mount - To get the icon of
+   --
+   -- The returned object should be unreffed  with  Unref  when  no  longer
+   -- needed.
+   --
+   -- Returns :
+   --
+   --    The icon or null
+   --
+   function Get_Icon
+     (Mount : not null access GMount_Record) return Glib.Object.GObject;
+
+   --
+   -- Get_Name -- Get name of a mount
+   --
+   --    Mount - To get the name of
+   --
+   -- Returns :
+   --
+   --    The name
+   --
+   function Get_Name
+     (Mount : not null access GMount_Record) return Glib.UTF8_String;
+
+   --
+   -- Get_Root -- Get root path of a mount
+   --
+   --    Mount - To get the root of
+   --
+   -- Returns :
+   --
+   --    The local path of the mount root or an empty string
+   --
+   function Get_Root
+     (Mount : not null access GMount_Record) return Glib.UTF8_String;
+
+   --
+   -- Get_UUID -- Get UUID for a mount
+   --
+   --    Mount - To get the UUID of
+   --
+   -- This function sets the UUID for the mount. The reference is typically
+   -- based on the file system UUID for the mount in question and should be
+   -- considered an opaque string.
+   --
+   -- Returns :
+   --
+   --    The UUID or empty string if not available
+   --
+   function Get_UUID
+     (Mount : not null access GMount_Record) return Glib.UTF8_String;
+
+   function Convert (Mount : GMount) return System.Address;
+
+   function Convert (Pointer : System.Address) return GMount;
+
    package Mount_List is new Glib.Glist.Generic_List (GMount);
 
 end GIO.Mount;
