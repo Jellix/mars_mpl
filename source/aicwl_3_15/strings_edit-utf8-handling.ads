@@ -26,7 +26,7 @@
 --____________________________________________________________________--
 --
 --  This package provides conversions between UTF-8 strings and standard
---  Ada's strings and characters. 
+--  Ada's strings and characters.
 --
 package Strings_Edit.UTF8.Handling is
 --
@@ -39,7 +39,7 @@ package Strings_Edit.UTF8.Handling is
 -- string (standard Ada string). The parameter Substitute specifies  the
 -- character  that  substitutes  non-Latin-1  code  points  in Value. If
 -- omitted Constraint_Error is propagated when non-Latin-1  code  points
--- appear in Value. 
+-- appear in Value.
 --
 -- Returns :
 --
@@ -64,7 +64,7 @@ package Strings_Edit.UTF8.Handling is
 -- string.  The  parameter  can  be Character, String, Wide_Character or
 -- Wide_String. The result can be from 1 to  3  bytes  long.  Note  that
 -- Character  has  Latin-1  encoding  which  differs  from  UTF-8 in the
--- positions greater than 127. 
+-- positions greater than 127.
 --
 -- Returns :
 --

@@ -91,7 +91,7 @@ package Strings_Edit.Fields is
 --      Fill        - The fill character
 --
 -- The  output  Pointer..Index-1  is adjusted within the output field as
--- necessary. Pointer is set to either Pointer + Field or Index. 
+-- necessary. Pointer is set to either Pointer + Field or Index.
 --
    procedure Adjust_Output_Field
              (  Destination : in out String;

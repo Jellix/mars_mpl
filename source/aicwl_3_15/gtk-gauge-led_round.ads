@@ -25,21 +25,17 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Cairo;              use Cairo;
-with Gdk.Color;          use Gdk.Color;
-with Gtk.Enums;          use Gtk.Enums;
-with Gtk.Layered;        use Gtk.Layered;
-with Gtk.Layered.Cache;  use Gtk.Layered.Cache;
-with Gtk.Layered.Line;   use Gtk.Layered.Line;
-with Gtk.Missed;         use Gtk.Missed;
-with Gtk.Widget;         use Gtk.Widget;
+with Cairo;
 
+with Gdk.Color;
+
+with Gtk.Enums;
+with Gtk.Layered.Cache;
 with Gtk.Layered.Elliptic_Background;
-use  Gtk.Layered.Elliptic_Background;
+with Gtk.Layered.Line;
+with Gtk.Missed;
 
 package Gtk.Gauge.LED_Round is
-
-   pragma Warnings (Off, "declaration hides ""Widget""");
 
    --
    -- Class_Name - Of the widget
@@ -50,7 +46,7 @@ package Gtk.Gauge.LED_Round is
    -- Gtk_Gauge_LED_Round -- Round LED
    --
    type Gtk_Gauge_LED_Round_Record is
-     new Gtk_Layered_Record with private;
+     new Gtk.Layered.Gtk_Layered_Record with private;
    type Gtk_Gauge_LED_Round is
      access all Gtk_Gauge_LED_Round_Record'Class;
 
@@ -65,7 +61,7 @@ package Gtk.Gauge.LED_Round is
    --
    function Get_Background
      (Widget : not null access Gtk_Gauge_LED_Round_Record)
-      return not null access Elliptic_Background_Layer;
+      return not null access Gtk.Layered.Elliptic_Background.Elliptic_Background_Layer;
 
    --
    -- Get_Cache -- The LED's caching layer
@@ -81,7 +77,7 @@ package Gtk.Gauge.LED_Round is
    --    The cache layer of the widget
    --
    function Get_Cache (Widget : not null access Gtk_Gauge_LED_Round_Record)
-                       return not null access Cache_Layer;
+                       return not null access Gtk.Layered.Cache.Cache_Layer;
 
    --
    -- Get_Off_Color -- The color of turned off LED
@@ -93,7 +89,7 @@ package Gtk.Gauge.LED_Round is
    --    The color
    --
    function Get_Off_Color (Widget : not null access Gtk_Gauge_LED_Round_Record)
-                           return Gdk_Color;
+                           return Gdk.Color.Gdk_Color;
 
    --
    -- Get_On_Color -- The color of turned on LED
@@ -105,7 +101,7 @@ package Gtk.Gauge.LED_Round is
    --    The color
    --
    function Get_On_Color (Widget : not null access Gtk_Gauge_LED_Round_Record)
-                          return Gdk_Color;
+                          return Gdk.Color.Gdk_Color;
 
    --
    -- Get_State -- The LED's state
@@ -136,10 +132,11 @@ package Gtk.Gauge.LED_Round is
    --    Off_Color     - The LED's color when off
    --    Border_Shadow - Border shadow type
    --
-   procedure Gtk_New (Widget        : out Gtk_Gauge_LED_Round;
-                      On_Color      : Gdk_Color := RGB (0.0, 1.0, 0.0);
-                      Off_Color     : Gdk_Color := RGB (0.5, 0.5, 0.5);
-                      Border_Shadow : Gtk_Shadow_Type := Shadow_In);
+   procedure Gtk_New
+     (Widget        : out Gtk_Gauge_LED_Round;
+      On_Color      : Gdk.Color.Gdk_Color       := Gtk.Missed.RGB (0.0, 1.0, 0.0);
+      Off_Color     : Gdk.Color.Gdk_Color       := Gtk.Missed.RGB (0.5, 0.5, 0.5);
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type := Gtk.Enums.Shadow_In);
 
    --
    -- Initialize -- The widget initialization
@@ -151,9 +148,9 @@ package Gtk.Gauge.LED_Round is
    --
    procedure Initialize
      (Widget        : not null access Gtk_Gauge_LED_Round_Record'Class;
-      On_Color      : Gdk_Color;
-      Off_Color     : Gdk_Color;
-      Border_Shadow : Gtk_Shadow_Type);
+      On_Color      : Gdk.Color.Gdk_Color;
+      Off_Color     : Gdk.Color.Gdk_Color;
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type);
 
    --
    -- Set_Colors -- Change the colors
@@ -165,9 +162,10 @@ package Gtk.Gauge.LED_Round is
    -- Note that changing  state does not refresh the widget.  The operation
    -- is task safe.
    --
-   procedure Set_Colors (Widget    : not null access Gtk_Gauge_LED_Round_Record;
-                         On_Color  : Gdk_Color;
-                         Off_Color : Gdk_Color);
+   procedure Set_Colors
+     (Widget    : not null access Gtk_Gauge_LED_Round_Record;
+      On_Color  : Gdk.Color.Gdk_Color;
+      Off_Color : Gdk.Color.Gdk_Color);
 
    --
    -- Set_State -- Change the LED status
@@ -183,27 +181,25 @@ package Gtk.Gauge.LED_Round is
 
    overriding procedure Refresh
      (Widget  : not null access Gtk_Gauge_LED_Round_Record;
-      Context : Cairo_Context);
+      Context : Cairo.Cairo_Context);
 
 private
 
    type Gtk_Gauge_LED_Round_Record is
-     new Gtk_Layered_Record with
+     new Gtk.Layered.Gtk_Layered_Record with
       record
-         Background : access Elliptic_Background_Layer;
-         Cache      : access Cache_Layer;
-         Reflection : access Line_Layer;
-         Shadow     : access Line_Layer;
+         Background : access Gtk.Layered.Elliptic_Background.Elliptic_Background_Layer;
+         Cache      : access Gtk.Layered.Cache.Cache_Layer;
+         Reflection : access Gtk.Layered.Line.Line_Layer;
+         Shadow     : access Gtk.Layered.Line.Line_Layer;
          State      : Boolean := False;
          Toggled    : Boolean := False;
-         On         : Gdk_Color;
-         Off        : Gdk_Color;
+         On         : Gdk.Color.Gdk_Color;
+         Off        : Gdk.Color.Gdk_Color;
          pragma Atomic (State);
          pragma Atomic (Toggled);
       end record;
 
    procedure Update_State (Widget : not null access Gtk_Gauge_LED_Round_Record);
-
-   pragma Warnings (On, "declaration hides ""Widget""");
 
 end Gtk.Gauge.LED_Round;

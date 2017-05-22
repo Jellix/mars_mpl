@@ -34,7 +34,7 @@ package body Strings_Edit.UTF8.Handling is
       Put (Result, Pointer, UTF8_Code_Point (Character'Pos (Value)));
       return Result (1..Pointer - 1);
    end To_UTF8;
-   
+
    function To_UTF8 (Value : String) return String is
       Result  : String (1..Value'Length * 2);
       Pointer : Integer := Result'First;

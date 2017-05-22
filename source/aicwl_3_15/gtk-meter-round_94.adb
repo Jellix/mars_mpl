@@ -43,6 +43,8 @@ with Gtk.Widget.Styles.Line_Cap_Property;
 package body Gtk.Meter.Round_94 is
    use Gtk.Widget.Styles.Line_Cap_Property;
 
+   Pi : constant := Ada.Numerics.Pi;
+
    Needle_Color      : constant Gdk_Color := RGB (1.0, 0.0, 0.0);
    Background_Color  : constant Gdk_Color := RGB (1.0, 1.0, 1.0);
    Major_Tick_Color  : constant Gdk_Color := RGB (0.0, 0.0, 0.0);

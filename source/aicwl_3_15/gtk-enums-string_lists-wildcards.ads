@@ -22,7 +22,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 --
 --  This package is provides wildcard patterns. A pattern is a  list  of
 --  alternatives.  An  empty list matches anything. Otherwise it matches
@@ -31,27 +31,27 @@
 --
 package Gtk.Enums.String_Lists.Wildcards is
 
-   Any : constant String_List.GList := String_List.Null_List;
---
--- Match -- A text against a pattern
---
---    Text    - To match
---    Pattern - The pattern
---
--- The pattern can be specified either as a list of  UTF8_String  or  as
--- controlled wrapper around it.
---
--- Returns :
---
---    True if Pattern matches Text
---
+   Any : constant String_List.Glist := String_List.Null_List;
+
+   --
+   -- Match -- A text against a pattern
+   --
+   --    Text    - To match
+   --    Pattern - The pattern
+   --
+   -- The pattern can be specified either as a list of  UTF8_String  or  as
+   -- controlled wrapper around it.
+   --
+   -- Returns :
+   --
+   --    True if Pattern matches Text
+   --
    function Match
-            (  Text    : UTF8_String;
-               Pattern : Controlled_String_List
-            )  return Boolean;
+     (Text    : UTF8_String;
+      Pattern : Controlled_String_List) return Boolean;
+
    function Match
-            (  Text    : UTF8_String;
-               Pattern : String_List.GList
-            )  return Boolean;
+     (Text    : UTF8_String;
+      Pattern : String_List.Glist) return Boolean;
 
 end Gtk.Enums.String_Lists.Wildcards;

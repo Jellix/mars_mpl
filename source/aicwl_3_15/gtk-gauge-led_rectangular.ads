@@ -23,190 +23,186 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Cairo;              use Cairo;
-with Gdk.Color;          use Gdk.Color;
-with Gdk.Rectangle;      use Gdk.Rectangle;
-with Gtk.Enums;          use Gtk.Enums;
-with Gtk.Layered;        use Gtk.Layered;
-with Gtk.Layered.Cache;  use Gtk.Layered.Cache;
-with Gtk.Layered.Line;   use Gtk.Layered.Line;
-with Gtk.Missed;         use Gtk.Missed;
-with Gtk.Widget;         use Gtk.Widget;
-
+with Cairo;
+with Gdk.Color;
+with Gtk.Enums;
+with Gtk.Layered.Cache;
+with Gtk.Layered.Line;
 with Gtk.Layered.Rectangular_Background;
-use  Gtk.Layered.Rectangular_Background;
+with Gtk.Missed;
 
 package Gtk.Gauge.LED_Rectangular is
---
--- Class_Name - Of the widget
---
-   Class_Name : constant String := "GtkGaugeLEDRectangular";
---
--- Gtk_Gauge_LED_Rectangular -- Rectangular LED
---
-   type Gtk_Gauge_LED_Rectangular_Record is
-      new Gtk_Layered_Record with private;
-   type Gtk_Gauge_LED_Rectangular is
-      access all Gtk_Gauge_LED_Rectangular_Record'Class;
---
--- Get_Cache -- The LED's caching layer
---
---    Widget - The widget
---
--- If the widget is extended, static things which do not change with the
--- widget state should be placed below the caching layer for performance
--- reasons.
---
--- Returns :
---
---    The cache layer of the widget
---
-   function Get_Cache
-            (  Widget : not null access Gtk_Gauge_LED_Rectangular_Record
-            )  return not null access Cache_Layer;
---
--- Get_Type -- The type of the widget
---
--- Returns :
---
---    The GTK type of the widget
---
-   function Get_Type return GType;
---
--- Gtk_New -- Widget construction
---
---    Widget        - The result
---    On_Color      - The LED's color when on
---    Off_Color     - The LED's color when off
---    Border_Shadow - Border shadow type
---
-   procedure Gtk_New
-             (  Widget        : out Gtk_Gauge_LED_Rectangular;
-                On_Color      : Gdk_Color := RGB (0.0, 1.0, 0.0);
-                Off_Color     : Gdk_Color := RGB (0.5, 0.5, 0.5);
-                Border_Shadow : Gtk_Shadow_Type := Shadow_In
-             );
---
--- Initialize -- The widget initialization
---
---    Widget        - The widget to initialize
---    On_Color      - The LED's color when on
---    Off_Color     - The LED's color when off
---    Border_Shadow - Border shadow type
---
-   procedure Initialize
-             (  Widget        : not null access
-                                Gtk_Gauge_LED_Rectangular_Record'Class;
-                On_Color      : Gdk_Color;
-                Off_Color     : Gdk_Color;
-                Border_Shadow : Gtk_Shadow_Type
-             );
---
--- Get_Background -- The LED's background
---
---    Widget - The widget
---
--- Returns :
---
---    The background layer
---
-   function Get_Background
-            (  Widget : not null access Gtk_Gauge_LED_Rectangular_Record
-            )  return not null access Rectangular_Background_Layer;
---
--- Get_Off_Color -- The color of turned off LED
---
---    Widget - The widget
---
--- Returns :
---
---    The color
---
-   function Get_Off_Color
-            (  Widget : not null access Gtk_Gauge_LED_Rectangular_Record
-            )  return Gdk_Color;
---
--- Get_On_Color -- The color of turned on LED
---
---    Widget - The widget
---
--- Returns :
---
---    The color
---
-   function Get_On_Color
-            (  Widget : not null access Gtk_Gauge_LED_Rectangular_Record
-            )  return Gdk_Color;
---
--- Get_State -- The LED's state
---
---    Widget - The widget
---
--- Returns :
---
---    The needle layer of the widget
---
-   function Get_State
-            (  Widget : not null access Gtk_Gauge_LED_Rectangular_Record
-            )  return Boolean;
---
--- Set_Colors -- Change the colors
---
---    Widget    - The widget
---    On_Color  - The LED's color when on
---    Off_Color - The LED's color when off
---
--- Note that changing  state does not refresh the widget.  The operation
--- is task safe.
---
-   procedure Set_Colors
-             (  Widget    : not null access
-                            Gtk_Gauge_LED_Rectangular_Record;
-                On_Color  : Gdk_Color;
-                Off_Color : Gdk_Color
-             );
---
--- Set_State -- Change the LED status
---
---    Widget - The widget
---    State  - To set
---
--- Note that changing  state does not refresh the widget.  The operation
--- is task safe.
---
-   procedure Set_State
-             (  Widget : not null access
-                         Gtk_Gauge_LED_Rectangular_Record;
-                State  : Boolean
-             );
 
-   overriding
-      procedure Refresh
-                (  Widget  : not null access
-                             Gtk_Gauge_LED_Rectangular_Record;
-                   Context : Cairo_Context
-                );
-private
+   --
+   -- Class_Name - Of the widget
+   --
+   Class_Name : constant String := "GtkGaugeLEDRectangular";
+
+   --
+   -- Gtk_Gauge_LED_Rectangular -- Rectangular LED
+   --
    type Gtk_Gauge_LED_Rectangular_Record is
-      new Gtk_Layered_Record with
-   record
-      Background : access Rectangular_Background_Layer;
-      Cache      : access Cache_Layer;
-      Reflection : access Line_Layer;
-      Shadow     : access Line_Layer;
-      State      : Boolean := False;
-      Toggled    : Boolean := False;
-      On         : Gdk_Color;
-      Off        : Gdk_Color;
-      pragma Atomic (State);
-      pragma Atomic (Toggled);
-   end record;
+     new Gtk.Layered.Gtk_Layered_Record with private;
+   type Gtk_Gauge_LED_Rectangular is
+     access all Gtk_Gauge_LED_Rectangular_Record'Class;
+
+   --
+   -- Get_Cache -- The LED's caching layer
+   --
+   --    Widget - The widget
+   --
+   -- If the widget is extended, static things which do not change with the
+   -- widget state should be placed below the caching layer for performance
+   -- reasons.
+   --
+   -- Returns :
+   --
+   --    The cache layer of the widget
+   --
+   function Get_Cache
+     (Widget : not null access Gtk_Gauge_LED_Rectangular_Record)
+      return not null access Gtk.Layered.Cache.Cache_Layer;
+
+   --
+   -- Get_Type -- The type of the widget
+   --
+   -- Returns :
+   --
+   --    The GTK type of the widget
+   --
+   function Get_Type return GType;
+
+   --
+   -- Gtk_New -- Widget construction
+   --
+   --    Widget        - The result
+   --    On_Color      - The LED's color when on
+   --    Off_Color     - The LED's color when off
+   --    Border_Shadow - Border shadow type
+   --
+   procedure Gtk_New
+     (Widget        : out Gtk_Gauge_LED_Rectangular;
+      On_Color      : Gdk.Color.Gdk_Color       := Gtk.Missed.RGB (0.0, 1.0, 0.0);
+      Off_Color     : Gdk.Color.Gdk_Color       := Gtk.Missed.RGB (0.5, 0.5, 0.5);
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type := Gtk.Enums.Shadow_In);
+
+   --
+   -- Initialize -- The widget initialization
+   --
+   --    Widget        - The widget to initialize
+   --    On_Color      - The LED's color when on
+   --    Off_Color     - The LED's color when off
+   --    Border_Shadow - Border shadow type
+   --
+   procedure Initialize
+     (Widget        : not null access Gtk_Gauge_LED_Rectangular_Record'Class;
+      On_Color      : Gdk.Color.Gdk_Color;
+      Off_Color     : Gdk.Color.Gdk_Color;
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type);
+
+   --
+   -- Get_Background -- The LED's background
+   --
+   --    Widget - The widget
+   --
+   -- Returns :
+   --
+   --    The background layer
+   --
+   function Get_Background
+     (Widget : not null access Gtk_Gauge_LED_Rectangular_Record)
+      return not null access Gtk.Layered.Rectangular_Background.Rectangular_Background_Layer;
+
+   --
+   -- Get_Off_Color -- The color of turned off LED
+   --
+   --    Widget - The widget
+   --
+   -- Returns :
+   --
+   --    The color
+   --
+   function Get_Off_Color
+     (Widget : not null access Gtk_Gauge_LED_Rectangular_Record)
+      return Gdk.Color.Gdk_Color;
+
+   --
+   -- Get_On_Color -- The color of turned on LED
+   --
+   --    Widget - The widget
+   --
+   -- Returns :
+   --
+   --    The color
+   --
+   function Get_On_Color
+     (Widget : not null access Gtk_Gauge_LED_Rectangular_Record)
+      return Gdk.Color.Gdk_Color;
+
+   --
+   -- Get_State -- The LED's state
+   --
+   --    Widget - The widget
+   --
+   -- Returns :
+   --
+   --    The needle layer of the widget
+   --
+   function Get_State
+     (Widget : not null access Gtk_Gauge_LED_Rectangular_Record) return Boolean;
+
+   --
+   -- Set_Colors -- Change the colors
+   --
+   --    Widget    - The widget
+   --    On_Color  - The LED's color when on
+   --    Off_Color - The LED's color when off
+   --
+   -- Note that changing  state does not refresh the widget.  The operation
+   -- is task safe.
+   --
+   procedure Set_Colors
+     (Widget    : not null access Gtk_Gauge_LED_Rectangular_Record;
+      On_Color  : Gdk.Color.Gdk_Color;
+      Off_Color : Gdk.Color.Gdk_Color);
+
+   --
+   -- Set_State -- Change the LED status
+   --
+   --    Widget - The widget
+   --    State  - To set
+   --
+   -- Note that changing  state does not refresh the widget.  The operation
+   -- is task safe.
+   --
+   procedure Set_State
+     (Widget : not null access Gtk_Gauge_LED_Rectangular_Record;
+      State  : Boolean);
+
+   overriding procedure Refresh
+     (Widget  : not null access Gtk_Gauge_LED_Rectangular_Record;
+      Context : Cairo.Cairo_Context);
+
+private
+
+   type Gtk_Gauge_LED_Rectangular_Record is
+     new Gtk.Layered.Gtk_Layered_Record with
+      record
+         Background : access Gtk.Layered.Rectangular_Background.Rectangular_Background_Layer;
+         Cache      : access Gtk.Layered.Cache.Cache_Layer;
+         Reflection : access Gtk.Layered.Line.Line_Layer;
+         Shadow     : access Gtk.Layered.Line.Line_Layer;
+         State      : Boolean := False;
+         Toggled    : Boolean := False;
+         On         : Gdk.Color.Gdk_Color;
+         Off        : Gdk.Color.Gdk_Color;
+         pragma Atomic (State);
+         pragma Atomic (Toggled);
+      end record;
 
    procedure Update_State
-             (  Widget : not null access
-                         Gtk_Gauge_LED_Rectangular_Record
-             );
+     (Widget : not null access Gtk_Gauge_LED_Rectangular_Record);
 
 end Gtk.Gauge.LED_Rectangular;

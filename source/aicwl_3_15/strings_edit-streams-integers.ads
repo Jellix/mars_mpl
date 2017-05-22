@@ -29,4 +29,3 @@ with Strings_Edit.Streams.Generic_Integer;
 
 package Strings_Edit.Streams.Integers is
    new Strings_Edit.Streams.Generic_Integer (Integer);
-

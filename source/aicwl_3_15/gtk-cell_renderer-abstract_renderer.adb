@@ -23,21 +23,22 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Ada.Exceptions;        use Ada.Exceptions;
-with GLib;                  use GLib;
-with GLib.Messages;         use GLib.Messages;
-with GtkAda.Bindings;       use GtkAda.Bindings;
-with Gtk.Arguments;         use Gtk.Arguments;
-with Gtk.Cell_Editable;     use Gtk.Cell_Editable;
-with Gtk.Missed;            use Gtk.Missed;
-with Interfaces.C;          use Interfaces.C;
-with Interfaces.C.Strings;  use Interfaces.C.Strings;
-
+with Ada.Exceptions;
 with Ada.Unchecked_Conversion;
 with Ada.Unchecked_Deallocation;
-with System.Address_To_Access_Conversions;
+
+with Glib.Messages;
+
+with Gtk.Arguments;
+with Gtk.Cell_Editable;
+with Gtk.Missed;
+
+with Gtkada.Bindings;
+
+with Interfaces.C;
+with Interfaces.C.Strings;
 
 package body Gtk.Cell_Renderer.Abstract_Renderer is
 
@@ -50,163 +51,151 @@ package body Gtk.Cell_Renderer.Abstract_Renderer is
    type GtkCellRendererClass_Ptr is access all GtkCellRendererClass;
    pragma Convention (C, GtkCellRendererClass_Ptr);
 
-   type C_Dispose is access procedure (Object : Address);
+   type C_Dispose is access procedure (Object : System.Address);
    pragma Convention (C, C_Dispose);
 
-   type C_Finalize is access procedure (Object : Address);
+   type C_Finalize is access procedure (Object : System.Address);
    pragma Convention (C, C_Finalize);
 
    type C_Activate is access function
-        (  Cell            : Address;
-	   Event           : Gdk_Event;
-           Widget          : Address;
-	   Path            : Chars_Ptr;
-	   Background_Area : access Gdk_Rectangle;
-	   Cell_Area       : access Gdk_Rectangle;
-	   Flags           : Gtk_Cell_Renderer_State
-        )  return GBoolean;
+     (Cell            : System.Address;
+      Event           : Gdk_Event;
+      Widget          : System.Address;
+      Path            : Interfaces.C.Strings.chars_ptr;
+      Background_Area : access Gdk_Rectangle;
+      Cell_Area       : access Gdk_Rectangle;
+      Flags           : Gtk_Cell_Renderer_State) return Gboolean;
    pragma Convention (C, C_Activate);
 
-   type C_Editing_Canceled is access procedure (Cell : Address);
+   type C_Editing_Canceled is access procedure (Cell : System.Address);
    pragma Convention (C, C_Editing_Canceled);
 
    type C_Editing_Started is access procedure
-        (  Cell     : Address;
-           Editable : Address;
-           Path     : Chars_Ptr
-        );
+     (Cell     : System.Address;
+      Editable : System.Address;
+      Path     : Interfaces.C.Strings.chars_ptr);
    pragma Convention (C, C_Editing_Started);
 
    type C_Get_Aligned_Area is access procedure
-        (  Cell           : Address;
-           Widget         : Address;
-           Flags          : Gtk_Cell_Renderer_State;
-           Cell_Rectangle : access Gdk_Rectangle;
-           Aligned_Area   : access Gdk_Rectangle
-        );
+     (Cell           : System.Address;
+      Widget         : System.Address;
+      Flags          : Gtk_Cell_Renderer_State;
+      Cell_Rectangle : access Gdk_Rectangle;
+      Aligned_Area   : access Gdk_Rectangle);
    pragma Convention (C, C_Get_Aligned_Area);
 
    type C_Get_Preferred_Width is access procedure
-        (  Cell         : Address;
-           Widget       : Address;
-           Minimum_Size : in out GInt;
-           Natural_Size : in out GInt
-        );
+     (Cell         : System.Address;
+      Widget       : System.Address;
+      Minimum_Size : in out Gint;
+      Natural_Size : in out Gint);
    pragma Convention (C, C_Get_Preferred_Width);
 
    type C_Get_Preferred_Height_For_Width is access procedure
-        (  Cell           : Address;
-           Widget         : Address;
-           Width          : GInt;
-           Minimum_Height : in out GInt;
-           Natural_Height : in out GInt
-        );
+     (Cell           : System.Address;
+      Widget         : System.Address;
+      Width          : Gint;
+      Minimum_Height : in out Gint;
+      Natural_Height : in out Gint);
    pragma Convention (C, C_Get_Preferred_Height_For_Width);
 
    type C_Get_Preferred_Height is access procedure
-        (  Cell         : Address;
-           Widget       : Address;
-           Minimum_Size : in out GInt;
-           Natural_Size : in out GInt
-        );
+     (Cell         : System.Address;
+      Widget       : System.Address;
+      Minimum_Size : in out Gint;
+      Natural_Size : in out Gint);
    pragma Convention (C, C_Get_Preferred_Height);
 
    type C_Get_Preferred_Width_For_Height is access procedure
-        (  Cell          : Address;
-           Widget        : Address;
-           Height        : GInt;
-           Minimum_Width : in out GInt;
-           Natural_Width : in out GInt
-        );
+     (Cell          : System.Address;
+      Widget        : System.Address;
+      Height        : Gint;
+      Minimum_Width : in out Gint;
+      Natural_Width : in out Gint);
    pragma Convention (C, C_Get_Preferred_Width_For_Height);
 
    type C_Get_Property is access procedure
-        (  Object    : Address;
-           Param_ID  : Property_ID;
-           Value     : in out GValue;
-           Param     : Param_Spec
-        );
+     (Object    : System.Address;
+      Param_ID  : Glib.Properties.Creation.Property_Id;
+      Value     : in out Glib.Values.GValue;
+      Param     : Param_Spec);
    pragma Convention (C, C_Get_Property);
 
    type C_Get_Request_Mode is access function
-        (  Cell : Address
-        )  return Gtk_Size_Request_Mode;
+     (Cell : System.Address) return Gtk_Size_Request_Mode;
    pragma Convention (C, C_Get_Request_Mode);
 
    type Gdk_Rectangle_Ptr is access all Gdk_Rectangle;
    pragma Convention (C, Gdk_Rectangle_Ptr);
 
-   type GInt_Ptr is access all GInt;
+   type GInt_Ptr is access all Gint;
    pragma Convention (C, GInt_Ptr);
 
    type C_Get_Size is access procedure
-        (  Cell      : Address;
-	   Widget    : Address;
-	   Cell_Area : Gdk_Rectangle_Ptr;
-	   X_Offset  : GInt_Ptr;
-	   Y_Offset  : GInt_Ptr;
-	   Width     : GInt_Ptr;
-	   Height    : GInt_Ptr
-        );
+     (Cell      : System.Address;
+      Widget    : System.Address;
+      Cell_Area : Gdk_Rectangle_Ptr;
+      X_Offset  : GInt_Ptr;
+      Y_Offset  : GInt_Ptr;
+      Width     : GInt_Ptr;
+      Height    : GInt_Ptr);
    pragma Convention (C, C_Get_Size);
 
    type C_Render is access procedure
-        (  Cell            : Address;
-           Context         : Address;
-           Widget          : Address;
-	   Background_Area : access Gdk_Rectangle;
-	   Cell_Area       : access Gdk_Rectangle;
-	   Flags           : Gtk_Cell_Renderer_State
-        );
+     (Cell            : System.Address;
+      Context         : System.Address;
+      Widget          : System.Address;
+      Background_Area : access Gdk_Rectangle;
+      Cell_Area       : access Gdk_Rectangle;
+      Flags           : Gtk_Cell_Renderer_State);
    pragma Convention (C, C_Render);
 
    type C_Set_Property is access procedure
-        (  Object   : Address;
-           Param_ID : Property_ID;
-           Value    : GValue;
-           Param    : Param_Spec
-        );
+     (Object   : System.Address;
+      Param_ID : Glib.Properties.Creation.Property_Id;
+      Value    : Glib.Values.GValue;
+      Param    : Param_Spec);
    pragma Convention (C, C_Set_Property);
 
    type C_Start_Editing is access function
-        (  Object          : Address;
-           Event           : Gdk.Event.Gdk_Event;
-           Widget          : Address;
-           Path            : Chars_Ptr;
-	   Background_Area : access Gdk_Rectangle;
-	   Cell_Area       : access Gdk_Rectangle;
-           Flags           : Gtk_Cell_Renderer_State
-        )  return Address;
+     (Object          : System.Address;
+      Event           : Gdk.Event.Gdk_Event;
+      Widget          : System.Address;
+      Path            : Interfaces.C.Strings.chars_ptr;
+      Background_Area : access Gdk_Rectangle;
+      Cell_Area       : access Gdk_Rectangle;
+      Flags           : Gtk_Cell_Renderer_State) return System.Address;
    pragma Convention (C, C_Start_Editing);
 
-   type GTypeQuery is record
-      Type_Of       : GType;
-      Type_Name     : Chars_Ptr;
-      Class_Size    : GUInt;
-      Instance_Size : GUInt;
-   end record;
+   type GTypeQuery is
+      record
+         Type_Of       : GType;
+         Type_Name     : Interfaces.C.Strings.chars_ptr;
+         Class_Size    : Guint;
+         Instance_Size : Guint;
+      end record;
    pragma Convention (C, GTypeQuery);
 
    procedure Type_Query (Type_Of : GType; Query : out GTypeQuery);
    pragma Import (C, Type_Query, "g_type_query");
 
-   type Dummy is array (1..6) of Address;
+   type Dummy is array (1 .. 6) of System.Address;
    pragma Convention (C, Dummy);
    type GtkCellRendererClass is record
       G_Type                         : GType;      -- GTypeClass
 
-      Construct_Properties           : Address;    -- GObjectClass
-      Constructor                    : Address;
+      Construct_Properties           : System.Address;    -- GObjectClass
+      Constructor                    : System.Address;
       Set_Property                   : C_Set_Property;
       Get_Property                   : C_Get_Property;
       Dispose                        : C_Dispose;
       Finalize                       : C_Finalize;
-      Dispatch_Properties_Changed    : Address;
-      Notify                         : Address;
-      Constructed                    : Address;
-      Flags                          : GSize;
+      Dispatch_Properties_Changed    : System.Address;
+      Notify                         : System.Address;
+      Constructed                    : System.Address;
+      Flags                          : Gsize;
       P_Dummy                        : Dummy;
-                                                -- GtkCellRendererClass
+      -- GtkCellRendererClass
       Get_Request_Mode               : C_Get_Request_Mode;
       Get_Preferred_Width            : C_Get_Preferred_Width;
       Get_Preferred_Height_For_Width : C_Get_Preferred_Height_For_Width;
@@ -219,33 +208,36 @@ package body Gtk.Cell_Renderer.Abstract_Renderer is
       Start_Editing                  : C_Start_Editing;
       Editing_Canceled               : C_Editing_Canceled;
       Editing_Started                : C_Editing_Started;
-      Priv                           : Address;
-      Gtk_Reserved_1                 : Address;
-      Gtk_Reserved_2                 : Address;
-      Gtk_Reserved_3                 : Address;
+      Priv                           : System.Address;
+      Gtk_Reserved_1                 : System.Address;
+      Gtk_Reserved_2                 : System.Address;
+      Gtk_Reserved_3                 : System.Address;
    end record;
    pragma Convention (C, GtkCellRendererClass);
 
    function To_Ptr is
-      new Ada.Unchecked_Conversion
-          (  GObject_Class,
-             GtkCellRendererClass_Ptr
-          );
+     new Ada.Unchecked_Conversion
+       (  GObject_Class,
+          GtkCellRendererClass_Ptr
+         );
 
    type Gtk_Abstract_Renderer is
-      access all Gtk_Abstract_Renderer_Record'Class;
+     access all Gtk_Abstract_Renderer_Record'Class;
 
-   GtkAda_String : constant String := "_GtkAda" & ASCII.NUL;
+   GtkAda_String       : constant String := "_GtkAda" & ASCII.NUL;
    GtkAda_String_Quark : Glib.GQuark := Glib.Unknown_Quark;
 
-   function To_Ada (Object : Address) return Gtk_Abstract_Renderer is
-      function Internal (Object : Address; Quark : GQuark)
-         return Address;
+   function To_Ada (Object : System.Address) return Gtk_Abstract_Renderer
+   is
+      function Internal (Object : System.Address; Quark : GQuark)
+                         return System.Address;
       pragma Import (C, Internal, "g_object_get_qdata");
       function To_Object is
-         new Ada.Unchecked_Conversion (Address, Gtk_Abstract_Renderer);
+        new Ada.Unchecked_Conversion (System.Address, Gtk_Abstract_Renderer);
+
+      use type System.Address;
    begin
-      if Object = Null_Address then
+      if Object = System.Null_Address then
          return null;
       end if;
       if GtkAda_String_Quark = Unknown_Quark then
@@ -255,175 +247,162 @@ package body Gtk.Cell_Renderer.Abstract_Renderer is
    end To_Ada;
 
    procedure Free is
-      new Ada.Unchecked_Deallocation (Cell_Path, Cell_Path_Ptr);
+     new Ada.Unchecked_Deallocation (Cell_Path, Cell_Path_Ptr);
 
    Parent_Class : GtkCellRendererClass_Ptr := null;
 
    type GType_Info is record
-      Class_Size     : GUInt16;
-      Base_Init      : Address;
-      Base_Finalize  : Address;
+      Class_Size     : Guint16;
+      Base_Init      : System.Address;
+      Base_Finalize  : System.Address;
       Class_Init     : C_Class_Init;
-      Class_Finalize : Address;
-      Class_Data     : Address;
-      Instance_Size  : GUInt16;
-      Preallocs      : GUInt16;
-      Instance_Init  : Address;
-      Value_Table    : Address;
+      Class_Finalize : System.Address;
+      Class_Data     : System.Address;
+      Instance_Size  : Guint16;
+      Preallocs      : Guint16;
+      Instance_Init  : System.Address;
+      Value_Table    : System.Address;
    end record;
    pragma Convention (C, GType_Info);
 
    procedure Marsh_Gtk_Abstract_Renderer_Void
-             (  Closure         : GClosure;
-                Return_Value    : GValue;
-                N_Params        : GUInt;
-                Params          : C_GValues;
-                Invocation_Hint : Address;
-                User_Data       : Address
-             );
+     (Closure         : Gtkada.Bindings.GClosure;
+      Return_Value    : Glib.Values.GValue;
+      N_Params        : Guint;
+      Params          : Glib.Values.C_GValues;
+      Invocation_Hint : System.Address;
+      User_Data       : System.Address);
    pragma Convention (C, Marsh_Gtk_Abstract_Renderer_Void);
 
    function On_Activate
-            (  Cell            : Address;
-	       Event           : Gdk.Event.Gdk_Event;
-	       Widget          : Address;
-	       Path            : Chars_Ptr;
-	       Background_Area : access Gdk_Rectangle;
-	       Cell_Area       : access Gdk_Rectangle;
-	       Flags           : Gtk_Cell_Renderer_State
-            )  return GBoolean;
+     (Cell            : System.Address;
+      Event           : Gdk.Event.Gdk_Event;
+      Widget          : System.Address;
+      Path            : Interfaces.C.Strings.chars_ptr;
+      Background_Area : access Gdk_Rectangle;
+      Cell_Area       : access Gdk_Rectangle;
+      Flags           : Gtk_Cell_Renderer_State) return Gboolean;
    pragma Convention (C, On_Activate);
 
-   procedure On_Delete (Object : Address);
+   procedure On_Delete (Object : System.Address);
    pragma Convention (C, On_Delete);
 
---     procedure On_Editing_Canceled (Cell : Address);
---     pragma Convention (C, On_Editing_Canceled);
---
---     procedure On_Editing_Started
---               (  Cell     : Address;
---                  Editable : Address;
---                  Path     : Chars_Ptr
---               );
---     pragma Convention (C, On_Editing_Started);
+   --     procedure On_Editing_Canceled (Cell : System.Address);
+   --     pragma Convention (C, On_Editing_Canceled);
+   --
+   --     procedure On_Editing_Started
+   --               (  Cell     : System.Address;
+   --                  Editable : System.Address;
+   --                  Path     : Interfaces.C.Strings.Chars_Ptr
+   --               );
+   --     pragma Convention (C, On_Editing_Started);
 
    procedure On_Get_Aligned_Area
-             (  Cell           : Address;
-                Widget         : Address;
-                Flags          : Gtk_Cell_Renderer_State;
-                Cell_Rectangle : access Gdk_Rectangle;
-                Aligned_Area   : access Gdk_Rectangle
-             );
+     (Cell           : System.Address;
+      Widget         : System.Address;
+      Flags          : Gtk_Cell_Renderer_State;
+      Cell_Rectangle : access Gdk_Rectangle;
+      Aligned_Area   : access Gdk_Rectangle);
    pragma Convention (C, On_Get_Aligned_Area);
 
    procedure On_Get_Preferred_Width
-             (  Cell         : Address;
-                Widget       : Address;
-                Minimum_Size : in out GInt;
-                Natural_Size : in out GInt
-             );
+     (Cell         : System.Address;
+      Widget       : System.Address;
+      Minimum_Size : in out Gint;
+      Natural_Size : in out Gint);
    pragma Convention (C, On_Get_Preferred_Width);
 
    procedure On_Get_Preferred_Height_For_Width
-             (  Cell           : Address;
-                Widget         : Address;
-                Width          : GInt;
-                Minimum_Height : in out GInt;
-                Natural_Height : in out GInt
-             );
+     (Cell           : System.Address;
+      Widget         : System.Address;
+      Width          : Gint;
+      Minimum_Height : in out Gint;
+      Natural_Height : in out Gint);
    pragma Convention (C, On_Get_Preferred_Height_For_Width);
 
    procedure On_Get_Preferred_Height
-             (  Cell         : Address;
-                Widget       : Address;
-                Minimum_Size : in out GInt;
-                Natural_Size : in out GInt
-             );
+     (Cell         : System.Address;
+      Widget       : System.Address;
+      Minimum_Size : in out Gint;
+      Natural_Size : in out Gint);
    pragma Convention (C, On_Get_Preferred_Height);
 
    procedure On_Get_Preferred_Width_For_Height
-             (  Cell          : Address;
-                Widget        : Address;
-                Height        : GInt;
-                Minimum_Width : in out GInt;
-                Natural_Width : in out GInt
-             );
+     (Cell          : System.Address;
+      Widget        : System.Address;
+      Height        : Gint;
+      Minimum_Width : in out Gint;
+      Natural_Width : in out Gint);
    pragma Convention (C, On_Get_Preferred_Width_For_Height);
 
    procedure On_Get_Property
-             (  Cell      : Address;
-                Param_ID  : Property_ID;
-                Value     : in out GValue;
-                Param     : Param_Spec
-             );
+     (Cell      : System.Address;
+      Param_ID  : Glib.Properties.Creation.Property_Id;
+      Value     : in out Glib.Values.GValue;
+      Param     : Param_Spec);
    pragma Convention (C, On_Get_Property);
 
    function On_Get_Request_Mode
-            (  Cell : Address
-            )  return Gtk_Size_Request_Mode;
+     (Cell : System.Address) return Gtk_Size_Request_Mode;
    pragma Convention (C, On_Get_Request_Mode);
 
    procedure On_Get_Size
-             (  Cell      : Address;
-   	        Widget    : Address;
-   	        Cell_Area : Gdk_Rectangle_Ptr;
-                X_Offset  : GInt_Ptr;
-   	        Y_Offset  : GInt_Ptr;
-   	        Width     : GInt_Ptr;
-   	        Height    : GInt_Ptr
-             );
+     (Cell      : System.Address;
+      Widget    : System.Address;
+      Cell_Area : Gdk_Rectangle_Ptr;
+      X_Offset  : GInt_Ptr;
+      Y_Offset  : GInt_Ptr;
+      Width     : GInt_Ptr;
+      Height    : GInt_Ptr);
    pragma Convention (C, On_Get_Size);
 
    procedure On_Render
-             (  Cell            : Address;
-                Context         : Address;
-	        Widget          : Address;
-	        Background_Area : access Gdk_Rectangle;
-	        Cell_Area       : access Gdk_Rectangle;
-	        Flags           : Gtk_Cell_Renderer_State
-             );
+     (Cell            : System.Address;
+      Context         : System.Address;
+      Widget          : System.Address;
+      Background_Area : access Gdk_Rectangle;
+      Cell_Area       : access Gdk_Rectangle;
+      Flags           : Gtk_Cell_Renderer_State);
    pragma Convention (C, On_Render);
 
    procedure On_Set_Property
-             (  Cell     : Address;
-                Param_ID : Property_ID;
-                Value    : GValue;
-                Param    : Param_Spec
-             );
+     (Cell     : System.Address;
+      Param_ID : Glib.Properties.Creation.Property_Id;
+      Value    : Glib.Values.GValue;
+      Param    : Param_Spec);
    pragma Convention (C, On_Set_Property);
 
    function On_Start_Editing
-            (  Cell            : Address;
-               Event           : Gdk_Event;
-               Widget          : Address;
-               Path            : Chars_Ptr;
-	       Background_Area : access Gdk_Rectangle;
-	       Cell_Area       : access Gdk_Rectangle;
-               Flags           : Gtk_Cell_Renderer_State
-            )  return Address;
+     (Cell            : System.Address;
+      Event           : Gdk_Event;
+      Widget          : System.Address;
+      Path            : Interfaces.C.Strings.chars_ptr;
+      Background_Area : access Gdk_Rectangle;
+      Cell_Area       : access Gdk_Rectangle;
+      Flags           : Gtk_Cell_Renderer_State) return System.Address;
    pragma Convention (C, On_Start_Editing);
 
-   function Activate
-            (  Cell   : not null access Gtk_Abstract_Renderer_Record;
-               Event  : Gdk_Event;
-               Widget : not null access Gtk_Widget_Record'Class;
-               Path            : UTF8_String;
-               Background_Area : Gdk_Rectangle;
-               Cell_Area       : Gdk_Rectangle;
-               Flags           : Gtk_Cell_Renderer_State
-            )  return Boolean is
+   overriding function Activate
+     (  Cell          : not null access Gtk_Abstract_Renderer_Record;
+        Event           : Gdk_Event;
+        Widget          : not null access Gtk_Widget_Record'Class;
+        Path            : UTF8_String;
+        Background_Area : Gdk_Rectangle;
+        Cell_Area       : Gdk_Rectangle;
+        Flags           : Gtk_Cell_Renderer_State
+       )  return Boolean is
    begin
       return False;
    end Activate;
 
-   procedure Adjust  (Path : in out Cell_Path_Ref) is
+   overriding procedure Adjust  (Path : in out Cell_Path_Ref) is
    begin
       Path.Ref := null;
    end Adjust;
 
    procedure Base_Class_Init (Class : GObject_Class) is
       function Class_Peek_Parent (Class : GtkCellRendererClass_Ptr)
-         return GtkCellRendererClass_Ptr;
+                                  return GtkCellRendererClass_Ptr;
       pragma Import (C, Class_Peek_Parent, "g_type_class_peek_parent");
       This : constant GtkCellRendererClass_Ptr := To_Ptr (Class);
    begin
@@ -441,17 +420,17 @@ package body Gtk.Cell_Renderer.Abstract_Renderer is
       This.Render               := On_Render'Access;
       This.Activate             := On_Activate'Access;
       This.Start_Editing        := On_Start_Editing'Access;
---        This.Editing_Started      := On_Editing_Started'Access;
---        This.Editing_Canceled     := On_Editing_Canceled'Access;
+      --        This.Editing_Started      := On_Editing_Started'Access;
+      --        This.Editing_Canceled     := On_Editing_Canceled'Access;
       This.Get_Preferred_Height_For_Width :=
-         On_Get_Preferred_Height_For_Width'Access;
+        On_Get_Preferred_Height_For_Width'Access;
       This.Get_Preferred_Width_For_Height :=
-         On_Get_Preferred_Width_For_Height'Access;
+        On_Get_Preferred_Width_For_Height'Access;
    end Base_Class_Init;
 
    procedure Cancel
-             (  Cell : not null access Gtk_Abstract_Renderer_Record
-             )  is
+     (Cell : not null access Gtk_Abstract_Renderer_Record)
+   is
       procedure Internal (Object : System.Address; Name : String);
       pragma Import (C, Internal, "ada_g_signal_emit_by_name");
    begin
@@ -459,174 +438,174 @@ package body Gtk.Cell_Renderer.Abstract_Renderer is
    end Cancel;
 
    procedure Commit
-             (  Cell : not null access Gtk_Abstract_Renderer_Record
-             )  is
+     (Cell : not null access Gtk_Abstract_Renderer_Record)
+   is
       procedure Internal (Object : System.Address; Name : String);
       pragma Import (C, Internal, "ada_g_signal_emit_by_name");
    begin
       Internal (Get_Object (Cell), "commit" & ASCII.NUL);
    end Commit;
 
-   procedure Finalize (Path : in out Cell_Path_Ref) is
+   overriding procedure Finalize (Path : in out Cell_Path_Ref) is
    begin
       Free (Path.Ref);
    end Finalize;
 
    procedure Finalize
-             (  Cell : not null access Gtk_Abstract_Renderer_Record
-             )  is
+     (Cell : not null access Gtk_Abstract_Renderer_Record) is
    begin
       null;
    end Finalize;
 
    function Get_Mode
-            (  Cell : not null access Gtk_Abstract_Renderer_Record
-            )  return Gtk_Cell_Renderer_Mode is
-      use Gtk_Cell_Renderer_Mode_Properties;
+     (Cell : not null access Gtk_Abstract_Renderer_Record)
+      return Gtk_Cell_Renderer_Mode is
    begin
-      return Get_Property (Cell, Property_RO (Mode_Property));
+      return
+        Gtk_Cell_Renderer_Mode_Properties.Get_Property
+          (Cell,
+           Gtk_Cell_Renderer_Mode_Properties.Property_RO (Mode_Property));
    end Get_Mode;
 
    function Get_Path
-            (  Cell : not null access Gtk_Abstract_Renderer_Record
-            )  return String is
+     (  Cell : not null access Gtk_Abstract_Renderer_Record
+       )  return String is
    begin
       if Cell.Path.Ref = null then
          return "";
       else
-         return Cell.Path.Ref.Text (1..Cell.Path.Ref.Length);
+         return Cell.Path.Ref.Text (1 .. Cell.Path.Ref.Length);
       end if;
    end Get_Path;
 
-   procedure Get_Preferred_Height
-             (  Cell   : not null access Gtk_Abstract_Renderer_Record;
-                Widget : not null access Gtk_Widget_Record'Class;
-                Minimum_Height : out GInt;
-                Natural_Height : out GInt
-             )  is
+   overriding procedure Get_Preferred_Height
+     (  Cell         : not null access Gtk_Abstract_Renderer_Record;
+        Widget         : not null access Gtk_Widget_Record'Class;
+        Minimum_Height : out Gint;
+        Natural_Height : out Gint
+       )  is
       Area : constant Gdk_Rectangle :=
-                Get_Size
-                (  Gtk_Abstract_Renderer_Record'Class (Cell.all)'Access,
-                   Widget
-                );
+               Get_Size
+                 (  Gtk_Abstract_Renderer_Record'Class (Cell.all)'Access,
+                    Widget
+                   );
    begin
       Minimum_Height := Area.Height;
       Natural_Height := Area.Height;
    end Get_Preferred_Height;
 
-   procedure Get_Preferred_Height_For_Width
-             (  Cell   : not null access Gtk_Abstract_Renderer_Record;
-                Widget : not null access Gtk_Widget_Record'Class;
-                Width          : GInt;
-                Minimum_Height : out GInt;
-                Natural_Height : out GInt
-             )  is
+   overriding procedure Get_Preferred_Height_For_Width
+     (  Cell         : not null access Gtk_Abstract_Renderer_Record;
+        Widget         : not null access Gtk_Widget_Record'Class;
+        Width          : Gint;
+        Minimum_Height : out Gint;
+        Natural_Height : out Gint
+       )  is
       Area : constant Gdk_Rectangle :=
-                Get_Size
-                (  Gtk_Abstract_Renderer_Record'Class (Cell.all)'Access,
-                   Widget
-                );
+               Get_Size
+                 (  Gtk_Abstract_Renderer_Record'Class (Cell.all)'Access,
+                    Widget
+                   );
    begin
       Minimum_Height := Area.Height;
       Natural_Height := Area.Height;
    end Get_Preferred_Height_For_Width;
 
-   procedure Get_Preferred_Width_For_Height
-             (  Cell   : not null access Gtk_Abstract_Renderer_Record;
-                Widget : not null access Gtk_Widget_Record'Class;
-                Height        : GInt;
-                Minimum_Width : out GInt;
-                Natural_Width : out GInt
-             )  is
+   overriding procedure Get_Preferred_Width_For_Height
+     (  Cell        : not null access Gtk_Abstract_Renderer_Record;
+        Widget        : not null access Gtk_Widget_Record'Class;
+        Height        : Gint;
+        Minimum_Width : out Gint;
+        Natural_Width : out Gint
+       )  is
       Area : constant Gdk_Rectangle :=
-                Get_Size
-                (  Gtk_Abstract_Renderer_Record'Class (Cell.all)'Access,
-                   Widget
-                );
+               Get_Size
+                 (  Gtk_Abstract_Renderer_Record'Class (Cell.all)'Access,
+                    Widget
+                   );
    begin
       Minimum_Width := Area.Width;
       Natural_Width := Area.Width;
    end Get_Preferred_Width_For_Height;
 
-   procedure Get_Preferred_Width
-             (  Cell   : not null access Gtk_Abstract_Renderer_Record;
-                Widget : not null access Gtk_Widget_Record'Class;
-                Minimum_Width : out GInt;
-                Natural_Width : out GInt
-             )  is
+   overriding procedure Get_Preferred_Width
+     (  Cell        : not null access Gtk_Abstract_Renderer_Record;
+        Widget        : not null access Gtk_Widget_Record'Class;
+        Minimum_Width : out Gint;
+        Natural_Width : out Gint
+       )  is
       Area : constant Gdk_Rectangle :=
-                Get_Size
-                (  Gtk_Abstract_Renderer_Record'Class (Cell.all)'Access,
-                   Widget
-                );
+               Get_Size
+                 (  Gtk_Abstract_Renderer_Record'Class (Cell.all)'Access,
+                    Widget
+                   );
    begin
       Minimum_Width := Area.Width;
       Natural_Width := Area.Width;
    end Get_Preferred_Width;
 
    procedure Get_Property
-             (  Cell     : not null access Gtk_Abstract_Renderer_Record;
-                Param_ID : Property_ID;
-                Value         : out GValue;
-                Property_Spec : Param_Spec
-             )  is
+     (Cell          : not null access Gtk_Abstract_Renderer_Record;
+      Param_ID      : Glib.Properties.Creation.Property_Id;
+      Value         : out Glib.Values.GValue;
+      Property_Spec : Param_Spec) is
    begin
       Parent_Class.Get_Property
-      (  Get_Object (Cell),
-         Param_ID,
-         Value,
-         Property_Spec
-      );
+        (  Get_Object (Cell),
+           Param_ID,
+           Value,
+           Property_Spec
+          );
    end Get_Property;
 
-   function Get_Request_Mode
-            (  Cell : not null access Gtk_Abstract_Renderer_Record
-            )  return Gtk_Size_Request_Mode is
+   overriding function Get_Request_Mode
+     (  Cell : not null access Gtk_Abstract_Renderer_Record
+       )  return Gtk_Size_Request_Mode is
    begin
       return Constant_Size;
    end Get_Request_Mode;
 
    function Get_X_Align
-            (  Cell : not null access Gtk_Abstract_Renderer_Record
-            )  return GFloat is
-      X, Y : GFloat;
+     (  Cell : not null access Gtk_Abstract_Renderer_Record
+       )  return Gfloat is
+      X, Y : Gfloat;
    begin
       Cell.Get_Alignment (X, Y);
       return X;
    end Get_X_Align;
 
    function Get_X_Pad
-            (  Cell : not null access Gtk_Abstract_Renderer_Record
-            )  return GUInt is
-      X, Y : GInt;
+     (  Cell : not null access Gtk_Abstract_Renderer_Record
+       )  return Guint is
+      X, Y : Gint;
    begin
       Cell.Get_Padding (X, Y);
-      return GUInt (X);
+      return Guint (X);
    end Get_X_Pad;
 
    function Get_Y_Align
-            (  Cell : not null access Gtk_Abstract_Renderer_Record
-            )  return GFloat is
-      X, Y : GFloat;
+     (  Cell : not null access Gtk_Abstract_Renderer_Record
+       )  return Gfloat is
+      X, Y : Gfloat;
    begin
       Cell.Get_Alignment (X, Y);
       return Y;
    end Get_Y_Align;
 
    function Get_Y_Pad
-            (  Cell : not null access Gtk_Abstract_Renderer_Record
-            )  return GUInt is
-      X, Y : GInt;
+     (  Cell : not null access Gtk_Abstract_Renderer_Record
+       )  return Guint is
+      X, Y : Gint;
    begin
       Cell.Get_Padding (X, Y);
-      return GUInt (Y);
+      return Guint (Y);
    end Get_Y_Pad;
 
    procedure Initialize
-             (  Cell    : not null access
-                          Gtk_Abstract_Renderer_Record'Class;
-                Type_Of : GType
-             )  is
+     (  Cell    : not null access
+          Gtk_Abstract_Renderer_Record'Class;
+        Type_Of : GType
+       )  is
       function Object_New (Typ : GType) return System.Address;
       pragma Import (C, Object_New, "ada_g_object_new");
    begin
@@ -634,60 +613,59 @@ package body Gtk.Cell_Renderer.Abstract_Renderer is
    end Initialize;
 
    procedure Marsh_Gtk_Abstract_Renderer_Void
-             (  Closure         : GClosure;
-                Return_Value    : GValue;
-                N_Params        : GUInt;
-                Params          : C_GValues;
-                Invocation_Hint : Address;
-                User_Data       : Address
-             )  is
+     (Closure         : Gtkada.Bindings.GClosure;
+      Return_Value    : Glib.Values.GValue;
+      N_Params        : Guint;
+      Params          : Glib.Values.C_GValues;
+      Invocation_Hint : System.Address;
+      User_Data       : System.Address)
+   is
       function From_Address is
-         new Ada.Unchecked_Conversion (Address, Commit_Callback);
+        new Ada.Unchecked_Conversion (System.Address, Commit_Callback);
    begin
-      From_Address (Get_Callback (Closure))
-      (  Gtk_Abstract_Renderer (Unchecked_To_Object (Params, 0))
-      );
+      From_Address (Gtkada.Bindings.Get_Callback (Closure))
+        (Gtk_Abstract_Renderer (Gtk.Arguments.Unchecked_To_Object (Params, 0)));
    exception
       when Error : others =>
-         Log
-         (  GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            (  "Fault: "
-            &  Exception_Information (Error)
-            &  Where ("Marsh_Gtk_Abstract_Renderer_Void")
-         )  );
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: "
+            & Ada.Exceptions.Exception_Information (Error)
+            & Where ("Marsh_Gtk_Abstract_Renderer_Void"));
    end Marsh_Gtk_Abstract_Renderer_Void;
 
    function On_Activate
-            (  Cell            : Address;
-               Event           : Gdk.Event.Gdk_Event;
-	       Widget          : Address;
-	       Path            : Chars_Ptr;
-	       Background_Area : access Gdk_Rectangle;
-	       Cell_Area       : access Gdk_Rectangle;
-	       Flags           : Gtk_Cell_Renderer_State
-            )  return GBoolean is
+     (Cell            : System.Address;
+      Event           : Gdk.Event.Gdk_Event;
+      Widget          : System.Address;
+      Path            : Interfaces.C.Strings.chars_ptr;
+      Background_Area : access Gdk_Rectangle;
+      Cell_Area       : access Gdk_Rectangle;
+      Flags           : Gtk_Cell_Renderer_State) return Gboolean
+   is
       This : constant Gtk_Abstract_Renderer := To_Ada (Cell);
+
+      use type Interfaces.C.Strings.chars_ptr;
    begin
       if This /= null then
          declare
             Renderer : Gtk_Abstract_Renderer_Record'Class renames
-                       This.all;
+                         This.all;
          begin
             if Renderer.Get_Mode = Cell_Renderer_Mode_Activatable then
-               if Path = Null_Ptr then
+               if Path = Interfaces.C.Strings.Null_Ptr then
                   Set (Renderer.Path, "");
                else
-                  Set (Renderer.Path, Value (Path));
+                  Set (Renderer.Path, Interfaces.C.Strings.Value (Path));
                end if;
                if Renderer.Activate
-                  (  Event,
-                     Convert (Widget),
-                     Get_Path (This),
-                     Background_Area.all,
-                     Cell_Area.all,
-                     Flags
-                  )
+                 (Event,
+                  Convert (Widget),
+                  Get_Path (This),
+                  Background_Area.all,
+                  Cell_Area.all,
+                  Flags)
                then
                   return 1;
                end if;
@@ -698,23 +676,22 @@ package body Gtk.Cell_Renderer.Abstract_Renderer is
    end On_Activate;
 
    procedure On_Commit
-             (  Cell    : not null access Gtk_Abstract_Renderer_Record;
-                Handler : not null Commit_Callback;
-                After   : Boolean := False
-             )  is
+     (  Cell    : not null access Gtk_Abstract_Renderer_Record;
+        Handler : not null Commit_Callback;
+        After   : Boolean := False
+       )  is
       function To_Address is
-         new Ada.Unchecked_Conversion (Commit_Callback, Address);
+        new Ada.Unchecked_Conversion (Commit_Callback, System.Address);
    begin
-      Unchecked_Do_Signal_Connect
-      (  Object     => Cell,
+      Gtkada.Bindings.Unchecked_Do_Signal_Connect
+        (Object     => Cell,
          C_Name     => "commit" & Character'Val (0),
          Marshaller => Marsh_Gtk_Abstract_Renderer_Void'Access,
-         Handler    => To_Address (Handler),--  Set in the closure
-         After      => After
-      );
+         Handler    => To_Address (Handler), --  Set in the closure
+         After      => After);
    end On_Commit;
 
-   procedure On_Delete (Object : Address) is
+   procedure On_Delete (Object : System.Address) is
       This : constant Gtk_Abstract_Renderer := To_Ada (Object);
    begin
       if This /= null then
@@ -726,102 +703,101 @@ package body Gtk.Cell_Renderer.Abstract_Renderer is
    end On_Delete;
 
    procedure On_Get_Aligned_Area
-             (  Cell           : Address;
-                Widget         : Address;
-                Flags          : Gtk_Cell_Renderer_State;
-                Cell_Rectangle : access Gdk_Rectangle;
-                Aligned_Area   : access Gdk_Rectangle
-             )  is
+     (Cell           : System.Address;
+      Widget         : System.Address;
+      Flags          : Gtk_Cell_Renderer_State;
+      Cell_Rectangle : access Gdk_Rectangle;
+      Aligned_Area   : access Gdk_Rectangle)
+   is
       This : constant Gtk_Abstract_Renderer := To_Ada (Cell);
    begin
       if This /= null then
          Aligned_Area.all :=
-            This.Get_Aligned_Area
-            (  Convert (Widget),
-               Flags,
-               Cell_Rectangle.all
-            );
+           This.Get_Aligned_Area
+             (  Convert (Widget),
+                Flags,
+                Cell_Rectangle.all
+               );
       end if;
    end On_Get_Aligned_Area;
 
    procedure On_Get_Preferred_Height
-             (  Cell         : Address;
-                Widget       : Address;
-                Minimum_Size : in out GInt;
-                Natural_Size : in out GInt
-             )  is
+     (Cell         : System.Address;
+      Widget       : System.Address;
+      Minimum_Size : in out Gint;
+      Natural_Size : in out Gint)
+   is
       This : constant Gtk_Abstract_Renderer := To_Ada (Cell);
    begin
       if This /= null then
          This.Get_Preferred_Height
-         (  Convert (Widget),
-            Minimum_Size,
-            Natural_Size
-         );
+           (  Convert (Widget),
+              Minimum_Size,
+              Natural_Size
+             );
       end if;
    end On_Get_Preferred_Height;
 
    procedure On_Get_Preferred_Height_For_Width
-             (  Cell           : Address;
-                Widget         : Address;
-                Width          : GInt;
-                Minimum_Height : in out GInt;
-                Natural_Height : in out GInt
-             )  is
+     (Cell           : System.Address;
+      Widget         : System.Address;
+      Width          : Gint;
+      Minimum_Height : in out Gint;
+      Natural_Height : in out Gint)
+   is
       This : constant Gtk_Abstract_Renderer := To_Ada (Cell);
    begin
       if This /= null then
          This.Get_Preferred_Height_For_Width
-         (  Convert (Widget),
+           (Convert (Widget),
             Width,
             Minimum_Height,
-            Natural_Height
-         );
+            Natural_Height);
       end if;
    end On_Get_Preferred_Height_For_Width;
 
    procedure On_Get_Preferred_Width
-             (  Cell         : Address;
-                Widget       : Address;
-                Minimum_Size : in out GInt;
-                Natural_Size : in out GInt
-             )  is
+     (Cell         : System.Address;
+      Widget       : System.Address;
+      Minimum_Size : in out Gint;
+      Natural_Size : in out Gint)
+   is
       This : constant Gtk_Abstract_Renderer := To_Ada (Cell);
    begin
       if This /= null then
          This.Get_Preferred_Width
-         (  Convert (Widget),
-            Minimum_Size,
-            Natural_Size
-         );
+           (  Convert (Widget),
+              Minimum_Size,
+              Natural_Size
+             );
       end if;
    end On_Get_Preferred_Width;
 
    procedure On_Get_Preferred_Width_For_Height
-             (  Cell          : Address;
-                Widget        : Address;
-                Height        : GInt;
-                Minimum_Width : in out GInt;
-                Natural_Width : in out GInt
-             )  is
+     (Cell          : System.Address;
+      Widget        : System.Address;
+      Height        : Gint;
+      Minimum_Width : in out Gint;
+      Natural_Width : in out Gint)
+   is
       This : constant Gtk_Abstract_Renderer := To_Ada (Cell);
    begin
       if This /= null then
          This.Get_Preferred_Width_For_Height
-         (  Convert (Widget),
-            Height,
-            Minimum_Width,
-            Natural_Width
-         );
+           (  Convert (Widget),
+              Height,
+              Minimum_Width,
+              Natural_Width
+             );
       end if;
    end On_Get_Preferred_Width_For_Height;
 
    procedure On_Get_Property
-             (  Cell     : Address;
-                Param_ID : Property_ID;
-                Value    : in out GValue;
-                Param    : Param_Spec
-             )  is
+     (Cell     : System.Address;
+      Param_ID : Glib.Properties.Creation.Property_Id;
+      Value    : in out Glib.Values.GValue;
+      Param    : Param_Spec)
+   is
       This : constant Gtk_Abstract_Renderer := To_Ada (Cell);
    begin
       if This /= null then
@@ -830,8 +806,8 @@ package body Gtk.Cell_Renderer.Abstract_Renderer is
    end On_Get_Property;
 
    function On_Get_Request_Mode
-            (  Cell : Address
-            )  return Gtk_Size_Request_Mode is
+     (Cell : System.Address) return Gtk_Size_Request_Mode
+   is
       This : constant Gtk_Abstract_Renderer := To_Ada (Cell);
    begin
       if This /= null then
@@ -841,14 +817,14 @@ package body Gtk.Cell_Renderer.Abstract_Renderer is
    end On_Get_Request_Mode;
 
    procedure On_Get_Size
-             (  Cell      : Address;
-                Widget    : Address;
-                Cell_Area : Gdk_Rectangle_Ptr;
-                X_Offset  : GInt_Ptr;
-                Y_Offset  : GInt_Ptr;
-   	        Width     : GInt_Ptr;
-   	        Height    : GInt_Ptr
-             )  is
+     (Cell      : System.Address;
+      Widget    : System.Address;
+      Cell_Area : Gdk_Rectangle_Ptr;
+      X_Offset  : GInt_Ptr;
+      Y_Offset  : GInt_Ptr;
+      Width     : GInt_Ptr;
+      Height    : GInt_Ptr)
+   is
       This : constant Gtk_Abstract_Renderer := To_Ada (Cell);
    begin
       if This /= null then
@@ -877,34 +853,34 @@ package body Gtk.Cell_Renderer.Abstract_Renderer is
    end On_Get_Size;
 
    procedure On_Render
-             (  Cell            : Address;
-                Context         : Address;
-                Widget          : Address;
-	        Background_Area : access Gdk_Rectangle;
-	        Cell_Area       : access Gdk_Rectangle;
-	        Flags           : Gtk_Cell_Renderer_State
-             )  is
+     (Cell            : System.Address;
+      Context         : System.Address;
+      Widget          : System.Address;
+      Background_Area : access Gdk_Rectangle;
+      Cell_Area       : access Gdk_Rectangle;
+      Flags           : Gtk_Cell_Renderer_State)
+   is
       function To_Context is
-         new Ada.Unchecked_Conversion (Address, Cairo_Context);
+        new Ada.Unchecked_Conversion (System.Address, Cairo_Context);
       This : constant Gtk_Abstract_Renderer := To_Ada (Cell);
    begin
       if This /= null then
          This.Render
-         (  To_Context (Context),
-            Convert (Widget),
-            Background_Area.all,
-            Cell_Area.all,
-            Flags
-         );
+           (  To_Context (Context),
+              Convert (Widget),
+              Background_Area.all,
+              Cell_Area.all,
+              Flags
+             );
       end if;
    end On_Render;
 
    procedure On_Set_Property
-             (  Cell     : Address;
-                Param_ID : Property_ID;
-                Value    : GValue;
-                Param    : Param_Spec
-             )  is
+     (Cell     : System.Address;
+      Param_ID : Glib.Properties.Creation.Property_Id;
+      Value    : Glib.Values.GValue;
+      Param    : Param_Spec)
+   is
       This : constant Gtk_Abstract_Renderer := To_Ada (Cell);
    begin
       if This /= null then
@@ -913,172 +889,164 @@ package body Gtk.Cell_Renderer.Abstract_Renderer is
    end On_Set_Property;
 
    function On_Start_Editing
-            (  Cell            : Address;
-               Event           : Gdk.Event.Gdk_Event;
-               Widget          : Address;
-               Path            : Chars_Ptr;
-               Background_Area : access Gdk_Rectangle;
-               Cell_Area       : access Gdk_Rectangle;
-               Flags           : Gtk_Cell_Renderer_State
-            )  return Address is
-      function Internal (Object : Address; Interface_Type : GType)
-         return Address;
+     (Cell            : System.Address;
+      Event           : Gdk.Event.Gdk_Event;
+      Widget          : System.Address;
+      Path            : Interfaces.C.Strings.chars_ptr;
+      Background_Area : access Gdk_Rectangle;
+      Cell_Area       : access Gdk_Rectangle;
+      Flags           : Gtk_Cell_Renderer_State) return System.Address
+   is
+      function Internal (Object : System.Address; Interface_Type : GType)
+                         return System.Address;
       pragma Import (C, Internal, "g_type_check_instance_cast");
       This : constant Gtk_Abstract_Renderer := To_Ada (Cell);
+
+      use type Interfaces.C.Strings.chars_ptr;
    begin
       if This /= null then
-         if Path = Null_Ptr then
+         if Path = Interfaces.C.Strings.Null_Ptr then
             Set (This.Path, "");
          else
-            Set (This.Path, Value (Path));
+            Set (This.Path, Interfaces.C.Strings.Value (Path));
          end if;
          declare
-            Editor : Gtk_Widget renames
-                     This.Start_Editing
-                     (  Event,
-                        Convert (Widget),
-                        This.Get_Path,
-                        Background_Area.all,
-                        Cell_Area.all,
-                        Flags
-                     );
-            Editable : Address;
+            Editor   : Gtk_Widget renames
+                         This.Start_Editing
+                           (Event,
+                            Convert (Widget),
+                            This.Get_Path,
+                            Background_Area.all,
+                            Cell_Area.all,
+                            Flags);
+            Editable : System.Address;
          begin
             if Editor /= null then
                --
                -- Conversion  to the interface.  When failed  the result
-               -- is Null_Address
+               -- is System.Null_Address
                --
                Editable :=
-                  Internal
-                  (  Get_Object (Editor),
-                     Gtk.Cell_Editable.Get_Type
-                  );
+                 Internal
+                   (  Get_Object (Editor),
+                      Gtk.Cell_Editable.Get_Type
+                     );
                return Editable;
             end if;
          end;
       end if;
-      return Null_Address;
+      return System.Null_Address;
    end On_Start_Editing;
 
    function Register
-            (  Name : String;
-               Init : not null C_Class_Init := Base_Class_Init'Access
-            )  return GType is
+     (  Name : String;
+        Init : not null C_Class_Init := Base_Class_Init'Access
+       )  return GType is
    begin
       return Register_Type (Name => Name, Init => Init);
    end Register;
 
    function Register_Type
-            (  Name : String;
-               Size : Positive := GtkCellRenderer'Size;
-               Init : not null C_Class_Init := Base_Class_Init'Access
-            )  return GType is
+     (  Name : String;
+        Size : Positive := GtkCellRenderer'Size;
+        Init : not null C_Class_Init := Base_Class_Init'Access
+       )  return GType is
       function Cell_Renderer_Type return GType;
       pragma Import
-             (  C,
-                Cell_Renderer_Type,
-                "gtk_cell_renderer_get_type"
-             );
+        (  C,
+           Cell_Renderer_Type,
+           "gtk_cell_renderer_get_type"
+          );
       function Register_Static
-               (  Parent_Type : GType;
-                  Type_Name   : Char_Array;
-                  Type_Info   : access GType_Info;
-                  Type_Flags  : GUInt
-               )  return Glib.GType;
+        (Parent_Type : GType;
+         Type_Name   : Interfaces.C.char_array;
+         Type_Info   : access GType_Info;
+         Type_Flags  : Guint) return Glib.GType;
       pragma Import (C, Register_Static, "g_type_register_static");
       function Signal_NewV
-               (  Name         : Char_Array;
-                  IType        : GType;
-                  Signal_Flags : GUInt;
-                  Closure      : Address;
-                  Accumulator  : Address;
-                  Accu_Data    : Address;
-                  C_Marshaller : Address;
-                  Return_Type  : GType;
-                  N_Params     : GUInt;
-                  Params       : Address
-               )  return GUInt;
+        (Name         : Interfaces.C.char_array;
+         IType        : GType;
+         Signal_Flags : Guint;
+         Closure      : System.Address;
+         Accumulator  : System.Address;
+         Accu_Data    : System.Address;
+         C_Marshaller : System.Address;
+         Return_Type  : GType;
+         N_Params     : Guint;
+         Params       : System.Address) return Guint;
       pragma Import (C, Signal_NewV, "g_signal_newv");
       procedure Marshaller
-                (  Closure         : Address;
-                   Return_Value    : access GValue;
-                   N_Param_Values  : GUInt;
-                   Param_Values    : access GValue;
-                   Invocation_Hint : Address;
-                   Marshal_Data    : Address
-                );
+        (Closure         : System.Address;
+         Return_Value    : access Glib.Values.GValue;
+         N_Param_Values  : Guint;
+         Param_Values    : access Glib.Values.GValue;
+         Invocation_Hint : System.Address;
+         Marshal_Data    : System.Address);
       pragma Import (C, Marshaller, "g_cclosure_marshal_VOID__VOID");
 
       Result    : GType;
       Info      : GTypeQuery;
-      Commit_ID : GUInt;
+      Commit_ID : Guint;
       Parent    : GObject_Class :=
-                     Gtk.Missed.Class_From_Type (Cell_Renderer_Type);
+                    Gtk.Missed.Class_From_Type (Cell_Renderer_Type);
    begin
       Type_Query (Cell_Renderer_Type, Info);
-      if GUInt (Size / Interfaces.C.Char'Size) < Info.Instance_Size then
+      if Guint (Size / Interfaces.C.char'Size) < Info.Instance_Size then
          raise Constraint_Error with
-               "GTK object instance of '" &
-               Name &
-               "' is smaller than parent '" &
-               Value (Info.Type_Name) &
-               "' " &
-               Integer'Image (Size / Interfaces.C.Char'Size) &
-               " <" &
-               GUInt'Image (Info.Instance_Size);
+           "GTK object instance of '"
+           & Name
+           & "' is smaller than parent '"
+           & Interfaces.C.Strings.Value (Info.Type_Name)
+           & "' "
+           & Integer'Image (Size / Interfaces.C.char'Size)
+           & " <"
+           & Guint'Image (Info.Instance_Size);
       end if;
       Result :=
-         Register_Static
-         (  Parent_Type => Cell_Renderer_Type,
-            Type_Name   => To_C (Name),
-            Type_Flags  => 0,
-            Type_Info   =>
-               new GType_Info'
-                   (  Class_Size =>
-                         GUInt16'Max
-                         (  (  GtkCellRendererClass'Size
-                            /  Interfaces.C.Char'Size
-                            ),
-                            GUInt16 (Info.Class_Size)
-                         ),
-                      Base_Init      => Null_Address,
-                      Base_Finalize  => Null_Address,
-                      Class_Init     => Init,
-                      Class_Finalize => Null_Address,
-                      Class_Data     => Null_Address,
-                      Preallocs      => 0,
-                      Instance_Init  => Null_Address,
-                      Value_Table    => Null_Address,
-                      Instance_Size  =>
-                         GUInt16 (Size / Interfaces.C.Char'Size)
-         )         );
+        Register_Static
+          (Parent_Type => Cell_Renderer_Type,
+           Type_Name   => Interfaces.C.To_C (Name),
+           Type_Flags  => 0,
+           Type_Info   =>
+              new GType_Info'
+             (Class_Size     =>
+                    Guint16'Max
+                (GtkCellRendererClass'Size / Interfaces.C.char'Size,
+                 Guint16 (Info.Class_Size)),
+              Base_Init      => System.Null_Address,
+              Base_Finalize  => System.Null_Address,
+              Class_Init     => Init,
+              Class_Finalize => System.Null_Address,
+              Class_Data     => System.Null_Address,
+              Preallocs      => 0,
+              Instance_Init  => System.Null_Address,
+              Value_Table    => System.Null_Address,
+              Instance_Size  =>
+                Guint16 (Size / Interfaces.C.char'Size)));
       Commit_ID :=
-         Signal_Newv
-         (  Name         => To_C ("commit"),
-            IType        => Result,
-            Signal_Flags => 2, -- G_SIGNAL_RUN_LAST
-            Closure      => Null_Address,
-            Accumulator  => Null_Address,
-            Accu_Data    => Null_Address,
-            C_Marshaller => Marshaller'Address,
-            Return_Type  => GType_None,
-            N_Params     => 0,
-            Params       => Null_Address
-         );
+        Signal_NewV
+          (Name         => Interfaces.C.To_C ("commit"),
+           IType        => Result,
+           Signal_Flags => 2, -- G_SIGNAL_RUN_LAST
+           Closure      => System.Null_Address,
+           Accumulator  => System.Null_Address,
+           Accu_Data    => System.Null_Address,
+           C_Marshaller => Marshaller'Address,
+           Return_Type  => GType_None,
+           N_Params     => 0,
+           Params       => System.Null_Address);
       return Result;
    end Register_Type;
 
    procedure Set_Mode
-             (  Cell : not null access Gtk_Abstract_Renderer_Record;
-                Mode : Gtk_Cell_Renderer_Mode
-             )  is
+     (Cell : not null access Gtk_Abstract_Renderer_Record;
+      Mode : Gtk_Cell_Renderer_Mode) is
    begin
       Gtk_Cell_Renderer_Mode_Properties.Set_Property
-      (  Cell,
-         Gtk_Cell_Renderer_Mode_Properties.Property (Mode_Property),
-         Mode
-      );
+        (  Cell,
+           Gtk_Cell_Renderer_Mode_Properties.Property (Mode_Property),
+           Mode
+          );
    end Set_Mode;
 
    procedure Set (Path : in out Cell_Path_Ref; Text : String) is
@@ -1092,45 +1060,43 @@ package body Gtk.Cell_Renderer.Abstract_Renderer is
             Free (Path.Ref);
             Path.Ref := new Cell_Path'(Text'Length, Text'Length, Text);
          else
-            Path.Ref.Text (1..Text'Length) := Text;
+            Path.Ref.Text (1 .. Text'Length) := Text;
             Path.Ref.Length := Text'Length;
          end if;
       end if;
    end Set;
 
    procedure Set_Property
-             (  Cell     : not null access Gtk_Abstract_Renderer_Record;
-                Param_ID : Property_ID;
-                Value         : GValue;
-                Property_Spec : Param_Spec
-             )  is
+     (Cell          : not null access Gtk_Abstract_Renderer_Record;
+      Param_ID      : Glib.Properties.Creation.Property_Id;
+      Value         : Glib.Values.GValue;
+      Property_Spec : Param_Spec) is
    begin
       Parent_Class.Set_Property
-      (  Get_Object (Cell),
-         Param_ID,
-         Value,
-         Property_Spec
-      );
+        (  Get_Object (Cell),
+           Param_ID,
+           Value,
+           Property_Spec
+          );
    end Set_Property;
 
    function Start_Editing
-            (  Cell   : not null access Gtk_Abstract_Renderer_Record;
-               Event  : Gdk_Event;
-               Widget : not null access Gtk_Widget_Record'Class;
-               Path            : UTF8_String;
-               Background_Area : Gdk_Rectangle;
-               Cell_Area       : Gdk_Rectangle;
-               Flags           : Gtk_Cell_Renderer_State
-            )  return Gtk_Widget is
+     (Cell          : not null access Gtk_Abstract_Renderer_Record;
+      Event           : Gdk_Event;
+      Widget          : not null access Gtk_Widget_Record'Class;
+      Path            : UTF8_String;
+      Background_Area : Gdk_Rectangle;
+      Cell_Area       : Gdk_Rectangle;
+      Flags           : Gtk_Cell_Renderer_State) return Gtk_Widget is
    begin
       return null;
    end Start_Editing;
 
-   procedure Stop_Editing
-             (  Cell : not null access Gtk_Abstract_Renderer_Record;
-                Cancelled : Boolean
-             )  is
-      procedure Internal (Cell : Address; Cancelled : GBoolean);
+   overriding procedure Stop_Editing
+     (Cell    : not null access Gtk_Abstract_Renderer_Record;
+      Cancelled : Boolean)
+   is
+      procedure Internal (Cell : System.Address; Cancelled : Gboolean);
       pragma Import (C, Internal, "gtk_cell_renderer_stop_editing");
    begin
       if Cancelled then

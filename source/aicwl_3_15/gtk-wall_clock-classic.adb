@@ -40,6 +40,9 @@ with GLib.Object.Checked_Destroy;
 with Gtk.Widget.Styles.Line_Cap_Property;
 
 package body Gtk.Wall_Clock.Classic is
+
+   Pi : constant := Ada.Numerics.Pi;
+
    use Cairo.Line_Cap_Property;
    use Gtk.Widget.Styles.Line_Cap_Property;
 

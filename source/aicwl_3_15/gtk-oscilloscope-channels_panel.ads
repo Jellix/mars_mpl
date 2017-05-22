@@ -23,9 +23,9 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with GLib.Values;           use GLib.Values;
+with Glib.Values;           use Glib.Values;
 with Gtk.Box;               use Gtk.Box;
 with Gtk.Cell_Renderer;     use Gtk.Cell_Renderer;
 with Gtk.Check_Button;      use Gtk.Check_Button;
@@ -89,19 +89,19 @@ private
    record
       Oscilloscope   : Gtk_Oscilloscope;
       Channel        : Channel_Count;
-      Name_Column    : GInt;
-      Group_Column   : GInt;
-      Mode_Column    : GInt;
-      Color_Column   : GInt;
-      Values_Column  : GInt;
-      Visible_Column : GInt;
+      Name_Column    : Gint;
+      Group_Column   : Gint;
+      Mode_Column    : Gint;
+      Color_Column   : Gint;
+      Values_Column  : Gint;
+      Visible_Column : Gint;
    end record;
 
    function On_Button_Press
-            (  Object : access GObject_Record'Class;
-               Event  : Gdk_Event;
-               Panel  : Gtk_Oscilloscope_Channels_Panel
-            )  return Boolean;
+     (Object : access GObject_Record'Class;
+      Event  : Gdk.Event.Gdk_Event;
+      Panel  : Gtk_Oscilloscope_Channels_Panel) return Boolean;
+
    procedure On_Menu_Delete
              (  Widget : access GObject_Record'Class;
                 Panel  : Gtk_Oscilloscope_Channels_Panel

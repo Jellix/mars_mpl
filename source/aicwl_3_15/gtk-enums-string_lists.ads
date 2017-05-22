@@ -35,60 +35,70 @@
 with Ada.Finalization;
 
 package Gtk.Enums.String_Lists is
---
--- Controlled_String_List -- The controlled wrapper around GList
---
+
+   --
+   -- Controlled_String_List -- The controlled wrapper around GList
+   --
    type Controlled_String_List (<>) is limited private;
---
--- Get_GList -- Conversion to GList
---
---    List - The controlled list
---
--- Returns :
---
---    The GList of
---
+
+   --
+   -- Get_GList -- Conversion to GList
+   --
+   --    List - The controlled list
+   --
+   -- Returns :
+   --
+   --    The GList of
+   --
    function Get_GList (List : Controlled_String_List)
-      return String_List.Glist;
---
--- + -- Conversion to GList
---
---    List - The controlled list
---
--- Returns :
---
---    The GList of
---
+                       return String_List.Glist;
+
+   --
+   -- + -- Conversion to GList
+   --
+   --    List - The controlled list
+   --
+   -- Returns :
+   --
+   --    The GList of
+   --
    function "+" (List : Controlled_String_List)
-      return String_List.Glist renames Get_GList;
---
--- / -- List construction
---
---    Left  - A controlled list or string
---    Right - A string to add
---
--- Returns :
---
---    The concatenation of
---
+                 return String_List.Glist renames Get_GList;
+
+   --
+   -- / -- List construction
+   --
+   --    Left  - A controlled list or string
+   --    Right - A string to add
+   --
+   -- Returns :
+   --
+   --    The concatenation of
+   --
    function "/" (Left, Right : UTF8_String)
-      return Controlled_String_List;
+                 return Controlled_String_List;
+
    function "/" (Left : Controlled_String_List; Right : UTF8_String)
-      return Controlled_String_List;
+                 return Controlled_String_List;
 
 private
-   type String_List_Body is record
-      Use_Count : Natural := 1;
-      List      : String_List.Glist;
-   end record;
+
+   type String_List_Body is
+      record
+         Use_Count : Natural := 1;
+         List      : String_List.Glist;
+      end record;
+
    type String_List_Body_Ptr is access String_List_Body;
 
    type Controlled_String_List is
-      new Ada.Finalization.Controlled with
-   record
-      Ptr : String_List_Body_Ptr;
-   end record;
+     new Ada.Finalization.Controlled with
+      record
+         Ptr : String_List_Body_Ptr;
+      end record;
+
    overriding procedure Adjust (List : in out Controlled_String_List);
+
    overriding procedure Finalize (List : in out Controlled_String_List);
 
 end Gtk.Enums.String_Lists;

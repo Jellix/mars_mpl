@@ -28,13 +28,11 @@ with Ada.Unchecked_Deallocation;
 
 package body Gtk.Enums.String_Lists is
 
-   use String_List;
-
    function "/" (Left : Controlled_String_List; Right : UTF8_String)
       return Controlled_String_List is
    begin
       Left.Ptr.all.Use_Count := Left.Ptr.all.Use_Count + 1;
-      Append (Left.Ptr.all.List, Right);
+      String_List.Append (Left.Ptr.all.List, Right);
       return (Ada.Finalization.Controlled with Left.Ptr);
    end "/";
 
@@ -42,8 +40,8 @@ package body Gtk.Enums.String_Lists is
       return Controlled_String_List is
       Ptr : constant String_List_Body_Ptr := new String_List_Body;
    begin
-      Append (Ptr.all.List, Left);
-      Append (Ptr.all.List, Right);
+      String_List.Append (Ptr.all.List, Left);
+      String_List.Append (Ptr.all.List, Right);
       return (Ada.Finalization.Controlled with Ptr);
    end "/";
 

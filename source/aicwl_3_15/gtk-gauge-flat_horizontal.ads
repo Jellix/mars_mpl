@@ -23,197 +23,185 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Gdk.Color;                    use Gdk.Color;
-with Gtk.Adjustment;               use Gtk.Adjustment;
-with Gtk.Enums.String_Lists;       use Gtk.Enums.String_Lists;
-with Gtk.Layered;                  use Gtk.Layered;
-with Gtk.Layered.Flat_Annotation;  use Gtk.Layered.Flat_Annotation;
-with Gtk.Layered.Flat_Needle;      use Gtk.Layered.Flat_Needle;
-with Gtk.Layered.Cache;            use Gtk.Layered.Cache;
-with Gtk.Widget;                   use Gtk.Widget;
-with Interfaces.C;                 use Interfaces.C;
-
-with Gtk.Enums;
+with Gtk.Adjustment;
+with Gtk.Enums.String_Lists;
+with Gtk.Layered.Cache;
+with Gtk.Layered.Flat_Annotation;
+with Gtk.Layered.Flat_Needle;
 with Gtk.Layered.Flat_Scale;
-
 with Gtk.Layered.Rectangular_Background;
-use  Gtk.Layered.Rectangular_Background;
 
 package Gtk.Gauge.Flat_Horizontal is
---
--- Class_Name - Of the widget
---
-   Class_Name : constant String := "GtkGaugeFlatHorizontal";
---
--- Gtk_Gauge_Flat_Horizontal -- Rectangular gauge
---
-   type Gtk_Gauge_Flat_Horizontal_Record is
-      new Gtk_Layered_Record with private;
-   type Gtk_Gauge_Flat_Horizontal is
-      access all Gtk_Gauge_Flat_Horizontal_Record'Class;
---
--- Get_Type -- The type of the widget
---
--- Returns :
---
---    The GTK type of the widget
---
-   function Get_Type return GType;
---
--- Gtk_New -- Widget construction
---
---    Widget      - The result
---    Texts       - The texts to be placed near major ticks of the scale
---  [ Delimiter ] - The delimiter character used in Texts
---    Adjustment  - The adjustment object to indicate
---    Sectors     - The number of intervals between major ticks
---
--- Normally there should be Sector + 1 texts in the  list  Texts.  Extra
--- texts are ignored. Missing texts are shown empty.
---
-   procedure Gtk_New
-             (  Widget     : out Gtk_Gauge_Flat_Horizontal;
-                Texts      : Gtk.Enums.String_List.GList;
-                Adjustment : Gtk_Adjustment := null;
-                Sectors    : Positive       := 10
-             );
-   procedure Gtk_New
-             (  Widget     : out Gtk_Gauge_Flat_Horizontal;
-                Texts      : Controlled_String_List;
-                Adjustment : Gtk_Adjustment := null;
-                Sectors    : Positive       := 10
-             );
-   procedure Gtk_New
-             (  Widget     : out Gtk_Gauge_Flat_Horizontal;
-                Texts      : UTF8_String;
-                Delimiter  : Character      := ' ';
-                Adjustment : Gtk_Adjustment := null;
-                Sectors    : Positive       := 10
-             );
---
--- Initialize -- The widget initialization
---
---    Widget      - The widget to initialize
---    Texts       - The texts to be placed near major ticks of the scale
---  [ Delimiter ] - The delimiter character used in Texts
---    Adjustment  - The adjustment object to indicate
---    Sectors     - The number of intervals between major ticks
---
--- When  a  widget  type  is  derived from this one, it has to call this
--- procedure from its version of Initialize.
---
-   procedure Initialize
-             (  Widget     : not null access
-                                Gtk_Gauge_Flat_Horizontal_Record'Class;
-                Texts      : Gtk.Enums.String_List.GList;
-                Adjustment : Gtk_Adjustment;
-                Sectors    : Positive
-             );
-   procedure Initialize
-             (  Widget     : not null access
-                                Gtk_Gauge_Flat_Horizontal_Record'Class;
-                Texts      : Controlled_String_List;
-                Adjustment : Gtk_Adjustment;
-                Sectors    : Positive
-             );
-   procedure Initialize
-             (  Widget     : not null access
-                                Gtk_Gauge_Flat_Horizontal_Record'Class;
-                Texts      : UTF8_String;
-                Delimiter  : Character;
-                Adjustment : Gtk_Adjustment;
-                Sectors    : Positive
-             );
---
--- Get_Annotation -- The gauge's annotation
---
---    Widget - The widget
---
--- Returns :
---
---    The annotation layer
---
-   function Get_Annotation
-            (  Widget : not null access Gtk_Gauge_Flat_Horizontal_Record
-            )  return not null access Flat_Annotation_Layer;
---
--- Get_Background -- The gauge's background
---
---    Widget - The widget
---
--- Returns :
---
---    The background layer
---
-   function Get_Background
-            (  Widget : not null access Gtk_Gauge_Flat_Horizontal_Record
-            )  return not null access Rectangular_Background_Layer;
---
--- Get_Cache -- The gauge caching layer
---
---    Widget - The widget
---
--- If the widget is extended, static things which do not change with the
--- widget state should be placed below the caching layer for performance
--- reasons.
---
--- Returns :
---
---    The cache layer of the widget
---
-   function Get_Cache
-            (  Widget : not null access Gtk_Gauge_Flat_Horizontal_Record
-            )  return not null access Cache_Layer;
---
--- Get_Needle -- The gauge needle
---
---    Widget - The widget
---
--- Returns :
---
---    The needle layer of the widget
---
-   function Get_Needle
-            (  Widget : not null access Gtk_Gauge_Flat_Horizontal_Record
-            )  return not null access Flat_Needle_Layer;
---
--- Set_Value -- Change the value indicated by the gauge
---
---    Widget - The widget
---    Value  - The value in the range From .. From + Length
---
--- When  the value is out of range it is saturated to the nearest bound.
--- Note  that  procedure does not emit any events, if the widget need to
--- be redrawn the event "draw" should be emitted.
---
-   procedure Set_Value
-             (  Widget : not null access
-                            Gtk_Gauge_Flat_Horizontal_Record;
-                Value  : GDouble
-             );
 
-   overriding
-      procedure Style_Changed
-                (  Widget : not null access
-                               Gtk_Gauge_Flat_Horizontal_Record
-                );
+   --
+   -- Class_Name - Of the widget
+   --
+   Class_Name : constant String := "GtkGaugeFlatHorizontal";
+   --
+   -- Gtk_Gauge_Flat_Horizontal -- Rectangular gauge
+   --
+   type Gtk_Gauge_Flat_Horizontal_Record is
+     new Gtk.Layered.Gtk_Layered_Record with private;
+   type Gtk_Gauge_Flat_Horizontal is
+     access all Gtk_Gauge_Flat_Horizontal_Record'Class;
+   --
+   -- Get_Type -- The type of the widget
+   --
+   -- Returns :
+   --
+   --    The GTK type of the widget
+   --
+   function Get_Type return GType;
+   --
+   -- Gtk_New -- Widget construction
+   --
+   --    Widget      - The result
+   --    Texts       - The texts to be placed near major ticks of the scale
+   --  [ Delimiter ] - The delimiter character used in Texts
+   --    Adjustment  - The adjustment object to indicate
+   --    Sectors     - The number of intervals between major ticks
+   --
+   -- Normally there should be Sector + 1 texts in the  list  Texts.  Extra
+   -- texts are ignored. Missing texts are shown empty.
+   --
+   procedure Gtk_New
+     (Widget     : out Gtk_Gauge_Flat_Horizontal;
+      Texts      : Gtk.Enums.String_List.Glist;
+      Adjustment : Gtk.Adjustment.Gtk_Adjustment := null;
+      Sectors    : Positive       := 10);
+
+   procedure Gtk_New
+     (Widget     : out Gtk_Gauge_Flat_Horizontal;
+      Texts      : Gtk.Enums.String_Lists.Controlled_String_List;
+      Adjustment : Gtk.Adjustment.Gtk_Adjustment := null;
+      Sectors    : Positive       := 10);
+
+   procedure Gtk_New
+     (Widget     : out Gtk_Gauge_Flat_Horizontal;
+      Texts      : UTF8_String;
+      Delimiter  : Character      := ' ';
+      Adjustment : Gtk.Adjustment.Gtk_Adjustment := null;
+      Sectors    : Positive       := 10);
+
+   --
+   -- Initialize -- The widget initialization
+   --
+   --    Widget      - The widget to initialize
+   --    Texts       - The texts to be placed near major ticks of the scale
+   --  [ Delimiter ] - The delimiter character used in Texts
+   --    Adjustment  - The adjustment object to indicate
+   --    Sectors     - The number of intervals between major ticks
+   --
+   -- When  a  widget  type  is  derived from this one, it has to call this
+   -- procedure from its version of Initialize.
+   --
+   procedure Initialize
+     (Widget     : not null access Gtk_Gauge_Flat_Horizontal_Record'Class;
+      Texts      : Gtk.Enums.String_List.Glist;
+      Adjustment : Gtk.Adjustment.Gtk_Adjustment;
+      Sectors    : Positive);
+
+   procedure Initialize
+     (Widget     : not null access Gtk_Gauge_Flat_Horizontal_Record'Class;
+      Texts      : Gtk.Enums.String_Lists.Controlled_String_List;
+      Adjustment : Gtk.Adjustment.Gtk_Adjustment;
+      Sectors    : Positive);
+
+   procedure Initialize
+     (Widget     : not null access Gtk_Gauge_Flat_Horizontal_Record'Class;
+      Texts      : UTF8_String;
+      Delimiter  : Character;
+      Adjustment : Gtk.Adjustment.Gtk_Adjustment;
+      Sectors    : Positive);
+
+   --
+   -- Get_Annotation -- The gauge's annotation
+   --
+   --    Widget - The widget
+   --
+   -- Returns :
+   --
+   --    The annotation layer
+   --
+   function Get_Annotation
+     (Widget : not null access Gtk_Gauge_Flat_Horizontal_Record)
+      return not null access Gtk.Layered.Flat_Annotation.Flat_Annotation_Layer;
+
+   --
+   -- Get_Background -- The gauge's background
+   --
+   --    Widget - The widget
+   --
+   -- Returns :
+   --
+   --    The background layer
+   --
+   function Get_Background
+     (Widget : not null access Gtk_Gauge_Flat_Horizontal_Record)
+      return not null access Gtk.Layered.Rectangular_Background.Rectangular_Background_Layer;
+
+   --
+   -- Get_Cache -- The gauge caching layer
+   --
+   --    Widget - The widget
+   --
+   -- If the widget is extended, static things which do not change with the
+   -- widget state should be placed below the caching layer for performance
+   -- reasons.
+   --
+   -- Returns :
+   --
+   --    The cache layer of the widget
+   --
+   function Get_Cache
+     (Widget : not null access Gtk_Gauge_Flat_Horizontal_Record)
+      return not null access Gtk.Layered.Cache.Cache_Layer;
+
+   --
+   -- Get_Needle -- The gauge needle
+   --
+   --    Widget - The widget
+   --
+   -- Returns :
+   --
+   --    The needle layer of the widget
+   --
+   function Get_Needle
+     (Widget : not null access Gtk_Gauge_Flat_Horizontal_Record)
+      return not null access Gtk.Layered.Flat_Needle.Flat_Needle_Layer;
+
+   --
+   -- Set_Value -- Change the value indicated by the gauge
+   --
+   --    Widget - The widget
+   --    Value  - The value in the range From .. From + Length
+   --
+   -- When  the value is out of range it is saturated to the nearest bound.
+   -- Note  that  procedure does not emit any events, if the widget need to
+   -- be redrawn the event "draw" should be emitted.
+   --
+   procedure Set_Value
+     (Widget : not null access Gtk_Gauge_Flat_Horizontal_Record;
+      Value  : Gdouble);
+
+   overriding procedure Style_Changed
+     (Widget : not null access Gtk_Gauge_Flat_Horizontal_Record);
 
 private
-   use Gtk.Layered.Cache;
-   use Gtk.Layered.Flat_Scale;
 
-   type Gtk_Gauge_Flat_Horizontal_Record is new Gtk_Layered_Record with
-   record
-      Sectors      : Positive := 10;
-      Background   : access Rectangular_Background_Layer;
-      Cache        : access Cache_Layer;
-      Minor_Ticks  : access Flat_Scale_Layer;
-      Middle_Ticks : access Flat_Scale_Layer;
-      Major_Ticks  : access Flat_Scale_Layer;
-      Annotation   : access Flat_Annotation_Layer;
-      Needle       : access Flat_Needle_Layer;
-   end record;
+   type Gtk_Gauge_Flat_Horizontal_Record is
+     new Gtk.Layered.Gtk_Layered_Record with
+      record
+         Sectors      : Positive := 10;
+         Background   : access Gtk.Layered.Rectangular_Background.Rectangular_Background_Layer;
+         Cache        : access Gtk.Layered.Cache.Cache_Layer;
+         Minor_Ticks  : access Gtk.Layered.Flat_Scale.Flat_Scale_Layer;
+         Middle_Ticks : access Gtk.Layered.Flat_Scale.Flat_Scale_Layer;
+         Major_Ticks  : access Gtk.Layered.Flat_Scale.Flat_Scale_Layer;
+         Annotation   : access Gtk.Layered.Flat_Annotation.Flat_Annotation_Layer;
+         Needle       : access Gtk.Layered.Flat_Needle.Flat_Needle_Layer;
+      end record;
 
 end Gtk.Gauge.Flat_Horizontal;

@@ -23,447 +23,424 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Ada.Numerics;              use Ada.Numerics;
-with Cairo.Line_Cap_Property;   use Cairo.Line_Cap_Property;
-with GLib.Properties.Creation;  use GLib.Properties.Creation;
-with GLib.Types;                use GLib.Types;
-with GtkAda.Types;              use GtkAda.Types;
-with Gtk.Enums;                 use Gtk.Enums;
-with Gtk.Missed;                use Gtk.Missed;
-with Gtk.Widget.Styles;         use Gtk.Widget.Styles;
-with Pango.Cairo.Fonts;         use Pango.Cairo.Fonts;
+with Ada.Numerics;
 
-with GLib.Object.Checked_Destroy;
+with Cairo.Line_Cap_Property;
 
+with Gdk.Color;
+
+with Glib.Object.Checked_Destroy;
+with Glib.Properties.Creation;
+with Glib.Types;
+
+with Gtk.Enums;
+with Gtk.Missed;
 with Gtk.Widget.Styles.Line_Cap_Property;
-use  Gtk.Widget.Styles.Line_Cap_Property;
+
+with Pango.Cairo.Fonts;
 
 package body Gtk.Gauge.Round_270_Reversed is
 
-   Needle_Color     : constant Gdk_Color := RGB (0.2, 0.3, 1.0);
-   Pin_Color        : constant Gdk_Color := RGB (0.0, 0.0, 1.0);
-   Background_Color : constant Gdk_Color := RGB (0.0, 0.0, 0.0);
-   Major_Tick_Color : constant Gdk_Color := RGB (1.0, 1.0, 1.0);
-   Minor_Tick_Color : constant Gdk_Color := RGB (1.0, 1.0, 1.0);
-   Text_Color       : constant Gdk_Color := RGB (1.0, 1.0, 1.0);
+   Pi : constant := Ada.Numerics.Pi;
+
+   Needle_Color     : constant Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.2, 0.3, 1.0);
+   Pin_Color        : constant Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 1.0);
+   Background_Color : constant Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+   Major_Tick_Color : constant Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 1.0, 1.0);
+   Minor_Tick_Color : constant Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 1.0, 1.0);
+   Text_Color       : constant Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 1.0, 1.0);
 
    Class_Record : aliased Ada_GObject_Class := Uninitialized_Class;
 
    procedure Create_Background
-             (  Widget  : not null access
-                          Gtk_Gauge_Round_270_Reversed_Record'Class;
-                Sectors : Positive
-             )  is
+     (Widget  : not null access Gtk_Gauge_Round_270_Reversed_Record'Class;
+      Sectors : Positive) is
    begin
       G_New (Widget, Get_Type);
       Gtk.Layered.Initialize (Widget);
-      Widget.Sectors := Sectors;
-      Widget.Background :=
-         Add_Elliptic_Background
-         (  Under         => Widget,
-            Color         => Background_Color,
-            Outer         => ((0.0, 0.0), 1.0 / 0.5, 0.5, 0.0),
-            Border_Width  => 0.01,
-            Border_Depth  => 0.005,
-            Border_Shadow => Shadow_Etched_Out,
-            Deepened      => True,
-            Widened       => True,
-            Scaled        => True
-         );
-      Widget.Pin :=
-         Add_Elliptic_Background
-         (  Under         => Widget.Background.Get_Foreground,
-            Color         => Pin_Color,
-            Outer         => ((0.0, 0.0), 1.0 / 0.04, 0.04, 0.0),
-            Scaled        => True,
-            Border_Shadow => Shadow_None,
-            Deepened      => True
-         );
-      Widget.Minor_Ticks :=
-         Add_Elliptic_Scale
-         (  Under   => Widget.Background.Get_Foreground,
-            Inner   => ((0.0, 0.0), 1.0 / 0.40, 0.40, Pi * 3.0 / 4.0),
-            Outer   => ((0.0, 0.0), 1.0 / 0.47, 0.47, Pi * 3.0 / 4.0),
-            Color   => Minor_Tick_Color,
-            Width   => 1.3 / 200.0,
-            Skipped => 2,
-            Step    => 6.0 * Pi / (8.0 * 2.0 * GDouble (Widget.Sectors)),
-            From    => 3.0 * Pi / 4.0,
-            Length  => 6.0 * Pi / 4.0,
-            Scaled  => True,
-            Widened => True
-         );
-      Widget.Major_Ticks :=
-         Add_Elliptic_Scale
-         (  Under   => Widget.Background.Get_Foreground,
-            Inner   => ((0.0, 0.0), 1.0 / 0.38, 0.38, Pi * 3.0 / 4.0),
-            Outer   => ((0.0, 0.0), 1.0 / 0.47, 0.47, Pi * 3.0 / 4.0),
-            Color   => Major_Tick_Color,
-            Width   => 2.3 / 200.0,
-            Step    => 6.0 * Pi / (8.0 * GDouble (Widget.Sectors)),
-            From    => 3.0 * Pi / 4.0,
-            Length  => 6.0 * Pi / 4.0,
-            Scaled  => True,
-            Widened => True
-         );
-      Widget.Cache := Add_Cache (Widget.Background.Get_Foreground);
+      Widget.all.Sectors := Sectors;
+      Widget.all.Background :=
+        Gtk.Layered.Elliptic_Background.Add_Elliptic_Background
+          (Under         => Widget,
+           Color         => Background_Color,
+           Outer         => ((0.0, 0.0), 1.0 / 0.5, 0.5, 0.0),
+           Border_Width  => 0.01,
+           Border_Depth  => 0.005,
+           Border_Shadow => Gtk.Enums.Shadow_Etched_Out,
+           Deepened      => True,
+           Widened       => True,
+           Scaled        => True);
+      Widget.all.Pin :=
+        Gtk.Layered.Elliptic_Background.Add_Elliptic_Background
+          (Under         => Widget.all.Background.all.Get_Foreground,
+           Color         => Pin_Color,
+           Outer         => ((0.0, 0.0), 1.0 / 0.04, 0.04, 0.0),
+           Scaled        => True,
+           Border_Shadow => Gtk.Enums.Shadow_None,
+           Deepened      => True);
+      Widget.all.Minor_Ticks :=
+        Gtk.Layered.Elliptic_Scale.Add_Elliptic_Scale
+          (Under   => Widget.all.Background.all.Get_Foreground,
+           Inner   => ((0.0, 0.0), 1.0 / 0.40, 0.40, Pi * 3.0 / 4.0),
+           Outer   => ((0.0, 0.0), 1.0 / 0.47, 0.47, Pi * 3.0 / 4.0),
+           Color   => Minor_Tick_Color,
+           Width   => 1.3 / 200.0,
+           Skipped => 2,
+           Step    => 6.0 * Pi / (8.0 * 2.0 * Gdouble (Widget.all.Sectors)),
+           From    => 3.0 * Pi / 4.0,
+           Length  => 6.0 * Pi / 4.0,
+           Scaled  => True,
+           Widened => True);
+      Widget.all.Major_Ticks :=
+        Gtk.Layered.Elliptic_Scale.Add_Elliptic_Scale
+          (Under   => Widget.all.Background.all.Get_Foreground,
+           Inner   => ((0.0, 0.0), 1.0 / 0.38, 0.38, Pi * 3.0 / 4.0),
+           Outer   => ((0.0, 0.0), 1.0 / 0.47, 0.47, Pi * 3.0 / 4.0),
+           Color   => Major_Tick_Color,
+           Width   => 2.3 / 200.0,
+           Step    => 6.0 * Pi / (8.0 * Gdouble (Widget.all.Sectors)),
+           From    => 3.0 * Pi / 4.0,
+           Length  => 6.0 * Pi / 4.0,
+           Scaled  => True,
+           Widened => True);
+      Widget.all.Cache :=
+        Gtk.Layered.Cache.Add_Cache (Widget.all.Background.all.Get_Foreground);
    end Create_Background;
 
    procedure Create_Needle
-             (  Widget  : not null access
-                          Gtk_Gauge_Round_270_Reversed_Record'Class;
-                Adjustment : Gtk_Adjustment
-             )  is
+     (Widget     : not null access Gtk_Gauge_Round_270_Reversed_Record'Class;
+      Adjustment : Gtk.Adjustment.Gtk_Adjustment) is
    begin
-      Widget.Needle :=
-         Add_Needle
-         (  Under       => Widget,
-            Center      => (0.0, 0.0),
-            From        => Pi / 4.0,
-            Length      => -3.0 * Pi / 2.0,
-            Tip_Cap     => CAIRO_LINE_CAP_ROUND,
-            Color       => Needle_Color,
-            Adjustment  => Adjustment,
-            Tip_Length  => 0.4,
-            Tip_Width   => 0.01,
-            Rear_Length => 0.2,
-            Rear_Width  => 0.05,
-            Scaled      => True
-         );
+      Widget.all.Needle :=
+        Gtk.Layered.Needle.Add_Needle
+          (Under       => Widget,
+           Center      => (0.0, 0.0),
+           From        => Pi / 4.0,
+           Length      => -3.0 * Pi / 2.0,
+           Tip_Cap     => Cairo.Cairo_Line_Cap_Round,
+           Color       => Needle_Color,
+           Adjustment  => Adjustment,
+           Tip_Length  => 0.4,
+           Tip_Width   => 0.01,
+           Rear_Length => 0.2,
+           Rear_Width  => 0.05,
+           Scaled      => True);
    end Create_Needle;
 
    function Get_Annotation
-            (  Widget : not null access
-                        Gtk_Gauge_Round_270_Reversed_Record
-            )  return not null access Elliptic_Annotation_Layer is
+     (Widget : not null access Gtk_Gauge_Round_270_Reversed_Record)
+      return not null access Gtk.Layered.Elliptic_Annotation.Elliptic_Annotation_Layer
+   is
    begin
-      return Widget.Annotation;
+      return Widget.all.Annotation;
    end Get_Annotation;
 
-   function Get_Needle
-            (  Widget : not null access
-                        Gtk_Gauge_Round_270_Reversed_Record
-            )  return not null access Needle_Layer is
-   begin
-      return Widget.Needle;
-   end Get_Needle;
-
    function Get_Background
-            (  Widget : not null access
-                        Gtk_Gauge_Round_270_Reversed_Record
-            )  return not null access Elliptic_Background_Layer is
+     (Widget : not null access Gtk_Gauge_Round_270_Reversed_Record)
+      return not null access Gtk.Layered.Elliptic_Background.Elliptic_Background_Layer
+   is
    begin
-      return Widget.Background;
+      return Widget.all.Background;
    end Get_Background;
 
    function Get_Cache
-            (  Widget : not null access
-                        Gtk_Gauge_Round_270_Reversed_Record
-            )  return not null access Cache_Layer is
+     (Widget : not null access Gtk_Gauge_Round_270_Reversed_Record)
+      return not null access Gtk.Layered.Cache.Cache_Layer is
    begin
-      return Widget.Cache;
+      return Widget.all.Cache;
    end Get_Cache;
+
+   function Get_Needle
+     (Widget : not null access Gtk_Gauge_Round_270_Reversed_Record)
+      return not null access Gtk.Layered.Needle.Needle_Layer is
+   begin
+      return Widget.all.Needle;
+   end Get_Needle;
 
    function Get_Type return GType is
    begin
-      if Initialize_Class_Record
-         (  Ancestor     => Gtk.Layered.Get_Type,
-            Class_Record => Class_Record'Access,
-            Type_Name    => Class_Name
-         )
+      if
+        Initialize_Class_Record
+          (Ancestor     => Gtk.Layered.Get_Type,
+           Class_Record => Class_Record'Access,
+           Type_Name    => Class_Name)
       then
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
-            Gnew_Boxed
-            (  Name       => "needle-color",
-               Boxed_Type => Gdk_Color_Type,
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
+            Glib.Properties.Creation.Gnew_Boxed
+              (Name       => "needle-color",
+               Boxed_Type => Gdk.Color.Gdk_Color_Type,
                Nick       => "Needle color",
-               Blurb      => "The color of the gauge's needle"
-         )  );
-         Install_Style
-         (  Class_Ref (Class_Record.The_Type),
+               Blurb      => "The color of the gauge's needle"));
+         Gtk.Widget.Styles.Line_Cap_Property.Install_Style
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
             Cairo.Line_Cap_Property.Gnew_Enum
-            (  Name    => "needle-tip-cap",
+              (Name    => "needle-tip-cap",
                Nick    => "Tip cap",
                Blurb   => "The style used for the needle tip",
-               Default => CAIRO_LINE_CAP_ROUND
-         )  );
-         Install_Style
-         (  Class_Ref (Class_Record.The_Type),
+               Default => Cairo.Cairo_Line_Cap_Round));
+         Gtk.Widget.Styles.Line_Cap_Property.Install_Style
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
             Cairo.Line_Cap_Property.Gnew_Enum
-            (  Name    => "needle-rear-cap",
+              (Name    => "needle-rear-cap",
                Nick    => "Rear cap",
                Blurb   => "The style used for the needle rear",
-               Default => CAIRO_LINE_CAP_BUTT
-         )  );
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
-            Gnew_Boxed
-            (  Name       => "backgound-color",
-               Boxed_Type => Gdk_Color_Type,
+               Default => Cairo.Cairo_Line_Cap_Butt));
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
+            Glib.Properties.Creation.Gnew_Boxed
+              (Name       => "backgound-color",
+               Boxed_Type => Gdk.Color.Gdk_Color_Type,
                Nick       => "Background color",
-               Blurb      => "The background color"
-         )  );
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
-            Gnew_Boxed
-            (  Name       => "major-tick-color",
-               Boxed_Type => Gdk_Color_Type,
+               Blurb      => "The background color"));
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
+            Glib.Properties.Creation.Gnew_Boxed
+              (Name       => "major-tick-color",
+               Boxed_Type => Gdk.Color.Gdk_Color_Type,
                Nick       => "Major ticks color",
-               Blurb      => "Major ticks color"
-         )  );
-         Install_Style
-         (  Class_Ref (Class_Record.The_Type),
+               Blurb      => "Major ticks color"));
+         Gtk.Widget.Styles.Line_Cap_Property.Install_Style
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
             Cairo.Line_Cap_Property.Gnew_Enum
-            (  Name    => "major-tick-line-cap",
+              (Name    => "major-tick-line-cap",
                Nick    => "Major tick cap",
                Blurb   => "The line cap style used for major ticks",
-               Default => CAIRO_LINE_CAP_BUTT
-         )  );
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
-            Gnew_Boxed
-            (  Name       => "minor-tick-color",
-               Boxed_Type => Gdk_Color_Type,
+               Default => Cairo.Cairo_Line_Cap_Butt));
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
+            Glib.Properties.Creation.Gnew_Boxed
+              (Name       => "minor-tick-color",
+               Boxed_Type => Gdk.Color.Gdk_Color_Type,
                Nick       => "Minor ticks color",
-               Blurb      => "Minor ticks color"
-         )  );
-         Install_Style
-         (  Class_Ref (Class_Record.The_Type),
+               Blurb      => "Minor ticks color"));
+         Gtk.Widget.Styles.Line_Cap_Property.Install_Style
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
             Cairo.Line_Cap_Property.Gnew_Enum
-            (  Name    => "minor-tick-line-cap",
+              (Name    => "minor-tick-line-cap",
                Nick    => "Minor tick cap",
                Blurb   => "The line cap style used for minor ticks",
-               Default => CAIRO_LINE_CAP_BUTT
-         )  );
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
-            Gnew_Boxed
-            (  Name       => "pin-color",
-               Boxed_Type => Gdk_Color_Type,
+               Default => Cairo.Cairo_Line_Cap_Butt));
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
+            Glib.Properties.Creation.Gnew_Boxed
+              (Name       => "pin-color",
+               Boxed_Type => Gdk.Color.Gdk_Color_Type,
                Nick       => "Pin color",
-               Blurb      => "Arrow pin color"
-         )  );
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
-            Gnew_Boxed
-            (  Name       => "text-color",
-               Boxed_Type => Gdk_Color_Type,
+               Blurb      => "Arrow pin color"));
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
+            Glib.Properties.Creation.Gnew_Boxed
+              (Name       => "text-color",
+               Boxed_Type => Gdk.Color.Gdk_Color_Type,
                Nick       => "Text color",
-               Blurb      => "Text color"
-         )  );
+               Blurb      => "Text color"));
       end if;
-      return Class_Record.The_Type;
+      return Class_Record.all.The_Type;
    end Get_Type;
 
    procedure Gtk_New
-             (  Widget     : out Gtk_Gauge_Round_270_Reversed;
-                Texts      : Gtk.Enums.String_List.GList;
-                Adjustment : Gtk_Adjustment := null;
-                Sectors    : Positive       := 9
-             )  is
+     (Widget     : out Gtk_Gauge_Round_270_Reversed;
+      Texts      : Gtk.Enums.String_List.Glist;
+      Adjustment : Gtk.Adjustment.Gtk_Adjustment := null;
+      Sectors    : Positive                      := 9) is
    begin
       Widget := new Gtk_Gauge_Round_270_Reversed_Record;
       Initialize (Widget, Texts, Adjustment, Sectors);
    exception
       when others =>
-         GLib.Object.Checked_Destroy (Widget);
+         Glib.Object.Checked_Destroy (Widget);
          Widget := null;
          raise;
    end Gtk_New;
 
    procedure Gtk_New
-             (  Widget     : out Gtk_Gauge_Round_270_Reversed;
-                Texts      : Controlled_String_List;
-                Adjustment : Gtk_Adjustment := null;
-                Sectors    : Positive       := 9
-             )  is
+     (Widget     : out Gtk_Gauge_Round_270_Reversed;
+      Texts      : Gtk.Enums.String_Lists.Controlled_String_List;
+      Adjustment : Gtk.Adjustment.Gtk_Adjustment := null;
+      Sectors    : Positive                      := 9) is
    begin
       Widget := new Gtk_Gauge_Round_270_Reversed_Record;
       Initialize (Widget, Texts, Adjustment, Sectors);
    exception
       when others =>
-         GLib.Object.Checked_Destroy (Widget);
+         Glib.Object.Checked_Destroy (Widget);
          Widget := null;
          raise;
    end Gtk_New;
 
    procedure Gtk_New
-             (  Widget     : out Gtk_Gauge_Round_270_Reversed;
-                Texts      : UTF8_String;
-                Delimiter  : Character      := ' ';
-                Adjustment : Gtk_Adjustment := null;
-                Sectors    : Positive       := 9
-             )  is
+     (Widget     : out Gtk_Gauge_Round_270_Reversed;
+      Texts      : UTF8_String;
+      Delimiter  : Character                     := ' ';
+      Adjustment : Gtk.Adjustment.Gtk_Adjustment := null;
+      Sectors    : Positive                      := 9) is
    begin
       Widget := new Gtk_Gauge_Round_270_Reversed_Record;
       Initialize (Widget, Texts, Delimiter, Adjustment, Sectors);
    exception
       when others =>
-         GLib.Object.Checked_Destroy (Widget);
+         Glib.Object.Checked_Destroy (Widget);
          Widget := null;
          raise;
    end Gtk_New;
 
    procedure Initialize
-             (  Widget     : not null access
-                             Gtk_Gauge_Round_270_Reversed_Record'Class;
-                Texts      : Gtk.Enums.String_List.GList;
-                Adjustment : Gtk_Adjustment;
-                Sectors    : Positive
-             )  is
+     (Widget     : not null access Gtk_Gauge_Round_270_Reversed_Record'Class;
+      Texts      : Gtk.Enums.String_List.Glist;
+      Adjustment : Gtk.Adjustment.Gtk_Adjustment;
+      Sectors    : Positive) is
    begin
       Create_Background (Widget, Sectors);
-      Widget.Annotation :=
-         Add_Elliptic_Annotation
-         (  Under   => Widget.Cache,
-            Ellipse => ((0.0, 0.0), 1.0 / 0.36, 0.36, 3.0 * Pi / 4.0),
-            Texts   => Texts,
-            Face    => Create_Toy
-                       (  Family => "arial",
-                          Slant  => CAIRO_FONT_SLANT_NORMAL,
-                          Weight => CAIRO_FONT_WEIGHT_BOLD
-                       ),
-            Step    => 6.0 * Pi / (4.0 * GDouble (Sectors)),
-            Height  => 0.06,
-            Stretch => 0.7,
-            Color   => Text_Color,
-            From    => Pi / 4.0,
-            Length  => -6.0 * Pi / 4.0,
-            Mode    => Moved_Inside,
-            Scaled  => True
-         );
+      Widget.all.Annotation :=
+        Gtk.Layered.Elliptic_Annotation.Add_Elliptic_Annotation
+          (Under   => Widget.all.Cache,
+           Ellipse => ((0.0, 0.0), 1.0 / 0.36, 0.36, 3.0 * Pi / 4.0),
+           Texts   => Texts,
+           Face    =>
+             Pango.Cairo.Fonts.Create_Toy
+               (Family => "arial",
+                Slant  => Cairo.Cairo_Font_Slant_Normal,
+                Weight => Cairo.Cairo_Font_Weight_Bold),
+           Step    => 6.0 * Pi / (4.0 * Gdouble (Sectors)),
+           Height  => 0.06,
+           Stretch => 0.7,
+           Color   => Text_Color,
+           From    => Pi / 4.0,
+           Length  => -6.0 * Pi / 4.0,
+           Mode    => Gtk.Layered.Moved_Inside,
+           Scaled  => True);
       Create_Needle (Widget, Adjustment);
    end Initialize;
 
    procedure Initialize
-             (  Widget     : not null access
-                                Gtk_Gauge_Round_270_Reversed_Record'Class;
-                Texts      : Controlled_String_List;
-                Adjustment : Gtk_Adjustment;
-                Sectors    : Positive
-             )  is
+     (Widget     : not null access Gtk_Gauge_Round_270_Reversed_Record'Class;
+      Texts      : Gtk.Enums.String_Lists.Controlled_String_List;
+      Adjustment : Gtk.Adjustment.Gtk_Adjustment;
+      Sectors    : Positive) is
    begin
-      Initialize (Widget, Get_GList (Texts), Adjustment, Sectors);
+      Initialize
+        (Widget, Gtk.Enums.String_Lists.Get_GList (Texts), Adjustment, Sectors);
    end Initialize;
 
    procedure Initialize
-             (  Widget     : not null access
-                                Gtk_Gauge_Round_270_Reversed_Record'Class;
-                Texts      : UTF8_String;
-                Delimiter  : Character;
-                Adjustment : Gtk_Adjustment;
-                Sectors    : Positive
-             )  is
+     (Widget     : not null access Gtk_Gauge_Round_270_Reversed_Record'Class;
+      Texts      : UTF8_String;
+      Delimiter  : Character;
+      Adjustment : Gtk.Adjustment.Gtk_Adjustment;
+      Sectors    : Positive) is
    begin
       Create_Background (Widget, Sectors);
-      Widget.Annotation :=
-         Add_Elliptic_Annotation
-         (  Under     => Widget.Cache,
-            Ellipse   => ((0.0, 0.0), 1.0 / 0.36, 0.36, 3.0 * Pi / 4.0),
-            Texts     => Texts,
-            Delimiter => Delimiter,
-            Face      => Create_Toy
-                         (  Family => "arial",
-                            Slant  => CAIRO_FONT_SLANT_NORMAL,
-                            Weight => CAIRO_FONT_WEIGHT_BOLD
-                         ),
-            Step      => 6.0 * Pi / (4.0 * GDouble (Sectors)),
-            Height    => 0.06,
-            Stretch   => 0.8,
-            Color     => Text_Color,
-            From      => Pi / 4.0,
-            Length    => -6.0 * Pi / 4.0,
-            Mode      => Moved_Inside,
-            Scaled    => True
-         );
+      Widget.all.Annotation :=
+        Gtk.Layered.Elliptic_Annotation.Add_Elliptic_Annotation
+          (Under     => Widget.all.Cache,
+           Ellipse   => ((0.0, 0.0), 1.0 / 0.36, 0.36, 3.0 * Pi / 4.0),
+           Texts     => Texts,
+           Delimiter => Delimiter,
+           Face      =>
+             Pango.Cairo.Fonts.Create_Toy
+               (Family => "arial",
+                Slant  => Cairo.Cairo_Font_Slant_Normal,
+                Weight => Cairo.Cairo_Font_Weight_Bold),
+           Step      => 6.0 * Pi / (4.0 * Gdouble (Sectors)),
+           Height    => 0.06,
+           Stretch   => 0.8,
+           Color     => Text_Color,
+           From      => Pi / 4.0,
+           Length    => -6.0 * Pi / 4.0,
+           Mode      => Gtk.Layered.Moved_Inside,
+           Scaled    => True);
       Create_Needle (Widget, Adjustment);
    end Initialize;
 
    procedure Set_Value
-             (  Widget : not null access Gtk_Gauge_Round_270_Reversed_Record;
-                Value  : GDouble
-             )  is
+     (Widget : not null access Gtk_Gauge_Round_270_Reversed_Record;
+      Value  : Gdouble) is
    begin
-      Widget.Needle.Set_Value (Value);
+      Widget.all.Needle.all.Set_Value (Value);
    end Set_Value;
 
-   procedure Style_Changed
-             (  Widget : not null access Gtk_Gauge_Round_270_Reversed_Record
-             )  is
+   overriding procedure Style_Changed
+     (Widget : not null access Gtk_Gauge_Round_270_Reversed_Record) is
    begin
-      Widget.Needle.Set
-      (  Center => Widget.Needle.Get_Center,
-         From   => Widget.Needle.Get_From,
-         Length => Widget.Needle.Get_Length,
-         Tip    => (  Length => Widget.Needle.Get_Tip.Length,
-                      Width  => Widget.Needle.Get_Tip.Width,
-                      Cap    => Style_Get (Widget, "needle-tip-cap")
-                   ),
-         Rear   => (  Length => Widget.Needle.Get_Rear.Length,
-                      Width  => Widget.Needle.Get_Rear.Width,
-                      Cap    => Style_Get (Widget, "needle-rear-cap")
-                   ),
-         Color  => Style_Get (Widget, "needle-color", Needle_Color)
-      );
-      Widget.Pin.Set
-      (  Outer         => Widget.Pin.Get_Outer,
-         Inner         => Widget.Pin.Get_Inner,
-         From          => Widget.Pin.Get_From,
-         Length        => Widget.Pin.Get_Length,
-         Border_Width  => Widget.Pin.Get_Border_Width,
-         Border_Depth  => Widget.Pin.Get_Border_Depth,
-         Border_Color  => Widget.Pin.Get_Border_Color,
-         Border_Shadow => Widget.Pin.Get_Border_Shadow,
-         Color         => Style_Get (Widget, "pin-color", Pin_Color)
-      );
-      Widget.Background.Set
-      (  Outer         => Widget.Background.Get_Outer,
-         Inner         => Widget.Background.Get_Inner,
-         From          => Widget.Background.Get_From,
-         Length        => Widget.Background.Get_Length,
-         Border_Width  => Widget.Background.Get_Border_Width,
-         Border_Depth  => Widget.Background.Get_Border_Depth,
-         Border_Color  => Widget.Background.Get_Border_Color,
-         Border_Shadow => Widget.Background.Get_Border_Shadow,
+      Widget.all.Needle.all.Set
+        (Center => Widget.all.Needle.all.Get_Center,
+         From   => Widget.all.Needle.all.Get_From,
+         Length => Widget.all.Needle.all.Get_Length,
+         Tip    =>
+           (Length => Widget.all.Needle.all.Get_Tip.Length,
+            Width  => Widget.all.Needle.all.Get_Tip.Width,
+            Cap    =>
+              Gtk.Widget.Styles.Line_Cap_Property.Style_Get
+                (Widget, "needle-tip-cap")),
+         Rear   =>
+           (Length => Widget.all.Needle.all.Get_Rear.Length,
+            Width  => Widget.all.Needle.all.Get_Rear.Width,
+            Cap    =>
+              Gtk.Widget.Styles.Line_Cap_Property.Style_Get
+                (Widget, "needle-rear-cap")),
          Color  =>
-            Style_Get (Widget, "backgound-color", Background_Color)
-      );
-      Widget.Minor_Ticks.Set
-      (  Inner  => Widget.Minor_Ticks.Get_Inner,
-         Outer  => Widget.Minor_Ticks.Get_Outer,
-         Ticks  => Widget.Minor_Ticks.Get_Ticks,
-         From   => Widget.Minor_Ticks.Get_From,
-         Length => Widget.Minor_Ticks.Get_Length,
-         Line =>
-            (  Widget.Minor_Ticks.Get_Line.Width,
-               Style_Get (Widget, "minor-tick-color", Minor_Tick_Color),
-               Style_Get (Widget, "minor-tick-line-cap")
-      )     );
-      Widget.Major_Ticks.Set
-      (  Inner  => Widget.Major_Ticks.Get_Inner,
-         Outer  => Widget.Major_Ticks.Get_Outer,
-         Ticks  => Widget.Major_Ticks.Get_Ticks,
-         From   => Widget.Major_Ticks.Get_From,
-         Length => Widget.Major_Ticks.Get_Length,
-         Line =>
-            (  Widget.Major_Ticks.Get_Line.Width,
-               Style_Get (Widget, "major-tick-color", Major_Tick_Color),
-               Style_Get (Widget, "major-tick-line-cap")
-      )     );
-      Widget.Annotation.Set
-      (  Ellipse => Widget.Annotation.Get_Ellipse,
-         Ticks   => Widget.Annotation.Get_Ticks,
-         From    => Widget.Annotation.Get_From,
-         Length  => Widget.Annotation.Get_Length,
-         Face    => Widget.Annotation.Get_Face,
-         Mode    => Widget.Annotation.Get_Mode,
-         Height  => Widget.Annotation.Get_Height,
-         Stretch => Widget.Annotation.Get_Stretch,
-         Color   => Style_Get (Widget, "text-color", Text_Color)
-      );
+           Gtk.Widget.Styles.Style_Get (Widget, "needle-color", Needle_Color));
+      Widget.all.Pin.all.Set
+        (Outer         => Widget.all.Pin.all.Get_Outer,
+         Inner         => Widget.all.Pin.all.Get_Inner,
+         From          => Widget.all.Pin.all.Get_From,
+         Length        => Widget.all.Pin.all.Get_Length,
+         Border_Width  => Widget.all.Pin.all.Get_Border_Width,
+         Border_Depth  => Widget.all.Pin.all.Get_Border_Depth,
+         Border_Color  => Widget.all.Pin.all.Get_Border_Color,
+         Border_Shadow => Widget.all.Pin.all.Get_Border_Shadow,
+         Color         =>
+           Gtk.Widget.Styles.Style_Get (Widget, "pin-color", Pin_Color));
+      Widget.all.Background.all.Set
+        (Outer         => Widget.all.Background.all.Get_Outer,
+         Inner         => Widget.all.Background.all.Get_Inner,
+         From          => Widget.all.Background.all.Get_From,
+         Length        => Widget.all.Background.all.Get_Length,
+         Border_Width  => Widget.all.Background.all.Get_Border_Width,
+         Border_Depth  => Widget.all.Background.all.Get_Border_Depth,
+         Border_Color  => Widget.all.Background.all.Get_Border_Color,
+         Border_Shadow => Widget.all.Background.all.Get_Border_Shadow,
+         Color         =>
+           Gtk.Widget.Styles.Style_Get
+             (Widget, "backgound-color", Background_Color));
+      Widget.all.Minor_Ticks.all.Set
+        (Inner  => Widget.all.Minor_Ticks.all.Get_Inner,
+         Outer  => Widget.all.Minor_Ticks.all.Get_Outer,
+         Ticks  => Widget.all.Minor_Ticks.all.Get_Ticks,
+         From   => Widget.all.Minor_Ticks.all.Get_From,
+         Length => Widget.all.Minor_Ticks.all.Get_Length,
+         Line   =>
+           (Widget.all.Minor_Ticks.all.Get_Line.Width,
+            Gtk.Widget.Styles.Style_Get
+              (Widget, "minor-tick-color", Minor_Tick_Color),
+            Gtk.Widget.Styles.Line_Cap_Property.Style_Get
+              (Widget, "minor-tick-line-cap")));
+      Widget.all.Major_Ticks.all.Set
+        (Inner  => Widget.all.Major_Ticks.all.Get_Inner,
+         Outer  => Widget.all.Major_Ticks.all.Get_Outer,
+         Ticks  => Widget.all.Major_Ticks.all.Get_Ticks,
+         From   => Widget.all.Major_Ticks.all.Get_From,
+         Length => Widget.all.Major_Ticks.all.Get_Length,
+         Line   =>
+           (Widget.all.Major_Ticks.all.Get_Line.Width,
+            Gtk.Widget.Styles.Style_Get
+              (Widget, "major-tick-color", Major_Tick_Color),
+            Gtk.Widget.Styles.Line_Cap_Property.Style_Get
+              (Widget, "major-tick-line-cap")));
+      Widget.all.Annotation.all.Set
+        (Ellipse => Widget.all.Annotation.all.Get_Ellipse,
+         Ticks   => Widget.all.Annotation.all.Get_Ticks,
+         From    => Widget.all.Annotation.all.Get_From,
+         Length  => Widget.all.Annotation.all.Get_Length,
+         Face    => Widget.all.Annotation.all.Get_Face,
+         Mode    => Widget.all.Annotation.all.Get_Mode,
+         Height  => Widget.all.Annotation.all.Get_Height,
+         Stretch => Widget.all.Annotation.all.Get_Stretch,
+         Color   =>
+           Gtk.Widget.Styles.Style_Get (Widget, "text-color", Text_Color));
    end Style_Changed;
 
 end Gtk.Gauge.Round_270_Reversed;

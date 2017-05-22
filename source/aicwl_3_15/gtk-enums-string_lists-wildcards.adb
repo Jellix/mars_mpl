@@ -22,28 +22,32 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Strings_Edit.UTF8.Wildcards;  use Strings_Edit.UTF8.Wildcards;
+with Strings_Edit.UTF8.Wildcards;
 
 package body Gtk.Enums.String_Lists.Wildcards is
 
-   function Match (Text : UTF8_String; Pattern : String_List.GList)
-      return Boolean is
-      use String_List;
+   function Match (Text : UTF8_String; Pattern : String_List.Glist)
+                   return Boolean
+   is
+      use type String_List.Glist;
    begin
-      if Pattern = Null_List then
+      if Pattern = String_List.Null_List then
          return True;
       end if;
       declare
-         Alternative : String_List.GList := Pattern;
+         Alternative : String_List.Glist := Pattern;
       begin
          loop
-            if Match (Text, Get_Data (Alternative)) then
+            if
+              Strings_Edit.UTF8.Wildcards.Match
+                (Text, String_List.Get_Data (Alternative))
+            then
                return True;
             end if;
-            Alternative := Next (Alternative);
-            if Alternative = Null_List then
+            Alternative := String_List.Next (Alternative);
+            if Alternative = String_List.Null_List then
                return False;
             end if;
          end loop;

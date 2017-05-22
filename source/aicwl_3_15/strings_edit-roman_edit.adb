@@ -68,7 +68,7 @@ package body Strings_Edit.Roman_Edit is
                end if;
             elsif Get (V) then
                return 4;
-            elsif Get (X) then 
+            elsif Get (X) then
                return 9;
             else
                return 1;

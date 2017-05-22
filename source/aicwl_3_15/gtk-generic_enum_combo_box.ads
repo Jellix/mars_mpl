@@ -39,28 +39,24 @@ package Gtk.Generic_Enum_Combo_Box is
    type Gtk_Enum_Combo_Box is access all Gtk_Enum_Combo_Box_Record'Class;
 
    procedure Gtk_New
-             (  Combo : out Gtk_Enum_Combo_Box;
-                Style : in Gtk.Missed.Enum_Style_Type :=
-                           Gtk.Missed.Mixed_Case;
-                Replace_Underscore_By_Space : in Boolean := False
-             );
+     (Combo : out Gtk_Enum_Combo_Box;
+      Style : in Gtk.Missed.Enum_Style_Type := Gtk.Missed.Mixed_Case;
+      Replace_Underscore_By_Space : in Boolean := False);
 
    -- Alternative form of initialization (using classwide access)
    procedure Initialize
-             (  Combo : not null access Gtk_Enum_Combo_Box_Record'Class;
-                Style : in Gtk.Missed.Enum_Style_Type :=
-                           Gtk.Missed.Mixed_Case;
-                Replace_Underscore_By_Space : in Boolean := False
-             );
+     (Combo : not null access Gtk_Enum_Combo_Box_Record'Class;
+      Style : in Gtk.Missed.Enum_Style_Type := Gtk.Missed.Mixed_Case;
+      Replace_Underscore_By_Space : in Boolean := False);
 
    procedure Set_Active_Value
-             (  Combo : not null access Gtk_Enum_Combo_Box_Record;
-                Value : in Enum_Type
-             );
+     (Combo : not null access Gtk_Enum_Combo_Box_Record;
+      Value : in Enum_Type);
 
    function Get_Active_Value
-            (  Combo : not null access Gtk_Enum_Combo_Box_Record
-            )  return Enum_Type;
+     (Combo : not null access Gtk_Enum_Combo_Box_Record)
+      return Enum_Type;
+
    -- Raises exception No_Selection if no value is active.
 
 end Gtk.Generic_Enum_Combo_Box;

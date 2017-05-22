@@ -30,4 +30,3 @@ with Strings_Edit.Streams.Generic_Modular;
 
 package Strings_Edit.Streams.Unsigneds_32 is
    new Strings_Edit.Streams.Generic_Modular (Interfaces.Unsigned_32);
-

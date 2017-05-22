@@ -23,14 +23,14 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 with Ada.Exceptions;              use Ada.Exceptions;
 with Gdk.RGBA;                    use Gdk.RGBA;
-with GLib.Messages;               use GLib.Messages;
-with GLib.Properties;             use GLib.Properties;
-with GLib.Properties.Creation;    use GLib.Properties.Creation;
-with GLib.Types;                  use GLib.Types;
+with Glib.Messages;               use Glib.Messages;
+with Glib.Properties;             use Glib.Properties;
+with Glib.Properties.Creation;    use Glib.Properties.Creation;
+with Glib.Types;                  use Glib.Types;
 with Gtk.Dialog;                  use Gtk.Dialog;
 with Gtk.Cell_Layout;             use Gtk.Cell_Layout;
 with Gtk.Cell_Renderer_Text;      use Gtk.Cell_Renderer_Text;
@@ -38,14 +38,16 @@ with Gtk.Cell_Renderer_Toggle;    use Gtk.Cell_Renderer_Toggle;
 with Gtk.Color_Selection_Dialog;  use Gtk.Color_Selection_Dialog;
 with Gtk.Enums;                   use Gtk.Enums;
 with Gtk.Image;                   use Gtk.Image;
+with Gtk.Image_Menu_Item;
+with Gtk.Menu;
 with Gtk.Separator_Menu_Item;     use Gtk.Separator_Menu_Item;
 with Gtk.Stock;                   use Gtk.Stock;
 with Gtk.Tree_Selection;          use Gtk.Tree_Selection;
 with Gtk.Widget.Styles;           use Gtk.Widget.Styles;
-with GtkAda.Types;                use GtkAda.Types;
+with Gtkada.Types;                use Gtkada.Types;
 with Strings_Edit.Integers;       use Strings_Edit.Integers;
 
-with GLib.Object.Checked_Destroy;
+with Glib.Object.Checked_Destroy;
 
 package body Gtk.Oscilloscope.Channels_Panel is
    use Gtk.Layered.Waveform.Edit;
@@ -65,63 +67,56 @@ package body Gtk.Oscilloscope.Channels_Panel is
             Type_Name    => Class_Name
          )
       then
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
+         Gtk.Widget.Install_Style_Property
+           (Class_Ref (Class_Record.The_Type),
             Gnew_String
-            (  Name    => "channel-name-title",
+              (Name    => "channel-name-title",
                Default => "Channel",
                Nick    => "Channel name",
-               Blurb   => "The title of the channel name column"
-         )  );
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
+               Blurb   => "The title of the channel name column"));
+         Gtk.Widget.Install_Style_Property
+           (Class_Ref (Class_Record.The_Type),
             Gnew_String
-            (  Name    => "group-name-title",
+              (Name    => "group-name-title",
                Default => "Group",
                Nick    => "Group name",
-               Blurb   => "The title of the group name column"
-         )  );
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
+               Blurb   => "The title of the group name column"));
+         Gtk.Widget.Install_Style_Property
+           (Class_Ref (Class_Record.The_Type),
             Gnew_String
-            (  Name    => "menu-delete",
+              (Name    => "menu-delete",
                Default => "Delete channel",
                Nick    => "Delete",
-               Blurb   => "The menu item deleting selected channel"
-         )  );
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
+               Blurb   => "The menu item deleting selected channel"));
+         Gtk.Widget.Install_Style_Property
+           (Class_Ref (Class_Record.The_Type),
             Gnew_String
-            (  Name    => "menu-down",
+              (Name    => "menu-down",
                Default => "Move channel down",
                Nick    => "Down",
-               Blurb   => "The menu item moving selected channel down"
-         )  );
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
+               Blurb   => "The menu item moving selected channel down"));
+         Gtk.Widget.Install_Style_Property
+           (Class_Ref (Class_Record.The_Type),
             Gnew_String
-            (  Name    => "menu-select-color",
+              (Name    => "menu-select-color",
                Default => "Select color",
                Nick    => "Color",
                Blurb   => "The menu item changing the color of " &
-                          "the selected channel"
-         )  );
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
+                          "the selected channel"));
+         Gtk.Widget.Install_Style_Property
+           (Class_Ref (Class_Record.The_Type),
             Gnew_String
-            (  Name    => "menu-up",
+              (Name    => "menu-up",
                Default => "Move channel up",
                Nick    => "Down",
-               Blurb   => "The menu item moving selected channel up"
-         )  );
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
+               Blurb   => "The menu item moving selected channel up"));
+         Gtk.Widget.Install_Style_Property
+           (Class_Ref (Class_Record.The_Type),
             Gnew_String
-            (  Name    => "values-title",
+              (Name    => "values-title",
                Default => "Values",
                Nick    => "Values",
-               Blurb   => "The title of the values column"
-         )  );
+               Blurb   => "The title of the values column"));
       end if;
       return Class_Record.The_Type;
    end Get_Type;
@@ -136,7 +131,7 @@ package body Gtk.Oscilloscope.Channels_Panel is
       Initialize (Widget, Oscilloscope);
    exception
       when others =>
-         GLib.Object.Checked_Destroy (Widget);
+         Glib.Object.Checked_Destroy (Widget);
          Widget := null;
          raise;
    end Gtk_New;
@@ -223,7 +218,7 @@ package body Gtk.Oscilloscope.Channels_Panel is
             Widget.all'Access
          );
       end;
-      Widget.Set_Events (Button_Press_Mask);
+      Widget.Set_Events (Gdk.Event.Button_Press_Mask);
       Connect
       (  Widget,
          "style-updated",
@@ -231,29 +226,28 @@ package body Gtk.Oscilloscope.Channels_Panel is
          Widget.all'Unchecked_Access
       );
       Connect
-      (  Widget,
+        (Widget,
          "button_press_event",
          To_Marshaller (On_Button_Press'Access),
-         Widget.all'Unchecked_Access
-      );
+         Widget.all'Unchecked_Access);
       On_Style_Updated (Widget, Widget.all'Unchecked_Access);
    end Initialize;
 
    function On_Button_Press
-            (  Object : access GObject_Record'Class;
-               Event  : Gdk_Event;
-               Panel  : Gtk_Oscilloscope_Channels_Panel
-            )  return Boolean is
+     (Object : access GObject_Record'Class;
+      Event  : Gdk.Event.Gdk_Event;
+      Panel  : Gtk_Oscilloscope_Channels_Panel) return Boolean
+   is
       use Menu_Handlers;
-      Menu      : Gtk_Menu;
+      Menu      : Gtk.Menu.Gtk_Menu;
       Model     : Gtk_Tree_Model;
-      Item      : Gtk_Image_Menu_Item;
+      Item      : Gtk.Image_Menu_Item.Gtk_Image_Menu_Item;
       Selection : Gtk_Tree_Selection;
       Selected  : Gtk_Tree_Iter;
       Separator : Gtk_Separator_Menu_Item;
       Icon      : Gtk_Image;
    begin
-      case Get_Button (Event) is
+      case Gdk.Event.Get_Button (Event) is
          when 3 =>
             Selection := Panel.Get_Selection;
             if Selection.Count_Selected_Rows = 1 then
@@ -261,13 +255,13 @@ package body Gtk.Oscilloscope.Channels_Panel is
                if Selected /= Null_Iter then
                   Panel.Channel :=
                      Channel_Count (Get_Int (Model, Selected, 1));
-                  Gtk_New (Menu);
+                  Gtk.Menu.Gtk_New (Menu);
                      -- Move up
                   if Panel.Channel > 1 then
-                     Gtk_New (Item, Style_Get (Panel, "menu-up"));
+                     Gtk.Image_Menu_Item.Gtk_New (Item, Style_Get (Panel, "menu-up"));
                      Gtk_New (Icon, Stock_Go_Up, Icon_Size_Menu);
-                     Set_Image (Item, Icon);
-                     Append (Menu, Item);
+                     Gtk.Image_Menu_Item.Set_Image (Item, Icon);
+                     Gtk.Menu.Append (Menu, Item);
                      Connect
                      (  Item,
                         "activate",
@@ -280,10 +274,10 @@ package body Gtk.Oscilloscope.Channels_Panel is
                      <  Panel.Oscilloscope.Get_Channels_Number
                      )
                   then
-                     Gtk_New (Item, Style_Get (Panel, "menu-down"));
+                     Gtk.Image_Menu_Item.Gtk_New (Item, Style_Get (Panel, "menu-down"));
                      Gtk_New (Icon, Stock_Go_Down, Icon_Size_Menu);
-                     Set_Image (Item, Icon);
-                     Append (Menu, Item);
+                     Gtk.Image_Menu_Item.Set_Image (Item, Icon);
+                     Gtk.Menu.Append (Menu, Item);
                      Connect
                      (  Item,
                         "activate",
@@ -291,13 +285,12 @@ package body Gtk.Oscilloscope.Channels_Panel is
                         Panel
                      );
                   end if;
-                  Gtk_New
-                  (  Item,
-                     Style_Get (Panel, "menu-select-color")
-                  );
+                  Gtk.Image_Menu_Item.Gtk_New
+                    (Item,
+                     Style_Get (Panel, "menu-select-color"));
                   Gtk_New (Icon, Stock_Select_Color, Icon_Size_Menu);
-                  Set_Image (Item, Icon);
-                  Append (Menu, Item);
+                  Gtk.Image_Menu_Item.Set_Image (Item, Icon);
+                  Gtk.Menu.Append (Menu, Item);
                   Connect
                   (  Item,
                      "activate",
@@ -306,12 +299,13 @@ package body Gtk.Oscilloscope.Channels_Panel is
                   );
                      -- Separator
                   Gtk_New (Separator);
-                  Append (Menu, Separator);
+                  Gtk.Menu.Append (Menu, Separator);
                      -- Delete selection
-                  Gtk_New (Item, Style_Get (Panel, "menu-delete"));
+                  Gtk.Image_Menu_Item.Gtk_New
+                    (Item, Style_Get (Panel, "menu-delete"));
                   Gtk_New (Icon, Stock_Delete, Icon_Size_Menu);
-                  Set_Image (Item, Icon);
-                  Append (Menu, Item);
+                  Gtk.Image_Menu_Item.Set_Image (Item, Icon);
+                  Gtk.Menu.Append (Menu, Item);
                   Connect
                   (  Item,
                      "activate",
@@ -319,11 +313,10 @@ package body Gtk.Oscilloscope.Channels_Panel is
                      Panel
                   );
                   Menu.Show_All;
-                  Popup
-                  (  Menu,
+                  Gtk.Menu.Popup
+                    (Menu,
                      Button => Gdk.Event.Get_Button (Event),
-                     Activate_Time => Gdk.Event.Get_Time (Event)
-                  );
+                     Activate_Time => Gdk.Event.Get_Time (Event));
                end if;
             end if;
          when others =>
@@ -378,7 +371,7 @@ package body Gtk.Oscilloscope.Channels_Panel is
          Panel.Get_Selection.Select_Iter
          (  Panel.Oscilloscope.Channel_Names.Nth_Child
             (  Null_Iter,
-               GInt (Panel.Channel)
+               Gint (Panel.Channel)
          )  );
       end if;
    exception
@@ -397,7 +390,7 @@ package body Gtk.Oscilloscope.Channels_Panel is
                 Panel  : Gtk_Oscilloscope_Channels_Panel
              )  is
       Dialog : Gtk_Color_Selection_Dialog;
-      Color  : Gdk_Color;
+      Color  : Gdk.Color.Gdk_Color;
    begin
       if Panel.Channel > 0 then
          Gtk_New (Dialog, "Change channel color");
@@ -436,7 +429,7 @@ package body Gtk.Oscilloscope.Channels_Panel is
          Panel.Get_Selection.Select_Iter
          (  Panel.Oscilloscope.Channel_Names.Nth_Child
             (  Null_Iter,
-               GInt (Panel.Channel) - 2
+               Gint (Panel.Channel) - 2
          )  );
       end if;
    exception
@@ -455,23 +448,22 @@ package body Gtk.Oscilloscope.Channels_Panel is
                 Values : GValues;
                 Panel  : Gtk_Oscilloscope_Channels_Panel
              )  is
-      List : constant Gtk_List_Store :=
+      List : constant Gtk.List_Store.Gtk_List_Store :=
                 Panel.Oscilloscope.Get_Channel_List;
       Row  : constant Gtk_Tree_Iter :=
-                Get_Iter_From_String
-                (  List,
-                   Get_String (Nth (Values, 1))
-                );
+                Gtk.List_Store.Get_Iter_From_String
+                 (List,
+                  Get_String (Nth (Values, 1)));
       Channel : Channel_Number;
-      Mode    : Interpolation_Mode;
+      Mode    : Gtk.Layered.Interpolation_Mode;
    begin
       if Row /= Null_Iter then
          Channel := Channel_Number (List.Get_Int (Row, 1));
          case Panel.Oscilloscope.Get_Interpolation_Mode (Channel) is
-            when Left =>
-               Mode := Linear;
-            when Linear =>
-               Mode := Left;
+            when Gtk.Layered.Left =>
+               Mode := Gtk.Layered.Linear;
+            when Gtk.Layered.Linear =>
+               Mode := Gtk.Layered.Left;
          end case;
          Panel.Oscilloscope.Set_Interpolation_Mode (Channel, Mode);
       end if;
@@ -492,12 +484,12 @@ package body Gtk.Oscilloscope.Channels_Panel is
       Color   := To_RGBA (Panel.Oscilloscope.Get_Color (Channel));
       Set_Property
       (  Cell,
-         Cell_Background_RGBA_Property,
+         Cell_Background_Rgba_Property,
          Color
       );
       Set_Property
       (  Cell,
-         Foreground_RGBA_Property,
+         Foreground_Rgba_Property,
          Color
       );
       Set_Property
@@ -548,13 +540,12 @@ package body Gtk.Oscilloscope.Channels_Panel is
                 Values : GValues;
                 Panel  : Gtk_Oscilloscope_Channels_Panel
              )  is
-      List : constant Gtk_List_Store :=
+      List : constant Gtk.List_Store.Gtk_List_Store :=
                 Panel.Oscilloscope.Get_Channel_List;
       Row  : constant Gtk_Tree_Iter :=
-                Get_Iter_From_String
-                (  List,
-                   Get_String (Nth (Values, 1))
-                );
+                Gtk.List_Store.Get_Iter_From_String
+                 (List,
+                  Get_String (Nth (Values, 1)));
       Channel : Channel_Number;
       Visible : Boolean;
    begin

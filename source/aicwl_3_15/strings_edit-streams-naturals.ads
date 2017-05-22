@@ -29,4 +29,3 @@ with Strings_Edit.Streams.Generic_Unsigned;
 
 package Strings_Edit.Streams.Naturals is
    new Strings_Edit.Streams.Generic_Unsigned (Natural);
-

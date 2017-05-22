@@ -39,14 +39,14 @@ package Strings_Edit.Roman_Edit is
 --      ToLast  - Force value to Last instead of exception
 --
 -- This procedure gets a  roman  number  from  the  string  Source.  The
--- process starts from Source (Pointer). 
+-- process starts from Source (Pointer).
 --
 -- Exceptions:
 --
 --      Constraint_Error - The number is not in First..Last
 --      Data_Error       - Syntax error in the number
 --      End_Error        - There is no any number
---      Layout_Error     - Pointer not in Source'First..Source'Last + 1 
+--      Layout_Error     - Pointer not in Source'First..Source'Last + 1
 --
    procedure Get
              (  Source  : in String;
@@ -68,7 +68,7 @@ package Strings_Edit.Roman_Edit is
 --
 -- This  function  gets  the  roman  number  from the string Source. The
 -- number  can be surrounded by spaces and tabs. The whole string Source
--- should be matched. Otherwise the exception Data_Error is propagated. 
+-- should be matched. Otherwise the exception Data_Error is propagated.
 --
 -- Returns :
 --
@@ -101,12 +101,12 @@ package Strings_Edit.Roman_Edit is
 -- This procedure places the number specified  by  the  parameter  Value
 -- into  the  output  string Destination. The string is written starting
 -- from  Destination  (Pointer).  The  parameter  LowerCase   determines
--- whether upper or lower case letters should be used. 
+-- whether upper or lower case letters should be used.
 --
 -- Exceptions:
 --
 --      Layout_Error - Pointer is not in Destination'Range or  there  is
---                     no room for the output. 
+--                     no room for the output.
 --
    procedure Put
              (  Destination : in out String;
@@ -124,7 +124,7 @@ package Strings_Edit.Roman_Edit is
 --      LowerCase  - Use lower case letters for the output
 --
 -- This  function  converts  Value  to  string.  The parameter LowerCase
--- indicates whether upper or lower case letters shall be used. 
+-- indicates whether upper or lower case letters shall be used.
 --
 -- Returns :
 --
