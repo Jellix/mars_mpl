@@ -23,25 +23,27 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Ada.Numerics;              use Ada.Numerics;
+with Ada.Numerics;
 with Ada.Strings;               use Ada.Strings;
+
 with Cairo;                     use Cairo;
 with Cairo.Line_Cap_Property;   use Cairo.Line_Cap_Property;
+
 with Gdk.Color.IHLS;            use Gdk.Color.IHLS;
-with GLib.Properties.Creation;  use GLib.Properties.Creation;
-with GLib.Types;                use GLib.Types;
-with GtkAda.Types;              use GtkAda.Types;
+
+with Glib.Object.Checked_Destroy;
+with Glib.Properties.Creation;  use Glib.Properties.Creation;
+with Glib.Types;                use Glib.Types;
+
 with Gtk.Enums;                 use Gtk.Enums;
 with Gtk.Widget.Styles;         use Gtk.Widget.Styles;
+with Gtk.Widget.Styles.Line_Cap_Property; use  Gtk.Widget.Styles.Line_Cap_Property;
+
 with Pango.Cairo.Fonts;         use Pango.Cairo.Fonts;
 
-with GLib.Object.Checked_Destroy;
 with Strings_Edit;
-
-with Gtk.Widget.Styles.Line_Cap_Property;
-use  Gtk.Widget.Styles.Line_Cap_Property;
 
 package body Gtk.Meter.Thermo_Dual is
 
@@ -79,7 +81,7 @@ package body Gtk.Meter.Thermo_Dual is
 
    Color_Span : constant Gdk_Luminance := Gdk_Luminance'Last / 2;
 
-   function Celsius (T : GDouble) return GDouble is
+   function Celsius (T : Gdouble) return Gdouble is
       F : constant := 5.0 / 9.0;
    begin
       return (T - 32.0) * F;
@@ -88,11 +90,11 @@ package body Gtk.Meter.Thermo_Dual is
          if T < 0.0 then
             return -273.16;
          else
-            return GDouble'Last;
+            return Gdouble'Last;
          end if;
    end Celsius;
 
-   function Fahrenheit (T : GDouble) return GDouble is
+   function Fahrenheit (T : Gdouble) return Gdouble is
       F : constant := 9.0 / 5.0;
    begin
       return T * F + 32.0;
@@ -101,7 +103,7 @@ package body Gtk.Meter.Thermo_Dual is
          if T < 0.0 then
             return -459.67;
          else
-            return GDouble'Last;
+            return Gdouble'Last;
          end if;
    end Fahrenheit;
 
@@ -149,7 +151,7 @@ package body Gtk.Meter.Thermo_Dual is
 
    function Get_Celsius_Value
             (  Widget : not null access Gtk_Meter_Thermo_Dual_Record
-            )  return GDouble is
+            )  return Gdouble is
    begin
       return
       (  Widget.Bar.Get_Value * Widget.Celsius.Span
@@ -173,7 +175,7 @@ package body Gtk.Meter.Thermo_Dual is
 
    function Get_Fahrenheit_Value
             (  Widget : not null access Gtk_Meter_Thermo_Dual_Record
-            )  return GDouble is
+            )  return Gdouble is
    begin
       return
       (  Widget.Bar.Get_Value * Widget.Fahrenheit.Span
@@ -220,7 +222,7 @@ package body Gtk.Meter.Thermo_Dual is
             (  Name    => "major-tick-line-cap",
                Nick    => "Major tick cap",
                Blurb   => "The line cap style used for major ticks",
-               Default => CAIRO_LINE_CAP_BUTT
+               Default => Cairo_Line_Cap_Butt
          )  );
          Install_Style_Property
          (  Class_Ref (Class_Record.The_Type),
@@ -236,7 +238,7 @@ package body Gtk.Meter.Thermo_Dual is
             (  Name    => "middle-tick-line-cap",
                Nick    => "Middle tick cap",
                Blurb   => "The line cap style used for middle ticks",
-               Default => CAIRO_LINE_CAP_BUTT
+               Default => Cairo_Line_Cap_Butt
          )  );
          Install_Style_Property
          (  Class_Ref (Class_Record.The_Type),
@@ -252,7 +254,7 @@ package body Gtk.Meter.Thermo_Dual is
             (  Name    => "minor-tick-line-cap",
                Nick    => "Minor tick cap",
                Blurb   => "The line cap style used for minor ticks",
-               Default => CAIRO_LINE_CAP_BUTT
+               Default => Cairo_Line_Cap_Butt
          )  );
          Install_Style_Property
          (  Class_Ref (Class_Record.The_Type),
@@ -278,15 +280,15 @@ package body Gtk.Meter.Thermo_Dual is
       Initialize_Celsius (Widget, Adjustment, Sectors, Color);
    exception
       when others =>
-         GLib.Object.Checked_Destroy (Widget);
+         Glib.Object.Checked_Destroy (Widget);
          Widget := null;
          raise;
    end Gtk_New_Celsius;
 
    procedure Gtk_New_Celsius
              (  Widget  : out Gtk_Meter_Thermo_Dual;
-                Lower   : GDouble    := -40.0;
-                Upper   : GDouble    := 50.0;
+                Lower   : Gdouble    := -40.0;
+                Upper   : Gdouble    := 50.0;
                 Sectors : Positive  := 8;
                 Color   : Gdk_Color := RGB (1.0, 0.0, 0.0)
              )  is
@@ -295,7 +297,7 @@ package body Gtk.Meter.Thermo_Dual is
       Initialize_Celsius (Widget, Lower, Upper, Sectors, Color);
    exception
       when others =>
-         GLib.Object.Checked_Destroy (Widget);
+         Glib.Object.Checked_Destroy (Widget);
          Widget := null;
          raise;
    end Gtk_New_Celsius;
@@ -312,15 +314,15 @@ package body Gtk.Meter.Thermo_Dual is
       Initialize_Fahrenheit (Widget, Adjustment, Sectors, Color);
    exception
       when others =>
-         GLib.Object.Checked_Destroy (Widget);
+         Glib.Object.Checked_Destroy (Widget);
          Widget := null;
          raise;
    end Gtk_New_Fahrenheit;
 
    procedure Gtk_New_Fahrenheit
              (  Widget  : out Gtk_Meter_Thermo_Dual;
-                Lower   : GDouble    := 20.0;
-                Upper   : GDouble    := 220.0;
+                Lower   : Gdouble    := 20.0;
+                Upper   : Gdouble    := 220.0;
                 Sectors : Positive  := 8;
                 Color   : Gdk_Color := RGB (1.0, 0.0, 0.0)
              )  is
@@ -329,7 +331,7 @@ package body Gtk.Meter.Thermo_Dual is
       Initialize_Fahrenheit (Widget, Lower, Upper, Sectors, Color);
    exception
       when others =>
-         GLib.Object.Checked_Destroy (Widget);
+         Glib.Object.Checked_Destroy (Widget);
          Widget := null;
          raise;
    end Gtk_New_Fahrenheit;
@@ -339,15 +341,15 @@ package body Gtk.Meter.Thermo_Dual is
                              Gtk_Meter_Thermo_Dual_Record'Class;
                 Mode       : Bar_Mode;
                 Adjustment : Gtk_Adjustment;
-                Lower      : GDouble;
-                Upper      : GDouble;
+                Lower      : Gdouble;
+                Upper      : Gdouble;
                 Count      : Positive;
                 Color      : Gdk_Color
              )  is
       procedure Create_Annotation
                 (  Scale   : in out Temperature_Scale;
                    Justify : Alignment;
-                   Offset  : GDouble
+                   Offset  : Gdouble
                 )  is
          use Strings_Edit;
          Texts   : UTF8_String (1..2048);
@@ -360,36 +362,36 @@ package body Gtk.Meter.Thermo_Dual is
                AbsSmall    => Scale.Small,
                Value       =>
                   (  Scale.Lower
-                  +  GDouble (Index)
-                  *  GDouble (Scale.Step / Scale.Factor)
+                  +  Gdouble (Index)
+                  *  Gdouble (Scale.Step / Scale.Factor)
             )     );
             Put (Texts, Pointer, " ");
          end loop;
          Scale.Annotation :=
-            Add_Flat_Annotation
-            (  Under       => Widget.Cache,
-               From        => (Offset, First - Scale.First),
-               Length      => Length - Scale.First,
-               Scale_Angle => 3.0 * Pi / 2.0,
-               Texts       => Texts (1..Pointer - 1),
-               Justify     => Justify,
-               Step        => Scale.Step,
-               Height      => 0.1,
-               Color       => Text_Color,
-               Scaled      => True,
-               Face        => Create_Toy
-                              (  Family => "arial",
-                                 Slant  => CAIRO_FONT_SLANT_NORMAL,
-                                 Weight => CAIRO_FONT_WEIGHT_NORMAL
-            )                 );
+           Add_Flat_Annotation
+             (Under       => Widget.Cache,
+              From        => (Offset, First - Scale.First),
+              Length      => Length - Scale.First,
+              Scale_Angle => 3.0 * Ada.Numerics.Pi / 2.0,
+              Texts       => Texts (1 .. Pointer - 1),
+              Justify     => Justify,
+              Step        => Scale.Step,
+              Height      => 0.1,
+              Color       => Text_Color,
+              Scaled      => True,
+              Face        =>
+                Create_Toy
+                  (Family => "arial",
+                   Slant  => Cairo_Font_Slant_Normal,
+                   Weight => Cairo_Font_Weight_Normal));
       end Create_Annotation;
 
       procedure Create_Ticks
                 (  Scale   : in out Temperature_Scale;
-                   Lower   : GDouble;
-                   Upper   : GDouble;
-                   Offset  : GDouble;
-                   Sign    : GDouble;
+                   Lower   : Gdouble;
+                   Upper   : Gdouble;
+                   Offset  : Gdouble;
+                   Sign    : Gdouble;
                    Sectors : Positive
                 )  is
          Raster : constant Gtk.Layered.Waveform.Rasters.Scale :=
@@ -405,9 +407,9 @@ package body Gtk.Meter.Thermo_Dual is
          Scale.Factor := Length / Scale.Span;
          Scale.Small  := Integer'Min (Raster.Small, 0);
          Scale.Step :=
-            (  GDouble (Raster.Minor)
+            (  Gdouble (Raster.Minor)
             *  Scale.Factor
-            *  GDouble (Raster.Ticks + 1)
+            *  Gdouble (Raster.Ticks + 1)
             );
          if Raster.Low_Tick = 0 then
             Scale.Lower := Raster.Low_Value;
@@ -415,25 +417,24 @@ package body Gtk.Meter.Thermo_Dual is
             Scale.Lower :=
                (  Raster.Low_Value
                +  Raster.Minor
-               *  GDouble (Raster.Ticks + 1 - Raster.Low_Tick)
+               *  Gdouble (Raster.Ticks + 1 - Raster.Low_Tick)
                );
          end if;
-         Scale.First := Scale.Factor * GDouble (Scale.Lower - Lower);
+         Scale.First := Scale.Factor * Gdouble (Scale.Lower - Lower);
          Scale.Major_Ticks :=
            Add_Flat_Scale
-            (  Under   => Widget.Background.Get_Foreground,
-               From    => (Offset + Sign * 0.07, First - Scale.First),
-               Length  => Length - Scale.First,
-               Angle   => 3.0 * Pi / 2.0,
-               Breadth => 0.13,
-               Color   => Major_Tick_Color,
-               Width   => 4.0 / 600.0,
-               Step    => Scale.Step,
-               Scaled  => True,
-               Widened => True
-            );
+             (Under   => Widget.Background.Get_Foreground,
+              From    => (Offset + Sign * 0.07, First - Scale.First),
+              Length  => Length - Scale.First,
+              Angle   => 3.0 * Ada.Numerics.Pi / 2.0,
+              Breadth => 0.13,
+              Color   => Major_Tick_Color,
+              Width   => 4.0 / 600.0,
+              Step    => Scale.Step,
+              Scaled  => True,
+              Widened => True);
          declare
-            Start : GDouble := Scale.First;
+            Start : Gdouble := Scale.First;
             Tick  : Tick_Number;
          begin
             if Start >= 0.5 * Scale.Step then
@@ -443,23 +444,22 @@ package body Gtk.Meter.Thermo_Dual is
                Tick := 2;
             end if;
             Scale.Middle_Ticks :=
-               Add_Flat_Scale
-               (  Under   => Widget.Background.Get_Foreground,
-                  From    => (Offset + Sign * 0.05, First - Start),
-                  Length  => Length - Start,
-                  Angle   => 3.0 * Pi / 2.0,
-                  Breadth => 0.10,
-                  Color   => Middle_Tick_Color,
-                  Width   => 2.0 / 600.0,
-                  Step    => 0.5 * Scale.Step,
-                  Skipped => 2,
-                  First   => Tick,
-                  Scaled  => True,
-                  Widened => True
-               );
+              Add_Flat_Scale
+                (Under   => Widget.Background.Get_Foreground,
+                 From    => (Offset + Sign * 0.05, First - Start),
+                 Length  => Length - Start,
+                 Angle   => 3.0 * Ada.Numerics.Pi / 2.0,
+                 Breadth => 0.10,
+                 Color   => Middle_Tick_Color,
+                 Width   => 2.0 / 600.0,
+                 Step    => 0.5 * Scale.Step,
+                 Skipped => 2,
+                 First   => Tick,
+                 Scaled  => True,
+                 Widened => True);
          end;
          declare
-            Start : GDouble := Scale.First;
+            Start : Gdouble := Scale.First;
             Tick  : Tick_Number := 10;
          begin
             if Start > 0.1 * Scale.Step then
@@ -472,20 +472,19 @@ package body Gtk.Meter.Thermo_Dual is
                end if;
             end if;
             Scale.Minor_Ticks :=
-               Add_Flat_Scale
-               (  Under   => Widget.Background.Get_Foreground,
-                  From    => (Offset + Sign * 0.04, First - Start),
-                  Length  => Length - Start,
-                  Angle   => 3.0 * Pi / 2.0,
-                  Breadth => 0.07,
-                  Color   => Minor_Tick_Color,
-                  Width   => 1.0 / 600.0,
-                  Step    => 0.1 * Scale.Step,
-                  Skipped => 5,
-                  First   => Tick,
-                  Scaled  => True,
-                  Widened => True
-               );
+              Add_Flat_Scale
+                (Under   => Widget.Background.Get_Foreground,
+                 From    => (Offset + Sign * 0.04, First - Start),
+                 Length  => Length - Start,
+                 Angle   => 3.0 * Ada.Numerics.Pi / 2.0,
+                 Breadth => 0.07,
+                 Color   => Minor_Tick_Color,
+                 Width   => 1.0 / 600.0,
+                 Step    => 0.1 * Scale.Step,
+                 Skipped => 5,
+                 First   => Tick,
+                 Scaled  => True,
+                 Widened => True);
          end;
       end Create_Ticks;
    begin
@@ -575,7 +574,7 @@ package body Gtk.Meter.Thermo_Dual is
             To       => (Bar_Offset, First),
             Width    => Bar_Width,
             Color    => Color,
-            Line_Cap => CAIRO_LINE_CAP_BUTT,
+            Line_Cap => Cairo_Line_Cap_Butt,
             Scaled   => True,
             Widened  => True
          );
@@ -586,7 +585,7 @@ package body Gtk.Meter.Thermo_Dual is
              To       => (Bar_Offset, First + Stem_Length),
              Width    => Bar_Width * 2.0,
              Color    => Color,
-             Line_Cap => CAIRO_LINE_CAP_ROUND,
+             Line_Cap => Cairo_Line_Cap_Round,
              Scaled   => True,
              Widened  => True
           );
@@ -600,7 +599,7 @@ package body Gtk.Meter.Thermo_Dual is
                             First + Stem_Length - Reflection_Offset
                          ),
              Width    => Reflection_Offset * 2.0,
-             Line_Cap => CAIRO_LINE_CAP_ROUND,
+             Line_Cap => Cairo_Line_Cap_Round,
              Scaled   => True,
              Widened  => True,
              Color    => Lighten
@@ -622,8 +621,8 @@ package body Gtk.Meter.Thermo_Dual is
          (  Under    => Widget.Get_Cache,
             Face     => Create_Toy
                         (  Family => "arial",
-                           Slant  => CAIRO_FONT_SLANT_NORMAL,
-                           Weight => CAIRO_FONT_WEIGHT_BOLD
+                           Slant  => Cairo_Font_Slant_Normal,
+                           Weight => Cairo_Font_Weight_Bold
                         ),
             Color    => Text_Color,
             Height   => 0.12,
@@ -643,8 +642,8 @@ package body Gtk.Meter.Thermo_Dual is
          (  Under    => Widget.Get_Cache,
             Face     => Create_Toy
                         (  Family => "arial",
-                           Slant  => CAIRO_FONT_SLANT_NORMAL,
-                           Weight => CAIRO_FONT_WEIGHT_BOLD
+                           Slant  => Cairo_Font_Slant_Normal,
+                           Weight => Cairo_Font_Weight_Bold
                         ),
             Color    => Text_Color,
             Height   => 0.12,
@@ -658,18 +657,17 @@ package body Gtk.Meter.Thermo_Dual is
       -- Create foreground
       --
       Widget.Bar :=
-         Add_Bar
-         (  Under      => Widget.Background.Get_Foreground,
-            From       => (Bar_Offset, First),
-            Length     => Length,
-            Angle      => 3.0 * Pi / 2.0,
-            Adjustment => Adjustment,
-            Line_Cap   => CAIRO_LINE_CAP_BUTT,
-            Width      => Bar_Width,
-            Color      => Color,
-            Scaled     => True,
-            Widened    => True
-         );
+        Add_Bar
+          (Under      => Widget.Background.Get_Foreground,
+           From       => (Bar_Offset, First),
+           Length     => Length,
+           Angle      => 3.0 * Ada.Numerics.Pi / 2.0,
+           Adjustment => Adjustment,
+           Line_Cap   => Cairo_Line_Cap_Butt,
+           Width      => Bar_Width,
+           Color      => Color,
+           Scaled     => True,
+           Widened    => True);
    end Initialize;
 
    procedure Initialize_Celsius
@@ -695,8 +693,8 @@ package body Gtk.Meter.Thermo_Dual is
    procedure Initialize_Celsius
              (  Widget  : not null access
                           Gtk_Meter_Thermo_Dual_Record'Class;
-                Lower   : GDouble;
-                Upper   : GDouble;
+                Lower   : Gdouble;
+                Upper   : Gdouble;
                 Sectors : Positive;
                 Color   : Gdk_Color
              )  is
@@ -735,8 +733,8 @@ package body Gtk.Meter.Thermo_Dual is
    procedure Initialize_Fahrenheit
              (  Widget  : not null access
                           Gtk_Meter_Thermo_Dual_Record'Class;
-                Lower   : GDouble;
-                Upper   : GDouble;
+                Lower   : Gdouble;
+                Upper   : Gdouble;
                 Sectors : Positive;
                 Color   : Gdk_Color
              )  is
@@ -792,7 +790,7 @@ package body Gtk.Meter.Thermo_Dual is
 
    procedure Set_Celsius_Value
              (  Widget : not null access Gtk_Meter_Thermo_Dual_Record;
-                Value  : GDouble
+                Value  : Gdouble
              )  is
    begin
       Widget.Bar.Set_Value
@@ -803,7 +801,7 @@ package body Gtk.Meter.Thermo_Dual is
 
    procedure Set_Fahrenheit_Value
              (  Widget : not null access Gtk_Meter_Thermo_Dual_Record;
-                Value  : GDouble
+                Value  : Gdouble
              )  is
    begin
       Widget.Bar.Set_Value

@@ -23,7 +23,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 --
 --  This  package  provides a simplified way of disconnecting the signal
 --  handlers when the handler callback depends on the life time  of  not
@@ -42,47 +42,52 @@
 with Ada.Finalization;
 
 package Gtk.Handlers.References is
---
--- Handler_Reference -- Reference to a callback handler
---
+
+   --
+   -- Handler_Reference -- Reference to a callback handler
+   --
    type Handler_Reference is
-      new Ada.Finalization.Controlled with private;
---
--- Get -- Callback identification as given by Connect
---
---    Reference - To the callback
---
--- Returns :
---
---    The callback identification
---
+     new Ada.Finalization.Controlled with private;
+
+   --
+   -- Get -- Callback identification as given by Connect
+   --
+   --    Reference - To the callback
+   --
+   -- Returns :
+   --
+   --    The callback identification
+   --
    function Get (Reference : Handler_Reference) return Handler_Id;
---
--- Set -- Reference to callback
---
---    Reference - To be set
---  [ Handler ] - The callback identification
---
--- The parameter ID is typically the return value of a call to  Connect.
--- When  Reference  is  already  set to a different callback handler the
--- latter is disconnected first.  When Handler  is omitted the reference
--- is reset.
---
+
+   --
+   -- Set -- Reference to callback
+   --
+   --    Reference - To be set
+   --  [ Handler ] - The callback identification
+   --
+   -- The parameter ID is typically the return value of a call to  Connect.
+   -- When  Reference  is  already  set to a different callback handler the
+   -- latter is disconnected first.  When Handler  is omitted the reference
+   -- is reset.
+   --
    procedure Set
-             (  Reference : in out Handler_Reference;
-                Handler   : Handler_Id
-             );
+     (Reference : in out Handler_Reference;
+      Handler   : Handler_Id);
+
    procedure Set (Reference : in out Handler_Reference);
 
 private
-   type Handler_Reference is
-      new Ada.Finalization.Controlled with
-   record
-      ID      : Gulong := Null_Handler_Id;
-      Closure : GClosure;
-   end record;
 
-   procedure Adjust (Reference : in out Handler_Reference);
-   procedure Finalize (Reference : in out Handler_Reference);
+   type Handler_Reference is
+     new Ada.Finalization.Controlled with
+      record
+         ID      : Gulong := Null_Handler_Id;
+         Closure : GClosure;
+      end record;
+
+   overriding procedure Adjust (Reference : in out Handler_Reference);
+
+   overriding procedure Finalize (Reference : in out Handler_Reference);
 
 end Gtk.Handlers.References;

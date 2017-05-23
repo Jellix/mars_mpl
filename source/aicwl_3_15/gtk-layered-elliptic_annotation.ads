@@ -25,7 +25,7 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Ada.Numerics;  use Ada.Numerics;
+with Ada.Numerics;
 with Gtk.Missed;
 
 package Gtk.Layered.Elliptic_Annotation is
@@ -38,6 +38,7 @@ package Gtk.Layered.Elliptic_Annotation is
      new Abstract_Layer
      and Annotation_Layer
      and Scalable_Layer with private;
+
    --
    -- Add_Elliptic_Annotation -- Add annotation texts
    --
@@ -88,7 +89,7 @@ package Gtk.Layered.Elliptic_Annotation is
       Skipped : Tick_Number                        := Tick_Number'Last;
       Ellipse : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
       From    : Gdouble                            := 0.0;
-      Length  : Gdouble                            := 2.0 * Pi;
+      Length  : Gdouble                            := 2.0 * Ada.Numerics.Pi;
       Face    : Pango.Cairo.Fonts.Pango_Cairo_Font :=
         Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
@@ -109,7 +110,7 @@ package Gtk.Layered.Elliptic_Annotation is
       Skipped : Tick_Number                        := Tick_Number'Last;
       Ellipse : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
       From    : Gdouble                            := 0.0;
-      Length  : Gdouble                            := 2.0 * Pi;
+      Length  : Gdouble                            := 2.0 * Ada.Numerics.Pi;
       Face    : Pango.Cairo.Fonts.Pango_Cairo_Font :=
         Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
@@ -130,7 +131,7 @@ package Gtk.Layered.Elliptic_Annotation is
       Skipped   : Tick_Number                        := Tick_Number'Last;
       Ellipse   : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
       From      : Gdouble                            := 0.0;
-      Length    : Gdouble                            := 2.0 * Pi;
+      Length    : Gdouble                            := 2.0 * Ada.Numerics.Pi;
       Face      : Pango.Cairo.Fonts.Pango_Cairo_Font :=
         Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
@@ -152,7 +153,7 @@ package Gtk.Layered.Elliptic_Annotation is
       Skipped : Tick_Number                        := Tick_Number'Last;
       Ellipse : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
       From    : Gdouble                            := 0.0;
-      Length  : Gdouble                            := 2.0 * Pi;
+      Length  : Gdouble                            := 2.0 * Ada.Numerics.Pi;
       Face    : Pango.Cairo.Fonts.Pango_Cairo_Font :=
         Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
@@ -174,7 +175,7 @@ package Gtk.Layered.Elliptic_Annotation is
       Skipped : Tick_Number                        := Tick_Number'Last;
       Ellipse : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
       From    : Gdouble                            := 0.0;
-      Length  : Gdouble                            := 2.0 * Pi;
+      Length  : Gdouble                            := 2.0 * Ada.Numerics.Pi;
       Face    : Pango.Cairo.Fonts.Pango_Cairo_Font :=
         Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
@@ -196,7 +197,7 @@ package Gtk.Layered.Elliptic_Annotation is
       Skipped   : Tick_Number                        := Tick_Number'Last;
       Ellipse   : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
       From      : Gdouble                            := 0.0;
-      Length    : Gdouble                            := 2.0 * Pi;
+      Length    : Gdouble                            := 2.0 * Ada.Numerics.Pi;
       Face      : Pango.Cairo.Fonts.Pango_Cairo_Font :=
         Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
@@ -234,6 +235,7 @@ package Gtk.Layered.Elliptic_Annotation is
    --
    function Get_Ellipse (Layer : Elliptic_Annotation_Layer)
                          return Cairo.Ellipses.Ellipse_Parameters;
+
    --
    -- Get_From -- Angle of where the arc of texts begins
    --
@@ -244,6 +246,7 @@ package Gtk.Layered.Elliptic_Annotation is
    --    The angle
    --
    function Get_From (Layer : Elliptic_Annotation_Layer) return Gdouble;
+
    --
    -- Get_Length -- Angular length of the arc of texts
    --
@@ -255,6 +258,7 @@ package Gtk.Layered.Elliptic_Annotation is
    --
    function Get_Length (Layer : Elliptic_Annotation_Layer)
                         return Gdouble;
+
    --
    -- Get_Mode -- The text transformation mode
    --
@@ -266,6 +270,7 @@ package Gtk.Layered.Elliptic_Annotation is
    --
    function Get_Mode (Layer : Elliptic_Annotation_Layer)
                       return Text_Transformation;
+
    --
    -- Set -- Parameters of the annotation
    --
@@ -403,8 +408,8 @@ private
       Buffer : UTF8_String (1 .. Size);
    end record;
    type Annotation_Text_Ptr is access Annotation_Text;
-   function "+" (Value : Annotation_Text_Ptr) return UTF8_String;
-   pragma Inline ("+");
+
+   function "+" (Value : Annotation_Text_Ptr) return UTF8_String with Inline;
 
    type Annotation_List is
      array (Positive range <>) of Annotation_Text_Ptr;

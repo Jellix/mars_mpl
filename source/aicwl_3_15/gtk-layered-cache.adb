@@ -25,9 +25,9 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Cairo.Surface;   use Cairo.Surface;
-
 with Ada.Unchecked_Deallocation;
+
+with Cairo.Surface;
 
 package body Gtk.Layered.Cache is
    type Cache_Ptr is access all Cache_Layer;
@@ -182,7 +182,7 @@ package body Gtk.Layered.Cache is
       then
          declare
             Surface : constant Cairo.Cairo_Surface :=
-                         Create_Similar
+                        Cairo.Surface.Create_Similar
                           (Cairo.Get_Target (Context),
                            Cairo.Cairo_Content_Color,
                            Width,

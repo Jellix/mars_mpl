@@ -31,7 +31,7 @@ package body GIO.Drive is
    function Can_Eject
      (Drive : not null access GDrive_Record) return Boolean
    is
-      function Internal (Drive : Address) return Glib.Gboolean;
+      function Internal (Drive : System.Address) return Glib.Gboolean;
       pragma Import (C, Internal, "g_drive_can_eject");
 
       use type Glib.Gboolean;
@@ -39,12 +39,12 @@ package body GIO.Drive is
       return 0 /= Internal (Glib.Object.Get_Object (Drive));
    end Can_Eject;
 
-   function Convert (Mount  : GDrive) return Address is
+   function Convert (Mount  : GDrive) return System.Address is
    begin
       return Glib.Object.Get_Object (Mount);
    end Convert;
 
-   function Convert (Pointer : Address) return GDrive is
+   function Convert (Pointer : System.Address) return GDrive is
       Stub : GDrive_Record;
    begin
       return GDrive (Glib.Object.Get_User_Data (Pointer, Stub));
@@ -53,7 +53,7 @@ package body GIO.Drive is
    function Get_Drive
      (Volume : not null access GIO.Volume.GVolume_Record'Class) return GDrive
    is
-      function Internal (Volume : Address) return Address;
+      function Internal (Volume : System.Address) return System.Address;
       pragma Import (C, Internal, "g_volume_get_drive");
    begin
       return Convert (Internal (Glib.Object.Get_Object (Volume)));
@@ -62,7 +62,7 @@ package body GIO.Drive is
    function Get_Drive
      (Mount : not null access GIO.Mount.GMount_Record'Class) return GDrive
    is
-      function Internal (Volume : Address) return Address;
+      function Internal (Volume : System.Address) return System.Address;
       pragma Import (C, Internal, "g_mount_get_drive");
    begin
       return Convert (Internal (Glib.Object.Get_Object (Mount)));
@@ -71,7 +71,8 @@ package body GIO.Drive is
    function Get_Name
      (Drive : not null access GDrive_Record) return Glib.UTF8_String
    is
-      function Internal (Drive : Address) return Interfaces.C.Strings.chars_ptr;
+      function Internal (Drive : System.Address)
+                         return Interfaces.C.Strings.chars_ptr;
       pragma Import (C, Internal, "g_drive_get_name");
       Ptr : Interfaces.C.Strings.chars_ptr :=
               Internal (Glib.Object.Get_Object (Drive));
@@ -94,7 +95,7 @@ package body GIO.Drive is
    function Get_Icon
      (Drive : not null access GDrive_Record) return Glib.Object.GObject
    is
-      function Internal (Drive : Address) return Address;
+      function Internal (Drive : System.Address) return System.Address;
       pragma Import (C, Internal, "g_drive_get_icon");
    begin
       return Glib.Object.Convert (Internal (Glib.Object.Get_Object (Drive)));
@@ -103,7 +104,7 @@ package body GIO.Drive is
    function Get_Volumes
      (Drive : not null access GDrive_Record) return GIO.Volume.Volume_List.Glist
    is
-      function Internal (Monitor : Address) return Address;
+      function Internal (Monitor : System.Address) return System.Address;
       pragma Import (C, Internal, "g_drive_get_volumes");
       List : GIO.Volume.Volume_List.Glist;
    begin
@@ -116,7 +117,7 @@ package body GIO.Drive is
    function Has_Media
      (Drive : not null access GDrive_Record) return Boolean
    is
-      function Internal (Drive : Address) return Glib.Gboolean;
+      function Internal (Drive : System.Address) return Glib.Gboolean;
       pragma Import (C, Internal, "g_drive_has_media");
 
       use type Glib.Gboolean;
@@ -127,7 +128,7 @@ package body GIO.Drive is
    function Has_Volumes
      (Drive : not null access GDrive_Record) return Boolean
    is
-      function Internal (Drive : Address) return Glib.Gboolean;
+      function Internal (Drive : System.Address) return Glib.Gboolean;
       pragma Import (C, Internal, "g_drive_has_volumes");
 
       use type Glib.Gboolean;
@@ -138,7 +139,7 @@ package body GIO.Drive is
    function Is_Media_Check_Automatic
      (Drive : not null access GDrive_Record) return Boolean
    is
-      function Internal (Drive : Address) return Glib.Gboolean;
+      function Internal (Drive : System.Address) return Glib.Gboolean;
       pragma Import (C, Internal, "g_drive_is_media_check_automatic");
 
       use type Glib.Gboolean;
@@ -149,7 +150,7 @@ package body GIO.Drive is
    function Is_Media_Removable
      (Drive : not null access GDrive_Record) return Boolean
    is
-      function Internal (Drive : Address) return Glib.Gboolean;
+      function Internal (Drive : System.Address) return Glib.Gboolean;
       pragma Import (C, Internal, "g_drive_is_media_removable");
 
       use type Glib.Gboolean;

@@ -31,7 +31,6 @@ package body Glib.Object.Weak_References is
 
    package Address_To_Access is
       new System.Address_To_Access_Conversions (Weak_Reference'Class);
-   use Address_To_Access;
 
    overriding procedure Adjust (Reference : in out Weak_Reference) is
    begin
@@ -85,7 +84,10 @@ package body Glib.Object.Weak_References is
       Where_The_Object_Was : System.Address)
    is
       pragma Unreferenced (Where_The_Object_Was);
-      Ptr : constant Object_Pointer := To_Pointer (Data);
+      Ptr : constant Address_To_Access.Object_Pointer :=
+              Address_To_Access.To_Pointer (Data);
+
+      use type Address_To_Access.Object_Pointer;
    begin
       if Ptr /= null then
          Ptr.all.Object := null;

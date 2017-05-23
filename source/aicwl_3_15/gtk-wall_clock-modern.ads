@@ -204,7 +204,7 @@ private
 
    procedure Set
              (  Widget  : not null access Gtk_Wall_Clock_Modern_Record;
-                Seconds : GDouble
+                Seconds : Gdouble
              );
 
 end Gtk.Wall_Clock.Modern;

@@ -33,8 +33,8 @@
 --  abstract primitive operations of the base type. A derived type shall
 --  provide an implementation for them. Finalization is supported.
 --
-with GLib.Values;   use GLib.Values;
-with GtkAda.Types;  use GtkAda.Types;
+with Glib.Values;   use Glib.Values;
+with Gtkada.Types;  use Gtkada.Types;
 
 package Gtk.Tree_Model.Abstract_Store is
 --
@@ -106,7 +106,7 @@ package Gtk.Tree_Model.Abstract_Store is
 --
    function Get_Column_Type
             (  Model : not null access Gtk_Abstract_Model_Record;
-               Index : GInt
+               Index : Gint
             )  return GType is abstract;
 --
 -- Get_Flags -- The GTK flags associated with the model
@@ -145,7 +145,7 @@ package Gtk.Tree_Model.Abstract_Store is
 --
    function Get_N_Columns
             (  Model : not null access Gtk_Abstract_Model_Record
-            )  return GInt is abstract;
+            )  return Gint is abstract;
 --
 -- Get_Path -- The iterator associated with the path
 --
@@ -240,7 +240,7 @@ package Gtk.Tree_Model.Abstract_Store is
    function Nth_Child
             (  Model  : not null access Gtk_Abstract_Model_Record;
                Parent : Gtk_Tree_Iter;
-               N      : GInt
+               N      : Gint
             )  return Gtk_Tree_Iter is abstract;
 --
 -- N_Children -- Of an iterator
@@ -255,7 +255,7 @@ package Gtk.Tree_Model.Abstract_Store is
    function N_Children
             (  Model : not null access Gtk_Abstract_Model_Record;
                Iter  : Gtk_Tree_Iter := Null_Iter
-            )  return GInt is abstract;
+            )  return Gint is abstract;
 --
 -- Parent -- Level up
 --
@@ -334,7 +334,7 @@ private
 --
    type GObject is record -- GObject
       G_Type_Instance : Address;
-      Ref_Count       : GUInt;
+      Ref_Count       : Guint;
       QData           : Address;
    end record;
    pragma Convention (C, GObject);

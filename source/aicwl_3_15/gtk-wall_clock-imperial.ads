@@ -196,7 +196,7 @@ private
    procedure Set
              (  Widget  : not null access
                           Gtk_Wall_Clock_Imperial_Record;
-                Seconds : GDouble
+                Seconds : Gdouble
              );
 
 end Gtk.Wall_Clock.Imperial;

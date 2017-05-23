@@ -23,97 +23,102 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Gtk.Box;     use Gtk.Box;
-with Gtk.Button;  use Gtk.Button;
-with Gtk.Enums;   use Gtk.Enums;
-with Gtk.Label;   use Gtk.Label;
-with Gtk.Widget;  use Gtk.Widget;
+with Gtk.Box;
+with Gtk.Button;
+with Gtk.Enums;
+with Gtk.Label;
+with Gtk.Widget;
 
 package Gtk.Image_Button is
---
--- Gtk_Image_Button_Record -- The button type
---
--- The  button  is  a  button  with  a  label. From the container widget
--- Set_Style you might wish to set:
---
---    Set_Text (Get_Label (Button), ...);
---    Set_Tip  (..., Button, ...);
---    Set_Spacing (Get_Box (Button), ...);
---
-   type Gtk_Image_Button_Record is new Gtk_Button_Record with private;
+
+   --
+   -- Gtk_Image_Button_Record -- The button type
+   --
+   -- The  button  is  a  button  with  a  label. From the container widget
+   -- Set_Style you might wish to set:
+   --
+   --    Set_Text (Get_Label (Button), ...);
+   --    Set_Tip  (..., Button, ...);
+   --    Set_Spacing (Get_Box (Button), ...);
+   --
+   type Gtk_Image_Button_Record is
+     new Gtk.Button.Gtk_Button_Record with private;
    type Gtk_Image_Button is access all Gtk_Image_Button_Record'Class;
---
--- Get_Box -- Get the label box of the button
---
---    Button - The button
---
--- Returns :
---
---    The label box of the button
---
+
+   --
+   -- Get_Box -- Get the label box of the button
+   --
+   --    Button - The button
+   --
+   -- Returns :
+   --
+   --    The label box of the button
+   --
    function Get_Box
-            (  Button : not null access Gtk_Image_Button_Record
-            )  return Gtk_Box;
---
--- Get_Label -- Get the label of the button
---
---    Button - The button
---
--- Returns :
---
---    The label of the button
---
+     (Button : not null access Gtk_Image_Button_Record) return Gtk.Box.Gtk_Box;
+
+   --
+   -- Get_Label -- Get the label of the button
+   --
+   --    Button - The button
+   --
+   -- Returns :
+   --
+   --    The label of the button
+   --
    function Get_Label
-            (  Button : not null access Gtk_Image_Button_Record
-            )  return Gtk_Label;
---
--- Gtk_New -- Factory
---
---    Button - The button (the result)
---    Image  - Of the button
---    Label  - The button label
---
+     (Button : not null access Gtk_Image_Button_Record)
+      return Gtk.Label.Gtk_Label;
+
+   --
+   -- Gtk_New -- Factory
+   --
+   --    Button - The button (the result)
+   --    Image  - Of the button
+   --    Label  - The button label
+   --
    procedure Gtk_New
-             (  Button : out Gtk_Image_Button;
-                Image  : not null access Gtk_Widget_Record'Class;
-                Label  : UTF8_String := ""
-             );
---
--- Gtk_New -- Factory
---
---    Button   - The button (the result)
---    Stock_Id - Of the button's image
---    Size     - Of the image
---    Label    - The button label
---
+     (Button : out Gtk_Image_Button;
+      Image  : not null access Gtk.Widget.Gtk_Widget_Record'Class;
+      Label  : UTF8_String := "");
+
+   --
+   -- Gtk_New -- Factory
+   --
+   --    Button   - The button (the result)
+   --    Stock_Id - Of the button's image
+   --    Size     - Of the image
+   --    Label    - The button label
+   --
    procedure Gtk_New
-             (  Button   : out Gtk_Image_Button;
-                Stock_Id : String;
-                Size     : Gtk_Icon_Size;
-                Label    : UTF8_String := ""
-             );
---
--- Initialize -- Construction
---
---    Button - The button to initialize
---    Image  - Of the button
---    Label  - The button label
---
--- Each derived type is responsible to  call  this  procedure  upon  its
--- construction.
---
+     (Button   : out Gtk_Image_Button;
+      Stock_Id : String;
+      Size     : Gtk.Enums.Gtk_Icon_Size;
+      Label    : UTF8_String := "");
+
+   --
+   -- Initialize -- Construction
+   --
+   --    Button - The button to initialize
+   --    Image  - Of the button
+   --    Label  - The button label
+   --
+   -- Each derived type is responsible to  call  this  procedure  upon  its
+   -- construction.
+   --
    procedure Initialize
-             (  Button : not null access Gtk_Image_Button_Record'Class;
-                Image  : not null access Gtk_Widget_Record'Class;
-                Label  : UTF8_String
-             );
+     (Button : not null access Gtk_Image_Button_Record'Class;
+      Image  : not null access Gtk.Widget.Gtk_Widget_Record'Class;
+      Label  : UTF8_String);
 
 private
-   type Gtk_Image_Button_Record is new Gtk_Button_Record with record
-      Label : Gtk_Label;
-      Box   : Gtk_Box;
+
+   type Gtk_Image_Button_Record is new Gtk.Button.Gtk_Button_Record
+     with record
+      Label : Gtk.Label.Gtk_Label;
+      Box   : Gtk.Box.Gtk_Box;
    end record;
 
 end Gtk.Image_Button;

@@ -23,16 +23,13 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 with Ada.IO_Exceptions;
 with Ada.Numerics.Elementary_Functions;
+
 with Strings_Edit.Integers;
 pragma Elaborate_All (Strings_Edit.Integers);
-
-use Ada.IO_Exceptions;
-use Ada.Numerics.Elementary_Functions;
-use Strings_Edit.Integers;
 
 package body Strings_Edit.Float_Edit is
    --
@@ -41,69 +38,66 @@ package body Strings_Edit.Float_Edit is
    -- represents.
    --
    Logs : constant array (NumberBase) of Float :=
-            (  2 => Log (Float (Number'Machine_Radix), 2.0),
-               3 => Log (Float (Number'Machine_Radix), 3.0),
-               4 => Log (Float (Number'Machine_Radix), 4.0),
-               5 => Log (Float (Number'Machine_Radix), 5.0),
-               6 => Log (Float (Number'Machine_Radix), 6.0),
-               7 => Log (Float (Number'Machine_Radix), 7.0),
-               8 => Log (Float (Number'Machine_Radix), 8.0),
-               9 => Log (Float (Number'Machine_Radix), 9.0),
-              10 => Log (Float (Number'Machine_Radix), 10.0),
-              11 => Log (Float (Number'Machine_Radix), 11.0),
-              12 => Log (Float (Number'Machine_Radix), 12.0),
-              13 => Log (Float (Number'Machine_Radix), 13.0),
-              14 => Log (Float (Number'Machine_Radix), 14.0),
-              15 => Log (Float (Number'Machine_Radix), 15.0),
-              16 => Log (Float (Number'Machine_Radix), 16.0)
-            );
+            (2  => Ada.Numerics.Elementary_Functions.Log (Float (Number'Machine_Radix), 2.0),
+             3  => Ada.Numerics.Elementary_Functions.Log (Float (Number'Machine_Radix), 3.0),
+             4  => Ada.Numerics.Elementary_Functions.Log (Float (Number'Machine_Radix), 4.0),
+             5  => Ada.Numerics.Elementary_Functions.Log (Float (Number'Machine_Radix), 5.0),
+             6  => Ada.Numerics.Elementary_Functions.Log (Float (Number'Machine_Radix), 6.0),
+             7  => Ada.Numerics.Elementary_Functions.Log (Float (Number'Machine_Radix), 7.0),
+             8  => Ada.Numerics.Elementary_Functions.Log (Float (Number'Machine_Radix), 8.0),
+             9  => Ada.Numerics.Elementary_Functions.Log (Float (Number'Machine_Radix), 9.0),
+             10 => Ada.Numerics.Elementary_Functions.Log (Float (Number'Machine_Radix), 10.0),
+             11 => Ada.Numerics.Elementary_Functions.Log (Float (Number'Machine_Radix), 11.0),
+             12 => Ada.Numerics.Elementary_Functions.Log (Float (Number'Machine_Radix), 12.0),
+             13 => Ada.Numerics.Elementary_Functions.Log (Float (Number'Machine_Radix), 13.0),
+             14 => Ada.Numerics.Elementary_Functions.Log (Float (Number'Machine_Radix), 14.0),
+             15 => Ada.Numerics.Elementary_Functions.Log (Float (Number'Machine_Radix), 15.0),
+             16 => Ada.Numerics.Elementary_Functions.Log (Float (Number'Machine_Radix), 16.0));
+
    --
    -- GetExponentField -- Calculate the length of the exponent
    --
-   --	 Base	- Of the number
+   --    Base   - Of the number
    --
    -- This  function  calculates  how  many  digits  are  necessary   to
    -- represent any Base-radix exponent in decimal the format.
    --
    -- Returns :
    --
-   --	 The exponent length
+   --    The exponent length
    --
    function GetExponentField (Base : NumberBase) return Natural is
    begin
       if Number'Machine_Emax > -Number'Machine_Emin then
          return
             Natural
-            (  Log (Float (Number'Machine_Emax) * Logs (Base), 10.0)
-            +  0.5
-            );
+             (Ada.Numerics.Elementary_Functions.Log
+                (Float (Number'Machine_Emax) * Logs (Base), 10.0) + 0.5);
       else
          return
             Natural
-            (  Log (Float (-Number'Machine_Emin) * Logs (Base), 10.0)
-            +  0.5
-            );
+             (Ada.Numerics.Elementary_Functions.Log
+                (Float (-Number'Machine_Emin) * Logs (Base), 10.0) + 0.5);
       end if;
    end GetExponentField;
    --
    -- The exponent lengths for different Bases
    --
    ExponentField : constant array (NumberBase) of Natural :=
-                      (  GetExponentField (2),  GetExponentField (3),
-                         GetExponentField (4),  GetExponentField (5),
-                         GetExponentField (6),  GetExponentField (7),
-                         GetExponentField (8),  GetExponentField (9),
-                         GetExponentField (10), GetExponentField (11),
-                         GetExponentField (12), GetExponentField (13),
-                         GetExponentField (14), GetExponentField (15),
-                         GetExponentField (16)
-                      );
+                     (GetExponentField (2),  GetExponentField (3),
+                      GetExponentField (4),  GetExponentField (5),
+                      GetExponentField (6),  GetExponentField (7),
+                      GetExponentField (8),  GetExponentField (9),
+                      GetExponentField (10), GetExponentField (11),
+                      GetExponentField (12), GetExponentField (13),
+                      GetExponentField (14), GetExponentField (15),
+                      GetExponentField (16));
    --
    -- GetExponent -- Get the exponent part from the string
    --
-   --	    Source  - The string
-   --	    Pointer - Within the string
-   --	    Value   - Of the exponent (output)
+   --       Source  - The string
+   --       Pointer - Within the string
+   --       Value   - Of the exponent (output)
    --
    -- This procedure scans the Source string starting from  the  Pointer
    -- position  for  the  exponent  part of a number. Spaces are skipped
@@ -112,42 +106,43 @@ package body Strings_Edit.Float_Edit is
    -- present Value is set to zero (the Pointer remains intact).
    --
    procedure GetExponent
-             (  Source   : in String;
-                Pointer  : in out Integer;
-                Value    : out Integer
-             )  is
+     (Source   : in String;
+      Pointer  : in out Integer;
+      Value    : out Integer)
+   is
       Index : Integer := Pointer;
    begin
       Get (Source, Index);
-      if (  Index > Source'Last
-         or else
-            (  Source (Index) /= 'E'
-            and
-               Source (Index) /= 'e'
-         )  )
+      if
+        Index > Source'Last or else
+        Source (Index) not in 'E' | 'e'
       then
          Value := 0;
       else
          Index := Index + 1;
          Get (Source, Index);
-         Get (Source, Index, Value, 10, -1000, +1000, True, True);
+         Strings_Edit.Integers.Get
+           (Source, Index, Value, 10, -1000, +1000, True, True);
          Pointer := Index;
       end if;
    exception
-      when End_Error | Data_Error | Layout_Error | Constraint_Error =>
+      when Ada.IO_Exceptions.End_Error |
+           Ada.IO_Exceptions.Data_Error |
+           Ada.IO_Exceptions.Layout_Error |
+           Constraint_Error =>
          Value := 0;
    end GetExponent;
 
    procedure Get
-             (  Source   : in String;
-                Pointer  : in out Integer;
-                Value    : out Number'Base;
-                Base     : in NumberBase := 10;
-                First    : in Number'Base := Number'Base'First;
-                Last     : in Number'Base := Number'Base'Last;
-                ToFirst  : in Boolean := False;
-                ToLast   : in Boolean := False
-             )  is
+     (Source   : in String;
+      Pointer  : in out Integer;
+      Value    : out Number'Base;
+      Base     : in NumberBase := 10;
+      First    : in Number'Base := Number'Base'First;
+      Last     : in Number'Base := Number'Base'Last;
+      ToFirst  : in Boolean := False;
+      ToLast   : in Boolean := False)
+   is
       Radix        : constant Number'Base := Number'Base (Base);
       Digit        : Natural;
       Exponent     : Integer;
@@ -157,14 +152,11 @@ package body Strings_Edit.Float_Edit is
       Sign         : Integer := 0;
       Index        : Integer := Pointer;
    begin
-      if (  Pointer < Source'First
-         or else
-            (  Pointer > Source'Last
-            and then
-               Pointer - 1 > Source'Last
-         )  )
+      if
+        Pointer < Source'First or else
+        (Pointer > Source'Last and then Pointer - 1 > Source'Last)
       then
-         raise Layout_Error;
+         raise Ada.IO_Exceptions.Layout_Error;
       end if;
       if Pointer <= Source'Last then
          case Source (Index) is
@@ -209,20 +201,19 @@ package body Strings_Edit.Float_Edit is
       end if;
       if 0 = Sign then
          if Pointer = Index then
-            raise End_Error; -- No fraction part - no number
+            raise Ada.IO_Exceptions.End_Error; -- No fraction part - no number
          end if;
          Sign := 1;
       else
          if Pointer = Index - 1 then
-            raise Data_Error; -- Only a sign
+            raise Ada.IO_Exceptions.Data_Error; -- Only a sign
          end if;
       end if;
-      if (  ExponentPart = Index - 1
-         and then
-            Source (ExponentPart) = '.'
-         )
+      if
+        ExponentPart = Index - 1 and then
+        Source (ExponentPart) = '.'
       then
-         raise Data_Error; -- Only decimal point is present
+         raise Ada.IO_Exceptions.Data_Error; -- Only decimal point is present
       end if;
       GetExponent (Source, Index, ExponentPart);
       if Mantissa > 0.0 then
@@ -249,11 +240,11 @@ package body Strings_Edit.Float_Edit is
             end if;
             Mantissa := Mantissa * Radix ** Exponent;
             if not Mantissa'Valid then
-               if Sign > 0 and ToLast then
+               if Sign > 0 and then ToLast then
                   Value   := Last;
                   Pointer := Index;
                   return;
-               elsif Sign < 0 and ToFirst then
+               elsif Sign < 0 and then ToFirst then
                   Value   := First;
                   Pointer := Index;
                   return;
@@ -261,12 +252,12 @@ package body Strings_Edit.Float_Edit is
                raise Constraint_Error;
             end if;
          exception
-            when Numeric_Error | Constraint_Error =>
-               if Sign > 0 and ToLast then
+            when Constraint_Error =>
+               if Sign > 0 and then ToLast then
                   Value   := Last;
                   Pointer := Index;
                   return;
-               elsif Sign < 0 and ToFirst then
+               elsif Sign < 0 and then ToFirst then
                   Value   := First;
                   Pointer := Index;
                   return;
@@ -292,13 +283,13 @@ package body Strings_Edit.Float_Edit is
    end Get;
 
    function Value
-            (  Source  : in String;
-               Base    : in NumberBase := 10;
-               First   : in Number'Base := Number'First;
-               Last    : in Number'Base := Number'Last;
-               ToFirst : in Boolean := False;
-               ToLast  : in Boolean := False
-            )  return Number'Base is
+     (Source  : in String;
+      Base    : in NumberBase := 10;
+      First   : in Number'Base := Number'First;
+      Last    : in Number'Base := Number'Last;
+      ToFirst : in Boolean := False;
+      ToLast  : in Boolean := False) return Number'Base
+   is
       Result  : Number'Base;
       Pointer : Integer := Source'First;
    begin
@@ -306,23 +297,23 @@ package body Strings_Edit.Float_Edit is
       Get (Source, Pointer, Result, Base, First, Last, ToFirst, ToLast);
       Get (Source, Pointer, SpaceAndTab);
       if Pointer /= Source'Last + 1 then
-         raise Data_Error;
+         raise Ada.IO_Exceptions.Data_Error;
       end if;
       return Result;
    end Value;
 
    procedure Put
-             (  Destination : in out String;
-                Pointer     : in out Integer;
-                Value       : in Number'Base;
-                Base        : in NumberBase := 10;
-                PutPlus     : in Boolean := False;
-                RelSmall    : in Positive := MaxSmall;
-                AbsSmall    : in Integer := -MaxSmall;
-                Field       : in Natural := 0;
-                Justify     : in Alignment := Left;
-                Fill        : in Character := ' '
-             )  is
+     (Destination : in out String;
+      Pointer     : in out Integer;
+      Value       : in Number'Base;
+      Base        : in NumberBase := 10;
+      PutPlus     : in Boolean := False;
+      RelSmall    : in Positive := MaxSmall;
+      AbsSmall    : in Integer := -MaxSmall;
+      Field       : in Natural := 0;
+      Justify     : in Alignment := Left;
+      Fill        : in Character := ' ')
+   is
       --
       -- Sign -- Make the sign of a number
       --
@@ -334,9 +325,8 @@ package body Strings_Edit.Float_Edit is
       --    The string to be used as the sign
       --
       function Sign
-               (  Value   : Number'Base;
-                  PutPlus : Boolean
-               )  return String is
+        (Value   : Number'Base;
+         PutPlus : Boolean) return String is
       begin
          if Value < 0.0 then
             return "-";
@@ -362,10 +352,10 @@ package body Strings_Edit.Float_Edit is
       --    The string containing the exponent part
       --
       function PutExponent
-               (  Value : Integer;
-                  Base  : NumberBase
-               )  return String is
-         Result   : String (1..32);
+        (Value : Integer;
+         Base  : NumberBase) return String
+      is
+         Result   : String (1 .. 32);
          Exponent : Integer := Value;
          Pointer  : Integer := Result'First;
          Sign     : Character := '+';
@@ -374,27 +364,24 @@ package body Strings_Edit.Float_Edit is
             Sign := '-';
             Exponent := -Value;
          end if;
-         Put
-         (  Result,
+         Strings_Edit.Integers.Put
+           (Result,
             Pointer,
             Exponent,
             Field   => ExponentField (Base),
             PutPlus => False,
             Justify => Right,
-            Fill    => '0'
-         );
+            Fill    => '0');
          if Base >= 15 then
-            return " e" & Sign & Result (Result'First..Pointer - 1);
+            return " e" & Sign & Result (Result'First .. Pointer - 1);
          else
-            return 'E' & Sign & Result (Result'First..Pointer - 1);
+            return 'E' & Sign & Result (Result'First .. Pointer - 1);
          end if;
       end PutExponent;
 
       Precision : Integer :=   -- The maximal available precision
                      Integer
-                     (  Float (Number'Machine_Mantissa)
-                     *  Logs (Base)
-                     );
+                      (Float (Number'Machine_Mantissa) * Logs (Base));
       Mantissa  : Number'Base := abs Value;
       Exponent  : Integer := 0;
       Increment : Integer := 0;
@@ -430,19 +417,19 @@ package body Strings_Edit.Float_Edit is
       if Mantissa >= 1.0 then
          Mantissa  := Mantissa / Radix;
          Exponent  := Exponent + 1;
-	 Precision := Precision + Increment;
+         Precision := Precision + Increment;
       end if;
       if Precision > 0 then
          declare
             ExponentPart : constant String :=
                            PutExponent (Exponent - 1, Base);
-            MantissaPart : String (1..Precision);
+            MantissaPart : String (1 .. Precision);
             Digit        : Natural;
          begin
             --
             -- Convert the Mantissa to character string
             --
-            for Index in MantissaPart'range loop
+            for Index in MantissaPart'Range loop
                Mantissa := Mantissa * Radix;
                Digit := Integer (Mantissa);
                if Number'Base (Digit) > Mantissa then
@@ -451,100 +438,86 @@ package body Strings_Edit.Float_Edit is
                Mantissa := Mantissa - Number'Base (Digit);
                MantissaPart (Index) := Figures (Digit + Figures'First);
             end loop;
-            if (  Exponent < - ExponentPart'Length
-               or Exponent > Precision
-               )
-            then
+            if Exponent < -ExponentPart'Length or else Exponent > Precision then
                --
                -- Format X.XXXXXeYYY
                --
-	         Put
-               (  Destination,
-	            Pointer,
-                  (  Sign (Value, PutPlus)
-                  &  MantissaPart (MantissaPart'First)
-                  &  '.'
-                  &  MantissaPart
-                     (  MantissaPart'First + 1
-                     .. MantissaPart'Last
-                     )
-                  &  ExponentPart
-		      ),
+               Put
+                 (Destination,
+                  Pointer,
+                  (Sign (Value, PutPlus)
+                   & MantissaPart (MantissaPart'First)
+                   & '.'
+                   & MantissaPart (MantissaPart'First + 1 .. MantissaPart'Last)
+                   & ExponentPart),
                   Field,
                   Justify,
-                  Fill
-               );
+                  Fill);
             elsif Exponent = Precision then
                --
                -- Format: XXXXXXX
                --
                Put
-               (  Destination,
+                 (Destination,
                   Pointer,
                   Sign (Value, PutPlus) & MantissaPart,
                   Field,
                   Justify,
-                  Fill
-	         );
+                  Fill);
             elsif Exponent > 0 then
                --
                -- Format: XXXX.XXX
                --
                Put
-               (  Destination,
+                 (Destination,
                   Pointer,
-                  (  Sign (Value, PutPlus)
-                  &  MantissaPart
-                     (  MantissaPart'First
-                     .. MantissaPart'First + Exponent - 1
-                     )
-                  &  '.'
-                  &  MantissaPart
-                     (  MantissaPart'First + Exponent
-                     .. MantissaPart'Last
-                  )  ),
+                  (Sign (Value, PutPlus)
+                   & MantissaPart
+                     (MantissaPart'First
+                     .. MantissaPart'First + Exponent - 1)
+                   &  '.'
+                   &  MantissaPart
+                     (MantissaPart'First + Exponent
+                      .. MantissaPart'Last)),
                   Field,
                   Justify,
-                  Fill
-               );
+                  Fill);
             else
                --
                -- Format: 0.000XXXXX
                --
                Put
-               (  Destination,
+                 (Destination,
                   Pointer,
-                  (  Sign (Value, PutPlus)
-                  &  "0."
-                  &  String'(1..-Exponent => '0')
-                  &  MantissaPart
-                  ),
+                  (Sign (Value, PutPlus)
+                   &  "0."
+                   & String'(1 .. -Exponent => '0')
+                   & MantissaPart),
                   Field,
                   Justify,
-                  Fill
-               );
+                  Fill);
             end if;
          end;
       else
          --
          -- Zero
-	   --
+         --
          Put (Destination, Pointer, "0", Field, Justify, Fill);
       end if;
    end Put;
 
    function Image
-            (  Value    : in Number'Base;
-               Base     : in NumberBase := 10;
-               PutPlus  : in Boolean    := False;
-               RelSmall : in Positive   := MaxSmall;
-               AbsSmall : in Integer    := -MaxSmall
-            )  return String is
-      Text    : String (1..80);
+     (Value    : in Number'Base;
+      Base     : in NumberBase := 10;
+      PutPlus  : in Boolean    := False;
+      RelSmall : in Positive   := MaxSmall;
+      AbsSmall : in Integer    := -MaxSmall) return String
+   is
+      Text    : String (1 .. 80);
       Pointer : Integer := Text'First;
    begin
       Put (Text, Pointer, Value, Base, PutPlus, RelSmall, AbsSmall);
-      return Text (Text'First..Pointer - 1);
+      return Text (Text'First .. Pointer - 1);
    end Image;
 
 end Strings_Edit.Float_Edit;

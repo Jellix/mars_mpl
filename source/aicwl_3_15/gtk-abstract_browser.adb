@@ -1052,11 +1052,10 @@ package body Gtk.Abstract_Browser is
       Params  : Glib.Values.GValues;
       Browser : Gtk_Directory_Tree_View)
    is
-      use Gtk.Tree_Model;
       Row : constant Gtk.Tree_Model.Gtk_Tree_Iter :=
               Get_Iter
                 (Browser.all.Cache,
-                 Convert
+                 Gtk.Tree_Model.Convert
                    (Glib.Values.Get_Address (Glib.Values.Nth (Params, 1))));
 
       use type Gtk.Tree_Model.Gtk_Tree_Iter;
@@ -1751,15 +1750,15 @@ package body Gtk.Abstract_Browser is
    end Get_Cached;
 
    function Get_Cache_Model_Type return Gtk_Type is
-      use Interfaces.C.Strings;
 
       function Lookup (Index : Interfaces.C.size_t) return Signal_Id is
       begin
-         return Lookup
-           (Cache_Model_Type,
-            Glib.Signal_Name
-              (String'
-                   (Value
+         return
+           Lookup
+             (Cache_Model_Type,
+              Glib.Signal_Name
+                (String'
+                   (Interfaces.C.Strings.Value
                         (Abstract_Directory_Signal_Names (Index)))));
       end Lookup;
    begin
@@ -2099,7 +2098,6 @@ package body Gtk.Abstract_Browser is
    end Get_Item;
 
    function Get_Items_Model_Type return Gtk_Type is
-      use Interfaces.C.Strings;
    begin
       if Items_Model_Type = GType_Invalid then
          Items_Model_Type :=
@@ -5157,22 +5155,20 @@ package body Gtk.Abstract_Browser is
    end Set_Selection_Mode;
 
    procedure Set_Trace_File (File_Name : String) is
-      use Ada.Text_IO;
    begin
       if Has_File then
-         Close (File);
+         Ada.Text_IO.Close (File);
          Has_File := False;
       end if;
       Set_Trace_File;
-      Open (File, Out_File, File_Name);
+      Ada.Text_IO.Open (File, Ada.Text_IO.Out_File, File_Name);
       Has_File := True;
    end Set_Trace_File;
 
    procedure Set_Trace_File is
-      use Ada.Text_IO;
    begin
       if Has_File then
-         Close (File);
+         Ada.Text_IO.Close (File);
          Has_File := False;
       end if;
    end Set_Trace_File;
@@ -5523,8 +5519,8 @@ package body Gtk.Abstract_Browser is
       Depth : Natural;
       Text  : String)
    is
-      use Ada.Text_IO;
-      use Ada.Strings.Fixed;
+      function "*" (Left : Natural; Right : String) return String
+                    renames Ada.Strings.Fixed."*";
    begin
       if
         Trace_To_Output_Only /=
@@ -5536,9 +5532,9 @@ package body Gtk.Abstract_Browser is
         0 /= (Store.all.Tracing and (Trace_To_Both or Trace_To_Output_Only))
       then
          if Has_File then
-            Put_Line (File, Depth * "  " & Text);
+            Ada.Text_IO.Put_Line (File, Depth * "  " & Text);
          else
-            Put_Line (Depth * "  " & Text);
+            Ada.Text_IO.Put_Line (Depth * "  " & Text);
          end if;
       end if;
    end Trace;
@@ -5549,8 +5545,6 @@ package body Gtk.Abstract_Browser is
       Iter  : Gtk.Tree_Model.Gtk_Tree_Iter;
       Mode  : Traced_Actions) return Boolean
    is
-      use Ada.Text_IO;
-
       function Image (Kind : Gint) return String is
       begin
          case Kind is
@@ -5574,7 +5568,8 @@ package body Gtk.Abstract_Browser is
                 " - " &
                 Image (Gtk.Tree_Model.Get_Int (Model, Iter, 2));
 
-      use Ada.Strings.Fixed;
+      function "*" (Left : Natural; Right : String) return String
+                    renames Ada.Strings.Fixed."*";
    begin
       if
         Trace_To_Output_Only /=
@@ -5586,9 +5581,9 @@ package body Gtk.Abstract_Browser is
         0 /= (Mode and (Trace_To_Both or Trace_To_Output_Only))
       then
          if Has_File then
-            Put_Line (File, Depth * "  " & Text);
+            Ada.Text_IO.Put_Line (File, Depth * "  " & Text);
          else
-            Put_Line (Depth * "  " & Text);
+            Ada.Text_IO.Put_Line (Depth * "  " & Text);
          end if;
       end if;
       return False;
@@ -5596,11 +5591,10 @@ package body Gtk.Abstract_Browser is
 
    procedure Trace
      (Model   : not null access Gtk.Tree_Model.Gtk_Root_Tree_Model_Record'Class;
-      Tracing : Traced_Actions := Trace_To_Both)
-   is
-      use Traverse;
+      Tracing : Traced_Actions := Trace_To_Both) is
    begin
-      Foreach (Gtk.Tree_Model.To_Interface (Model), Trace'Access, Tracing);
+      Traverse.Foreach
+        (Gtk.Tree_Model.To_Interface (Model), Trace'Access, Tracing);
    end Trace;
 
    pragma Warnings (On, "declaration hides ""Params""");

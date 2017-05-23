@@ -107,7 +107,7 @@ package Gtk.Source_Style_Scheme_Manager is
    function Get_Scheme_IDs
             (  Manager : not null access
                          Gtk_Source_Style_Scheme_Manager_Record
-            )  return Chars_Ptr_Array;
+            )  return chars_ptr_array;
 --
 -- Get_Search_Path -- Get the current search path for the manager
 --
@@ -123,7 +123,7 @@ package Gtk.Source_Style_Scheme_Manager is
    function Get_Search_Path
             (  Manager : not null access
                          Gtk_Source_Style_Scheme_Manager_Record
-            )  return Chars_Ptr_Array;
+            )  return chars_ptr_array;
 --
 -- Gtk_New -- Creation of a new manager object
 --
@@ -166,7 +166,7 @@ package Gtk.Source_Style_Scheme_Manager is
    procedure Set_Search_Path
              (  Manager : not null access
                           Gtk_Source_Style_Scheme_Manager_Record;
-                Dirs    : Chars_Ptr_Array
+                Dirs    : chars_ptr_array
              );
    procedure Set_Search_Path
              (  Manager : not null access

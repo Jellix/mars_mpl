@@ -25,14 +25,12 @@
 --  executable file might be covered by the GNU Public License.       --
 --____________________________________________________________________--
 
-with Gdk.Color;               use Gdk.Color;
 with Gtk.Adjustment;          use Gtk.Adjustment;
 with Gtk.Enums.String_Lists;  use Gtk.Enums.String_Lists;
 with Gtk.Layered;             use Gtk.Layered;
 with Gtk.Layered.Needle;      use Gtk.Layered.Needle;
 with Gtk.Layered.Cache;       use Gtk.Layered.Cache;
 with Gtk.Widget;              use Gtk.Widget;
-with Interfaces.C;            use Interfaces.C;
 
 with Gtk.Enums;
 with Gtk.Layered.Elliptic_Scale;
@@ -75,7 +73,7 @@ package Gtk.Meter.Elliptic_90 is
 --
    procedure Gtk_New
              (  Widget     : out Gtk_Meter_Elliptic_90;
-                Texts      : Gtk.Enums.String_List.GList;
+                Texts      : Gtk.Enums.String_List.Glist;
                 Adjustment : Gtk_Adjustment := null;
                 Sectors    : Positive       := 5
              );
@@ -107,7 +105,7 @@ package Gtk.Meter.Elliptic_90 is
    procedure Initialize
              (  Widget : not null access
                          Gtk_Meter_Elliptic_90_Record'Class;
-                Texts      : Gtk.Enums.String_List.GList;
+                Texts      : Gtk.Enums.String_List.Glist;
                 Adjustment : Gtk_Adjustment;
                 Sectors    : Positive
              );
@@ -195,7 +193,7 @@ package Gtk.Meter.Elliptic_90 is
    procedure Set_Value
              (  Widget : not null access
                          Gtk_Meter_Elliptic_90_Record;
-                Value  : GDouble
+                Value  : Gdouble
              );
 
    overriding

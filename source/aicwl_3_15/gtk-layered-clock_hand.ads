@@ -25,8 +25,7 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Ada.Numerics;        use Ada.Numerics;
-with Gtk.Handlers;        use Gtk.Handlers;
+with Gtk.Handlers;
 with Gtk.Missed;
 
 package Gtk.Layered.Clock_Hand is
@@ -38,6 +37,7 @@ package Gtk.Layered.Clock_Hand is
      new Abstract_Layer
      and Gauge_Needle
      and Scalable_Layer with private;
+
    --
    -- Add_Clock_Hand -- Add a clock hand
    --
@@ -86,8 +86,8 @@ package Gtk.Layered.Clock_Hand is
    procedure Add_Clock_Hand
      (Under         : not null access Layer_Location'Class;
       Center        : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 0.0);
-      From          : Gdouble                                           := 3.0 * Pi / 4.0;
-      Length        : Gdouble                                           := 3.0 * Pi / 2.0;
+      From          : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 4.0;
+      Length        : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 2.0;
       Tip_Length    : Gdouble                                           := 20.0;
       Tip_Width     : Gdouble                                           := 2.0;
       Tip_Cap       : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
@@ -104,8 +104,8 @@ package Gtk.Layered.Clock_Hand is
    function Add_Clock_Hand
      (Under         : not null access Layer_Location'Class;
       Center        : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 0.0);
-      From          : Gdouble                                           := 3.0 * Pi / 4.0;
-      Length        : Gdouble                                           := 3.0 * Pi / 2.0;
+      From          : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 4.0;
+      Length        : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 2.0;
       Tip_Length    : Gdouble                                           := 20.0;
       Tip_Width     : Gdouble                                           := 2.0;
       Tip_Cap       : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
@@ -131,6 +131,7 @@ package Gtk.Layered.Clock_Hand is
    --
    function Get_Bulb_Position (Layer : Clock_Hand_Layer)
                                return Gdouble;
+
    --
    -- Get_Bulb_Radius -- The bulb radius
    --
@@ -141,6 +142,7 @@ package Gtk.Layered.Clock_Hand is
    --    The radius
    --
    function Get_Bulb_Radius (Layer : Clock_Hand_Layer) return Gdouble;
+
    --
    -- Get_Bulb_Width -- The bulb line width
    --
@@ -151,6 +153,7 @@ package Gtk.Layered.Clock_Hand is
    --    The radius
    --
    function Get_Bulb_Width (Layer : Clock_Hand_Layer) return Gdouble;
+
    --
    -- Get_Center -- Center of the needle
    --
@@ -173,6 +176,7 @@ package Gtk.Layered.Clock_Hand is
    --    The needle's color
    --
    function Get_Color (Layer : Clock_Hand_Layer) return Gdk.Color.Gdk_Color;
+
    --
    -- Get_From -- The angle (position) of the lowest value
    --
@@ -183,6 +187,7 @@ package Gtk.Layered.Clock_Hand is
    --    The angle
    --
    function Get_From (Layer : Clock_Hand_Layer) return Gdouble;
+
    --
    -- Get_Length -- The angular length of the needle positions
    --
@@ -193,6 +198,7 @@ package Gtk.Layered.Clock_Hand is
    --    The angle
    --
    function Get_Length (Layer : Clock_Hand_Layer) return Gdouble;
+
    --
    -- Get_Rear -- The parameters of the needle's rear end
    --
@@ -203,6 +209,7 @@ package Gtk.Layered.Clock_Hand is
    --    The parameters of the needle's rear end
    --
    function Get_Rear (Layer : Clock_Hand_Layer) return End_Parameters;
+
    --
    -- Get_Tip -- The parameters of the needle's tip
    --
@@ -213,6 +220,7 @@ package Gtk.Layered.Clock_Hand is
    --    The parameters of the needle's tip
    --
    function Get_Tip (Layer : Clock_Hand_Layer) return End_Parameters;
+
    --
    -- Set -- Parameters of the arc
    --
@@ -322,8 +330,8 @@ private
          Bulb_Width    : Gdouble;
          Color         : Gdk.Color.Gdk_Color;
          Adjustment    : Gtk.Adjustment.Gtk_Adjustment;
-         Changed       : Handler_Id;
-         Value_Changed : Handler_Id;
+         Changed       : Gtk.Handlers.Handler_Id;
+         Value_Changed : Gtk.Handlers.Handler_Id;
          Scaled        : Boolean := False;
          Updated       : Boolean := True;
          pragma Atomic (Value);

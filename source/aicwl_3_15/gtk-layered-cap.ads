@@ -26,75 +26,78 @@
 -- __________________________________________________________________ --
 
 with Gtk.Enums;
-with Gtk.Layered.Abstract_Bordered;  use Gtk.Layered.Abstract_Bordered;
+with Gtk.Layered.Abstract_Bordered;
 with Gtk.Missed;
 
 package Gtk.Layered.Cap is
---
--- Cap_Layer -- A layer shaped as an round cap
---
-   type Cap_Layer (<>) is new Abstract_Bordered_Layer with private;
---
--- Add_Cap -- Add a cap
---
---    Under         - The layer or widget where to place the cap under
---    Center        - Of the cap
---    Radius        - The cap radius
---    From          - The color in upper left corner
---    To            - The color in lower right corner
---    Border_Width  - Border width
---    Border_Depth  - Border depth
---    Border_Color  - The border color
---    Border_Shadow - The border shape
---    Deepened      - The border depth is increased with the parent
---    Scaled        - The layer is scaled together with the parent
---    Widened       - The border line is widened with the parent
---
--- When Scaled is true the cap is scaled to fit the parent  widget.  The
--- scaling is performed as follows:
---
--- (o)  The center's X is multiplied by the widget's width and placed in
---      the coorinate system centered in the widget's center;
--- (o)  The  center's  Y is multiplied by the widget's height and placed
---      in the coorinate system centered in the widget's center;
--- (o)  The cap radius is multiplied by  the  minimum  of  the  widget's
---      height and width.
---
--- Returns :
---
---    The layer (optional)
---
--- Exceptions :
---
---    Constraint_Error - Wrong parameters
---
+
+   --
+   -- Cap_Layer -- A layer shaped as an round cap
+   --
+   type Cap_Layer (<>) is
+     new Gtk.Layered.Abstract_Bordered.Abstract_Bordered_Layer with private;
+
+   --
+   -- Add_Cap -- Add a cap
+   --
+   --    Under         - The layer or widget where to place the cap under
+   --    Center        - Of the cap
+   --    Radius        - The cap radius
+   --    From          - The color in upper left corner
+   --    To            - The color in lower right corner
+   --    Border_Width  - Border width
+   --    Border_Depth  - Border depth
+   --    Border_Color  - The border color
+   --    Border_Shadow - The border shape
+   --    Deepened      - The border depth is increased with the parent
+   --    Scaled        - The layer is scaled together with the parent
+   --    Widened       - The border line is widened with the parent
+   --
+   -- When Scaled is true the cap is scaled to fit the parent  widget.  The
+   -- scaling is performed as follows:
+   --
+   -- (o)  The center's X is multiplied by the widget's width and placed in
+   --      the coorinate system centered in the widget's center;
+   -- (o)  The  center's  Y is multiplied by the widget's height and placed
+   --      in the coorinate system centered in the widget's center;
+   -- (o)  The cap radius is multiplied by  the  minimum  of  the  widget's
+   --      height and width.
+   --
+   -- Returns :
+   --
+   --    The layer (optional)
+   --
+   -- Exceptions :
+   --
+   --    Constraint_Error - Wrong parameters
+   --
    procedure Add_Cap
      (Under         : not null access Layer_Location'Class;
-      Center        : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
-      Radius        : Gdouble                    := 1.0;
-      From          : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (1.0, 1.0, 1.0);
-      To            : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.5, 0.5, 0.5);
-      Border_Width  : Gdouble                    := 0.0;
-      Border_Depth  : Gdouble                    := 1.0;
-      Border_Color  : Border_Color_Type          := Default_Color;
-      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type  := Gtk.Enums.Shadow_Out;
-      Deepened      : Boolean                    := False;
-      Scaled        : Boolean                    := False;
-      Widened       : Boolean                    := False);
+      Center        : Cairo.Ellipses.Cairo_Tuple                      := (0.0, 0.0);
+      Radius        : Gdouble                                         := 1.0;
+      From          : Gdk.Color.Gdk_Color                             := Gtk.Missed.RGB (1.0, 1.0, 1.0);
+      To            : Gdk.Color.Gdk_Color                             := Gtk.Missed.RGB (0.5, 0.5, 0.5);
+      Border_Width  : Gdouble                                         := 0.0;
+      Border_Depth  : Gdouble                                         := 1.0;
+      Border_Color  : Gtk.Layered.Abstract_Bordered.Border_Color_Type := Gtk.Layered.Abstract_Bordered.Default_Color;
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type                       := Gtk.Enums.Shadow_Out;
+      Deepened      : Boolean                                         := False;
+      Scaled        : Boolean                                         := False;
+      Widened       : Boolean                                         := False);
 
    function Add_Cap
      (Under         : not null access Layer_Location'Class;
-      Center        : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
-      Radius        : Gdouble                    := 1.0;
-      From          : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (1.0, 1.0, 1.0);
-      To            : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.5, 0.5, 0.5);
-      Border_Width  : Gdouble                    := 0.0;
-      Border_Depth  : Gdouble                    := 1.0;
-      Border_Color  : Border_Color_Type          := Default_Color;
-      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type  := Gtk.Enums.Shadow_Out;
-      Deepened      : Boolean                    := False;
-      Scaled        : Boolean                    := False;
-      Widened       : Boolean                    := False)
+      Center        : Cairo.Ellipses.Cairo_Tuple                      := (0.0, 0.0);
+      Radius        : Gdouble                                         := 1.0;
+      From          : Gdk.Color.Gdk_Color                             := Gtk.Missed.RGB (1.0, 1.0, 1.0);
+      To            : Gdk.Color.Gdk_Color                             := Gtk.Missed.RGB (0.5, 0.5, 0.5);
+      Border_Width  : Gdouble                                         := 0.0;
+      Border_Depth  : Gdouble                                         := 1.0;
+      Border_Color  : Gtk.Layered.Abstract_Bordered.Border_Color_Type := Gtk.Layered.Abstract_Bordered.Default_Color;
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type                       := Gtk.Enums.Shadow_Out;
+      Deepened      : Boolean                                         := False;
+      Scaled        : Boolean                                         := False;
+      Widened       : Boolean                                         := False)
       return not null access Cap_Layer;
 
    --
@@ -158,15 +161,16 @@ package Gtk.Layered.Cap is
    --
    --    Constraint_Error - Wrong parameters
    --
-   procedure Set (Layer         : in out Cap_Layer;
-                  Center        : Cairo.Ellipses.Cairo_Tuple;
-                  Radius        : Gdouble;
-                  From          : Gdk.Color.Gdk_Color;
-                  To            : Gdk.Color.Gdk_Color;
-                  Border_Width  : Gdouble;
-                  Border_Depth  : Gdouble;
-                  Border_Color  : Border_Color_Type;
-                  Border_Shadow : Gtk.Enums.Gtk_Shadow_Type);
+   procedure Set
+     (Layer         : in out Cap_Layer;
+      Center        : Cairo.Ellipses.Cairo_Tuple;
+      Radius        : Gdouble;
+      From          : Gdk.Color.Gdk_Color;
+      To            : Gdk.Color.Gdk_Color;
+      Border_Width  : Gdouble;
+      Border_Depth  : Gdouble;
+      Border_Color  : Gtk.Layered.Abstract_Bordered.Border_Color_Type;
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type);
 
    overriding function Add
      (Under  : not null access Layer_Location'Class;
@@ -178,31 +182,29 @@ package Gtk.Layered.Cap is
       Context : Cairo.Cairo_Context;
       Area    : Gdk.Rectangle.Gdk_Rectangle);
 
-   overriding
-   procedure Finalize (Layer : in out Cap_Layer);
+   overriding procedure Finalize (Layer : in out Cap_Layer);
 
-   overriding
-   function Get_Properties_Number (Layer : Cap_Layer) return Natural;
+   overriding function Get_Properties_Number (Layer : Cap_Layer) return Natural;
 
-   overriding
-   function Get_Property_Specification (Layer    : Cap_Layer;
-                                        Property : Positive) return Param_Spec;
+   overriding function Get_Property_Specification
+     (Layer    : Cap_Layer;
+      Property : Positive) return Param_Spec;
 
    overriding function Get_Property_Value
      (Layer    : Cap_Layer;
       Property : Positive) return Glib.Values.GValue;
 
-   overriding
-   procedure Move (Layer  : in out Cap_Layer;
-                   Offset : Cairo.Ellipses.Cairo_Tuple);
+   overriding procedure Move
+     (Layer  : in out Cap_Layer;
+      Offset : Cairo.Ellipses.Cairo_Tuple);
 
    overriding procedure Restore
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Layer  : in out Cap_Layer);
 
-   overriding
-   procedure Scale (Layer  : in out Cap_Layer;
-                    Factor : Gdouble);
+   overriding procedure Scale
+     (Layer  : in out Cap_Layer;
+      Factor : Gdouble);
 
    overriding procedure Set_Contents_Path
      (Layer   : in out Cap_Layer;
@@ -220,7 +222,8 @@ package Gtk.Layered.Cap is
 
 private
 
-   type Cap_Layer is new Abstract_Bordered_Layer with
+   type Cap_Layer is
+     new Gtk.Layered.Abstract_Bordered.Abstract_Bordered_Layer with
       record
          Center  : Cairo.Ellipses.Cairo_Tuple;
          Radius  : Gdouble;

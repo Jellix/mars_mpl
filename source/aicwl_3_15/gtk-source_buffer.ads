@@ -240,7 +240,7 @@ package Gtk.Source_Buffer is
 --
    function Get_Max_Undo_Levels
             (  Buffer : not null access Gtk_Source_Buffer_Record
-            )  return GInt;
+            )  return Gint;
 --
 -- Get_Source_Marks_At_Line -- Get source marks by line number
 --
@@ -254,12 +254,12 @@ package Gtk.Source_Buffer is
 --
    function Get_Source_Marks_At_Line
             (  Buffer   : not null access Gtk_Source_Buffer_Record;
-               Line     : GInt;
+               Line     : Gint;
                Category : UTF8_String
             )  return Gtk_Source_Marks_Array;
    function Get_Source_Marks_At_Line
             (  Buffer   : not null access Gtk_Source_Buffer_Record;
-               Line     : GInt
+               Line     : Gint
             )  return Gtk_Source_Marks_Array;
 --
 -- Get_Source_Marks_At_Iter -- Get source marks by iterator
@@ -428,7 +428,7 @@ package Gtk.Source_Buffer is
 --
    procedure Set_Max_Undo_Levels
              (  Buffer : not null access Gtk_Source_Buffer_Record;
-                Max_Undo_Levels : GInt := -1
+                Max_Undo_Levels : Gint := -1
              );
 --
 -- Set_Style_Scheme -- Sets style scheme used by the buffer

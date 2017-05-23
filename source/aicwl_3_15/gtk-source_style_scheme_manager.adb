@@ -25,7 +25,7 @@
 --  executable file might be covered by the GNU Public License.       --
 --____________________________________________________________________--
 
-with GLib.Chars_Ptr_Vectors;  use GLib.Chars_Ptr_Vectors;
+with Glib.Chars_Ptr_Vectors;  use Glib.Chars_Ptr_Vectors;
 with Interfaces.C;            use Interfaces.C;
 with System;                  use System;
 
@@ -38,7 +38,7 @@ package body Gtk.Source_Style_Scheme_Manager is
                           Gtk_Source_Style_Scheme_Manager_Record;
                 Path    : UTF8_String
              )  is
-      procedure Internal (Manager : Address; Path : Char_Array);
+      procedure Internal (Manager : Address; Path : char_array);
       pragma Import
              (  C,
                 Internal,
@@ -82,7 +82,7 @@ package body Gtk.Source_Style_Scheme_Manager is
                          Gtk_Source_Style_Scheme_Manager_Record;
                Scheme  : UTF8_String
             )  return Gtk_Source_Style_Scheme is
-      function Internal (Manager : Address; ID : Char_Array)
+      function Internal (Manager : Address; ID : char_array)
          return Address;
       pragma Import
              (  C,
@@ -102,7 +102,7 @@ package body Gtk.Source_Style_Scheme_Manager is
    function Get_Scheme_IDs
             (  Manager : not null access
                          Gtk_Source_Style_Scheme_Manager_Record
-            )  return Chars_Ptr_Array is
+            )  return chars_ptr_array is
       function Internal (Manager : Address) return Chars_Ptr_Ptr;
       pragma Import
              (  C,
@@ -116,7 +116,7 @@ package body Gtk.Source_Style_Scheme_Manager is
    function Get_Search_Path
             (  Manager : not null access
                          Gtk_Source_Style_Scheme_Manager_Record
-            )  return Chars_Ptr_Array is
+            )  return chars_ptr_array is
       function Internal (Manager : Address) return Chars_Ptr_Ptr;
       pragma Import
              (  C,
@@ -161,7 +161,7 @@ package body Gtk.Source_Style_Scheme_Manager is
                           Gtk_Source_Style_Scheme_Manager_Record;
                 Path    : UTF8_String
              )  is
-      procedure Internal (Manager : Address; Path : Char_Array);
+      procedure Internal (Manager : Address; Path : char_array);
       pragma Import
              (  C,
                 Internal,
@@ -174,15 +174,15 @@ package body Gtk.Source_Style_Scheme_Manager is
    procedure Set_Search_Path
              (  Manager : not null access
                           Gtk_Source_Style_Scheme_Manager_Record;
-                Dirs    : Chars_Ptr_Array
+                Dirs    : chars_ptr_array
              )  is
-      procedure Internal (Manager : Address; Dirs : Chars_Ptr_Array);
+      procedure Internal (Manager : Address; Dirs : chars_ptr_array);
       pragma Import
              (  C,
                 Internal,
                 "gtk_source_style_scheme_manager_set_search_path"
              );
-      List : Chars_Ptr_Array (Dirs'First..Dirs'Last + 1);
+      List : chars_ptr_array (Dirs'First..Dirs'Last + 1);
    begin
       List (Dirs'First..Dirs'Last) := Dirs;
       List (List'Last) := Null_Ptr;  -- NUL at the end of Dirs

@@ -25,7 +25,7 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Gtk.Enums;  use Gtk.Enums;
+with Gtk.Enums;
 
 package Gtk.Layered.Abstract_Bordered is
 
@@ -41,7 +41,9 @@ package Gtk.Layered.Abstract_Bordered is
          when False => Color : Gdk.Color.Gdk_Color;
       end case;
    end record;
+
    Default_Color : constant Border_Color_Type := (Style_Color => True);
+
    --
    -- Abstract_Bordered_Layer -- An abstract layer with a border
    --
@@ -49,6 +51,7 @@ package Gtk.Layered.Abstract_Bordered is
      abstract new Abstract_Layer
      and Scalable_Layer
      and Widened_Layer with private;
+
    --
    -- Foreground_Layer -- A  foreground  layer  automatically  added by the
    --                     border  layer.  The  border  widget  changes  the
@@ -59,6 +62,7 @@ package Gtk.Layered.Abstract_Bordered is
    -- will not be scaled with the border.
    --
    type Foreground_Layer is new Abstract_Layer with private;
+
    --
    -- Draw_Contents -- Draw the layer contents
    --
@@ -125,7 +129,7 @@ package Gtk.Layered.Abstract_Bordered is
    --    The shadow type
    --
    function Get_Border_Shadow (Layer : Abstract_Bordered_Layer)
-                               return Gtk_Shadow_Type;
+                               return Gtk.Enums.Gtk_Shadow_Type;
 
    --
    -- Get_Border_Width -- The border width
@@ -181,7 +185,7 @@ package Gtk.Layered.Abstract_Bordered is
       Border_Width  : Gdouble;
       Border_Depth  : Gdouble;
       Border_Color  : Border_Color_Type;
-      Border_Shadow : Gtk_Shadow_Type);
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type);
 
    --
    -- Set_Aspected -- Border behavior when the parent widget is resized
@@ -303,18 +307,18 @@ private
      and Widened_Layer with
       record
          Foreground    : Foreground_Layer_Ptr;
-         Border_Color  : Border_Color_Type := (Style_Color => True);
-         Border_Shadow : Gtk_Shadow_Type   := Shadow_None;
-         Border_Width  : Gdouble  := 0.0;
-         Border_Depth  : Gdouble  := 1.0;
-         Aspected      : Boolean := False;
-         Scaled        : Boolean := False;
-         Widened       : Boolean := False;
-         Deepened      : Boolean := False;
-         Updated       : Boolean := True;
+         Border_Color  : Border_Color_Type         := (Style_Color => True);
+         Border_Shadow : Gtk.Enums.Gtk_Shadow_Type := Gtk.Enums.Shadow_None;
+         Border_Width  : Gdouble                   := 0.0;
+         Border_Depth  : Gdouble                   := 1.0;
+         Aspected      : Boolean                   := False;
+         Scaled        : Boolean                   := False;
+         Widened       : Boolean                   := False;
+         Deepened      : Boolean                   := False;
+         Updated       : Boolean                   := True;
       end record;
-   overriding
-   procedure Remove (Layer : in out Abstract_Bordered_Layer);
+
+   overriding procedure Remove (Layer : in out Abstract_Bordered_Layer);
 
    type Foreground_Layer is new Abstract_Layer with record
       Size   : Gdouble;

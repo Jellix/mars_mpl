@@ -41,8 +41,8 @@ package body Gtk.Source_Buffer is
       function Internal
                (  Buffer   : Address;
                   Iter     : Address;
-                  Category : Char_Array
-               )  return GBoolean;
+                  Category : char_array
+               )  return Gboolean;
       pragma Import
              (  C,
                 Internal,
@@ -66,7 +66,7 @@ package body Gtk.Source_Buffer is
                (  Buffer   : Address;
                   Iter     : Address;
                   Category : Address := Null_Address
-               )  return GBoolean;
+               )  return Gboolean;
       pragma Import
              (  C,
                 Internal,
@@ -87,7 +87,7 @@ package body Gtk.Source_Buffer is
       Set_Object (List, Pointer);
       declare
          Result : Gtk_Source_Marks_Array (1..Natural (Length (List)));
-         This   : GSList := List;
+         This   : GSlist := List;
       begin
          for Index in Result'Range loop
             Result (Index) := Get_Data (This);
@@ -114,7 +114,7 @@ package body Gtk.Source_Buffer is
    function Can_Redo
             (  Buffer : not null access Gtk_Source_Buffer_Record
             )  return Boolean is
-      function Internal (Buffer : Address) return GBoolean;
+      function Internal (Buffer : Address) return Gboolean;
       pragma Import (C, Internal, "gtk_source_buffer_can_redo");
    begin
       return 0 /= Internal (Get_Object (Buffer));
@@ -123,7 +123,7 @@ package body Gtk.Source_Buffer is
    function Can_Undo
             (  Buffer : not null access Gtk_Source_Buffer_Record
             )  return Boolean is
-      function Internal (Buffer : Address) return GBoolean;
+      function Internal (Buffer : Address) return Gboolean;
       pragma Import (C, Internal, "gtk_source_buffer_can_undo");
    begin
       return 0 /= Internal (Get_Object (Buffer));
@@ -137,8 +137,8 @@ package body Gtk.Source_Buffer is
             )  return Gtk_Source_Mark is
       function Internal
                (  Buffer   : Address;
-                  Name     : Char_Array;
-                  Category : Char_Array;
+                  Name     : char_array;
+                  Category : char_array;
                   Where    : Gtk_Text_Iter
                )  return Address;
       pragma Import
@@ -169,7 +169,7 @@ package body Gtk.Source_Buffer is
       function Internal
                (  Buffer   : Address;
                   Name     : Address;
-                  Category : Char_Array;
+                  Category : char_array;
                   Where    : Gtk_Text_Iter
                )  return Address;
       pragma Import
@@ -232,8 +232,8 @@ package body Gtk.Source_Buffer is
       function Internal
                (  Buffer   : Address;
                   Iter     : Address;
-                  Category : Char_Array
-               )  return GBoolean;
+                  Category : char_array
+               )  return Gboolean;
       pragma Import
              (  C,
                 Internal,
@@ -257,7 +257,7 @@ package body Gtk.Source_Buffer is
                (  Buffer   : Address;
                   Iter     : Address;
                   Category : Address := Null_Address
-               )  return GBoolean;
+               )  return Gboolean;
       pragma Import
              (  C,
                 Internal,
@@ -276,7 +276,7 @@ package body Gtk.Source_Buffer is
    function Get_Highlight_Matching_Brackets
             (  Buffer : not null access Gtk_Source_Buffer_Record
             )  return Boolean is
-      function Internal (Buffer : Address) return GBoolean;
+      function Internal (Buffer : Address) return Gboolean;
       pragma Import
              (  C,
                 Internal,
@@ -289,7 +289,7 @@ package body Gtk.Source_Buffer is
    function Get_Highlight_Syntax
             (  Buffer : not null access Gtk_Source_Buffer_Record
             )  return Boolean is
-      function Internal (Buffer : Address) return GBoolean;
+      function Internal (Buffer : Address) return Gboolean;
       pragma Import
              (  C, Internal, "gtk_source_buffer_get_highlight_syntax"
              );
@@ -314,8 +314,8 @@ package body Gtk.Source_Buffer is
 
    function Get_Max_Undo_Levels
             (  Buffer : not null access Gtk_Source_Buffer_Record
-            )  return GInt is
-      function Internal (Buffer : Address) return GInt;
+            )  return Gint is
+      function Internal (Buffer : Address) return Gint;
       pragma Import
              (  C, Internal, "gtk_source_buffer_get_max_undo_levels"
              );
@@ -325,13 +325,13 @@ package body Gtk.Source_Buffer is
 
    function Get_Source_Marks_At_Line
             (  Buffer   : not null access Gtk_Source_Buffer_Record;
-               Line     : GInt;
+               Line     : Gint;
                Category : UTF8_String
             )  return Gtk_Source_Marks_Array is
       function Internal
                (  Buffer   : Address;
-                  Line     : GInt;
-                  Category : Char_Array
+                  Line     : Gint;
+                  Category : char_array
                )  return Address;
       pragma Import
              (  C,
@@ -347,11 +347,11 @@ package body Gtk.Source_Buffer is
 
    function Get_Source_Marks_At_Line
             (  Buffer   : not null access Gtk_Source_Buffer_Record;
-               Line     : GInt
+               Line     : Gint
             )  return Gtk_Source_Marks_Array is
       function Internal
                (  Buffer   : Address;
-                  Line     : GInt;
+                  Line     : Gint;
                   Category : Address := Null_Address
                )  return Address;
       pragma Import
@@ -371,7 +371,7 @@ package body Gtk.Source_Buffer is
       function Internal
                (  Buffer   : Address;
                   Iter     : Gtk_Text_Iter;
-                  Category : Char_Array
+                  Category : char_array
                )  return Address;
       pragma Import
              (  C,
@@ -492,7 +492,7 @@ package body Gtk.Source_Buffer is
                 (  Buffer   : Address;
                    Start    : Gtk_Text_Iter;
                    Stop     : Gtk_Text_Iter;
-                   Category : Char_Array
+                   Category : char_array
                 );
       pragma Import
              (  C,
@@ -527,7 +527,7 @@ package body Gtk.Source_Buffer is
              (  Buffer    : not null access Gtk_Source_Buffer_Record;
                 Highlight : Boolean
              )  is
-      procedure Internal (Buffer : Address; Highlight : GBoolean);
+      procedure Internal (Buffer : Address; Highlight : Gboolean);
       pragma Import
              (  C, Internal, "gtk_source_buffer_set_highlight_syntax"
              );
@@ -543,7 +543,7 @@ package body Gtk.Source_Buffer is
              (  Buffer    : not null access Gtk_Source_Buffer_Record;
                 Highlight : Boolean
              )  is
-      procedure Internal (Buffer : Address; Highlight : GBoolean);
+      procedure Internal (Buffer : Address; Highlight : Gboolean);
       pragma Import
              (  C,
                 Internal,
@@ -573,9 +573,9 @@ package body Gtk.Source_Buffer is
 
    procedure Set_Max_Undo_Levels
              (  Buffer : not null access Gtk_Source_Buffer_Record;
-                Max_Undo_Levels : GInt := -1
+                Max_Undo_Levels : Gint := -1
              )  is
-      procedure Internal (Buffer : Address; Max_Undo_Levels : GInt);
+      procedure Internal (Buffer : Address; Max_Undo_Levels : Gint);
       pragma Import
              (  C,
                 Internal,

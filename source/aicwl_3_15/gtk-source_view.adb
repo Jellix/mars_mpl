@@ -36,7 +36,7 @@ package body Gtk.Source_View is
    function Get_Auto_Indent
             (  Widget : not null access Gtk_Source_View_Record
             )  return Boolean is
-      function Internal (Widget : Address) return GBoolean;
+      function Internal (Widget : Address) return Gboolean;
       pragma Import (C, Internal, "gtk_source_view_get_auto_indent");
    begin
       return 0 /= Internal (Get_Object (Widget));
@@ -45,7 +45,7 @@ package body Gtk.Source_View is
    function Get_Draw_Spaces
             (  Widget : not null access Gtk_Source_View_Record
             )  return Gtk_Source_Draw_Spaces_Flags is
-      function Internal (Widget : Address) return Unsigned;
+      function Internal (Widget : Address) return unsigned;
       pragma Import (C, Internal, "gtk_source_view_set_draw_spaces");
    begin
       return
@@ -57,7 +57,7 @@ package body Gtk.Source_View is
    function Get_Highlight_Current_Line
             (  Widget : not null access Gtk_Source_View_Record
             )  return Boolean is
-      function Internal (Widget : Address) return GBoolean;
+      function Internal (Widget : Address) return Gboolean;
       pragma Import
              (  C,
                 Internal,
@@ -70,7 +70,7 @@ package body Gtk.Source_View is
    function Get_Indent_On_Tab
             (  Widget : not null access Gtk_Source_View_Record
             )  return Boolean is
-      function Internal (Widget : Address) return GBoolean;
+      function Internal (Widget : Address) return Gboolean;
       pragma Import (C, Internal, "gtk_source_view_get_indent_on_tab");
    begin
       return 0 /= Internal (Get_Object (Widget));
@@ -78,8 +78,8 @@ package body Gtk.Source_View is
 
    function Get_Indent_Width
             (  Widget : not null access Gtk_Source_View_Record
-            )  return GInt is
-      function Internal (Widget : Address) return GInt;
+            )  return Gint is
+      function Internal (Widget : Address) return Gint;
       pragma Import (C, Internal, "gtk_source_view_get_indent_width");
    begin
       return Internal (Get_Object (Widget));
@@ -88,7 +88,7 @@ package body Gtk.Source_View is
    function Get_Insert_Spaces_Instead_Of_Tabs
             (  Widget : not null access Gtk_Source_View_Record
             )  return Boolean is
-      function Internal (Widget : Address) return GBoolean;
+      function Internal (Widget : Address) return Gboolean;
       pragma Import
              (  C,
                 Internal,
@@ -101,12 +101,12 @@ package body Gtk.Source_View is
    function Get_Mark_Attributes
             (  Widget   : not null access Gtk_Source_View_Record;
                Category : UTF8_String;
-               Priority : GInt
+               Priority : Gint
             )  return Gtk_Source_Mark_Atributes is
       function Internal
                (  Widget   : Address;
-                  Category : Char_Array;
-                  Priority : GInt
+                  Category : char_array;
+                  Priority : Gint
                )  return Address;
       pragma Import
              (  C,
@@ -129,8 +129,8 @@ package body Gtk.Source_View is
 
    function Get_Right_Margin_Position
             (  Widget : not null access Gtk_Source_View_Record
-            )  return GUInt is
-      function Internal (Widget : Address) return GUInt;
+            )  return Guint is
+      function Internal (Widget : Address) return Guint;
       pragma Import
              (  C,
                 Internal,
@@ -143,7 +143,7 @@ package body Gtk.Source_View is
    function Get_Show_Line_Marks
             (  Widget : not null access Gtk_Source_View_Record
             )  return Boolean is
-      function Internal (Widget : Address) return GBoolean;
+      function Internal (Widget : Address) return Gboolean;
       pragma Import
              (  C,
                 Internal,
@@ -156,7 +156,7 @@ package body Gtk.Source_View is
    function Get_Show_Line_Numbers
             (  Widget : not null access Gtk_Source_View_Record
             )  return Boolean is
-      function Internal (Widget : Address) return GBoolean;
+      function Internal (Widget : Address) return Gboolean;
       pragma Import
              (  C,
                 Internal,
@@ -169,7 +169,7 @@ package body Gtk.Source_View is
    function Get_Show_Right_Margin
             (  Widget : not null access Gtk_Source_View_Record
             )  return Boolean is
-      function Internal (Widget : Address) return GBoolean;
+      function Internal (Widget : Address) return Gboolean;
       pragma Import
              (  C,
                 Internal,
@@ -182,7 +182,7 @@ package body Gtk.Source_View is
    function Get_Smart_Home_End
             (  Widget : not null access Gtk_Source_View_Record
             )  return Gtk_Source_Smart_Home_End_Type is
-      function Internal (Widget : Address) return Int;
+      function Internal (Widget : Address) return int;
       pragma Import (C, Internal, "gtk_source_view_get_smart_home_end");
    begin
       return
@@ -193,8 +193,8 @@ package body Gtk.Source_View is
 
    function Get_Tab_Width
             (  Widget : not null access Gtk_Source_View_Record
-            )  return GUInt is
-      function Internal (Widget : Address) return GUInt;
+            )  return Guint is
+      function Internal (Widget : Address) return Guint;
       pragma Import (C, Internal, "gtk_source_view_get_tab_width");
    begin
       return Internal (Get_Object (Widget));
@@ -248,7 +248,7 @@ package body Gtk.Source_View is
              (  Widget : not null access Gtk_Source_View_Record;
                 Enable : Boolean
              )  is
-      procedure Internal (Widget : Address; Enable : GBoolean);
+      procedure Internal (Widget : Address; Enable : Gboolean);
       pragma Import (C, Internal, "gtk_source_view_set_auto_indent");
    begin
       if Enable then
@@ -262,7 +262,7 @@ package body Gtk.Source_View is
              (  Widget : not null access Gtk_Source_View_Record;
                 Flags  : Gtk_Source_Draw_Spaces_Flags
              )  is
-      procedure Internal (Widget : Address; Flags : Unsigned);
+      procedure Internal (Widget : Address; Flags : unsigned);
       pragma Import (C, Internal, "gtk_source_view_set_draw_spaces");
    begin
       Internal
@@ -275,7 +275,7 @@ package body Gtk.Source_View is
              (  Widget : not null access Gtk_Source_View_Record;
                 Show   : Boolean
              )  is
-      procedure Internal (Widget : Address; Enable : GBoolean);
+      procedure Internal (Widget : Address; Enable : Gboolean);
       pragma Import
              (  C,
                 Internal,
@@ -293,7 +293,7 @@ package body Gtk.Source_View is
              (  Widget : not null access Gtk_Source_View_Record;
                 Enable : Boolean
              )  is
-      procedure Internal (Widget : Address; Enable : GBoolean);
+      procedure Internal (Widget : Address; Enable : Gboolean);
       pragma Import (C, Internal, "gtk_source_view_set_indent_on_tab");
    begin
       if Enable then
@@ -305,9 +305,9 @@ package body Gtk.Source_View is
 
    procedure Set_Indent_Width
              (  Widget : not null access Gtk_Source_View_Record;
-                Width  : GInt := -1
+                Width  : Gint := -1
              )  is
-      procedure Internal (Widget : Address; Width : GInt);
+      procedure Internal (Widget : Address; Width : Gint);
       pragma Import (C, Internal, "gtk_source_view_set_indent_width");
    begin
       Internal (Get_Object (Widget), Width);
@@ -317,7 +317,7 @@ package body Gtk.Source_View is
              (  Widget : not null access Gtk_Source_View_Record;
                 Enable : Boolean
              )  is
-      procedure Internal (Widget : Address; Enable : GBoolean);
+      procedure Internal (Widget : Address; Enable : Gboolean);
       pragma Import
              (  C,
                 Internal,
@@ -336,13 +336,13 @@ package body Gtk.Source_View is
                 Category   : UTF8_String;
                 Attributes : not null access
                              Gtk_Source_Mark_Atributes_Record'Class;
-                Priority   : GInt
+                Priority   : Gint
              )  is
       procedure Internal
                 (  Widget     : Address;
                    Category   : char_array;
                    Attributes : Address;
-                   Priority   : GInt
+                   Priority   : Gint
                 );
       pragma Import
              (  C,
@@ -360,9 +360,9 @@ package body Gtk.Source_View is
 
    procedure Set_Right_Margin_Position
              (  Widget   : not null access Gtk_Source_View_Record;
-                Position : GUInt
+                Position : Guint
              )  is
-      procedure Internal (Widget : Address; Pos : GUInt);
+      procedure Internal (Widget : Address; Pos : Guint);
       pragma Import
              (  C,
                 Internal,
@@ -376,7 +376,7 @@ package body Gtk.Source_View is
              (  Widget : not null access Gtk_Source_View_Record;
                 Show   : Boolean
              )  is
-      procedure Internal (Widget : Address; Enable : GBoolean);
+      procedure Internal (Widget : Address; Enable : Gboolean);
       pragma Import
              (  C,
                 Internal,
@@ -394,7 +394,7 @@ package body Gtk.Source_View is
              (  Widget : not null access Gtk_Source_View_Record;
                 Show   : Boolean
              )  is
-      procedure Internal (Widget : Address; Enable : GBoolean);
+      procedure Internal (Widget : Address; Enable : Gboolean);
       pragma Import
              (  C,
                 Internal,
@@ -412,7 +412,7 @@ package body Gtk.Source_View is
              (  Widget : not null access Gtk_Source_View_Record;
                 Show   : Boolean
              )  is
-      procedure Internal (Widget : Address; Enable : GBoolean);
+      procedure Internal (Widget : Address; Enable : Gboolean);
       pragma Import
              (  C,
                 Internal,
@@ -430,7 +430,7 @@ package body Gtk.Source_View is
              (  Widget : not null access Gtk_Source_View_Record;
                 Smart_Home_End  : Gtk_Source_Smart_Home_End_Type
              )  is
-      procedure Internal (Widget : Address; Smart_Home_End : Int);
+      procedure Internal (Widget : Address; Smart_Home_End : int);
       pragma Import (C, Internal, "gtk_source_view_set_smart_home_end");
    begin
       Internal
@@ -441,9 +441,9 @@ package body Gtk.Source_View is
 
    procedure Set_Tab_Width
              (  Widget : not null access Gtk_Source_View_Record;
-                Width  : GUInt
+                Width  : Guint
              )  is
-      procedure Internal (Widget : Address; Width : GUInt);
+      procedure Internal (Widget : Address; Width : Guint);
       pragma Import (C, Internal, "gtk_source_view_set_tab_width");
    begin
       Internal (Get_Object (Widget), Width);

@@ -25,16 +25,13 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Ada.Numerics;
-with Cairo.Transformations;
-with Glib.Properties.Creation;    use Glib.Properties.Creation;
-with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
-
 with Ada.Unchecked_Deallocation;
 
-package body Gtk.Layered.Rectangular_Clip_Region is
+with Cairo.Transformations;
+with Glib.Properties.Creation;
+with Gtk.Layered.Stream_IO;
 
-   Pi : constant := Ada.Numerics.Pi;
+package body Gtk.Layered.Rectangular_Clip_Region is
 
    type Layer_Property is
      (Property_Height,
@@ -203,8 +200,8 @@ package body Gtk.Layered.Rectangular_Clip_Region is
             X       => Half_Width - Radius,
             Y       => Radius - Half_Height,
             Radius  => Radius,
-            Angle1  => 3.0 * Pi / 2.0,
-            Angle2  => 2.0 * Pi);
+            Angle1  => 3.0 * Ada.Numerics.Pi / 2.0,
+            Angle2  => 2.0 * Ada.Numerics.Pi);
       end if;
       Cairo.Transformations.Line_To (Context, T, Half_Width, Half_Height);
       if Layer.Radius > 0.0 then
@@ -215,7 +212,7 @@ package body Gtk.Layered.Rectangular_Clip_Region is
             Y       => Half_Height - Radius,
             Radius  => Radius,
             Angle1  => 0.0,
-            Angle2  => Pi / 2.0);
+            Angle2  => Ada.Numerics.Pi / 2.0);
       end if;
       Cairo.Transformations.Line_To (Context, T, -Half_Width,  Half_Height);
       if Layer.Radius > 0.0 then
@@ -225,8 +222,8 @@ package body Gtk.Layered.Rectangular_Clip_Region is
             X       => Radius - Half_Width,
             Y       => Half_Height - Radius,
             Radius  => Radius,
-            Angle1  => Pi / 2.0,
-            Angle2  => Pi);
+            Angle1  => Ada.Numerics.Pi / 2.0,
+            Angle2  => Ada.Numerics.Pi);
       end if;
       Cairo.Transformations.Line_To (Context, T, -Half_Width, -Half_Height);
       if Layer.Radius > 0.0 then
@@ -236,8 +233,8 @@ package body Gtk.Layered.Rectangular_Clip_Region is
             X       => Radius - Half_Width,
             Y       => Radius - Half_Height,
             Radius  => Radius,
-            Angle1  => Pi,
-            Angle2  => 3.0 * Pi / 2.0);
+            Angle1  => Ada.Numerics.Pi,
+            Angle2  => 3.0 * Ada.Numerics.Pi / 2.0);
       end if;
       Cairo.Close_Path (Context);
       Cairo.Clip (Context);
@@ -325,7 +322,7 @@ package body Gtk.Layered.Rectangular_Clip_Region is
          case Layer_Property'Val (Property - 1) is
             when Property_Center_X =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "x",
                     Nick    => "x",
                     Minimum => Gdouble'First,
@@ -334,7 +331,7 @@ package body Gtk.Layered.Rectangular_Clip_Region is
                     Blurb   => "The x-coordinate of the rectangle's center");
             when Property_Center_Y =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "y",
                     Nick    => "y",
                     Minimum => Gdouble'First,
@@ -343,7 +340,7 @@ package body Gtk.Layered.Rectangular_Clip_Region is
                     Blurb   => "The y-coordinate of the rectangle's center");
             when Property_Height =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "height",
                     Nick    => "height",
                     Minimum => 0.0,
@@ -352,7 +349,7 @@ package body Gtk.Layered.Rectangular_Clip_Region is
                     Blurb   => "The rectangle's height");
             when Property_Width =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "width",
                     Nick    => "width",
                     Minimum => 0.0,
@@ -361,11 +358,11 @@ package body Gtk.Layered.Rectangular_Clip_Region is
                     Blurb   => "The rectnagle's width");
             when Property_Angle =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "angle",
                     Nick    => "angle",
-                    Minimum => -2.0 * Pi,
-                    Maximum => 2.0 * Pi,
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
                     Default => 0.0,
                     Blurb   =>
                        "The angle of the size " &
@@ -373,7 +370,7 @@ package body Gtk.Layered.Rectangular_Clip_Region is
                        "rectangle");
             when Property_Radius =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "corner-r",
                     Nick    => "corner r",
                     Minimum => 0.0,
@@ -384,7 +381,7 @@ package body Gtk.Layered.Rectangular_Clip_Region is
                        "the corners of the rectangle");
             when Property_Scaled =>
                return
-                 Gnew_Boolean
+                 Glib.Properties.Creation.Gnew_Boolean
                    (Name    => "scaled",
                     Nick    => "scaled",
                     Default => False,
@@ -514,12 +511,12 @@ package body Gtk.Layered.Rectangular_Clip_Region is
       Angle  : Gdouble;
       Radius : Gdouble;
    begin
-      Restore (Stream, Height);
-      Restore (Stream, Width);
-      Restore (Stream, Center);
-      Restore (Stream, Angle);
-      Restore (Stream, Radius);
-      Restore (Stream, Layer.Scaled);
+      Gtk.Layered.Stream_IO.Restore (Stream, Height);
+      Gtk.Layered.Stream_IO.Restore (Stream, Width);
+      Gtk.Layered.Stream_IO.Restore (Stream, Center);
+      Gtk.Layered.Stream_IO.Restore (Stream, Angle);
+      Gtk.Layered.Stream_IO.Restore (Stream, Radius);
+      Gtk.Layered.Stream_IO.Restore (Stream, Layer.Scaled);
       Set
         (Layer          => Layer,
          Height         => Height,
@@ -615,9 +612,12 @@ package body Gtk.Layered.Rectangular_Clip_Region is
                end if;
             when Property_Angle =>
                Layer.Angle := Glib.Values.Get_Double (Value);
-               if Layer.Angle not in -2.0 * Pi .. 2.0 * Pi then
+               if
+                 Layer.Angle not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
                   Layer.Angle :=
-                    Gdouble'Remainder (Layer.Angle, 2.0 * Pi);
+                    Gdouble'Remainder (Layer.Angle, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Scaled =>
                Layer.Scaled := Glib.Values.Get_Boolean (Value);
@@ -646,12 +646,12 @@ package body Gtk.Layered.Rectangular_Clip_Region is
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Layer  : Rectangular_Clip_Region_On_Layer) is
    begin
-      Store (Stream, Layer.Height);
-      Store (Stream, Layer.Width);
-      Store (Stream, Layer.Center);
-      Store (Stream, Layer.Angle);
-      Store (Stream, Layer.Radius);
-      Store (Stream, Layer.Drawn, Layer.Scaled);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Height);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Width);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Center);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Angle);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Radius);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Drawn, Layer.Scaled);
    end Store;
 
 end Gtk.Layered.Rectangular_Clip_Region;

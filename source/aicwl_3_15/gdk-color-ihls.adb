@@ -28,9 +28,9 @@
 with Ada.Numerics.Generic_Elementary_Functions;
 
 package body Gdk.Color.IHLS is
+
    package Elementary_Functions is
-      new Ada.Numerics.Generic_Elementary_Functions (Gdk_Stimulus);
-   use Elementary_Functions;
+     new Ada.Numerics.Generic_Elementary_Functions (Gdk_Stimulus);
 
    Hue_Range   : constant Gdk_Stimulus :=
                     Gdk_Stimulus (Gdk_Hue'Modulus);
@@ -39,7 +39,7 @@ package body Gdk.Color.IHLS is
    Hue_Sixth   : constant Gdk_Stimulus := Hue_Range / 6.0;
    Hue_Eps     : constant Gdk_Stimulus := 1.0 / Hue_Range;
    RGB_Max     : constant Gdk_Stimulus := Gdk_Stimulus (Guint16'Last);
-   S_Factor    : constant Gdk_Stimulus := Sqrt (3.0) / 2.0;
+   S_Factor    : constant Gdk_Stimulus := Elementary_Functions.Sqrt (3.0) / 2.0;
    S_Eps       : constant Gdk_Stimulus :=
                     1.0 / Gdk_Stimulus (Gdk_Saturation'Modulus);
 --
@@ -90,7 +90,7 @@ package body Gdk.Color.IHLS is
             Hue := Hue_Quarter;
          end if;
       else
-         Hue := Arctan (S_Factor * (G - B), Hue, Hue_Range);
+         Hue := Elementary_Functions.Arctan (S_Factor * (G - B), Hue, Hue_Range);
       end if;
       if Hue < 0.0 then
          return Hue_Range + Hue;
@@ -287,7 +287,7 @@ package body Gdk.Color.IHLS is
       if C1 >= Hue_Sixth then
          C1 := C1 - Hue_Sixth;
       end if;
-      C2 := Sin (Hue_Third - C1, Hue_Range);
+      C2 := Elementary_Functions.Sin (Hue_Third - C1, Hue_Range);
       if C2 < S_Eps then
          Red   := Luminance;
          Green := Luminance;
@@ -297,8 +297,8 @@ package body Gdk.Color.IHLS is
             C : constant Gdk_Stimulus :=
                    S_Factor * Gdk_Stimulus (Color.Saturation) / C2;
          begin
-            C1 :=  C * Cos (Hue, Hue_Range);
-            C2 := -C * Sin (Hue, Hue_Range);
+            C1 :=  C * Elementary_Functions.Cos (Hue, Hue_Range);
+            C2 := -C * Elementary_Functions.Sin (Hue, Hue_Range);
             Red   := Luminance + 0.7875 * C1 + 0.3714 * C2;
             Green := Luminance - 0.2125 * C1 - 0.2059 * C2;
             Blue  := Luminance - 0.2125 * C1 + 0.9488 * C2;
@@ -360,7 +360,7 @@ package body Gdk.Color.IHLS is
       if C1 >= Hue_Sixth then
          C1 := C1 - Hue_Sixth;
       end if;
-      C2 := Sin (Hue_Third - C1, Hue_Range);
+      C2 := Elementary_Functions.Sin (Hue_Third - C1, Hue_Range);
       if C2 < S_Eps then
          Red   := Luminance;
          Green := Luminance;
@@ -371,8 +371,8 @@ package body Gdk.Color.IHLS is
             C : Gdk_Stimulus :=
                    S_Factor * Gdk_Stimulus (Color.Saturation) / C2;
          begin
-            C1 :=  Cos (Hue, Hue_Range);
-            C2 := -Sin (Hue, Hue_Range);
+            C1 :=  Elementary_Functions.Cos (Hue, Hue_Range);
+            C2 := -Elementary_Functions.Sin (Hue, Hue_Range);
             Red   :=  0.7875 * C1 + 0.3714 * C2;
             Green := -0.2125 * C1 - 0.2059 * C2;
             Blue  := -0.2125 * C1 + 0.9488 * C2;

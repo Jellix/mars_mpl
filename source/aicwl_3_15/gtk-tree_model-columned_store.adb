@@ -26,7 +26,7 @@
 --____________________________________________________________________--
 
 with Ada.Exceptions;        use Ada.Exceptions;
-with GLib.Messages;         use GLib.Messages;
+with Glib.Messages;         use Glib.Messages;
 with Gtk.Missed;            use Gtk.Missed;
 with Interfaces.C.Strings;  use Interfaces.C.Strings;
 with System;                use System;
@@ -46,10 +46,10 @@ package body Gtk.Tree_Model.Columned_Store is
    end Where;
 
    function From_Addr is
-      new Ada.Unchecked_Conversion (Address, GInt);
+      new Ada.Unchecked_Conversion (Address, Gint);
 
    function To_Addr is
-      new Ada.Unchecked_Conversion (GInt, Address);
+      new Ada.Unchecked_Conversion (Gint, Address);
 
    procedure Emit_Root_Changed
              (  Store : access Gtk_Columned_Store_Record'Class
@@ -60,7 +60,7 @@ package body Gtk.Tree_Model.Columned_Store is
       Internal (Get_Object (Store), Root_Changed);
    end Emit_Root_Changed;
 
-   procedure Set_Path (Path : in out Gtk_Tree_Path; Row : GInt) is
+   procedure Set_Path (Path : in out Gtk_Tree_Path; Row : Gint) is
    begin
       Prepend_Index (Path, Row);
       if Up (Path) then
@@ -70,7 +70,7 @@ package body Gtk.Tree_Model.Columned_Store is
 
    function Compose_Columned
             (  Model : not null access Gtk_Columned_Store_Record'Class;
-               Row   : GInt
+               Row   : Gint
             )  return Gtk_Tree_Iter is
    begin
       if Row in 0..Model.Rows - 1 then
@@ -87,8 +87,8 @@ package body Gtk.Tree_Model.Columned_Store is
 
    function Compose_Reference
             (  Model  : not null access Gtk_Columned_Store_Record'Class;
-               Row    : GInt;
-               Column : GInt
+               Row    : Gint;
+               Column : Gint
             )  return Gtk_Tree_Iter is
    begin
       if Row >= Model.Rows or else Column >= Model.Columns then
@@ -133,7 +133,7 @@ package body Gtk.Tree_Model.Columned_Store is
    function Get_Position
             (  Model : not null access Gtk_Columned_Store_Record'Class;
                Path  : Gtk_Tree_Path
-            )  return GInt is
+            )  return Gint is
    begin
       if Model.Reference = Null_Gtk_Tree_Model then
          return -1;
@@ -146,7 +146,7 @@ package body Gtk.Tree_Model.Columned_Store is
          return -1;
       end if;
       declare
-         Indices : GInt_Array renames Get_Indices (Path);
+         Indices : Gint_Array renames Get_Indices (Path);
       begin
          if Model.Path = Null_Gtk_Tree_Path then
             if Indices'Length /= 1 then
@@ -167,7 +167,7 @@ package body Gtk.Tree_Model.Columned_Store is
    procedure Split_Columned
              (  Model : not null access Gtk_Columned_Store_Record'Class;
                 Iter  : Gtk_Tree_Iter;
-                Row   : out GInt
+                Row   : out Gint
              )  is
    begin
       if Model.Reference = Null_Gtk_Tree_Model then
@@ -202,8 +202,8 @@ package body Gtk.Tree_Model.Columned_Store is
    procedure Split_Reference
              (  Model  : access Gtk_Columned_Store_Record'Class;
                 Path   : Gtk_Tree_Path;
-                Row    : out GInt;
-                Column : out GInt
+                Row    : out Gint;
+                Column : out Gint
              )  is
    begin
       Row := Get_Position (Model, Path);
@@ -231,10 +231,10 @@ package body Gtk.Tree_Model.Columned_Store is
                Iter   : Gtk_Tree_Iter;
                Column : Positive
             )  return Gtk_Tree_Iter is
-      Row : GInt;
+      Row : Gint;
    begin
       Split_Columned (Model, Iter, Row);
-      return Compose_Reference (Model, Row, GInt (Column) - 1);
+      return Compose_Reference (Model, Row, Gint (Column) - 1);
    end From_Columned;
 
    function From_Columned
@@ -293,7 +293,7 @@ package body Gtk.Tree_Model.Columned_Store is
              (  Model : not null access Gtk_Columned_Store_Record
              )  is
       Item_Path : Gtk_Tree_Path;
-      Last_Row  : constant GInt := Model.Rows - 1;
+      Last_Row  : constant Gint := Model.Rows - 1;
    begin
       Gtk_New_First (Item_Path);
       for Child in reverse 0..Last_Row loop
@@ -325,13 +325,13 @@ package body Gtk.Tree_Model.Columned_Store is
                Column : Positive
             )  return Natural is
    begin
-      if GInt (Column) < Model.Columns then
+      if Gint (Column) < Model.Columns then
          return Natural (Model.Rows);
-      elsif GInt (Column) > Model.Columns or else Model.Rows = 0 then
+      elsif Gint (Column) > Model.Columns or else Model.Rows = 0 then
          return 0;
       end if;
       declare
-         Last : constant GInt :=
+         Last : constant Gint :=
                 (  N_Children (Model.Reference, Model.Get_Root)
                 mod
                    Model.Rows
@@ -347,7 +347,7 @@ package body Gtk.Tree_Model.Columned_Store is
 
    function Get_Column_Type
             (  Model : not null access Gtk_Columned_Store_Record;
-               Index : GInt
+               Index : Gint
             )  return GType is
    begin
       if Model.Reference = Null_Gtk_Tree_Model then
@@ -390,7 +390,7 @@ package body Gtk.Tree_Model.Columned_Store is
          return Null_Iter;
       else
          declare
-            Indices : constant GInt_Array := Get_Indices (Path);
+            Indices : constant Gint_Array := Get_Indices (Path);
          begin
             if Indices'Length = 1 then
                return Compose_Columned (Model, Indices (Indices'First));
@@ -410,7 +410,7 @@ package body Gtk.Tree_Model.Columned_Store is
 
    function Get_N_Columns
             (  Model : not null access Gtk_Columned_Store_Record
-            )  return GInt is
+            )  return Gint is
    begin
       if Model.Reference = Null_Gtk_Tree_Model then
          return 0;
@@ -423,7 +423,7 @@ package body Gtk.Tree_Model.Columned_Store is
             (  Model : not null access Gtk_Columned_Store_Record;
                Iter  : Gtk_Tree_Iter
             )  return Gtk_Tree_Path is
-      Row : GInt;
+      Row : Gint;
    begin
       Split_Columned (Model, Iter, Row);
       if Row >= 0 then
@@ -458,8 +458,8 @@ package body Gtk.Tree_Model.Columned_Store is
          return
             Compose_Reference
             (  Model,
-               GInt (Row) - 1,
-               GInt (Column) - 1
+               Gint (Row) - 1,
+               Gint (Column) - 1
             );
       end if;
    end Get_Reference_Iter;
@@ -511,7 +511,7 @@ package body Gtk.Tree_Model.Columned_Store is
    begin
       if Row <= Get_Column_Height (Model, Positive (Model.Columns)) then
          return Natural (Model.Columns);
-      elsif GInt (Row) <= Model.Rows then
+      elsif Gint (Row) <= Model.Rows then
          return Natural (Model.Columns - 1);
       else
          return 0;
@@ -521,7 +521,7 @@ package body Gtk.Tree_Model.Columned_Store is
    procedure Get_Value
              (  Model  : not null access Gtk_Columned_Store_Record;
                 Iter   : Gtk_Tree_Iter;
-                Column : GInt;
+                Column : Gint;
                 Value  : out GValue
              )  is
    begin
@@ -533,7 +533,7 @@ package body Gtk.Tree_Model.Columned_Store is
          );
       else
          declare
-            Minors : constant GInt := Get_N_Columns (Model.Reference);
+            Minors : constant Gint := Get_N_Columns (Model.Reference);
             Row    : constant Gtk_Tree_Iter :=
                         From_Columned
                         (  Model,
@@ -589,7 +589,7 @@ package body Gtk.Tree_Model.Columned_Store is
       return False;
    end Has_Child;
 
-   Signals : constant Chars_Ptr_Array :=
+   Signals : constant chars_ptr_array :=
       (0 => Interfaces.C.Strings.New_String ("root-changed"));
 
    procedure Initialize
@@ -674,7 +674,7 @@ package body Gtk.Tree_Model.Columned_Store is
              (  Model : not null access Gtk_Columned_Store_Record;
                 Iter  : in out Gtk_Tree_Iter
              )  is
-      Row : GInt;
+      Row : Gint;
    begin
       Split_Columned (Model, Iter, Row);
       if Row >= 0 then
@@ -687,7 +687,7 @@ package body Gtk.Tree_Model.Columned_Store is
    function Nth_Child
             (  Model  : not null access Gtk_Columned_Store_Record;
                Parent : Gtk_Tree_Iter;
-               N      : GInt
+               N      : Gint
             )  return Gtk_Tree_Iter is
    begin
       return Compose_Columned (Model, N);
@@ -696,7 +696,7 @@ package body Gtk.Tree_Model.Columned_Store is
    function N_Children
             (  Model : not null access Gtk_Columned_Store_Record;
                Iter  : Gtk_Tree_Iter := Null_Iter
-            )  return GInt is
+            )  return Gint is
    begin
       if Iter = Null_Iter then
          return Model.Rows;
@@ -712,7 +712,7 @@ package body Gtk.Tree_Model.Columned_Store is
              )  is
       Path : constant Gtk_Tree_Path :=
              Convert (Get_Address (Nth (Params, 1)));
-      Row  : GInt := Get_Position (Model, Path);
+      Row  : Gint := Get_Position (Model, Path);
    begin
       if Row >= 0 then
          if Model.Rows > 0 then
@@ -756,7 +756,7 @@ package body Gtk.Tree_Model.Columned_Store is
                 Model     : Gtk_Columned_Store
              )  is
       Path : Gtk_Tree_Path := Convert (Get_Address (Nth (Params, 1)));
-      Row  : GInt;
+      Row  : Gint;
    begin
       if Path = Null_Gtk_Tree_Path or else Get_Depth (Path) = 0 then
          return;
@@ -770,9 +770,9 @@ package body Gtk.Tree_Model.Columned_Store is
             Row := Get_Position (Model, Path);
             if Row >= 0 then
                declare
-                  Rows_Before : constant GInt := Model.Rows;
-                  Column : GInt;
-                  Size   : constant GInt :=
+                  Rows_Before : constant Gint := Model.Rows;
+                  Column : Gint;
+                  Size   : constant Gint :=
                               N_Children
                               (  Model.Reference,
                                  Model.Get_Root
@@ -873,7 +873,7 @@ package body Gtk.Tree_Model.Columned_Store is
                 Model      : Gtk_Columned_Store
              )  is
       Path : Gtk_Tree_Path := Convert (Get_Address (Nth (Params, 1)));
-      Row  : GInt;
+      Row  : Gint;
    begin
       case Compare (To_Interface (Model), Path, Model.Path) is
          when Before =>
@@ -902,9 +902,9 @@ package body Gtk.Tree_Model.Columned_Store is
             Row := Get_Position (Model, Path);
             if Row >= 0 then
                declare
-                  Rows_Before : constant GInt := Model.Rows;
-                  Column : GInt;
-                  Size   : constant GInt :=
+                  Rows_Before : constant Gint := Model.Rows;
+                  Column : Gint;
+                  Size   : constant Gint :=
                               N_Children
                               (  Model.Reference,
                                  Model.Get_Root
@@ -993,7 +993,7 @@ package body Gtk.Tree_Model.Columned_Store is
       end if;
       declare
          Order : Pointer := To_Pointer (Get_Address (Nth (Params, 2)));
-         Rows  : constant GInt := N_Children (Model, Null_Iter) - 1;
+         Rows  : constant Gint := N_Children (Model, Null_Iter) - 1;
          List  : array (0..Model.Rows - 1) of Boolean :=
                     (others => False);
          Path  : Gtk_Tree_Path;
@@ -1036,7 +1036,7 @@ package body Gtk.Tree_Model.Columned_Store is
              (  Model : not null access Gtk_Columned_Store_Record;
                 Iter  : in out Gtk_Tree_Iter
              )  is
-      Row : GInt;
+      Row : Gint;
    begin
       Split_Columned (Model, Iter, Row);
       if Row >= 0 then
@@ -1076,7 +1076,7 @@ package body Gtk.Tree_Model.Columned_Store is
    begin
       if (  To_Interface (Reference) = Model.Reference
          and then
-            GInt (Columns) = Model.Columns
+            Gint (Columns) = Model.Columns
          )
       then
          --
@@ -1092,7 +1092,7 @@ package body Gtk.Tree_Model.Columned_Store is
          --
          Ref (Reference);
          Set_Null_Reference (Model, False);
-         Model.Columns   := GInt (Columns);
+         Model.Columns   := Gint (Columns);
          Model.Reference := To_Interface (Reference);
          Do_Set_Root (Model, Root);
          Model.Callbacks (Changed) :=
@@ -1151,8 +1151,8 @@ package body Gtk.Tree_Model.Columned_Store is
                 Column : out Positive
              )  is
       Path : constant Gtk_Tree_Path := Get_Path (Model.Reference, Iter);
-      Row  : GInt;
-      Col  : GInt;
+      Row  : Gint;
+      Col  : Gint;
    begin
       Split_Reference (Model, Path, Row, Col);
       Iter := Compose_Columned (Model, Row);
@@ -1177,8 +1177,8 @@ package body Gtk.Tree_Model.Columned_Store is
             (  Model : not null access Gtk_Columned_Store_Record;
                Path  : Gtk_Tree_Path
             )  return Gtk_Tree_Path is
-      Row    : GInt;
-      Col    : GInt;
+      Row    : Gint;
+      Col    : Gint;
       Result : Gtk_Tree_Path;
    begin
       Split_Reference (Model, Path, Row, Col);

@@ -28,7 +28,7 @@
 with Ada.Calendar;  use Ada.Calendar;
 with Gdk.Pixbuf;    use Gdk.Pixbuf;
 with Gdk.Screen;    use Gdk.Screen;
-with GLib.Error;    use GLib.Error;
+with Glib.Error;    use Glib.Error;
 with Gtk.Enums;     use Gtk.Enums;
 with Gtk.Missed;    use Gtk.Missed;
 with Gtkada.Types;  use Gtkada.Types;
@@ -40,7 +40,7 @@ package Gtk.Recent_Manager_Alt is
 -- Gtk_Recent_Info -- Contains  informations  found  when  looking up an
 --                    entry of the recently used files list
 --
-   type Gtk_Recent_Info is new GLib.C_Proxy;
+   type Gtk_Recent_Info is new Glib.C_Proxy;
    type Gtk_Recent_Info_Array is
       array (Positive range <>) of Gtk_Recent_Info;
 --
@@ -54,7 +54,7 @@ package Gtk.Recent_Manager_Alt is
    record
       case Registered is
          when True =>
-            Count     : GUInt;
+            Count     : Guint;
             Last_Time : Time;
             App_Exec  : UTF8_String (1..App_Exec_Length);
          when False =>
@@ -188,7 +188,7 @@ package Gtk.Recent_Manager_Alt is
 --
    function Get_Icon
             (  Info : Gtk_Recent_Info;
-               Size : GInt
+               Size : Gint
             )  return Gdk_Pixbuf;
 --
 -- Get_Modified -- Resource modification time
@@ -504,7 +504,7 @@ package Gtk.Recent_Manager_Alt is
    procedure Purge_Items
              (  Manager : not null access Gtk_Recent_Manager_Record;
                 Error   : out GError;
-                Removed : out GInt
+                Removed : out Gint
              );
 --
 -- Remove_Item -- Remove the resource from the list
@@ -532,7 +532,7 @@ private
 -- 3. Its epoch is 1 January 1970
 -- 4. Its time zone is same as one of Ada.Calendar
 --
-   type Time_T is new Interfaces.C.Long;
+   type Time_T is new Interfaces.C.long;
    function To_Time (T : Time_T) return Time;
 
    pragma Import (C, Unref, "gtk_recent_info_unref");

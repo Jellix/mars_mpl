@@ -23,7 +23,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 --
 --  This  generic  package is provided to ease creation of buttons which
 --  appearance  is  controlled  by the resource file. A package instance
@@ -46,107 +46,111 @@
 --               level,  because  it  in  turn  instantiates the library
 --  level package Gtk.Handlers.Callback.
 --
-with Gtk.Box;     use Gtk.Box;
-with Gtk.Button;  use Gtk.Button;
-with Gtk.Enums;   use Gtk.Enums;
-with Gtk.Image;   use Gtk.Image;
-with Gtk.Label;   use Gtk.Label;
-with Gtk.Widget;  use Gtk.Widget;
-
-with Ada.Finalization;
+with Gtk.Box;
+with Gtk.Button;
+with Gtk.Enums;
 with Gtk.Handlers;
+with Gtk.Image;
+with Gtk.Label;
 
 generic
    Class_Name : UTF8_String;
-   Label      : UTF8_String      := "";
-   Icon       : UTF8_String      := "";
-   Icon_Left  : Boolean          := True;
-   Size       : Gtk_Icon_Size    := Icon_Size_Small_Toolbar;
-   Spacing    : Guint            := 3;
-   Tip        : UTF8_String      := "";
-   Relief     : Gtk_Relief_Style := Relief_Normal;
+   Label      : UTF8_String                := "";
+   Icon       : UTF8_String                := "";
+   Icon_Left  : Boolean                    := True;
+   Size       : Gtk.Enums.Gtk_Icon_Size    := Gtk.Enums.Icon_Size_Small_Toolbar;
+   Spacing    : Guint                      := 3;
+   Tip        : UTF8_String                := "";
+   Relief     : Gtk.Enums.Gtk_Relief_Style := Gtk.Enums.Relief_Normal;
+
 package Gtk.Generic_Style_Button is
---
--- Class - The name of
---
+
+   --
+   -- Class - The name of
+   --
    Class : String renames Class_Name;
---
--- Gtk_Style_Button_Record -- The button type
---
--- Style properties :
---
---    label        - The button label. String
---    icon-id      - The icon id. String
---    icon-size    - The icon size. Enumeration
---    icon-left    - The icon location. Boolean
---    relief-style - The button relief. Gtk.Enums.Gtk_Relief_Style
---    tip          - The tool tip
---    spacing      - Spacing between label and icon. GUInt
---
-   type Gtk_Style_Button_Record is new Gtk_Button_Record with private;
+
+   --
+   -- Gtk_Style_Button_Record -- The button type
+   --
+   -- Style properties :
+   --
+   --    label        - The button label. String
+   --    icon-id      - The icon id. String
+   --    icon-size    - The icon size. Enumeration
+   --    icon-left    - The icon location. Boolean
+   --    relief-style - The button relief. Gtk.Enums.Gtk_Relief_Style
+   --    tip          - The tool tip
+   --    spacing      - Spacing between label and icon. GUInt
+   --
+   type Gtk_Style_Button_Record is
+     new Gtk.Button.Gtk_Button_Record with private;
    type Gtk_Style_Button is access all Gtk_Style_Button_Record'Class;
---
--- Get_Box -- Get the label box of the button
---
---    Button - The button
---
--- Returns :
---
---    The label box of the button
---
+
+   --
+   -- Get_Box -- Get the label box of the button
+   --
+   --    Button - The button
+   --
+   -- Returns :
+   --
+   --    The label box of the button
+   --
    function Get_Box
-            (  Button : not null access Gtk_Style_Button_Record
-            )  return Gtk_Box;
---
--- Get_Label -- Get the label of the button
---
---    Button - The button
---
--- Returns :
---
---    The label of the button
---
+     (Button : not null access Gtk_Style_Button_Record) return Gtk.Box.Gtk_Box;
+
+   --
+   -- Get_Label -- Get the label of the button
+   --
+   --    Button - The button
+   --
+   -- Returns :
+   --
+   --    The label of the button
+   --
    function Get_Label
-            (  Button : not null access Gtk_Style_Button_Record
-            )  return Gtk_Label;
---
--- Get_Type -- The widget type
---
--- Returns :
---
---     GTK+ widget type
---
+     (Button : not null access Gtk_Style_Button_Record)
+      return Gtk.Label.Gtk_Label;
+
+   --
+   -- Get_Type -- The widget type
+   --
+   -- Returns :
+   --
+   --     GTK+ widget type
+   --
    function Get_Type return GType;
---
--- Gtk_New -- Factory
---
---    Button - The button (the result)
---
+   --
+   -- Gtk_New -- Factory
+   --
+   --    Button - The button (the result)
+   --
    procedure Gtk_New (Button : out Gtk_Style_Button);
---
--- Initialize -- Construction
---
---    Button - The button to initialize
---
--- Each derived type is responsible to  call  this  procedure  upon  its
--- construction.
---
+
+   --
+   -- Initialize -- Construction
+   --
+   --    Button - The button to initialize
+   --
+   -- Each derived type is responsible to  call  this  procedure  upon  its
+   -- construction.
+   --
    procedure Initialize
-             (  Button : not null access Gtk_Style_Button_Record'Class
-             );
+     (Button : not null access Gtk_Style_Button_Record'Class);
 
 private
-   type Gtk_Style_Button_Record is new Gtk_Button_Record with record
-      Label : Gtk_Label;
-      Image : Gtk_Image;
-      Box   : Gtk_Box;
+
+   type Gtk_Style_Button_Record is new Gtk.Button.Gtk_Button_Record
+     with record
+      Label : Gtk.Label.Gtk_Label;
+      Image : Gtk.Image.Gtk_Image;
+      Box   : Gtk.Box.Gtk_Box;
    end record;
 
    procedure Style_Updated
-             (  Button : access Gtk_Style_Button_Record'Class
-             );
+     (Button : access Gtk_Style_Button_Record'Class);
 
    package Style_Handlers is
-      new Gtk.Handlers.Callback (Gtk_Style_Button_Record);
+     new Gtk.Handlers.Callback (Gtk_Style_Button_Record);
 
 end Gtk.Generic_Style_Button;

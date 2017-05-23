@@ -26,7 +26,7 @@
 --____________________________________________________________________--
 
 with Ada.Exceptions;        use Ada.Exceptions;
-with GLib;                  use GLib;
+with Glib;                  use Glib;
 with Glib.Messages;         use Glib.Messages;
 with Gtk.Missed;            use Gtk.Missed;
 with Interfaces.C;          use Interfaces.C;
@@ -63,7 +63,7 @@ package body Gtk.Tree_Model.Abstract_Store is
       Finalize                    : C_Finalize;
       Dispatch_Properties_Changed : Address;
       Notify                      : Address;
-      Flags                       : GSize;
+      Flags                       : Gsize;
       P_Dummy                     : Dummy;
    end record;
    pragma Convention (C, C_GObjectClass);
@@ -87,14 +87,14 @@ package body Gtk.Tree_Model.Abstract_Store is
    pragma Convention (C, C_Interface_Init);
 
    type GType_Info is record
-      Class_Size     : GUInt16;
+      Class_Size     : Guint16;
       Base_Init      : Address;
       Base_Finalize  : Address;
       Class_Init     : C_Class_Init;
       Class_Finalize : Address;
       Class_Data     : Address;
-      Instance_Size  : GUInt16;
-      Preallocs      : GUInt16;
+      Instance_Size  : Guint16;
+      Preallocs      : Guint16;
       Instance_Init  : Address;
       Value_Table    : Address;
    end record;
@@ -102,9 +102,9 @@ package body Gtk.Tree_Model.Abstract_Store is
 
    type GTypeQuery is record
       Type_Of       : GType;
-      Type_Name     : Interfaces.C.Strings.Chars_Ptr;
-      Class_Size    : GUInt;
-      Instance_Size : GUInt;
+      Type_Name     : Interfaces.C.Strings.chars_ptr;
+      Class_Size    : Guint;
+      Instance_Size : Guint;
    end record;
    pragma Convention (C, GTypeQuery);
 
@@ -135,12 +135,12 @@ package body Gtk.Tree_Model.Abstract_Store is
    pragma Convention (C, C_Get_Flags);
 
    type C_Get_N_Columns is access function (Model : Address)
-      return GInt;
+      return Gint;
    pragma Convention (C, C_Get_N_Columns);
 
    type C_Get_Column_Type is access function
         (  Model : Address;
-           Index : GInt
+           Index : Gint
         )  return GType;
    pragma Convention (C, C_Get_Column_Type);
 
@@ -148,7 +148,7 @@ package body Gtk.Tree_Model.Abstract_Store is
         (  Model : Address;
            Iter  : access Gtk_Tree_Iter;
            Path  : Address
-        )  return GBoolean;
+        )  return Gboolean;
    pragma Convention (C, C_Get_Iter);
 
    type C_Get_Path is access function
@@ -169,19 +169,19 @@ package body Gtk.Tree_Model.Abstract_Store is
         (  Model  : Address;
            Iter   : access Gtk_Tree_Iter;
            Parent : Gtk_Tree_Iter_Ptr
-        )  return GBoolean;
+        )  return Gboolean;
    pragma Convention (C, C_Children);
 
    type C_Has_Child is access function
         (  Model : Address;
            Iter  : access Gtk_Tree_Iter
-        )  return GBoolean;
+        )  return Gboolean;
    pragma Convention (C, C_Has_Child);
 
    type C_Next is access function
         (  Model : Address;
            Iter  : access Gtk_Tree_Iter
-        )  return GBoolean;
+        )  return Gboolean;
    pragma Convention (C, C_Next);
 
    type C_N_Children is access function
@@ -194,7 +194,7 @@ package body Gtk.Tree_Model.Abstract_Store is
         (  Model  : Address;
            Iter   : access Gtk_Tree_Iter;
            Parent : Gtk_Tree_Iter_Ptr;
-           N      : GInt
+           N      : Gint
         )  return Gboolean;
    pragma Convention (C, C_Nth_Child);
 
@@ -202,13 +202,13 @@ package body Gtk.Tree_Model.Abstract_Store is
         (  Model : Address;
            Iter  : access Gtk_Tree_Iter;
            Child : access Gtk_Tree_Iter
-        )  return GBoolean;
+        )  return Gboolean;
    pragma Convention (C, C_Parent);
 
    type C_Previous is access function
         (  Model : Address;
            Iter  : access Gtk_Tree_Iter
-        )  return GBoolean;
+        )  return Gboolean;
    pragma Convention (C, C_Previous);
 
    type C_Ref_Node is access procedure
@@ -256,10 +256,10 @@ package body Gtk.Tree_Model.Abstract_Store is
    function On_Get_Flags (Model : Address) return Tree_Model_Flags;
    pragma Convention (C, On_Get_Flags);
 
-   function On_Get_N_Columns (Model : Address) return GInt;
+   function On_Get_N_Columns (Model : Address) return Gint;
    pragma Convention (C, On_Get_N_Columns);
 
-   function On_Get_Column_Type (Model : Address; Index : GInt)
+   function On_Get_Column_Type (Model : Address; Index : Gint)
       return GType;
    pragma Convention (C, On_Get_Column_Type);
 
@@ -267,7 +267,7 @@ package body Gtk.Tree_Model.Abstract_Store is
             (  Model : Address;
                Iter  : access Gtk_Tree_Iter;
                Path  : Address
-            )  return GBoolean;
+            )  return Gboolean;
    pragma Convention (C, On_Get_Iter);
 
    function On_Get_Path
@@ -288,13 +288,13 @@ package body Gtk.Tree_Model.Abstract_Store is
             (  Model  : Address;
                Iter   : access Gtk_Tree_Iter;
                Parent : Gtk_Tree_Iter_Ptr
-            )  return GBoolean;
+            )  return Gboolean;
    pragma Convention (C, On_Children);
 
    function On_Has_Child
             (  Model : Address;
                Iter  : access Gtk_Tree_Iter
-            )  return GBoolean;
+            )  return Gboolean;
    pragma Convention (C, On_Has_Child);
 
    procedure On_Initialize_Interface
@@ -306,7 +306,7 @@ package body Gtk.Tree_Model.Abstract_Store is
    function On_Next
             (  Model : Address;
                Iter  : access Gtk_Tree_Iter
-            )  return GBoolean;
+            )  return Gboolean;
    pragma Convention (C, On_Next);
 
    function On_N_Children
@@ -319,7 +319,7 @@ package body Gtk.Tree_Model.Abstract_Store is
             (  Model  : Address;
                Iter   : access Gtk_Tree_Iter;
                Parent : Gtk_Tree_Iter_Ptr;
-               N      : GInt
+               N      : Gint
             )  return Gboolean;
    pragma Convention (C, On_Nth_Child);
 
@@ -327,13 +327,13 @@ package body Gtk.Tree_Model.Abstract_Store is
             (  Model : Address;
                Iter  : access Gtk_Tree_Iter;
                Child : access Gtk_Tree_Iter
-            )  return GBoolean;
+            )  return Gboolean;
    pragma Convention (C, On_Parent);
 
    function On_Previous
             (  Model : Address;
                Iter  : access Gtk_Tree_Iter
-            )  return GBoolean;
+            )  return Gboolean;
    pragma Convention (C, On_Previous);
 
    procedure On_Ref_Node
@@ -399,7 +399,7 @@ package body Gtk.Tree_Model.Abstract_Store is
          return 0;
    end On_Get_Flags;
 
-   function On_Get_N_Columns (Model : Address) return GInt is
+   function On_Get_N_Columns (Model : Address) return Gint is
       This : constant Gtk_Abstract_Model_Record_Ptr := To_Ada (Model);
    begin
       if This = null then
@@ -427,7 +427,7 @@ package body Gtk.Tree_Model.Abstract_Store is
          return 0;
    end On_Get_N_Columns;
 
-   function On_Get_Column_Type (Model : Address; Index : GInt)
+   function On_Get_Column_Type (Model : Address; Index : Gint)
       return GType is
       This : constant Gtk_Abstract_Model_Record_Ptr := To_Ada (Model);
    begin
@@ -460,7 +460,7 @@ package body Gtk.Tree_Model.Abstract_Store is
             (  Model : Address;
                Iter  : access Gtk_Tree_Iter;
                Path  : Address
-            )  return GBoolean is
+            )  return Gboolean is
       This : constant Gtk_Abstract_Model_Record_Ptr := To_Ada (Model);
    begin
       if This = null then
@@ -534,7 +534,7 @@ package body Gtk.Tree_Model.Abstract_Store is
    procedure On_Get_Value
              (  Model  : Address;
                 Iter   : access Gtk_Tree_Iter;
-                Column : GInt;
+                Column : Gint;
                 Value  : access GValue
              )  is
       This : constant Gtk_Abstract_Model_Record_Ptr := To_Ada (Model);
@@ -566,7 +566,7 @@ package body Gtk.Tree_Model.Abstract_Store is
             (  Model  : Address;
                Iter   : access Gtk_Tree_Iter;
                Parent : Gtk_Tree_Iter_Ptr
-            )  return GBoolean is
+            )  return Gboolean is
       This : constant Gtk_Abstract_Model_Record_Ptr := To_Ada (Model);
    begin
       if This = null then
@@ -629,7 +629,7 @@ package body Gtk.Tree_Model.Abstract_Store is
    function On_Has_Child
             (  Model : Address;
                Iter  : access Gtk_Tree_Iter
-            )  return GBoolean is
+            )  return Gboolean is
       This : constant Gtk_Abstract_Model_Record_Ptr := To_Ada (Model);
    begin
       if This = null then
@@ -684,7 +684,7 @@ package body Gtk.Tree_Model.Abstract_Store is
    function On_Next
             (  Model : Address;
                Iter  : access Gtk_Tree_Iter
-            )  return GBoolean is
+            )  return Gboolean is
       This : constant Gtk_Abstract_Model_Record_Ptr := To_Ada (Model);
    begin
       if This = null then
@@ -725,7 +725,7 @@ package body Gtk.Tree_Model.Abstract_Store is
    function On_N_Children
             (  Model : Address;
                Iter  : Gtk_Tree_Iter_Ptr
-            )  return GInt is
+            )  return Gint is
       This : constant Gtk_Abstract_Model_Record_Ptr := To_Ada (Model);
    begin
       if This = null then
@@ -759,8 +759,8 @@ package body Gtk.Tree_Model.Abstract_Store is
             (  Model  : Address;
                Iter   : access Gtk_Tree_Iter;
                Parent : Gtk_Tree_Iter_Ptr;
-               N      : GInt
-            )  return GBoolean is
+               N      : Gint
+            )  return Gboolean is
       This : constant Gtk_Abstract_Model_Record_Ptr := To_Ada (Model);
    begin
       if This = null then
@@ -806,7 +806,7 @@ package body Gtk.Tree_Model.Abstract_Store is
             (  Model : Address;
                Iter  : access Gtk_Tree_Iter;
                Child : access Gtk_Tree_Iter
-            )  return GBoolean is
+            )  return Gboolean is
       This : constant Gtk_Abstract_Model_Record_Ptr := To_Ada (Model);
    begin
       if This = null then
@@ -846,7 +846,7 @@ package body Gtk.Tree_Model.Abstract_Store is
    function On_Previous
             (  Model : Address;
                Iter  : access Gtk_Tree_Iter
-            )  return GBoolean is
+            )  return Gboolean is
       This : constant Gtk_Abstract_Model_Record_Ptr := To_Ada (Model);
    begin
       if This = null then
@@ -945,7 +945,7 @@ package body Gtk.Tree_Model.Abstract_Store is
    function Image (Iter : Gtk_Tree_Iter) return String is
       use System.Storage_Elements;
    begin
-      return GInt'Image (Iter.Stamp) &
+      return Gint'Image (Iter.Stamp) &
              Integer_Address'Image (To_Integer (Iter.User_Data))  &
              Integer_Address'Image (To_Integer (Iter.User_Data2)) &
              Integer_Address'Image (To_Integer (Iter.User_Data3));
@@ -978,7 +978,7 @@ package body Gtk.Tree_Model.Abstract_Store is
 
    function Register
             (  Name       : String;
-               Signals    : GtkAda.Types.Chars_Ptr_Array := Null_Array;
+               Signals    : Gtkada.Types.Chars_Ptr_Array := Null_Array;
                Parameters : Signal_Parameter_Types :=
                                Null_Parameter_Types
             )  return GType is
@@ -994,15 +994,15 @@ package body Gtk.Tree_Model.Abstract_Store is
    function Register_Type
             (  Name       : String;
                Size       : Positive := GObject'Size;
-               Signals    : GtkAda.Types.Chars_Ptr_Array := Null_Array;
+               Signals    : Gtkada.Types.Chars_Ptr_Array := Null_Array;
                Parameters : Signal_Parameter_Types :=
                                Null_Parameter_Types
             )  return GType is
       function Register_Static
                (  Parent_Type : GType;
-                  Type_Name   : Char_Array;
+                  Type_Name   : char_array;
                   Type_Info   : access GType_Info;
-                  Type_Flags  : GUInt
+                  Type_Flags  : Guint
                )  return Glib.GType;
       pragma Import (C, Register_Static, "g_type_register_static");
       procedure Add_Interface_Static
@@ -1015,31 +1015,31 @@ package body Gtk.Tree_Model.Abstract_Store is
       procedure Marshaller
                 (  Closure         : Address;
                    Return_Value    : access GValue;
-                   N_Param_Values  : GUInt;
+                   N_Param_Values  : Guint;
                    Param_Values    : access GValue;
                    Invocation_Hint : Address;
                    Marshal_Data    : Address
                 );
       pragma Import (C, Marshaller, "g_cclosure_marshal_VOID__VOID");
       function Signal_NewV
-               (  Name         : GtkAda.Types.Chars_Ptr;
+               (  Name         : Gtkada.Types.Chars_Ptr;
                   IType        : GType;
-                  Signal_Flags : GUInt;
+                  Signal_Flags : Guint;
                   Closure      : Address;
                   Accumulator  : Address;
                   Accu_Data    : Address;
                   C_Marshaller : Address;
                   Return_Type  : GType;
-                  N_Params     : GUInt;
+                  N_Params     : Guint;
                   Params       : access GType
-               )  return GUInt;
+               )  return Guint;
       pragma Import (C, Signal_NewV, "g_signal_newv");
       type Parameter_List is array (Natural range <>) of aliased GType;
       pragma Convention (C, Parameter_List);
 
       Result : GType;
       Info   : GTypeQuery;
-      ID     : GUInt;
+      ID     : Guint;
    begin
       if Parameters /= Null_Parameter_Types then
          if Signals'Length /= Parameters'Length (1) then
@@ -1052,16 +1052,16 @@ package body Gtk.Tree_Model.Abstract_Store is
          end if;
       end if;
       Type_Query (GType_Object, Info);
-      if GUInt (Size / Interfaces.C.Char'Size) < Info.Instance_Size then
+      if Guint (Size / Interfaces.C.char'Size) < Info.Instance_Size then
          raise Constraint_Error with
                "GTK object instance of '" &
                Name &
                "' is smaller than parent '" &
                Value (Info.Type_Name) &
                "' " &
-               Integer'Image (Size / Interfaces.C.Char'Size) &
+               Integer'Image (Size / Interfaces.C.char'Size) &
                "<" &
-               GUInt'Image (Info.Instance_Size);
+               Guint'Image (Info.Instance_Size);
       end if;
       Result :=
          Register_Static
@@ -1071,9 +1071,9 @@ package body Gtk.Tree_Model.Abstract_Store is
             Type_Info   =>
                new GType_Info'
                (  Class_Size     =>
-                     GUInt16'Max
-                     (  C_GObjectClass'Size / Interfaces.C.Char'Size,
-                        GUInt16 (Info.Class_Size)
+                     Guint16'Max
+                     (  C_GObjectClass'Size / Interfaces.C.char'Size,
+                        Guint16 (Info.Class_Size)
                      ),
                   Base_Init      => Null_Address,
                   Base_Finalize  => Null_Address,
@@ -1084,7 +1084,7 @@ package body Gtk.Tree_Model.Abstract_Store is
                   Instance_Init  => Null_Address,
                   Value_Table    => Null_Address,
                   Instance_Size  =>
-                     GUInt16 (Size / Interfaces.C.Char'Size)
+                     Guint16 (Size / Interfaces.C.char'Size)
          )     );
       Add_Interface_Static
       (  Instance_Type  => Result,
@@ -1098,7 +1098,7 @@ package body Gtk.Tree_Model.Abstract_Store is
       if Parameters = Null_Parameter_Types then
          for Index in Signals'Range loop
             ID :=
-               Signal_Newv
+               Signal_NewV
                (  Name         => Signals (Index),
                   IType        => Result,
                   Signal_Flags => 2, -- G_SIGNAL_RUN_LAST
@@ -1134,7 +1134,7 @@ package body Gtk.Tree_Model.Abstract_Store is
                         );
                   end loop;
                   ID :=
-                     Signal_Newv
+                     Signal_NewV
                      (  Name         => Signals (Index),
                         IType        => Result,
                         Signal_Flags => 2, -- G_SIGNAL_RUN_LAST
@@ -1143,7 +1143,7 @@ package body Gtk.Tree_Model.Abstract_Store is
                         Accu_Data    => Null_Address,
                         C_Marshaller => Marshaller'Address,
                         Return_Type  => GType_None,
-                        N_Params     => GUInt (Count),
+                        N_Params     => Guint (Count),
                         Params       => List (1)'Access
                     );
                end;

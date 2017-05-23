@@ -27,15 +27,15 @@
 
 with System;  use System;
 
-with GLib.Chars_Ptr_Vectors;
-with GtkAda.Types;
+with Glib.Chars_Ptr_Vectors;
+with Gtkada.Types;
 
 package body Gtk.Source_Style_Scheme is
 
    function Get_Authors
             (  Scheme : not null access Gtk_Source_Style_Scheme_Record
-            )  return Chars_Ptr_Array is
-      use GLib.Chars_Ptr_Vectors;
+            )  return chars_ptr_array is
+      use Glib.Chars_Ptr_Vectors;
       function Internal (Object : Address) return Chars_Ptr_Ptr;
       pragma Import
              (  C,
@@ -49,13 +49,13 @@ package body Gtk.Source_Style_Scheme is
    function Get_Description
             (  Scheme : not null access Gtk_Source_Style_Scheme_Record
             )  return UTF8_String is
-      function Internal (Object : Address) return Chars_Ptr;
+      function Internal (Object : Address) return chars_ptr;
       pragma Import
              (  C,
                 Internal,
                 "gtk_source_style_scheme_get_description"
              );
-      Result : constant Chars_Ptr := Internal (Get_Object (Scheme));
+      Result : constant chars_ptr := Internal (Get_Object (Scheme));
    begin
       if Result = Null_Ptr then
          return "";
@@ -67,13 +67,13 @@ package body Gtk.Source_Style_Scheme is
    function Get_Filename
             (  Scheme : not null access Gtk_Source_Style_Scheme_Record
             )  return UTF8_String is
-      function Internal (Object : Address) return Chars_Ptr;
+      function Internal (Object : Address) return chars_ptr;
       pragma Import
              (  C,
                 Internal,
                 "gtk_source_style_scheme_get_filename"
              );
-      Result : constant Chars_Ptr := Internal (Get_Object (Scheme));
+      Result : constant chars_ptr := Internal (Get_Object (Scheme));
    begin
       if Result = Null_Ptr then
          return "";
@@ -85,9 +85,9 @@ package body Gtk.Source_Style_Scheme is
    function Get_ID
             (  Scheme : not null access Gtk_Source_Style_Scheme_Record
             )  return UTF8_String is
-      function Internal (Object : Address) return Chars_Ptr;
+      function Internal (Object : Address) return chars_ptr;
       pragma Import (C, Internal, "gtk_source_style_scheme_get_id");
-      Result : constant Chars_Ptr := Internal (Get_Object (Scheme));
+      Result : constant chars_ptr := Internal (Get_Object (Scheme));
    begin
       if Result = Null_Ptr then
          return "";
@@ -99,9 +99,9 @@ package body Gtk.Source_Style_Scheme is
    function Get_Name
             (  Scheme : not null access Gtk_Source_Style_Scheme_Record
             )  return UTF8_String is
-      function Internal (Object : Address) return Chars_Ptr;
+      function Internal (Object : Address) return chars_ptr;
       pragma Import (C, Internal, "gtk_source_style_scheme_get_name");
-      Result : constant Chars_Ptr := Internal (Get_Object (Scheme));
+      Result : constant chars_ptr := Internal (Get_Object (Scheme));
    begin
       if Result = Null_Ptr then
          return "";
@@ -115,7 +115,7 @@ package body Gtk.Source_Style_Scheme is
                Style  : UTF8_String
             )  return Gtk_Source_Style is
       use Interfaces.C;
-      function Internal (Object : Address; Style : Char_Array)
+      function Internal (Object : Address; Style : char_array)
          return Address;
       pragma Import (C, Internal, "gtk_source_style_scheme_get_style");
       Stub : Gtk_Source_Style_Record;

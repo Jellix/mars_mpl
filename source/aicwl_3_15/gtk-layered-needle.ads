@@ -25,7 +25,6 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Ada.Numerics;
 with Gtk.Handlers;
 with Gtk.Missed;
 
@@ -33,8 +32,6 @@ package Gtk.Layered.Needle is
 
    pragma Warnings (Off, "declaration hides ""Adjustment""");
    pragma Warnings (Off, "declaration hides ""Center""");
-
-   Pi : constant := Ada.Numerics.Pi;
 
    --
    -- Needle_Layer -- A needle
@@ -88,8 +85,8 @@ package Gtk.Layered.Needle is
    procedure Add_Needle
      (Under       : not null access Layer_Location'Class;
       Center      : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 0.0);
-      From        : Gdouble                                           := 3.0 * Pi / 4.0;
-      Length      : Gdouble                                           := 3.0 * Pi / 2.0;
+      From        : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 4.0;
+      Length      : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 2.0;
       Tip_Length  : Gdouble                                           := 20.0;
       Tip_Width   : Gdouble                                           := 2.0;
       Tip_Cap     : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
@@ -103,8 +100,8 @@ package Gtk.Layered.Needle is
    function Add_Needle
      (Under       : not null access Layer_Location'Class;
       Center      : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 0.0);
-      From        : Gdouble                                           := 3.0 * Pi / 4.0;
-      Length      : Gdouble                                           := 3.0 * Pi / 2.0;
+      From        : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 4.0;
+      Length      : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 2.0;
       Tip_Length  : Gdouble                                           := 20.0;
       Tip_Width   : Gdouble                                           := 2.0;
       Tip_Cap     : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;

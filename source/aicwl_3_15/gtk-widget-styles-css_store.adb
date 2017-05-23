@@ -29,10 +29,10 @@ with Gdk.Color;                 use Gdk.Color;
 with Gtk.Container;             use Gtk.Container;
 with Gtk.Missed;                use Gtk.Missed;
 with Gtk.Style;                 use Gtk.Style;
-with GLib.Properties.Creation;  use GLib.Properties.Creation;
+with Glib.Properties.Creation;  use Glib.Properties.Creation;
 with System;                    use System;
 
-with Gtk.RC;
+with Gtk.Rc;
 with System.Address_To_Access_Conversions;
 
 package body Gtk.Widget.Styles.CSS_Store is
@@ -111,12 +111,12 @@ package body Gtk.Widget.Styles.CSS_Store is
 
       procedure Put_Flags
                 (  Class_Of : Flags_Class;
-                   Mask     : GLong
+                   Mask     : Glong
                 )  is
          Flag  : Flags_Value;
          First : Boolean := True;
       begin
-         for Index in 0..GUInt'Last loop
+         for Index in 0..Guint'Last loop
             Flag := Nth_Value (Class_Of, Index);
             exit when Flag = null;
             if 0 /= (Value (Flag) and Flags_Int_Value (Mask)) then
@@ -127,7 +127,7 @@ package body Gtk.Widget.Styles.CSS_Store is
                end if;
                Put
                (  File,
-                  GLib.Properties.Creation.Name (Flag)
+                  Glib.Properties.Creation.Name (Flag)
                );
             end if;
         end loop;
@@ -147,11 +147,11 @@ package body Gtk.Widget.Styles.CSS_Store is
       if Recurse and then Widget.all in Gtk_Container_Record'Class then
          declare
             use Widget_List;
-            Children : Widget_List.GList :=
+            Children : Widget_List.Glist :=
                Get_Children
                (  Gtk_Container_Record'Class (Widget.all)'Access
                );
-            Child : Widget_List.GList := First (Children);
+            Child : Widget_List.Glist := First (Children);
          begin
             while Child /= Null_List loop
                Put (File, Get_Data (Child), Recurse, New_Prefix);
@@ -179,7 +179,7 @@ package body Gtk.Widget.Styles.CSS_Store is
          for Index in List'Range loop
             declare
                Param      : constant Param_Spec := List (Index);
-               Name       : constant String := PSpec_Name (Param);
+               Name       : constant String := Pspec_Name (Param);
                Param_Type : constant GType  := Value_Type (Param);
             begin
                Put_Line
@@ -210,16 +210,16 @@ package body Gtk.Widget.Styles.CSS_Store is
                   declare
                      This  : constant Param_Spec_Char :=
                              Param_Spec_Char (Param);
-                     Value : constant GChar := Style_Get (Widget, Name);
+                     Value : constant Gchar := Style_Get (Widget, Name);
                   begin
                      Put_Line
                      (  File,
                         (  " range "
-                        &  GInt8'Image (Minimum (This))
+                        &  Gint8'Image (Minimum (This))
                         &  " .."
-                        &  GInt8'Image (Maximum (This))
+                        &  Gint8'Image (Maximum (This))
                         &  " Default is"
-                        &  GInt8'Image (Default (This))
+                        &  Gint8'Image (Default (This))
                         &  " */"
                      )  );
                      Put_Line
@@ -227,7 +227,7 @@ package body Gtk.Widget.Styles.CSS_Store is
                         (  "   -"
                         &  Class_Name & "-" & Name
                         &  ":"
-                        &  Integer'Image (GChar'Pos (Value))
+                        &  Integer'Image (Gchar'Pos (Value))
                         &  ";"
                      )  );
                   end;
@@ -235,17 +235,17 @@ package body Gtk.Widget.Styles.CSS_Store is
                   declare
                      This  : constant Param_Spec_Double :=
                              Param_Spec_Double (Param);
-                     Value : constant GDouble :=
+                     Value : constant Gdouble :=
                              Style_Get (Widget, Name);
                   begin
                      Put_Line
                      (  File,
                         (  " range "
-                        &  GDouble'Image (Minimum (This))
+                        &  Gdouble'Image (Minimum (This))
                         &  " .."
-                        &  GDouble'Image (Maximum (This))
+                        &  Gdouble'Image (Maximum (This))
                         &  " Default is"
-                        &  GDouble'Image (Default (This))
+                        &  Gdouble'Image (Default (This))
                         &  " */"
                      )  );
                      Put_Line
@@ -255,7 +255,7 @@ package body Gtk.Widget.Styles.CSS_Store is
                         &  "-"
                         &  Name
                         &  ":"
-                        &  GDouble'Image (Value)
+                        &  Gdouble'Image (Value)
                         &  ";"
                      )  );
                   end;
@@ -263,17 +263,17 @@ package body Gtk.Widget.Styles.CSS_Store is
                   declare
                      This  : constant Param_Spec_Float :=
                              Param_Spec_Float (Param);
-                     Value : constant GFloat :=
+                     Value : constant Gfloat :=
                              Style_Get (Widget, Name);
                   begin
                      Put_Line
                      (  File,
                         (  " range "
-                        &  GFloat'Image (Minimum (This))
+                        &  Gfloat'Image (Minimum (This))
                         &  " .."
-                        &  GFloat'Image (Maximum (This))
+                        &  Gfloat'Image (Maximum (This))
                         &  " Default is"
-                        &  GFloat'Image (Default (This))
+                        &  Gfloat'Image (Default (This))
                         &  " */"
                      )  );
                      Put_Line
@@ -283,7 +283,7 @@ package body Gtk.Widget.Styles.CSS_Store is
                         &  "-"
                         &  Name
                         &  ":"
-                        &  GFloat'Image (Value)
+                        &  Gfloat'Image (Value)
                         &  ";"
                      )  );
                   end;
@@ -291,16 +291,16 @@ package body Gtk.Widget.Styles.CSS_Store is
                   declare
                      This  : constant Param_Spec_Long :=
                              Param_Spec_Long (Param);
-                     Value : constant GLong := Style_Get (Widget, Name);
+                     Value : constant Glong := Style_Get (Widget, Name);
                   begin
                      Put_Line
                      (  File,
                         (  " range "
-                        &  GLong'Image (Minimum (This))
+                        &  Glong'Image (Minimum (This))
                         &  " .."
-                        &  GLong'Image (Maximum (This))
+                        &  Glong'Image (Maximum (This))
                         &  " Default is"
-                        &  GLong'Image (Default (This))
+                        &  Glong'Image (Default (This))
                         &  " */"
                      )  );
                      Put_Line
@@ -310,7 +310,7 @@ package body Gtk.Widget.Styles.CSS_Store is
                         &  "-"
                         &  Name
                         &  ":"
-                        &  GLong'Image (Value)
+                        &  Glong'Image (Value)
                         &  ";"
                      )  );
                   end;
@@ -318,16 +318,16 @@ package body Gtk.Widget.Styles.CSS_Store is
                   declare
                      This  : constant Param_Spec_Int :=
                              Param_Spec_Int (Param);
-                     Value : constant GInt := Style_Get (Widget, Name);
+                     Value : constant Gint := Style_Get (Widget, Name);
                   begin
                      Put_Line
                      (  File,
                         (  " range "
-                        &  GInt'Image (Minimum (This))
+                        &  Gint'Image (Minimum (This))
                         &  " .."
-                        &  GInt'Image (Maximum (This))
+                        &  Gint'Image (Maximum (This))
                         &  " Default is"
-                        &  GInt'Image (Default (This))
+                        &  Gint'Image (Default (This))
                         &  " */"
                      )  );
                      Put_Line
@@ -337,25 +337,25 @@ package body Gtk.Widget.Styles.CSS_Store is
                         &  "-"
                         &  Name
                         &  ":"
-                        &  GInt'Image (Value)
+                        &  Gint'Image (Value)
                         &  ";"
                      )  );
                   end;
-               elsif Param_Type = GType_UChar then
+               elsif Param_Type = GType_Uchar then
                   declare
-                     This  : constant Param_Spec_UChar :=
-                             Param_Spec_UChar (Param);
-                     Value : constant GUChar :=
+                     This  : constant Param_Spec_Uchar :=
+                             Param_Spec_Uchar (Param);
+                     Value : constant Guchar :=
                              Style_Get (Widget, Name);
                   begin
                      Put_Line
                      (  File,
                         (  " range "
-                        &  GUInt8'Image (Minimum (This))
+                        &  Guint8'Image (Minimum (This))
                         &  " .."
-                        &  GUInt8'Image (Maximum (This))
+                        &  Guint8'Image (Maximum (This))
                         &  " Default is"
-                        &  GUInt8'Image (Default (This))
+                        &  Guint8'Image (Default (This))
                         &  " */"
                      )  );
                      Put_Line
@@ -365,24 +365,24 @@ package body Gtk.Widget.Styles.CSS_Store is
                         &  "-"
                         &  Name
                         &  ":"
-                        &  Integer'Image (GUChar'Pos (Value))
+                        &  Integer'Image (Guchar'Pos (Value))
                         &  ";"
                      )  );
                   end;
-               elsif Param_Type = GType_UInt then
+               elsif Param_Type = GType_Uint then
                   declare
-                     This  : constant Param_Spec_UInt :=
-                             Param_Spec_UInt (Param);
-                     Value : constant GUInt := Style_Get (Widget, Name);
+                     This  : constant Param_Spec_Uint :=
+                             Param_Spec_Uint (Param);
+                     Value : constant Guint := Style_Get (Widget, Name);
                   begin
                      Put_Line
                      (  File,
                         (  " range "
-                        &  GUInt'Image (Minimum (This))
+                        &  Guint'Image (Minimum (This))
                         &  " .."
-                        &  GUInt'Image (Maximum (This))
+                        &  Guint'Image (Maximum (This))
                         &  " Default is"
-                        &  GUInt'Image (Default (This))
+                        &  Guint'Image (Default (This))
                         &  " */"
                      )  );
                      Put_Line
@@ -392,25 +392,25 @@ package body Gtk.Widget.Styles.CSS_Store is
                         &  "-"
                         &  Name
                         &  ":"
-                        &  GUInt'Image (Value)
+                        &  Guint'Image (Value)
                         &  ";"
                      )  );
                   end;
-               elsif Param_Type = GType_ULong then
+               elsif Param_Type = GType_Ulong then
                   declare
-                     This  : constant Param_Spec_ULong :=
-                             Param_Spec_ULong (Param);
-                     Value : constant GULong :=
+                     This  : constant Param_Spec_Ulong :=
+                             Param_Spec_Ulong (Param);
+                     Value : constant Gulong :=
                              Style_Get (Widget, Name);
                   begin
                      Put_Line
                      (  File,
                         (  " range "
-                        &  GULong'Image (Minimum (This))
+                        &  Gulong'Image (Minimum (This))
                         &  " .."
-                        &  GULong'Image (Maximum (This))
+                        &  Gulong'Image (Maximum (This))
                         &  " Default is"
-                        &  GULong'Image (Default (This))
+                        &  Gulong'Image (Default (This))
                         &  " */"
                      )  );
                      Put_Line
@@ -420,7 +420,7 @@ package body Gtk.Widget.Styles.CSS_Store is
                         &  "-"
                         &  Name
                         &  ":"
-                        &  GULong'Image (Value)
+                        &  Gulong'Image (Value)
                         &  ";"
                      )  );
                   end;
@@ -455,7 +455,7 @@ package body Gtk.Widget.Styles.CSS_Store is
                   begin
                      Put (File, " */");
                      New_Line (File);
-                     Set_RGB (Default, 0, 0, 0);
+                     Set_Rgb (Default, 0, 0, 0);
                      Value := Style_Get (Widget, Name, Default);
                      Put_Line
                      (  File,
@@ -483,7 +483,7 @@ package body Gtk.Widget.Styles.CSS_Store is
                                 Enumeration (This);
                   begin
                      Put (File, " (");
-                     for Index in 0..GUInt'Last loop
+                     for Index in 0..Guint'Last loop
                         Value := Nth_Value (Class_Of, Index);
                         exit when Value = null;
                         if First then
@@ -493,13 +493,13 @@ package body Gtk.Widget.Styles.CSS_Store is
                         end if;
                         Put
                         (  File,
-                           GLib.Properties.Creation.Name (Value)
+                           Glib.Properties.Creation.Name (Value)
                         );
                      end loop;
                      Put_Line
                      (  File,
                         (  ") Default is "
-                        &  GLib.Properties.Creation.Name
+                        &  Glib.Properties.Creation.Name
                            (  Get_Value
                               (  Class_Of,
                                  Default (This)
@@ -513,7 +513,7 @@ package body Gtk.Widget.Styles.CSS_Store is
                         &  "-"
                         &  Name
                         &  ":"
-                        &  GLib.Properties.Creation.Name
+                        &  Glib.Properties.Creation.Name
                            (  Get_Value
                               (  Class_Of,
                                  Style_Get (Widget, Name)
@@ -531,7 +531,7 @@ package body Gtk.Widget.Styles.CSS_Store is
                      First    : Boolean := True;
                   begin
                      Put (File, " (");
-                     for Index in 0..GUInt'Last loop
+                     for Index in 0..Guint'Last loop
                         Value := Nth_Value (Class_Of, Index);
                         exit when Value = null;
                         if First then
@@ -541,7 +541,7 @@ package body Gtk.Widget.Styles.CSS_Store is
                         end if;
                         Put
                         (  File,
-                           GLib.Properties.Creation.Name (Value)
+                           Glib.Properties.Creation.Name (Value)
                         );
                      end loop;
                      Put_Line (File, ") Default is ");
@@ -570,13 +570,13 @@ package body Gtk.Widget.Styles.CSS_Store is
                         &  "-"
                         &  Name
                         &  ": "
-                        &  GInt16'Image (Border.Left)
+                        &  Gint16'Image (Border.Left)
                         &  " "
-                        &  GInt16'Image (Border.Right)
+                        &  Gint16'Image (Border.Right)
                         &  " "
-                        &  GInt16'Image (Border.Top)
+                        &  Gint16'Image (Border.Top)
                         &  " "
-                        &  GInt16'Image (Border.Bottom)
+                        &  Gint16'Image (Border.Bottom)
                         &  ";"
                      )  );
                   exception

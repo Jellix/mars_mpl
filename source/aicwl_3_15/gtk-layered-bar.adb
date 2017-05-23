@@ -25,12 +25,14 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
-with Glib.Properties.Creation;    use Glib.Properties.Creation;
-with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
-
 with Ada.Unchecked_Deallocation;
+
+with Cairo.Elementary_Functions;
 with Cairo.Line_Cap_Property;
+
+with Glib.Properties.Creation;
+
+with Gtk.Layered.Stream_IO;
 
 package body Gtk.Layered.Bar is
 
@@ -59,9 +61,8 @@ package body Gtk.Layered.Bar is
         Bar_Ptr);
 
    procedure Changed
-     (  Adjustment   : access GObject_Record'Class;
-        Bar          : Bar_Ptr
-       );
+     (Adjustment   : access GObject_Record'Class;
+      Bar          : Bar_Ptr);
 
    procedure Add_Adjustment
      (Layer      : in out Bar_Layer;
@@ -72,18 +73,16 @@ package body Gtk.Layered.Bar is
       Layer.Adjustment := Adjustment.all'Unchecked_Access;
       Layer.Changed :=
         Handlers.Connect
-          (  Adjustment,
-             "changed",
-             Handlers.To_Marshaller (Changed'Access),
-             Layer'Unchecked_Access
-            );
+          (Adjustment,
+           "changed",
+           Handlers.To_Marshaller (Changed'Access),
+           Layer'Unchecked_Access);
       Layer.Value_Changed :=
         Handlers.Connect
-          (  Adjustment,
-             "value_changed",
-             Handlers.To_Marshaller (Changed'Access),
-             Layer'Unchecked_Access
-            );
+          (Adjustment,
+           "value_changed",
+           Handlers.To_Marshaller (Changed'Access),
+           Layer'Unchecked_Access);
       declare
          Lower : constant Gdouble := Adjustment.all.Get_Lower;
          Upper : constant Gdouble := Adjustment.all.Get_Upper;
@@ -118,12 +117,11 @@ package body Gtk.Layered.Bar is
       Layer.Scaled  := Scaled;
       Add (Ptr, Under);
       Set
-        (  Layer  => Layer,
-           Line   => (Width, Color, Line_Cap),
-           From   => From,
-           Angle  => Angle,
-           Length => Length
-          );
+        (Layer  => Layer,
+         Line   => (Width, Color, Line_Cap),
+         From   => From,
+         Angle  => Angle,
+         Length => Length);
       if Adjustment /= null then
          Add_Adjustment (Ptr.all, Adjustment);
       end if;
@@ -151,11 +149,10 @@ package body Gtk.Layered.Bar is
       Layer.Scaled  := Scaled;
       Add (Ptr, Under);
       Set
-        (  Layer => Layer,
-           Line  => (Width, Color, Line_Cap),
-           From  => From,
-           To    => To
-          );
+        (Layer => Layer,
+         Line  => (Width, Color, Line_Cap),
+         From  => From,
+         To    => To);
       if Adjustment /= null then
          Add_Adjustment (Ptr.all, Adjustment);
       end if;
@@ -185,12 +182,11 @@ package body Gtk.Layered.Bar is
       Layer.Scaled  := Scaled;
       Add (Ptr, Under);
       Set
-        (  Layer  => Layer,
-           Line   => (Width, Color, Line_Cap),
-           From   => From,
-           Angle  => Angle,
-           Length => Length
-          );
+        (Layer  => Layer,
+         Line   => (Width, Color, Line_Cap),
+         From   => From,
+         Angle  => Angle,
+         Length => Length);
       if Adjustment /= null then
          Add_Adjustment (Ptr.all, Adjustment);
       end if;
@@ -220,11 +216,10 @@ package body Gtk.Layered.Bar is
       Layer.Scaled  := Scaled;
       Add (Ptr, Under);
       Set
-        (  Layer => Layer,
-           Line  => (Width, Color, Line_Cap),
-           From  => From,
-           To    => To
-          );
+        (Layer => Layer,
+         Line  => (Width, Color, Line_Cap),
+         From  => From,
+         To    => To);
       if Adjustment /= null then
          Add_Adjustment (Ptr.all, Adjustment);
       end if;
@@ -252,9 +247,9 @@ package body Gtk.Layered.Bar is
    end Add;
 
    procedure Changed
-     (  Adjustment : access GObject_Record'Class;
-        Bar        : Bar_Ptr
-       )  is
+     (Adjustment : access GObject_Record'Class;
+      Bar        : Bar_Ptr)
+   is
       Lower : constant Gdouble := Gtk.Adjustment.Get_Lower (Bar.all.Adjustment);
       Upper : constant Gdouble := Gtk.Adjustment.Get_Upper (Bar.all.Adjustment);
       Value : constant Gdouble := Gtk.Adjustment.Get_Value (Bar.all.Adjustment);
@@ -284,18 +279,16 @@ package body Gtk.Layered.Bar is
       Cairo.New_Path (Context);
       if Layer.Widened then
          Cairo.Set_Line_Width
-           (  Context,
-              Layer.Line.Width * Layer.Widget.all.Get_Size
-             );
+           (Context,
+            Layer.Line.Width * Layer.Widget.all.Get_Size);
       else
          Cairo.Set_Line_Width (Context, Layer.Line.Width);
       end if;
       Cairo.Set_Source_Rgb
-        (  Context,
-           Gdouble (Gdk.Color.Red   (Layer.Line.Color)) / Gdouble (Guint16'Last),
-           Gdouble (Gdk.Color.Green (Layer.Line.Color)) / Gdouble (Guint16'Last),
-           Gdouble (Gdk.Color.Blue  (Layer.Line.Color)) / Gdouble (Guint16'Last)
-          );
+        (Context,
+         Gdouble (Gdk.Color.Red   (Layer.Line.Color)) / Gdouble (Guint16'Last),
+         Gdouble (Gdk.Color.Green (Layer.Line.Color)) / Gdouble (Guint16'Last),
+         Gdouble (Gdk.Color.Blue  (Layer.Line.Color)) / Gdouble (Guint16'Last));
       Cairo.Set_Line_Cap (Context, Layer.Line.Line_Cap);
       if Layer.Scaled then
          declare
@@ -314,10 +307,9 @@ package body Gtk.Layered.Bar is
       end if;
       Cairo.Move_To (Context, From.X, From.Y);
       Cairo.Line_To
-        (  Cr => Context,
-           X  => From.X * A + To.X * B,
-           Y  => From.Y * A + To.Y * B
-          );
+        (Cr => Context,
+         X  => From.X * A + To.X * B,
+         Y  => From.Y * A + To.Y * B);
       Cairo.Stroke  (Context);
       Layer.Updated := False;
    end Draw;
@@ -328,8 +320,8 @@ package body Gtk.Layered.Bar is
    begin
       Finalize (Abstract_Layer (Layer));
       if Layer.Adjustment /= null then
-         Disconnect (Layer.Adjustment, Layer.Changed);
-         Disconnect (Layer.Adjustment, Layer.Value_Changed);
+         Gtk.Handlers.Disconnect (Layer.Adjustment, Layer.Changed);
+         Gtk.Handlers.Disconnect (Layer.Adjustment, Layer.Value_Changed);
          Gtk.Adjustment.Unref (Layer.Adjustment);
          Layer.Adjustment := null;
       end if;
@@ -344,10 +336,9 @@ package body Gtk.Layered.Bar is
    function Get_Angle (Layer : Bar_Layer) return Gdouble is
    begin
       return
-        Arctan
-          (  X => Layer.To.X - Layer.From.X,
-             Y => Layer.To.Y - Layer.From.Y
-            );
+        Cairo.Elementary_Functions.Arctan
+          (X => Layer.To.X - Layer.From.X,
+           Y => Layer.To.Y - Layer.From.Y);
    end Get_Angle;
 
    function Get_From (Layer : Bar_Layer) return Cairo.Ellipses.Cairo_Tuple is
@@ -358,10 +349,9 @@ package body Gtk.Layered.Bar is
    function Get_Length  (Layer : Bar_Layer) return Gdouble is
    begin
       return
-        Sqrt
-          (  (Layer.To.X - Layer.From.X) ** 2
-             +  (Layer.To.Y - Layer.From.Y) ** 2
-            );
+        Cairo.Elementary_Functions.Sqrt
+          ((Layer.To.X - Layer.From.X) ** 2
+           +  (Layer.To.Y - Layer.From.Y) ** 2);
    end Get_Length;
 
    function Get_Line (Layer : Bar_Layer)
@@ -375,16 +365,14 @@ package body Gtk.Layered.Bar is
       pragma Unreferenced (Layer);
    begin
       return
-        (  Layer_Property'Pos (Layer_Property'Last)
-           -  Layer_Property'Pos (Layer_Property'First)
-           +  1
-          );
+        (Layer_Property'Pos (Layer_Property'Last)
+         -  Layer_Property'Pos (Layer_Property'First)
+         +  1);
    end Get_Properties_Number;
 
    overriding function Get_Property_Specification
-     (  Layer    : Bar_Layer;
-        Property : Positive
-       )  return Param_Spec is
+     (Layer    : Bar_Layer;
+      Property : Positive) return Param_Spec is
    begin
       if Property > Get_Properties_Number (Layer) then
          raise Constraint_Error;
@@ -392,71 +380,69 @@ package body Gtk.Layered.Bar is
          case Layer_Property'Val (Property - 1) is
             when Property_From_X =>
                return
-                 Gnew_Double
-                   (  Name    => "x0",
-                      Nick    => "x0",
-                      Minimum => Gdouble'First,
-                      Maximum => Gdouble'Last,
-                      Default => 0.0,
-                      Blurb   => "The x-coordinate of the point " &
-                        "corresponding to the value 0"
-                     );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "x0",
+                    Nick    => "x0",
+                    Minimum => Gdouble'First,
+                    Maximum => Gdouble'Last,
+                    Default => 0.0,
+                    Blurb   =>
+                       "The x-coordinate of the point " &
+                       "corresponding to the value 0");
             when Property_From_Y =>
                return
-                 Gnew_Double
-                   (  Name    => "y0",
-                      Nick    => "y0",
-                      Minimum => Gdouble'First,
-                      Maximum => Gdouble'Last,
-                      Default => 0.0,
-                      Blurb   => "The y-coordinate of the point " &
-                        "corresponding to the value 0"
-                     );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "y0",
+                    Nick    => "y0",
+                    Minimum => Gdouble'First,
+                    Maximum => Gdouble'Last,
+                    Default => 0.0,
+                    Blurb   =>
+                       "The y-coordinate of the point " &
+                       "corresponding to the value 0");
             when Property_To_X =>
                return
-                 Gnew_Double
-                   (  Name    => "x1",
-                      Nick    => "x1",
-                      Minimum => Gdouble'First,
-                      Maximum => Gdouble'Last,
-                      Default => 0.0,
-                      Blurb   => "The x-coordinate of the point " &
-                        "corresponding to the value 1"
-                     );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "x1",
+                    Nick    => "x1",
+                    Minimum => Gdouble'First,
+                    Maximum => Gdouble'Last,
+                    Default => 0.0,
+                    Blurb   =>
+                       "The x-coordinate of the point " &
+                       "corresponding to the value 1");
             when Property_To_Y =>
                return
-                 Gnew_Double
-                   (  Name    => "y1",
-                      Nick    => "y1",
-                      Minimum => Gdouble'First,
-                      Maximum => Gdouble'Last,
-                      Default => 0.0,
-                      Blurb   => "The y-coordinate of the point " &
-                        "corresponding to the value 1"
-                     );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "y1",
+                    Nick    => "y1",
+                    Minimum => Gdouble'First,
+                    Maximum => Gdouble'Last,
+                    Default => 0.0,
+                    Blurb   =>
+                       "The y-coordinate of the point " &
+                       "corresponding to the value 1");
             when Property_Value =>
                return
-                 Gnew_Double
-                   (  Name    => "value",
-                      Nick    => "value",
-                      Minimum => 0.0,
-                      Maximum => 1.0,
-                      Default => 0.0,
-                      Blurb   => "The indicated value"
-                     );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "value",
+                    Nick    => "value",
+                    Minimum => 0.0,
+                    Maximum => 1.0,
+                    Default => 0.0,
+                    Blurb   => "The indicated value");
             when Property_Line_Width =>
                return
-                 Gnew_Double
-                   (  Name    => "width",
-                      Nick    => "width",
-                      Minimum => 0.0,
-                      Maximum => Gdouble'Last,
-                      Default => 1.0,
-                      Blurb   => "The bar's line width"
-                     );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "width",
+                    Nick    => "width",
+                    Minimum => 0.0,
+                    Maximum => Gdouble'Last,
+                    Default => 1.0,
+                    Blurb   => "The bar's line width");
             when Property_Line_Color =>
                return
-                 Gnew_Boxed
+                 Glib.Properties.Creation.Gnew_Boxed
                    (Name       => "color",
                     Boxed_Type => Gdk.Color.Gdk_Color_Type,
                     Nick       => "color",
@@ -464,29 +450,28 @@ package body Gtk.Layered.Bar is
             when Property_Line_Cap =>
                return
                  Cairo.Line_Cap_Property.Gnew_Enum
-                   (  Name    => "line-cap",
-                      Nick    => "line cap",
-                      Default => Cairo.Cairo_Line_Cap_Butt,
-                      Blurb   => "The cap style of the bar's line"
-                     );
+                   (Name    => "line-cap",
+                    Nick    => "line cap",
+                    Default => Cairo.Cairo_Line_Cap_Butt,
+                    Blurb   => "The cap style of the bar's line");
             when Property_Scaled =>
                return
-                 Gnew_Boolean
-                   (  Name    => "scaled",
-                      Nick    => "scaled",
-                      Default => False,
-                      Blurb   => "The bar size is changed when " &
-                        "the widget is resized"
-                     );
+                 Glib.Properties.Creation.Gnew_Boolean
+                   (Name    => "scaled",
+                    Nick    => "scaled",
+                    Default => False,
+                    Blurb   =>
+                       "The bar size is changed when " &
+                       "the widget is resized");
             when Property_Widened =>
                return
-                 Gnew_Boolean
-                   (  Name    => "widened",
-                      Nick    => "widened",
-                      Default => False,
-                      Blurb   => "The bar's line width is changed " &
-                        "when the widget is resized"
-                     );
+                 Glib.Properties.Creation.Gnew_Boolean
+                   (Name    => "widened",
+                    Nick    => "widened",
+                    Default => False,
+                    Blurb   =>
+                       "The bar's line width is changed " &
+                       "when the widget is resized");
          end case;
       end if;
    end Get_Property_Specification;
@@ -524,9 +509,8 @@ package body Gtk.Layered.Bar is
                   Gdk.Color.Set_Value (Value, Layer.Line.Color);
                when Property_Line_Cap =>
                   Cairo.Line_Cap_Property.Set_Enum
-                    (  Value,
-                       Layer.Line.Line_Cap
-                      );
+                    (Value,
+                     Layer.Line.Line_Cap);
                when Property_Scaled =>
                   Glib.Values.Init (Value, GType_Boolean);
                   Glib.Values.Set_Boolean (Value, Layer.Scaled);
@@ -584,37 +568,35 @@ package body Gtk.Layered.Bar is
       Line       : Line_Parameters;
       Adjustment : Boolean;
    begin
-      Restore (Stream, From);
-      Restore (Stream, To);
-      Restore (Stream, Line);
-      Restore (Stream, Layer.Scaled, Layer.Widened, Adjustment);
+      Gtk.Layered.Stream_IO.Restore (Stream, From);
+      Gtk.Layered.Stream_IO.Restore (Stream, To);
+      Gtk.Layered.Stream_IO.Restore (Stream, Line);
+      Gtk.Layered.Stream_IO.Restore (Stream, Layer.Scaled, Layer.Widened, Adjustment);
       Set
-        (  Layer => Layer,
-           From  => From,
-           To    => To,
-           Line  => Line
-          );
+        (Layer => Layer,
+         From  => From,
+         To    => To,
+         Line  => Line);
       if Adjustment then
          declare
             Adjustment : Gtk.Adjustment.Gtk_Adjustment;
          begin
-            Restore (Stream, Adjustment);
+            Gtk.Layered.Stream_IO.Restore (Stream, Adjustment);
             Add_Adjustment (Layer, Adjustment);
          end;
       else
          declare
             Value : Gdouble;
          begin
-            Restore (Stream, Value);
+            Gtk.Layered.Stream_IO.Restore (Stream, Value);
             Set_Value (Layer, Value);
          end;
       end if;
    end Restore;
 
    overriding procedure Scale
-     (  Layer  : in out Bar_Layer;
-        Factor : Gdouble
-       )  is
+     (Layer  : in out Bar_Layer;
+      Factor : Gdouble) is
    begin
       Layer.From.X  := Layer.From.X * Factor;
       Layer.From.Y  := Layer.From.Y * Factor;
@@ -631,12 +613,12 @@ package body Gtk.Layered.Bar is
       Line   : Line_Parameters) is
    begin
       Set
-        (  Layer => Layer,
-           Line  => Line,
-           From  => From,
-           To    => (  X => From.X + Length * Cos (Angle),
-                       Y => From.Y + Length * Sin (Angle)
-                      )        );
+        (Layer => Layer,
+         Line  => Line,
+         From  => From,
+         To    =>
+           (X => From.X + Length * Cairo.Elementary_Functions.Cos (Angle),
+            Y => From.Y + Length * Cairo.Elementary_Functions.Sin (Angle)));
    end Set;
 
    procedure Set
@@ -694,18 +676,16 @@ package body Gtk.Layered.Bar is
    end Set_Property_Value;
 
    overriding procedure Set_Scaled
-     (  Layer  : in out Bar_Layer;
-        Scaled : Boolean
-       )  is
+     (Layer  : in out Bar_Layer;
+      Scaled : Boolean) is
    begin
       Layer.Scaled  := Scaled;
       Layer.Updated := True;
    end Set_Scaled;
 
    overriding procedure Set_Value
-     (  Layer : in out Bar_Layer;
-        Value : Gdouble
-       )  is
+     (Layer : in out Bar_Layer;
+      Value : Gdouble) is
    begin
       if Value <= 0.0 then
          if Layer.Value /= 0.0 then
@@ -726,9 +706,8 @@ package body Gtk.Layered.Bar is
    end Set_Value;
 
    overriding procedure Set_Widened
-     (  Layer   : in out Bar_Layer;
-        Widened : Boolean
-       )  is
+     (Layer   : in out Bar_Layer;
+      Widened : Boolean) is
    begin
       Layer.Widened := Widened;
       Layer.Updated := True;
@@ -740,18 +719,18 @@ package body Gtk.Layered.Bar is
    is
       use type Gtk.Adjustment.Gtk_Adjustment;
    begin
-      Store (Stream, Layer.From);
-      Store (Stream, Layer.To);
-      Store (Stream, Layer.Line);
-      Store
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.From);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.To);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Line);
+      Gtk.Layered.Stream_IO.Store
         (Stream,
          Layer.Scaled,
          Layer.Widened,
          Layer.Adjustment /= null);
       if Layer.Adjustment = null then
-         Store (Stream, Layer.Value);
+         Gtk.Layered.Stream_IO.Store (Stream, Layer.Value);
       else
-         Store (Stream, Layer.Adjustment);
+         Gtk.Layered.Stream_IO.Store (Stream, Layer.Adjustment);
       end if;
    end Store;
 

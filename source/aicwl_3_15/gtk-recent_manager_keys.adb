@@ -27,8 +27,8 @@
 
 with Ada.Exceptions;     use Ada.Exceptions;
 with Ada.IO_Exceptions;  use Ada.IO_Exceptions;
-with GLib.Messages;      use GLib.Messages;
-with GLib.Values;        use GLib.Values;
+with Glib.Messages;      use Glib.Messages;
+with Glib.Values;        use Glib.Values;
 with Gtk.Missed;         use Gtk.Missed;
 with Gtk.Tree_Model;     use Gtk.Tree_Model;
 
@@ -90,21 +90,21 @@ package body Gtk.Recent_Manager_Keys is
          )  );
    end Enumerate;
 
-   procedure Process
+   overriding procedure Process
              (  Enumerator : in out Model_Enumerator;
                 Key        : UTF8_String;
                 Value      : UTF8_String;
                 Info       : Gtk_Recent_Info
              )  is
       Pointer : constant Integer := Key'First + Enumerator.Length;
-      Row     : GInt;
+      Row     : Gint;
       This    : Gtk_Tree_Iter;
    begin
       if Pointer >= Key'Last or else Key (Pointer) /= '_' then
          return;
       end if;
       begin
-         Row := GInt'Value (Key (Pointer + 1..Key'Last));
+         Row := Gint'Value (Key (Pointer + 1..Key'Last));
       exception
          when others =>
             return;
@@ -161,7 +161,7 @@ package body Gtk.Recent_Manager_Keys is
    procedure Restore
              (  Key     : UTF8_String;
                 Model   : Gtk_List_Store;
-                Column  : GInt;
+                Column  : Gint;
                 Max_Row : Positive := 10;
                 Manager : Gtk_Recent_Manager := Get_Default
              )  is
@@ -170,7 +170,7 @@ package body Gtk.Recent_Manager_Keys is
       Enumerator.Model   := Model;
       Enumerator.Column  := Column;
       Enumerator.Length  := Key'Length;
-      Enumerator.Max_Row := GInt (Max_Row);
+      Enumerator.Max_Row := Gint (Max_Row);
       Enumerate (Enumerator, Key, Manager);
    exception
       when Error : others =>
@@ -212,7 +212,7 @@ package body Gtk.Recent_Manager_Keys is
    procedure Store
              (  Key     : UTF8_String;
                 Model   : Gtk_List_Store;
-                Column  : GInt;
+                Column  : Gint;
                 Max_Row : Positive := 10;
                 Manager : Gtk_Recent_Manager := Get_Default
              )  is

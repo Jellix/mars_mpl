@@ -122,8 +122,8 @@ package body Gtk.Layered.Needle is
    procedure Add_Needle
      (Under       : not null access Layer_Location'Class;
       Center      : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 0.0);
-      From        : Gdouble                                           := 3.0 * Pi / 4.0;
-      Length      : Gdouble                                           := 3.0 * Pi / 2.0;
+      From        : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 4.0;
+      Length      : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 2.0;
       Tip_Length  : Gdouble                                           := 20.0;
       Tip_Width   : Gdouble                                           := 2.0;
       Tip_Cap     : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
@@ -163,8 +163,8 @@ package body Gtk.Layered.Needle is
    function Add_Needle
      (Under       : not null access Layer_Location'Class;
       Center      : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 0.0);
-      From        : Gdouble                                           := 3.0 * Pi / 4.0;
-      Length      : Gdouble                                           := 3.0 * Pi / 2.0;
+      From        : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 4.0;
+      Length      : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 2.0;
       Tip_Length  : Gdouble                                           := 20.0;
       Tip_Width   : Gdouble                                           := 2.0;
       Tip_Cap     : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
@@ -288,8 +288,8 @@ package body Gtk.Layered.Needle is
                   Xc     => Tip_Length,
                   Yc     => 0.0,
                   Radius => Tip_Radius,
-                  Angle1 => Angle - Pi / 2.0,
-                  Angle2 => Pi / 2.0 - Angle);
+                  Angle1 => Angle - Ada.Numerics.Pi / 2.0,
+                  Angle2 => Ada.Numerics.Pi / 2.0 - Angle);
                Cairo.Line_To
                  (Context,
                   Tip_Length + Tip_Radius * Sin_Angle,
@@ -327,8 +327,8 @@ package body Gtk.Layered.Needle is
                   Xc     => -Rear_Length,
                   Yc     => 0.0,
                   Radius => Rear_Radius,
-                  Angle1 => Pi / 2.0 - Angle,
-                  Angle2 => Angle - Pi / 2.0);
+                  Angle1 => Ada.Numerics.Pi / 2.0 - Angle,
+                  Angle2 => Angle - Ada.Numerics.Pi / 2.0);
                Cairo.Line_To
                  (Context,
                   -Rear_Length - Rear_Radius * Sin_Angle,
@@ -442,8 +442,8 @@ package body Gtk.Layered.Needle is
                  Glib.Properties.Creation.Gnew_Double
                    (Name    => "from",
                     Nick    => "from",
-                    Minimum => -2.0 * Pi,
-                    Maximum => 2.0 * Pi,
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
                     Default => 0.0,
                     Blurb   => "The angle of corresponding to the value 0");
             when Property_Length =>
@@ -451,8 +451,8 @@ package body Gtk.Layered.Needle is
                  Glib.Properties.Creation.Gnew_Double
                    (Name    => "length",
                     Nick    => "length",
-                    Minimum => -2.0 * Pi,
-                    Maximum => 2.0 * Pi,
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
                     Default => 0.0,
                     Blurb   =>
                        "The length added to the value of " &
@@ -745,14 +745,21 @@ package body Gtk.Layered.Needle is
                end if;
             when Property_From =>
                Layer.From := Glib.Values.Get_Double (Value);
-               if Layer.From not in -2.0 * Pi .. 2.0 * Pi then
-                  Layer.From := Gdouble'Remainder (Layer.From, 2.0 * Pi);
+               if
+                 Layer.From not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
+                  Layer.From :=
+                    Gdouble'Remainder (Layer.From, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Length =>
                Layer.Length := Glib.Values.Get_Double (Value);
-               if Layer.Length not in -2.0 * Pi .. 2.0 * Pi then
+               if
+                 Layer.Length not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
                   Layer.Length :=
-                    Gdouble'Remainder (Layer.Length, 2.0 * Pi);
+                    Gdouble'Remainder (Layer.Length, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Color =>
                Layer.Color := Gdk.Color.Get_Value (Value);

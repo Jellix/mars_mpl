@@ -54,7 +54,7 @@ with GIO.Volume;
 with Glib.Glist;
 with Glib.Object;
 
-with System;       use System;
+with System;
 
 package GIO.Drive is
 
@@ -180,9 +180,9 @@ package GIO.Drive is
    function Is_Media_Removable
      (Drive : not null access GDrive_Record) return Boolean;
 
-   function Convert (Mount  : GDrive) return Address;
+   function Convert (Mount  : GDrive) return System.Address;
 
-   function Convert (Pointer : Address) return GDrive;
+   function Convert (Pointer : System.Address) return GDrive;
 
    package Drive_List is new Glib.Glist.Generic_List (GDrive);
 

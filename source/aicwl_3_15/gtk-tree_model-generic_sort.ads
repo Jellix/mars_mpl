@@ -40,8 +40,8 @@ generic
       new Gtk_Abstract_Model_Record with private;
    type Tree_Model is access all Tree_Model_Record'Class;
 package Gtk.Tree_Model.Generic_Sort is
-   Default_Sort_Column_ID  : GInt := -1;
-   Unsorted_Sort_Column_ID : GInt := -2;
+   Default_Sort_Column_ID  : Gint := -1;
+   Unsorted_Sort_Column_ID : Gint := -2;
 --
 -- Gtk_Tree_Model_Sort_Record -- A   sorted   Tree_View_Model  based  on
 --                               Tree_Model_Record
@@ -174,7 +174,7 @@ package Gtk.Tree_Model.Generic_Sort is
 --
    procedure Get_Sort_Column_ID
              (  Store  : not null access Gtk_Tree_Model_Sort_Record;
-                Column : out GInt;
+                Column : out Gint;
                 Order  : out Gtk_Sort_Type
              );
 --
@@ -223,7 +223,7 @@ package Gtk.Tree_Model.Generic_Sort is
 --
    procedure Set_Sort_Column_ID
              (  Store  : not null access Gtk_Tree_Model_Sort_Record;
-                Column : GInt;
+                Column : Gint;
                 Order  : Gtk_Sort_Type
              );
 --
@@ -241,7 +241,7 @@ package Gtk.Tree_Model.Generic_Sort is
    procedure Set_Sort_Func
              (  Store  : not null access
                          Gtk_Tree_Model_Sort_Record'Class;
-                Column : GInt
+                Column : Gint
              );
    procedure Set_Sort_Func
              (  Store  : not null access

@@ -39,7 +39,7 @@ package body Gtk.Tree_Model.Generic_Sort is
                A         : access Gtk_Tree_Iter;
                B         : access Gtk_Tree_Iter;
                User_Data : System.Address
-            )  return GInt;
+            )  return Gint;
    pragma Convention (C, C_Sort);
 
    procedure Clear_Cache
@@ -195,7 +195,7 @@ package body Gtk.Tree_Model.Generic_Sort is
       function Internal
                (  Model : System.Address;
                   Iter  : access Gtk_Tree_Iter
-               )  return GBoolean;
+               )  return Gboolean;
       pragma Import (C, Internal, "gtk_tree_model_sort_iter_is_valid");
    begin
       if Iter = Null_Iter then
@@ -217,7 +217,7 @@ package body Gtk.Tree_Model.Generic_Sort is
                A         : access Gtk_Tree_Iter;
                B         : access Gtk_Tree_Iter;
                User_Data : System.Address
-            )  return GInt is
+            )  return Gint is
       function To_Store is
          new Ada.Unchecked_Conversion
              (  System.Address,
@@ -234,21 +234,21 @@ package body Gtk.Tree_Model.Generic_Sort is
 
    procedure Get_Sort_Column_ID
              (  Store  : not null access Gtk_Tree_Model_Sort_Record;
-                Column : out GInt;
+                Column : out Gint;
                 Order  : out Gtk_Sort_Type
              )  is
       function Internal
                (  Model  : System.Address;
-                  Column : access GInt;
+                  Column : access Gint;
                   Order  : access Gtk_Sort_Type
-               )  return GBoolean;
+               )  return Gboolean;
       pragma Import
              (  C,
                 Internal,
                 "gtk_tree_sortable_get_sort_column_id"
              );
-      Result       : GBoolean;
-      Local_Column : aliased GInt;
+      Result       : Gboolean;
+      Local_Column : aliased Gint;
       Local_Order  : aliased Gtk_Sort_Type;
    begin
       Result :=
@@ -264,7 +264,7 @@ package body Gtk.Tree_Model.Generic_Sort is
    function Has_Default_Sort_Func
             (  Store : not null access Gtk_Tree_Model_Sort_Record
             )  return Boolean is
-      function Internal (Model : System.Address) return GBoolean;
+      function Internal (Model : System.Address) return Gboolean;
       pragma Import
              (  C,
                 Internal,
@@ -276,12 +276,12 @@ package body Gtk.Tree_Model.Generic_Sort is
 
    procedure Set_Sort_Column_ID
              (  Store  : not null access Gtk_Tree_Model_Sort_Record;
-                Column : GInt;
+                Column : Gint;
                 Order  : Gtk_Sort_Type
              )  is
       procedure Internal
                 (  Model  : System.Address;
-                   Column : GInt;
+                   Column : Gint;
                    Order  : Gtk_Sort_Type
                 );
       pragma Import
@@ -296,11 +296,11 @@ package body Gtk.Tree_Model.Generic_Sort is
    procedure Set_Sort_Func
              (  Store  : not null access
                          Gtk_Tree_Model_Sort_Record'Class;
-                Column : GInt
+                Column : Gint
              )  is
       procedure Internal
                 (  Model     : System.Address;
-                   Column    : GInt;
+                   Column    : Gint;
                    Sort_Func : System.Address;
                    User_Data : System.Address;
                    Destroy   : System.Address

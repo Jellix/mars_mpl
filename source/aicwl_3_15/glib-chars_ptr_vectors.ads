@@ -40,8 +40,7 @@ package Glib.Chars_Ptr_Vectors is
         Gtkada.Types.Chars_Ptr,
         Chars_Ptr_Vector,
         null);
-   use Chars_Ptr_Pointers;
-   type Chars_Ptr_Ptr is new Pointer;
+   type Chars_Ptr_Ptr is new Chars_Ptr_Pointers.Pointer;
 
    --
    -- Convert_And_Free -- Conversion of  an object of gchar **  as returned

@@ -23,34 +23,33 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Gtk.Image;  use Gtk.Image;
+with Glib.Object.Checked_Destroy;
 
-with GLib.Object.Checked_Destroy;
+with Gtk.Image;
 
 package body Gtk.Image_Button is
 
    function Get_Box
-            (  Button : not null access Gtk_Image_Button_Record
-            )  return Gtk_Box is
+     (Button : not null access Gtk_Image_Button_Record) return Gtk.Box.Gtk_Box
+   is
    begin
-      return Button.Box;
+      return Button.all.Box;
    end Get_Box;
 
    function Get_Label
-            (  Button : not null access Gtk_Image_Button_Record
-            )  return Gtk_Label is
+     (Button : not null access Gtk_Image_Button_Record)
+      return Gtk.Label.Gtk_Label is
    begin
-      return Button.Label;
+      return Button.all.Label;
    end Get_Label;
 
    procedure Gtk_New
-             (  Button : out Gtk_Image_Button;
-                Image  : not null access Gtk_Widget_Record'Class;
-                Label  : UTF8_String := ""
-             )  is
-      use GLib.Object;
+     (Button : out Gtk_Image_Button;
+      Image  : not null access Gtk.Widget.Gtk_Widget_Record'Class;
+      Label  : UTF8_String := "")
+   is
       Widget : Gtk_Image_Button;
    begin
       Widget := new Gtk_Image_Button_Record;
@@ -64,38 +63,39 @@ package body Gtk.Image_Button is
    end Gtk_New;
 
    procedure Gtk_New
-             (  Button   : out Gtk_Image_Button;
-                Stock_Id : String;
-                Size     : Gtk_Icon_Size;
-                Label    : UTF8_String := ""
-             )  is
-      Image : Gtk_Image;
+     (Button   : out Gtk_Image_Button;
+      Stock_Id : String;
+      Size     : Gtk.Enums.Gtk_Icon_Size;
+      Label    : UTF8_String := "")
+   is
+      Image : Gtk.Image.Gtk_Image;
+
+      use type Gtk.Image.Gtk_Image;
    begin
-      Gtk_New (Image, Stock_Id, Size);
+      Gtk.Image.Gtk_New (Image, Stock_Id, Size);
       Gtk_New (Button, Image, Label);
    exception
       when others =>
          if Image /= null then
-            Unref (Image);
+            Gtk.Image.Unref (Image);
             raise;
          end if;
    end Gtk_New;
 
    procedure Initialize
-             (  Button : not null access Gtk_Image_Button_Record'Class;
-                Image  : not null access Gtk_Widget_Record'Class;
-                Label  : UTF8_String
-             )  is
+     (Button : not null access Gtk_Image_Button_Record'Class;
+      Image  : not null access Gtk.Widget.Gtk_Widget_Record'Class;
+      Label  : UTF8_String) is
    begin
       Gtk.Button.Initialize (Button, "");
-      Gtk_New (Button.Label, Label);
-      Gtk_New_HBox (Button.Box, False, 0);
-      Button.Box.Set_Border_Width (0);
-      Button.Box.Pack_Start (Image, False, False);
-      Button.Box.Pack_Start (Button.Label, False, False);
-      Image.Show;
-      Button.Label.Show;
-      Button.Add (Button.Box);
+      Gtk.Label.Gtk_New (Button.all.Label, Label);
+      Gtk.Box.Gtk_New_Hbox (Button.all.Box, False, 0);
+      Button.all.Box.all.Set_Border_Width (0);
+      Button.all.Box.all.Pack_Start (Image, False, False);
+      Button.all.Box.all.Pack_Start (Button.all.Label, False, False);
+      Image.all.Show;
+      Button.all.Label.all.Show;
+      Button.all.Add (Button.all.Box);
    end Initialize;
 
 end Gtk.Image_Button;

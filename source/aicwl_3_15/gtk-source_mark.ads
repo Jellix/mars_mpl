@@ -28,7 +28,7 @@
 with Gtk.Text_Mark;  use Gtk.Text_Mark;
 with System;         use System;
 
-with GLib.GSlist;
+with Glib.GSlist;
 
 package Gtk.Source_Mark is
 --

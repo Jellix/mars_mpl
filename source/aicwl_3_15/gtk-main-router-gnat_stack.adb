@@ -206,20 +206,20 @@ package body Gtk.Main.Router.GNAT_Stack is
                 Level  : Log_Level_Flags :=
                             Log_Fatal_Mask or Log_Level_Critical
              )  is
-      ID : Log_Handler_ID;
+      ID : Log_Handler_Id;
    begin
       ID := Log_Set_Handler (Domain, Level, Log_Function'Access);
    end Set_Log_Trace;
 
    type Log_Func_Ptr is access procedure
-        (  Domain  : Chars_Ptr;
+        (  Domain  : chars_ptr;
            Level   : Log_Level_Flags;
            Message : chars_ptr;
            Handler : Log_Function_Ptr
         );
    pragma Convention (C, Log_Func_Ptr);
    procedure Log_Func
-             (  Domain  : Chars_Ptr;
+             (  Domain  : chars_ptr;
                 Level   : Log_Level_Flags;
                 Message : chars_ptr;
                 Handler : Log_Function_Ptr
@@ -244,9 +244,9 @@ package body Gtk.Main.Router.GNAT_Stack is
       function Internal
                (  Func   : Log_Func_Ptr := Log_Func'Access;
                   Data   : Address      := Log_Function'Address
-               )  return Log_Handler_ID;
+               )  return Log_Handler_Id;
       pragma Import (C, Internal, "g_log_set_default_handler");
-      ID : Log_Handler_ID;
+      ID : Log_Handler_Id;
    begin
       ID := Internal;
    end Set_Log_Trace;

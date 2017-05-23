@@ -23,23 +23,26 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Ada.Numerics;              use Ada.Numerics;
+with Ada.Numerics;
+
 with Cairo;                     use Cairo;
-with GLib.Properties.Creation;  use GLib.Properties.Creation;
-with GLib.Types;                use GLib.Types;
-with GtkAda.Types;              use GtkAda.Types;
+with Cairo.Line_Cap_Property;
+
+with Glib.Object.Checked_Destroy;
+with Glib.Properties.Creation;  use Glib.Properties.Creation;
+with Glib.Types;                use Glib.Types;
+
 with Gtk.Enums;                 use Gtk.Enums;
 with Gtk.Missed;                use Gtk.Missed;
 with Gtk.Widget.Styles;         use Gtk.Widget.Styles;
-with Pango.Cairo.Fonts;         use Pango.Cairo.Fonts;
-
-with Cairo.Line_Cap_Property;
-with GLib.Object.Checked_Destroy;
 with Gtk.Widget.Styles.Line_Cap_Property;
 
+with Pango.Cairo.Fonts;         use Pango.Cairo.Fonts;
+
 package body Gtk.Wall_Clock.Imperial is
+
    use Cairo.Line_Cap_Property;
    use Gtk.Widget.Styles.Line_Cap_Property;
 
@@ -54,8 +57,8 @@ package body Gtk.Wall_Clock.Imperial is
 
    Class_Record : aliased Ada_GObject_Class := Uninitialized_Class;
 
-   Step  : constant GDouble := 2.0 * Pi / 12.0;
-   First : constant GDouble := Step - Pi / 2.0;
+   Step  : constant Gdouble := 2.0 * Ada.Numerics.Pi / 12.0;
+   First : constant Gdouble := Step - Ada.Numerics.Pi / 2.0;
 
    package Handlers is
       new Gtk.Handlers.User_Callback
@@ -135,7 +138,7 @@ package body Gtk.Wall_Clock.Imperial is
             (  Name    => "hour-needle-tip-cap",
                Nick    => "Tip cap",
                Blurb   => "The style used for the hour needle tip",
-               Default => CAIRO_LINE_CAP_ROUND
+               Default => Cairo_Line_Cap_Round
          )  );
          Install_Style
          (  Class_Ref (Class_Record.The_Type),
@@ -143,7 +146,7 @@ package body Gtk.Wall_Clock.Imperial is
             (  Name    => "hour-needle-rear-cap",
                Nick    => "Rear cap",
                Blurb   => "The style used for the hour needle rear",
-               Default => CAIRO_LINE_CAP_BUTT
+               Default => Cairo_Line_Cap_Butt
          )  );
          Install_Style_Property
          (  Class_Ref (Class_Record.The_Type),
@@ -175,7 +178,7 @@ package body Gtk.Wall_Clock.Imperial is
             (  Name    => "major-tick-line-cap",
                Nick    => "Major tick cap",
                Blurb   => "The line cap style used for major ticks",
-               Default => CAIRO_LINE_CAP_BUTT
+               Default => Cairo_Line_Cap_Butt
          )  );
          Install_Style_Property
          (  Class_Ref (Class_Record.The_Type),
@@ -191,7 +194,7 @@ package body Gtk.Wall_Clock.Imperial is
             (  Name    => "minor-tick-line-cap",
                Nick    => "Minor tick cap",
                Blurb   => "The line cap style used for minor ticks",
-               Default => CAIRO_LINE_CAP_BUTT
+               Default => Cairo_Line_Cap_Butt
          )  );
          Install_Style_Property
          (  Class_Ref (Class_Record.The_Type),
@@ -207,7 +210,7 @@ package body Gtk.Wall_Clock.Imperial is
             (  Name    => "minute-needle-tip-cap",
                Nick    => "Tip cap",
                Blurb   => "The style used for the minute needle tip",
-               Default => CAIRO_LINE_CAP_ROUND
+               Default => Cairo_Line_Cap_Round
          )  );
          Install_Style
          (  Class_Ref (Class_Record.The_Type),
@@ -215,7 +218,7 @@ package body Gtk.Wall_Clock.Imperial is
             (  Name    => "minute-needle-rear-cap",
                Nick    => "Rear cap",
                Blurb   => "The style used for the minute needle rear",
-               Default => CAIRO_LINE_CAP_BUTT
+               Default => Cairo_Line_Cap_Butt
          )  );
          Install_Style_Property
          (  Class_Ref (Class_Record.The_Type),
@@ -246,7 +249,7 @@ package body Gtk.Wall_Clock.Imperial is
       Initialize (Widget, Adjustment);
    exception
       when others =>
-         GLib.Object.Checked_Destroy (Widget);
+         Glib.Object.Checked_Destroy (Widget);
          Widget := null;
          raise;
    end Gtk_New;
@@ -332,8 +335,8 @@ package body Gtk.Wall_Clock.Imperial is
             Delimiter => ' ',
             Face      => Create_Toy
                          (  Family => "times",
-                            Slant  => CAIRO_FONT_SLANT_NORMAL,
-                            Weight => CAIRO_FONT_WEIGHT_BOLD
+                            Slant  => Cairo_Font_Slant_Normal,
+                            Weight => Cairo_Font_Weight_Bold
                          ),
             Step      => Step,
             Height    => 0.11,
@@ -344,38 +347,36 @@ package body Gtk.Wall_Clock.Imperial is
             Scaled    => True
          );
       Widget.Hour_Needle :=
-         Add_Clock_Hand
-         (  Under         => Widget.Background.Get_Foreground,
-            Center        => (0.0, 0.0),
-            Adjustment    => Adjustment,
-            Tip_Length    => 0.34,
-            Tip_Width     => 0.020,
-            Rear_Length   => 0.0,
-            Rear_Width    => 0.04,
-            From          => 3.0 * Pi / 2.0,
-            Length        => 2.0 * Pi,
-            Bulb_Radius   => 0.04,
-            Bulb_Position => 0.25,
-            Bulb_Width    => 0.02,
-            Color         => Hour_Needle_Color,
-            Scaled        => True
-         );
+        Add_Clock_Hand
+          (Under         => Widget.Background.Get_Foreground,
+           Center        => (0.0, 0.0),
+           Adjustment    => Adjustment,
+           Tip_Length    => 0.34,
+           Tip_Width     => 0.020,
+           Rear_Length   => 0.0,
+           Rear_Width    => 0.04,
+           From          => 3.0 * Ada.Numerics.Pi / 2.0,
+           Length        => 2.0 * Ada.Numerics.Pi,
+           Bulb_Radius   => 0.04,
+           Bulb_Position => 0.25,
+           Bulb_Width    => 0.02,
+           Color         => Hour_Needle_Color,
+           Scaled        => True);
       Widget.Minute_Needle :=
-         Add_Clock_Hand
-         (  Under         => Widget.Background.Get_Foreground,
-            Center        => (0.0, 0.0),
-            Tip_Length    => 0.47,
-            Tip_Width     => 0.015,
-            Rear_Length   => 0.0,
-            Rear_Width    => 0.025,
-            From          => 3.0 * Pi / 2.0,
-            Length        => 2.0 * Pi,
-            Bulb_Radius   => 0.03,
-            Bulb_Position => 0.37,
-            Bulb_Width    => 0.015,
-            Color         => Minute_Needle_Color,
-            Scaled        => True
-         );
+        Add_Clock_Hand
+          (Under         => Widget.Background.Get_Foreground,
+           Center        => (0.0, 0.0),
+           Tip_Length    => 0.47,
+           Tip_Width     => 0.015,
+           Rear_Length   => 0.0,
+           Rear_Width    => 0.025,
+           From          => 3.0 * Ada.Numerics.Pi / 2.0,
+           Length        => 2.0 * Ada.Numerics.Pi,
+           Bulb_Radius   => 0.03,
+           Bulb_Position => 0.37,
+           Bulb_Width    => 0.015,
+           Color         => Minute_Needle_Color,
+           Scaled        => True);
       if Adjustment /= null then
          Ref (Adjustment);
          Widget.Adjustment := Adjustment;
@@ -401,10 +402,10 @@ package body Gtk.Wall_Clock.Imperial is
    procedure Set
              (  Widget  : not null access
                           Gtk_Wall_Clock_Imperial_Record;
-                Seconds : GDouble
+                Seconds : Gdouble
              )  is
-      Hours  : GDouble := GDouble'Remainder (Seconds / 3600.0, 12.0);
-      Minute : GDouble := GDouble'Remainder (Seconds / 60.0, 60.0);
+      Hours  : Gdouble := Gdouble'Remainder (Seconds / 3600.0, 12.0);
+      Minute : Gdouble := Gdouble'Remainder (Seconds / 60.0, 60.0);
    begin
       if Hours < 0.0 then
          Hours := Hours + 12.0;
@@ -421,7 +422,7 @@ package body Gtk.Wall_Clock.Imperial is
                 Value  : Time
              )  is
    begin
-      Set (Widget, GDouble (Seconds (Value)));
+      Set (Widget, Gdouble (Seconds (Value)));
    end Set_Value;
 
    procedure Style_Changed

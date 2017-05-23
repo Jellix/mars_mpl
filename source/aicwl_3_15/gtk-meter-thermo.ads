@@ -80,7 +80,7 @@ package Gtk.Meter.Thermo is
 --
    procedure Gtk_New
              (  Widget     : out Gtk_Meter_Thermo;
-                Texts      : Gtk.Enums.String_List.GList;
+                Texts      : Gtk.Enums.String_List.Glist;
                 Adjustment : Gtk_Adjustment := null;
                 Sectors    : Positive       := 10;
                 Label      : String         := Celsius;
@@ -120,7 +120,7 @@ package Gtk.Meter.Thermo is
    procedure Initialize
              (  Widget     : not null access
                                 Gtk_Meter_Thermo_Record'Class;
-                Texts      : Gtk.Enums.String_List.GList;
+                Texts      : Gtk.Enums.String_List.Glist;
                 Adjustment : Gtk_Adjustment;
                 Sectors    : Positive;
                 Label      : String;
@@ -247,7 +247,7 @@ package Gtk.Meter.Thermo is
 --
    procedure Set_Value
              (  Widget : not null access Gtk_Meter_Thermo_Record;
-                Value  : GDouble
+                Value  : Gdouble
              );
 
    overriding

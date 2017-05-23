@@ -161,7 +161,7 @@ package body Gtk.Layered.Elliptic_Annotation is
       Skipped : Tick_Number                        := Tick_Number'Last;
       Ellipse : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
       From    : Gdouble                            := 0.0;
-      Length  : Gdouble                            := 2.0 * Pi;
+      Length  : Gdouble                            := 2.0 * Ada.Numerics.Pi;
       Face    : Pango.Cairo.Fonts.Pango_Cairo_Font :=
         Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
@@ -203,7 +203,7 @@ package body Gtk.Layered.Elliptic_Annotation is
       Skipped : Tick_Number                        := Tick_Number'Last;
       Ellipse : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
       From    : Gdouble                            := 0.0;
-      Length  : Gdouble                            := 2.0 * Pi;
+      Length  : Gdouble                            := 2.0 * Ada.Numerics.Pi;
       Face    : Pango.Cairo.Fonts.Pango_Cairo_Font :=
         Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
@@ -246,7 +246,7 @@ package body Gtk.Layered.Elliptic_Annotation is
       Skipped : Tick_Number                        := Tick_Number'Last;
       Ellipse : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
       From    : Gdouble                            := 0.0;
-      Length  : Gdouble                            := 2.0 * Pi;
+      Length  : Gdouble                            := 2.0 * Ada.Numerics.Pi;
       Face    : Pango.Cairo.Fonts.Pango_Cairo_Font :=
         Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
@@ -285,7 +285,7 @@ package body Gtk.Layered.Elliptic_Annotation is
       Skipped : Tick_Number                        := Tick_Number'Last;
       Ellipse : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
       From    : Gdouble                            := 0.0;
-      Length  : Gdouble                            := 2.0 * Pi;
+      Length  : Gdouble                            := 2.0 * Ada.Numerics.Pi;
       Face    : Pango.Cairo.Fonts.Pango_Cairo_Font :=
         Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
@@ -326,7 +326,7 @@ package body Gtk.Layered.Elliptic_Annotation is
       Skipped   : Tick_Number                        := Tick_Number'Last;
       Ellipse   : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
       From      : Gdouble                            := 0.0;
-      Length    : Gdouble                            := 2.0 * Pi;
+      Length    : Gdouble                            := 2.0 * Ada.Numerics.Pi;
       Face      : Pango.Cairo.Fonts.Pango_Cairo_Font :=
         Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
@@ -373,7 +373,7 @@ package body Gtk.Layered.Elliptic_Annotation is
       Skipped   : Tick_Number                        := Tick_Number'Last;
       Ellipse   : Cairo.Ellipses.Ellipse_Parameters  := Cairo.Ellipses.Unit_Circle;
       From      : Gdouble                            := 0.0;
-      Length    : Gdouble                            := 2.0 * Pi;
+      Length    : Gdouble                            := 2.0 * Ada.Numerics.Pi;
       Face      : Pango.Cairo.Fonts.Pango_Cairo_Font :=
         Pango.Cairo.Fonts.Create_Toy
           (Family => "arial",
@@ -517,9 +517,9 @@ package body Gtk.Layered.Elliptic_Annotation is
                            -- half Pi.  This replaces half Pi with a bit
                            -- greater angle.
                            --
-                           Cairo.Rotate (Context, Pi / 2.0 + Eps);
+                           Cairo.Rotate (Context, Ada.Numerics.Pi / 2.0 + Eps);
                         else
-                           Cairo.Rotate (Context, Angle + Pi / 2.0);
+                           Cairo.Rotate (Context, Angle + Ada.Numerics.Pi / 2.0);
                         end if;
                      when Skewed =>
                         Cairo.Rotate (Context, Ellipse.Angle);
@@ -529,7 +529,7 @@ package body Gtk.Layered.Elliptic_Annotation is
                            Matrix.Xx := 1.0;
                            Matrix.Xy := 1.0;
                            Matrix.Xy :=
-                             Tan (Ellipse.Angle - Angle - Pi / 2.0);
+                             Tan (Ellipse.Angle - Angle - Ada.Numerics.Pi / 2.0);
                            Matrix.X0 := 0.0;
                            Matrix.Yx := 0.0;
                            Matrix.Yy := 1.0;
@@ -773,8 +773,8 @@ package body Gtk.Layered.Elliptic_Annotation is
                  Gnew_Double
                    (Name    => "angle",
                     Nick    => "angle",
-                    Minimum => -2.0 * Pi,
-                    Maximum => 2.0 * Pi,
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
                     Default => 0.0,
                     Blurb   =>
                        "The angle of the major ellipse's axis. The " &
@@ -785,8 +785,8 @@ package body Gtk.Layered.Elliptic_Annotation is
                  Gnew_Double
                    (Name    => "from",
                     Nick    => "from",
-                    Minimum => -2.0 * Pi,
-                    Maximum => 2.0 * Pi,
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
                     Default => 0.0,
                     Blurb   =>
                        "The angle of the first annotation text on the arc of " &
@@ -796,8 +796,8 @@ package body Gtk.Layered.Elliptic_Annotation is
                  Gnew_Double
                    (Name    => "length",
                     Nick    => "length",
-                    Minimum => -2.0 * Pi,
-                    Maximum => 2.0 * Pi,
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
                     Default => 0.0,
                     Blurb   =>
                        "The angular length of the arc of the ellipse used " &
@@ -904,8 +904,8 @@ package body Gtk.Layered.Elliptic_Annotation is
                    (Name    => "step",
                     Nick    => "step",
                     Minimum => 1.0E-6,
-                    Maximum => 2.0 * Pi,
-                    Default => Pi / 12.0,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
+                    Default => Ada.Numerics.Pi / 12.0,
                     Blurb   =>
                        "The angular distance between two consequent scale " &
                        "ticks at where annotation texts are drawn");
@@ -1281,20 +1281,31 @@ package body Gtk.Layered.Elliptic_Annotation is
                end if;
             when Property_Angle =>
                Layer.Ellipse.Angle := Glib.Values.Get_Double (Value);
-               if Layer.Ellipse.Angle not in -2.0 * Pi .. 2.0 * Pi then
+               if
+                 Layer.Ellipse.Angle not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
                   Layer.Ellipse.Angle :=
-                    Gdouble'Remainder (Layer.Ellipse.Angle, 2.0 * Pi);
+                    Gdouble'Remainder
+                      (Layer.Ellipse.Angle, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_From =>
                Layer.From := Glib.Values.Get_Double (Value);
-               if Layer.From not in -2.0 * Pi .. 2.0 * Pi then
-                  Layer.From := Gdouble'Remainder (Layer.From, 2.0 * Pi);
+               if
+                 Layer.From not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
+                  Layer.From :=
+                    Gdouble'Remainder (Layer.From, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Length =>
                Layer.Length := Glib.Values.Get_Double (Value);
-               if Layer.Length not in -2.0 * Pi .. 2.0 * Pi then
+               if
+                 Layer.Length not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
                   Layer.Length :=
-                    Gdouble'Remainder (Layer.Length, 2.0 * Pi);
+                    Gdouble'Remainder (Layer.Length, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Stretch =>
                Layer.Stretch := Glib.Values.Get_Double (Value);

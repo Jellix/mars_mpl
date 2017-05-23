@@ -25,8 +25,6 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Ada.Numerics;
-
 with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
 with Glib.Properties.Creation;    use Glib.Properties.Creation;
 with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
@@ -38,8 +36,6 @@ with Pango.Enums.Weight_Property;
 with Gtk.Layered.Alignment_Property;
 
 package body Gtk.Layered.Flat_Annotation is
-
-   Pi : constant := Ada.Numerics.Pi;
 
    type Annotation_Ptr is access all Flat_Annotation_Layer;
 
@@ -762,8 +758,8 @@ package body Gtk.Layered.Flat_Annotation is
                  Gnew_Double
                    (Name    => "annotation-angle",
                     Nick    => "annotation line angle",
-                    Minimum => -2.0 * Pi,
-                    Maximum => 2.0 * Pi,
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
                     Default => 0.0,
                     Blurb   =>
                        "The angle of the line where " &
@@ -773,8 +769,8 @@ package body Gtk.Layered.Flat_Annotation is
                  Gnew_Double
                    (Name    => "text-angle",
                     Nick    => "text angle",
-                    Minimum => -2.0 * Pi,
-                    Maximum => 2.0 * Pi,
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
                     Default => 0.0,
                     Blurb   => "The angle of the annotation texts base line");
             when Property_Tick_Step =>
@@ -1267,15 +1263,22 @@ package body Gtk.Layered.Flat_Annotation is
                end if;
             when Property_Scale_Angle =>
                Layer.Scale_Angle := Glib.Values.Get_Double (Value);
-               if Layer.Scale_Angle not in -2.0 * Pi .. 2.0 * Pi then
+               if
+                 Layer.Scale_Angle not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
                   Layer.Scale_Angle :=
-                    Gdouble'Remainder (Layer.Scale_Angle, 2.0 * Pi);
+                    Gdouble'Remainder (Layer.Scale_Angle,
+                                       2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Text_Angle =>
                Layer.Text_Angle := Glib.Values.Get_Double (Value);
-               if Layer.Text_Angle not in -2.0 * Pi .. 2.0 * Pi then
+               if
+                 Layer.Text_Angle not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
                   Layer.Text_Angle :=
-                    Gdouble'Remainder (Layer.Text_Angle, 2.0 * Pi);
+                    Gdouble'Remainder (Layer.Text_Angle, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Height =>
                Layer.Height := Glib.Values.Get_Double (Value);

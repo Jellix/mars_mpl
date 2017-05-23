@@ -25,22 +25,23 @@
 --  executable file might be covered by the GNU Public License.       --
 --____________________________________________________________________--
 
-with Ada.Numerics;              use Ada.Numerics;
+with Ada.Numerics;
 with Ada.Strings;               use Ada.Strings;
+
 with Cairo;                     use Cairo;
 with Cairo.Line_Cap_Property;   use Cairo.Line_Cap_Property;
+
 with Gdk.Color.IHLS;            use Gdk.Color.IHLS;
-with GLib.Properties.Creation;  use GLib.Properties.Creation;
-with GLib.Types;                use GLib.Types;
-with GtkAda.Types;              use GtkAda.Types;
+
+with Glib.Object.Checked_Destroy;
+with Glib.Properties.Creation;  use Glib.Properties.Creation;
+with Glib.Types;                use Glib.Types;
+
 with Gtk.Enums;                 use Gtk.Enums;
 with Gtk.Widget.Styles;         use Gtk.Widget.Styles;
+with Gtk.Widget.Styles.Line_Cap_Property; use  Gtk.Widget.Styles.Line_Cap_Property;
+
 with Pango.Cairo.Fonts;         use Pango.Cairo.Fonts;
-
-with GLib.Object.Checked_Destroy;
-
-with Gtk.Widget.Styles.Line_Cap_Property;
-use  Gtk.Widget.Styles.Line_Cap_Property;
 
 package body Gtk.Meter.Thermo is
 
@@ -93,46 +94,43 @@ package body Gtk.Meter.Thermo is
             Scaled        => True
          );
       Widget.Major_Ticks :=
-         Add_Flat_Scale
-         (  Under   => Widget.Background.Get_Foreground,
-            From    => (Tick_Offset + 0.12, First),
-            Length  => Length,
-            Angle   => 3.0 * Pi / 2.0,
-            Breadth => 0.24,
-            Color   => Major_Tick_Color,
-            Width   => 4.0 / 600.0,
-            Step    => Length / GDouble (Sectors),
-            Scaled  => True,
-            Widened => True
-         );
+        Add_Flat_Scale
+          (Under   => Widget.Background.Get_Foreground,
+           From    => (Tick_Offset + 0.12, First),
+           Length  => Length,
+           Angle   => 3.0 * Ada.Numerics.Pi / 2.0,
+           Breadth => 0.24,
+           Color   => Major_Tick_Color,
+           Width   => 4.0 / 600.0,
+           Step    => Length / Gdouble (Sectors),
+           Scaled  => True,
+           Widened => True);
       Widget.Middle_Ticks :=
-         Add_Flat_Scale
-         (  Under   => Widget.Background.Get_Foreground,
-            From    => (Tick_Offset + 0.08, First),
-            Length  => Length,
-            Angle   => 3.0 * Pi / 2.0,
-            Breadth => 0.16,
-            Color   => Middle_Tick_Color,
-            Width   => 2.0 / 600.0,
-            Step    => 0.5 * Length / GDouble (Sectors),
-            Skipped => 2,
-            Scaled  => True,
-            Widened => True
-         );
+        Add_Flat_Scale
+          (Under   => Widget.Background.Get_Foreground,
+           From    => (Tick_Offset + 0.08, First),
+           Length  => Length,
+           Angle   => 3.0 * Ada.Numerics.Pi / 2.0,
+           Breadth => 0.16,
+           Color   => Middle_Tick_Color,
+           Width   => 2.0 / 600.0,
+           Step    => 0.5 * Length / Gdouble (Sectors),
+           Skipped => 2,
+           Scaled  => True,
+           Widened => True);
       Widget.Minor_Ticks :=
-         Add_Flat_Scale
-         (  Under   => Widget.Background.Get_Foreground,
-            From    => (Tick_Offset + 0.04, First),
-            Length  => Length,
-            Angle   => 3.0 * Pi / 2.0,
-            Breadth => 0.08,
-            Color   => Minor_Tick_Color,
-            Width   => 1.0 / 600.0,
-            Step    => 0.1 * Length / GDouble (Sectors),
-            Skipped => 5,
-            Scaled  => True,
-            Widened => True
-         );
+        Add_Flat_Scale
+          (Under   => Widget.Background.Get_Foreground,
+           From    => (Tick_Offset + 0.04, First),
+           Length  => Length,
+           Angle   => 3.0 * Ada.Numerics.Pi / 2.0,
+           Breadth => 0.08,
+           Color   => Minor_Tick_Color,
+           Width   => 1.0 / 600.0,
+           Step    => 0.1 * Length / Gdouble (Sectors),
+           Skipped => 5,
+           Scaled  => True,
+           Widened => True);
       Widget.Stem :=
          Add_Line
          (  Under    => Widget.Background.Get_Foreground,
@@ -140,7 +138,7 @@ package body Gtk.Meter.Thermo is
             To       => (Bar_Offset, First),
             Width    => Bar_Width,
             Color    => Color,
-            Line_Cap => CAIRO_LINE_CAP_BUTT,
+            Line_Cap => Cairo_Line_Cap_Butt,
             Scaled   => True,
             Widened  => True
          );
@@ -151,7 +149,7 @@ package body Gtk.Meter.Thermo is
             To       => (Bar_Offset, First + Stem_Length),
             Width    => Bar_Width * 2.0,
             Color    => Color,
-            Line_Cap => CAIRO_LINE_CAP_ROUND,
+            Line_Cap => Cairo_Line_Cap_Round,
             Scaled   => True,
             Widened  => True
          );
@@ -165,7 +163,7 @@ package body Gtk.Meter.Thermo is
                            First + Stem_Length - Reflection_Offset
                         ),
             Width    => Reflection_Offset * 2.0,
-            Line_Cap => CAIRO_LINE_CAP_ROUND,
+            Line_Cap => Cairo_Line_Cap_Round,
             Scaled   => True,
             Widened  => True,
             Color    => Lighten
@@ -183,18 +181,17 @@ package body Gtk.Meter.Thermo is
              )  is
    begin
       Widget.Bar :=
-         Add_Bar
-         (  Under      => Widget.Background.Get_Foreground,
-            From       => (Bar_Offset, First),
-            Length     => Length,
-            Angle      => 3.0 * Pi / 2.0,
-            Adjustment => Adjustment,
-            Line_Cap   => CAIRO_LINE_CAP_BUTT,
-            Width      => Bar_Width,
-            Color      => Color,
-            Scaled     => True,
-            Widened    => True
-         );
+        Add_Bar
+          (Under      => Widget.Background.Get_Foreground,
+           From       => (Bar_Offset, First),
+           Length     => Length,
+           Angle      => 3.0 * Ada.Numerics.Pi / 2.0,
+           Adjustment => Adjustment,
+           Line_Cap   => Cairo_Line_Cap_Butt,
+           Width      => Bar_Width,
+           Color      => Color,
+           Scaled     => True,
+           Widened    => True);
    end Create_Foreground;
 
    function Get_Annotation
@@ -278,7 +275,7 @@ package body Gtk.Meter.Thermo is
             (  Name    => "major-tick-line-cap",
                Nick    => "Major tick cap",
                Blurb   => "The line cap style used for major ticks",
-               Default => CAIRO_LINE_CAP_BUTT
+               Default => Cairo_Line_Cap_Butt
          )  );
          Install_Style_Property
          (  Class_Ref (Class_Record.The_Type),
@@ -294,7 +291,7 @@ package body Gtk.Meter.Thermo is
             (  Name    => "middle-tick-line-cap",
                Nick    => "Middle tick cap",
                Blurb   => "The line cap style used for middle ticks",
-               Default => CAIRO_LINE_CAP_BUTT
+               Default => Cairo_Line_Cap_Butt
          )  );
          Install_Style_Property
          (  Class_Ref (Class_Record.The_Type),
@@ -310,7 +307,7 @@ package body Gtk.Meter.Thermo is
             (  Name    => "minor-tick-line-cap",
                Nick    => "Minor tick cap",
                Blurb   => "The line cap style used for minor ticks",
-               Default => CAIRO_LINE_CAP_BUTT
+               Default => Cairo_Line_Cap_Butt
          )  );
          Install_Style_Property
          (  Class_Ref (Class_Record.The_Type),
@@ -326,7 +323,7 @@ package body Gtk.Meter.Thermo is
 
    procedure Gtk_New
              (  Widget     : out Gtk_Meter_Thermo;
-                Texts      : Gtk.Enums.String_List.GList;
+                Texts      : Gtk.Enums.String_List.Glist;
                 Adjustment : Gtk_Adjustment := null;
                 Sectors    : Positive       := 10;
                 Label      : String         := Celsius;
@@ -337,7 +334,7 @@ package body Gtk.Meter.Thermo is
       Initialize (Widget, Texts, Adjustment, Sectors, Label, Color);
    exception
       when others =>
-         GLib.Object.Checked_Destroy (Widget);
+         Glib.Object.Checked_Destroy (Widget);
          Widget := null;
          raise;
    end Gtk_New;
@@ -355,7 +352,7 @@ package body Gtk.Meter.Thermo is
       Initialize (Widget, Texts, Adjustment, Sectors, Label, Color);
    exception
       when others =>
-         GLib.Object.Checked_Destroy (Widget);
+         Glib.Object.Checked_Destroy (Widget);
          Widget := null;
          raise;
    end Gtk_New;
@@ -382,7 +379,7 @@ package body Gtk.Meter.Thermo is
       );
    exception
       when others =>
-         GLib.Object.Checked_Destroy (Widget);
+         Glib.Object.Checked_Destroy (Widget);
          Widget := null;
          raise;
    end Gtk_New;
@@ -390,7 +387,7 @@ package body Gtk.Meter.Thermo is
    procedure Initialize
              (  Widget     : not null access
                                 Gtk_Meter_Thermo_Record'Class;
-                Texts      : Gtk.Enums.String_List.GList;
+                Texts      : Gtk.Enums.String_List.Glist;
                 Adjustment : Gtk_Adjustment;
                 Sectors    : Positive;
                 Label      : String;
@@ -399,29 +396,29 @@ package body Gtk.Meter.Thermo is
    begin
       Create_Background (Widget, Sectors, Color);
       Widget.Annotation :=
-         Add_Flat_Annotation
-         (  Under       => Widget.Cache,
-            From        => (Annotation_Offset, First),
-            Length      => Length,
-            Scale_Angle => 3.0 * Pi / 2.0,
-            Texts       => Texts,
-            Justify     => Right,
-            Step        => Length / GDouble (Sectors),
-            Height      => 0.1,
-            Color       => Text_Color,
-            Scaled      => True,
-            Face        => Create_Toy
-                           (  Family => "arial",
-                              Slant  => CAIRO_FONT_SLANT_NORMAL,
-                              Weight => CAIRO_FONT_WEIGHT_NORMAL
-         )                 );
+        Add_Flat_Annotation
+          (Under       => Widget.Cache,
+           From        => (Annotation_Offset, First),
+           Length      => Length,
+           Scale_Angle => 3.0 * Ada.Numerics.Pi / 2.0,
+           Texts       => Texts,
+           Justify     => Right,
+           Step        => Length / Gdouble (Sectors),
+           Height      => 0.1,
+           Color       => Text_Color,
+           Scaled      => True,
+           Face        =>
+             Create_Toy
+               (Family => "arial",
+                Slant  => Cairo_Font_Slant_Normal,
+                Weight => Cairo_Font_Weight_Normal));
       Widget.Label :=
          Add_Label
          (  Under    => Widget.Get_Cache,
             Face     => Create_Toy
                         (  Family => "arial",
-                           Slant  => CAIRO_FONT_SLANT_NORMAL,
-                           Weight => CAIRO_FONT_WEIGHT_BOLD
+                           Slant  => Cairo_Font_Slant_Normal,
+                           Weight => Cairo_Font_Weight_Bold
                         ),
             Color    => Text_Color,
             Height   => 0.12,
@@ -466,30 +463,30 @@ package body Gtk.Meter.Thermo is
    begin
       Create_Background (Widget, Sectors, Color);
       Widget.Annotation :=
-         Add_Flat_Annotation
-         (  Under       => Widget.Cache,
-            From        => (Annotation_Offset, First),
-            Length      => Length,
-            Texts       => Texts,
-            Justify     => Right,
-            Delimiter   => Delimiter,
-            Scale_Angle => 3.0 * Pi / 2.0,
-            Step        => Length / GDouble (Sectors),
-            Height      => 0.1,
-            Color       => Text_Color,
-            Scaled      => True,
-            Face        => Create_Toy
-                           (  Family => "arial",
-                              Slant  => CAIRO_FONT_SLANT_NORMAL,
-                              Weight => CAIRO_FONT_WEIGHT_NORMAL
-         )                 );
+        Add_Flat_Annotation
+          (Under       => Widget.Cache,
+           From        => (Annotation_Offset, First),
+           Length      => Length,
+           Texts       => Texts,
+           Justify     => Right,
+           Delimiter   => Delimiter,
+           Scale_Angle => 3.0 * Ada.Numerics.Pi / 2.0,
+           Step        => Length / Gdouble (Sectors),
+           Height      => 0.1,
+           Color       => Text_Color,
+           Scaled      => True,
+           Face        =>
+             Create_Toy
+               (Family => "arial",
+                Slant  => Cairo_Font_Slant_Normal,
+                Weight => Cairo_Font_Weight_Normal));
       Widget.Label :=
          Add_Label
          (  Under    => Widget.Get_Cache,
             Face     => Create_Toy
                         (  Family => "arial",
-                           Slant  => CAIRO_FONT_SLANT_NORMAL,
-                           Weight => CAIRO_FONT_WEIGHT_BOLD
+                           Slant  => Cairo_Font_Slant_Normal,
+                           Weight => Cairo_Font_Weight_Bold
                         ),
             Color    => Text_Color,
             Height   => 0.12,
@@ -541,7 +538,7 @@ package body Gtk.Meter.Thermo is
 
    procedure Set_Value
              (  Widget : not null access Gtk_Meter_Thermo_Record;
-                Value  : GDouble
+                Value  : Gdouble
              )  is
    begin
       Widget.Bar.Set_Value (Value);

@@ -33,7 +33,7 @@ with Ada.Unchecked_Deallocation;
 
 package body Gtk.Source_Mark_Attributes is
 
-   procedure g_free (String : Chars_Ptr);
+   procedure g_free (String : chars_ptr);
    pragma Import (C, g_free, "g_free");
 
    function Get_Background
@@ -68,13 +68,13 @@ package body Gtk.Source_Mark_Attributes is
             (  Attributes : not null access
                             Gtk_Source_Mark_Atributes_Record
             )  return UTF8_String is
-      function Internal (Attributes : Address) return Chars_Ptr;
+      function Internal (Attributes : Address) return chars_ptr;
       pragma Import
              (  C,
                 Internal,
                 "gtk_source_mark_attributes_get_icon_name"
              );
-      Result : constant Chars_Ptr := Internal (Get_Object (Attributes));
+      Result : constant chars_ptr := Internal (Get_Object (Attributes));
    begin
       if Result = Null_Ptr then
          return "";
@@ -107,13 +107,13 @@ package body Gtk.Source_Mark_Attributes is
             (  Attributes : not null access
                             Gtk_Source_Mark_Atributes_Record
             )  return UTF8_String is
-      function Internal (Attributes : Address) return Chars_Ptr;
+      function Internal (Attributes : Address) return chars_ptr;
       pragma Import
              (  C,
                 Internal,
                 "gtk_source_mark_attributes_get_stock_id"
              );
-      Result : constant Chars_Ptr := Internal (Get_Object (Attributes));
+      Result : constant chars_ptr := Internal (Get_Object (Attributes));
    begin
       if Result = Null_Ptr then
          return "";
@@ -130,13 +130,13 @@ package body Gtk.Source_Mark_Attributes is
       function Internal
                (  Attributes : Address;
                   Mark       : Address
-               )  return Chars_Ptr;
+               )  return chars_ptr;
       pragma Import
              (  C,
                 Internal,
                 "gtk_source_mark_attributes_get_tooltip_markup"
              );
-      Ptr : constant Chars_Ptr :=
+      Ptr : constant chars_ptr :=
             Internal (Get_Object (Attributes), Get_Object (Mark));
    begin
       if Ptr = Null_Ptr then
@@ -156,13 +156,13 @@ package body Gtk.Source_Mark_Attributes is
       function Internal
                (  Attributes : Address;
                   Mark       : Address
-               )  return Chars_Ptr;
+               )  return chars_ptr;
       pragma Import
              (  C,
                 Internal,
                 "gtk_source_mark_attributes_get_tooltip_text"
              );
-      Ptr : constant Chars_Ptr :=
+      Ptr : constant chars_ptr :=
             Internal (Get_Object (Attributes), Get_Object (Mark));
    begin
       if Ptr = Null_Ptr then
@@ -203,12 +203,12 @@ package body Gtk.Source_Mark_Attributes is
             (  Attributes : not null access
                             Gtk_Source_Mark_Atributes_Record;
                Widget     : not null access Gtk_Widget_Record'Class;
-               Size       : GInt
+               Size       : Gint
             )  return Gdk_Pixbuf is
       function Internal
                (  Attributes : Address;
                   Widget     : Address;
-                  Size       : GInt
+                  Size       : Gint
                )  return Address;
       pragma Import
              (  C,
@@ -272,7 +272,7 @@ package body Gtk.Source_Mark_Attributes is
              )  is
       procedure Internal
                 (  Attributes : Address;
-                   Icon_Name  : Char_Array
+                   Icon_Name  : char_array
                 );
       pragma Import
              (  C,
@@ -308,7 +308,7 @@ package body Gtk.Source_Mark_Attributes is
              )  is
       procedure Internal
                 (  Attributes : Address;
-                   Stock_ID   : Char_Array
+                   Stock_ID   : char_array
                 );
       pragma Import
              (  C,

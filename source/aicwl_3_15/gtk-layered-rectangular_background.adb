@@ -25,7 +25,6 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Ada.Numerics;
 with Ada.Unchecked_Deallocation;
 
 with Cairo.Transformations;
@@ -35,8 +34,6 @@ with Glib.Properties.Creation;
 with Gtk.Layered.Stream_IO;
 
 package body Gtk.Layered.Rectangular_Background is
-
-   Pi : constant := Ada.Numerics.Pi;
 
    type Rectangular_Background_Ptr is
       access all Rectangular_Background_Layer;
@@ -267,8 +264,8 @@ package body Gtk.Layered.Rectangular_Background is
                  Glib.Properties.Creation.Gnew_Double
                    (Name    => "angle",
                     Nick    => "angle",
-                    Minimum => -2.0 * Pi,
-                    Maximum => 2.0 * Pi,
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
                     Default => 0.0,
                     Blurb   =>
                        "The angle of the size " &
@@ -511,8 +508,8 @@ package body Gtk.Layered.Rectangular_Background is
             X       => Half_Width - Radius,
             Y       => Radius - Half_Height,
             Radius  => Radius,
-            Angle1  => 3.0 * Pi / 2.0,
-            Angle2  => 2.0 * Pi);
+            Angle1  => 3.0 * Ada.Numerics.Pi / 2.0,
+            Angle2  => 2.0 * Ada.Numerics.Pi);
       end if;
       Cairo.Transformations.Line_To (Context, T, Half_Width, Half_Height - Radius);
       if Radius > 0.0 then
@@ -523,7 +520,7 @@ package body Gtk.Layered.Rectangular_Background is
             Y       => Half_Height - Radius,
             Radius  => Radius,
             Angle1  => 0.0,
-            Angle2  => Pi / 2.0);
+            Angle2  => Ada.Numerics.Pi / 2.0);
       end if;
       Cairo.Transformations.Line_To (Context, T, Radius - Half_Width,  Half_Height);
       if Radius > 0.0 then
@@ -533,8 +530,8 @@ package body Gtk.Layered.Rectangular_Background is
             X       => Radius - Half_Width,
             Y       => Half_Height - Radius,
             Radius  => Radius,
-            Angle1  => Pi / 2.0,
-            Angle2  => Pi);
+            Angle1  => Ada.Numerics.Pi / 2.0,
+            Angle2  => Ada.Numerics.Pi);
       end if;
       Cairo.Transformations.Line_To (Context, T, -Half_Width, Radius - Half_Height);
       if Radius > 0.0 then
@@ -544,8 +541,8 @@ package body Gtk.Layered.Rectangular_Background is
             X       => Radius - Half_Width,
             Y       => Radius - Half_Height,
             Radius  => Radius,
-            Angle1  => Pi,
-            Angle2  => 3.0 * Pi / 2.0);
+            Angle1  => Ada.Numerics.Pi,
+            Angle2  => 3.0 * Ada.Numerics.Pi / 2.0);
       end if;
    end Set_Contents_Path;
 
@@ -591,9 +588,12 @@ package body Gtk.Layered.Rectangular_Background is
                end if;
             when Property_Angle =>
                Layer.Angle := Glib.Values.Get_Double (Value);
-               if Layer.Angle not in -2.0 * Pi .. 2.0 * Pi then
+               if
+                 Layer.Angle not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
                   Layer.Angle :=
-                     Gdouble'Remainder (Layer.Angle, 2.0 * Pi);
+                     Gdouble'Remainder (Layer.Angle, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Color =>
                Layer.Color := Gdk.Color.Get_Value (Value);

@@ -25,26 +25,24 @@
 --  executable file might be covered by the GNU Public License.       --
 --____________________________________________________________________--
 
-with Ada.Numerics;              use Ada.Numerics;
+with Ada.Numerics;
 with Cairo;                     use Cairo;
 with Cairo.Line_Cap_Property;   use Cairo.Line_Cap_Property;
-with GLib.Properties.Creation;  use GLib.Properties.Creation;
-with GLib.Types;                use GLib.Types;
-with GtkAda.Types;              use GtkAda.Types;
+with Glib.Properties.Creation;  use Glib.Properties.Creation;
+with Glib.Types;                use Glib.Types;
+with Gtkada.Types;              use Gtkada.Types;
 with Gtk.Enums;                 use Gtk.Enums;
 with Gtk.Missed;                use Gtk.Missed;
 with Gtk.Widget.Styles;         use Gtk.Widget.Styles;
 with Pango.Cairo.Fonts;         use Pango.Cairo.Fonts;
 
 with Gtk.Layered.Rectangular_Clip_Region;
-with GLib.Object.Checked_Destroy;
+with Glib.Object.Checked_Destroy;
 with Gtk.Widget.Styles.Line_Cap_Property;
 
 package body Gtk.Meter.Round_90 is
    use Gtk.Layered.Rectangular_Clip_Region;
    use Gtk.Widget.Styles.Line_Cap_Property;
-
-   Pi : constant := Ada.Numerics.Pi;
 
    Needle_Color      : constant Gdk_Color := RGB (1.0, 0.0, 0.0);
    Background_Color  : constant Gdk_Color := RGB (1.0, 1.0, 1.0);
@@ -57,9 +55,9 @@ package body Gtk.Meter.Round_90 is
 
    Corner : constant := 1.0 / 30.0;
    Height : constant := 0.5;
-   Length : constant := Pi / 2.0;
+   Length : constant := Ada.Numerics.Pi / 2.0;
    Pin    : constant := Height * 1.5 / 2.0;
-   First  : constant := (Pi * 3.0 - Length) / 2.0;
+   First  : constant := (Ada.Numerics.Pi * 3.0 - Length) / 2.0;
 
    function Get_Type return GType is
    begin
@@ -83,7 +81,7 @@ package body Gtk.Meter.Round_90 is
             (  Name    => "needle-tip-cap",
                Nick    => "Tip cap",
                Blurb   => "The style used for the needle tip",
-               Default => CAIRO_LINE_CAP_ROUND
+               Default => Cairo_Line_Cap_Round
          )  );
          Install_Style
          (  Class_Ref (Class_Record.The_Type),
@@ -91,7 +89,7 @@ package body Gtk.Meter.Round_90 is
             (  Name    => "needle-rear-cap",
                Nick    => "Rear cap",
                Blurb   => "The style used for the needle rear",
-               Default => CAIRO_LINE_CAP_BUTT
+               Default => Cairo_Line_Cap_Butt
          )  );
          Install_Style_Property
          (  Class_Ref (Class_Record.The_Type),
@@ -115,7 +113,7 @@ package body Gtk.Meter.Round_90 is
             (  Name    => "major-tick-line-cap",
                Nick    => "Major tick cap",
                Blurb   => "The line cap style used for major ticks",
-               Default => CAIRO_LINE_CAP_BUTT
+               Default => Cairo_Line_Cap_Butt
          )  );
          Install_Style_Property
          (  Class_Ref (Class_Record.The_Type),
@@ -131,7 +129,7 @@ package body Gtk.Meter.Round_90 is
             (  Name    => "middle-tick-line-cap",
                Nick    => "Middle tick cap",
                Blurb   => "The line cap style used for middle ticks",
-               Default => CAIRO_LINE_CAP_BUTT
+               Default => Cairo_Line_Cap_Butt
          )  );
          Install_Style_Property
          (  Class_Ref (Class_Record.The_Type),
@@ -147,7 +145,7 @@ package body Gtk.Meter.Round_90 is
             (  Name    => "minor-tick-line-cap",
                Nick    => "Minor tick cap",
                Blurb   => "The line cap style used for minor ticks",
-               Default => CAIRO_LINE_CAP_BUTT
+               Default => Cairo_Line_Cap_Butt
          )  );
          Install_Style_Property
          (  Class_Ref (Class_Record.The_Type),
@@ -203,7 +201,7 @@ package body Gtk.Meter.Round_90 is
                ),
             Color   => Major_Tick_Color,
             Width   => 1.5 / 300.0,
-            Step    => Length / GDouble (Sectors),
+            Step    => Length / Gdouble (Sectors),
             From    => First,
             Length  => Length,
             Scaled  => True,
@@ -226,7 +224,7 @@ package body Gtk.Meter.Round_90 is
                ),
             Color   => Middle_Tick_Color,
             Width   => 1.5 / 300.0,
-            Step    => 0.5 * Length / GDouble (Sectors),
+            Step    => 0.5 * Length / Gdouble (Sectors),
             Skipped => 2,
             From    => First,
             Length  => Length,
@@ -250,7 +248,7 @@ package body Gtk.Meter.Round_90 is
                ),
             Color   => Minor_Tick_Color,
             Width   => 1.0 / 300.0,
-            Step    => 0.1 * Length / GDouble (Sectors),
+            Step    => 0.1 * Length / Gdouble (Sectors),
             Skipped => 5,
             From    => First,
             Length  => Length,
@@ -278,7 +276,7 @@ package body Gtk.Meter.Round_90 is
                   Scaled        => True
                ) .Above,
             Center      => (0.0, 0.0 + Pin),
-            Tip_Cap     => CAIRO_LINE_CAP_SQUARE,
+            Tip_Cap     => Cairo_Line_Cap_Square,
             Adjustment  => Adjustment,
             Tip_Length  => 0.52,
             Tip_Width   => 0.006,
@@ -325,7 +323,7 @@ package body Gtk.Meter.Round_90 is
 
    procedure Gtk_New
              (  Widget     : out Gtk_Meter_Round_90;
-                Texts      : Gtk.Enums.String_List.GList;
+                Texts      : Gtk.Enums.String_List.Glist;
                 Adjustment : Gtk_Adjustment := null;
                 Sectors    : Positive       := 4
              )  is
@@ -334,7 +332,7 @@ package body Gtk.Meter.Round_90 is
       Initialize (Widget, Texts, Adjustment, Sectors);
    exception
       when others =>
-         GLib.Object.Checked_Destroy (Widget);
+         Glib.Object.Checked_Destroy (Widget);
          Widget := null;
          raise;
    end Gtk_New;
@@ -350,7 +348,7 @@ package body Gtk.Meter.Round_90 is
       Initialize (Widget, Texts, Adjustment, Sectors);
    exception
       when others =>
-         GLib.Object.Checked_Destroy (Widget);
+         Glib.Object.Checked_Destroy (Widget);
          Widget := null;
          raise;
    end Gtk_New;
@@ -367,7 +365,7 @@ package body Gtk.Meter.Round_90 is
       Initialize (Widget, Texts, Delimiter, Adjustment, Sectors);
    exception
       when others =>
-         GLib.Object.Checked_Destroy (Widget);
+         Glib.Object.Checked_Destroy (Widget);
          Widget := null;
          raise;
    end Gtk_New;
@@ -375,7 +373,7 @@ package body Gtk.Meter.Round_90 is
    procedure Initialize
              (  Widget : not null access
                          Gtk_Meter_Round_90_Record'Class;
-                Texts      : Gtk.Enums.String_List.GList;
+                Texts      : Gtk.Enums.String_List.Glist;
                 Adjustment : Gtk_Adjustment;
                 Sectors    : Positive
              )  is
@@ -393,10 +391,10 @@ package body Gtk.Meter.Round_90 is
             Texts     => Texts,
             Face      => Create_Toy
                          (  Family => "arial",
-                            Slant  => CAIRO_FONT_SLANT_NORMAL,
-                            Weight => CAIRO_FONT_WEIGHT_NORMAL
+                            Slant  => Cairo_Font_Slant_Normal,
+                            Weight => Cairo_Font_Weight_Normal
                          ),
-            Step      => Length / GDouble (Sectors),
+            Step      => Length / Gdouble (Sectors),
             Height    => 0.05,
             Stretch   => 1.0,
             Color     => Text_Color,
@@ -442,10 +440,10 @@ package body Gtk.Meter.Round_90 is
             Delimiter => Delimiter,
             Face      => Create_Toy
                          (  Family => "arial",
-                            Slant  => CAIRO_FONT_SLANT_NORMAL,
-                            Weight => CAIRO_FONT_WEIGHT_NORMAL
+                            Slant  => Cairo_Font_Slant_Normal,
+                            Weight => Cairo_Font_Weight_Normal
                          ),
-            Step      => Length / GDouble (Sectors),
+            Step      => Length / Gdouble (Sectors),
             Height    => 0.05,
             Stretch   => 1.0,
             Color     => Text_Color,
@@ -460,7 +458,7 @@ package body Gtk.Meter.Round_90 is
    procedure Set_Value
              (  Widget : not null access
                          Gtk_Meter_Round_90_Record;
-                Value  : GDouble
+                Value  : Gdouble
              )  is
    begin
       Widget.Needle.Set_Value (Value);

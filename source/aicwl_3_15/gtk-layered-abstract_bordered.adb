@@ -25,22 +25,26 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
-with Gdk.Color.IHLS;              use Gdk.Color.IHLS;
-with Gdk.RGBA;                    use Gdk.RGBA;
-with Glib.Properties.Creation;    use Glib.Properties.Creation;
+with Cairo.Elementary_Functions;
+with Gdk.Color.IHLS;
+with Gdk.RGBA;
+with Glib.Properties.Creation;
 with Gtk.Enums.Shadow_Property;
-with Gtk.Style_Context;           use Gtk.Style_Context;
-with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
+with Gtk.Style_Context;
+with Gtk.Layered.Stream_IO;
 with Gtk.Missed;
 
 package body Gtk.Layered.Abstract_Bordered is
 
    type Drawing_Action is (Line, Region, Contents);
 
-   Darken_By  : constant Gdk_Luminance := Gdk_Luminance'Last / 3;
-   Lighten_By : constant Gdk_Luminance := Gdk_Luminance'Last / 3;
-   Cos_45     : constant Gdouble := Sqrt (2.0) * 0.5;
+   use type Gdk.Color.IHLS.Gdk_Luminance;
+
+   Darken_By  : constant Gdk.Color.IHLS.Gdk_Luminance :=
+                  Gdk.Color.IHLS.Gdk_Luminance'Last / 3;
+   Lighten_By : constant Gdk.Color.IHLS.Gdk_Luminance :=
+                  Gdk.Color.IHLS.Gdk_Luminance'Last / 3;
+   Cos_45     : constant Gdouble := Cairo.Elementary_Functions.Sqrt (2.0) * 0.5;
 
    type Layer_Property is
      (Property_Scaled,
@@ -54,7 +58,7 @@ package body Gtk.Layered.Abstract_Bordered is
       Property_Deepened);
 
    procedure Free is
-      new Ada.Unchecked_Deallocation
+     new Ada.Unchecked_Deallocation
        (Foreground_Layer,
         Foreground_Layer_Ptr);
 
@@ -106,13 +110,14 @@ package body Gtk.Layered.Abstract_Bordered is
             declare
                Widget : Gtk.Widget.Gtk_Widget := Layer.Widget.all'Unchecked_Access;
                Parent : Gtk.Widget.Gtk_Widget;
-               Color  : Gdk_RGBA;
+               Color  : Gdk.RGBA.Gdk_RGBA;
                use type Gtk.Widget.Gtk_Widget;
             begin
                loop
-                  Get_Style_Context (Widget).all.Get_Background_Color
-                    (Gtk_State_Flag_Normal,
-                     Color);
+                  Gtk.Style_Context.Get_Style_Context (Widget).all.
+                    Get_Background_Color
+                      (Gtk.Enums.Gtk_State_Flag_Normal,
+                       Color);
                   exit when Color.Alpha > 0.0;
                   Parent := Widget.all.Get_Parent;
                   exit when Parent = null or else Parent = Widget;
@@ -129,9 +134,9 @@ package body Gtk.Layered.Abstract_Bordered is
          Color : Gdk.Color.Gdk_Color;
       begin
          if Layer.Border_Color.Style_Color then
-            Color := Darken (Get_Background, Darken_By);
+            Color := Gdk.Color.IHLS.Darken (Get_Background, Darken_By);
          else
-            Color := Darken (Layer.Border_Color.Color, Darken_By);
+            Color := Gdk.Color.IHLS.Darken (Layer.Border_Color.Color, Darken_By);
          end if;
          Cairo.Set_Source_Rgb
            (Context,
@@ -144,9 +149,9 @@ package body Gtk.Layered.Abstract_Bordered is
          Color : Gdk.Color.Gdk_Color;
       begin
          if Layer.Border_Color.Style_Color then
-            Color := Lighten (Get_Background, Lighten_By);
+            Color := Gdk.Color.IHLS.Lighten (Get_Background, Lighten_By);
          else
-            Color := Lighten (Layer.Border_Color.Color, Lighten_By);
+            Color := Gdk.Color.IHLS.Lighten (Layer.Border_Color.Color, Lighten_By);
          end if;
          Cairo.Set_Source_Rgb
            (Context,
@@ -191,8 +196,8 @@ package body Gtk.Layered.Abstract_Bordered is
         (Shift, Bound, Width : Gdouble;
          Action              : Drawing_Action := Line)
       is
-         F : constant Gdouble := (Bound - Width) / Extent;
-         S : constant Gdouble := Shift * Shadow_Depth * 0.5;
+         F      : constant Gdouble := (Bound - Width) / Extent;
+         S      : constant Gdouble := Shift * Shadow_Depth * 0.5;
          FX, FY : Gdouble;
          State  : Cairo.Ellipses.Context_State := Cairo.Ellipses.Save (Context);
          pragma Unreferenced (State);
@@ -201,7 +206,7 @@ package body Gtk.Layered.Abstract_Bordered is
             -- Sized according to the widget's width
             FX := F;
             FY := (1.0 - 1.0 * Layer.Widget.all.Aspect_Ratio) + -- *Scaling+
-                  F * Layer.Widget.all.Aspect_Ratio;
+              F * Layer.Widget.all.Aspect_Ratio;
          else
             FX := F;
             FY := F;
@@ -264,22 +269,22 @@ package body Gtk.Layered.Abstract_Bordered is
             Area);
          Cairo.Close_Path (Context);
          Box := Cairo.Ellipses.Get_Path_Extents (Context);
---
---    Track the aspect ratio
---
---      Gtk.Main.Router.Trace
---      (  "Aspect ratio: Path ="
---      &  Double'Image (abs ((Box.X2 - Box.X1) / (Box.Y2 - Box.Y1)))
---      &  ", Widget ="
---      &  Double'Image
---         (  Double (Get_Allocation_Width  (Layer.Widget))
---         /  Double (Get_Allocation_Height (Layer.Widget))
---      )  );
+         --
+         --    Track the aspect ratio
+         --
+         --      Gtk.Main.Router.Trace
+         --      (  "Aspect ratio: Path ="
+         --      &  Double'Image (abs ((Box.X2 - Box.X1) / (Box.Y2 - Box.Y1)))
+         --      &  ", Widget ="
+         --      &  Double'Image
+         --         (  Double (Get_Allocation_Width  (Layer.Widget))
+         --         /  Double (Get_Allocation_Height (Layer.Widget))
+         --      )  );
          Extent := abs (Box.X2 - Box.X1);
---         Double'Max
---         (  abs (Box.X2 - Box.X1),
---            abs (Box.Y2 - Box.Y1)
---         );
+         --         Double'Max
+         --         (  abs (Box.X2 - Box.X1),
+         --            abs (Box.Y2 - Box.Y1)
+         --         );
          Box_Center.X := (Box.X2 + Box.X1) * 0.5;
          Box_Center.Y := (Box.Y2 + Box.Y1) * 0.5;
          if Layer.Scaled then
@@ -287,36 +292,36 @@ package body Gtk.Layered.Abstract_Bordered is
             Outer_Size := Extent;
             Inner_Size := Extent - 2.0 * Border_Width;
             case Layer.Border_Shadow is
-               when Shadow_None =>
+               when Gtk.Enums.Shadow_None =>
                   Middle_Size := Outer_Size;
-               when Shadow_In =>
+               when Gtk.Enums.Shadow_In =>
                   Inner_Size  := Inner_Size - 2.0 * Shadow_Depth;
                   Middle_Size := Outer_Size;
-               when Shadow_Out =>
+               when Gtk.Enums.Shadow_Out =>
                   Inner_Size  := Inner_Size - Shadow_Depth;
                   Middle_Size := Outer_Size - 2.0 * Shadow_Depth;
-               when Shadow_Etched_In | Shadow_Etched_Out =>
+               when Gtk.Enums.Shadow_Etched_In | Gtk.Enums.Shadow_Etched_Out =>
                   Inner_Size  := Inner_Size - 4.0 * Shadow_Depth;
                   Middle_Size := Outer_Size - 2.0 * Shadow_Depth;
             end case;
             if Inner_Size > 0.0 then
                Layer.Widget.all.Size :=
-                  Layer.Widget.all.Size * Inner_Size / Extent;
+                 Layer.Widget.all.Size * Inner_Size / Extent;
             end if;
          else
             -- Border around the path
             Inner_Size := Extent;
             Outer_Size := Extent + 2.0 * Border_Width;
             case Layer.Border_Shadow is
-               when Shadow_None =>
+               when Gtk.Enums.Shadow_None =>
                   Middle_Size := Outer_Size;
-               when Shadow_In =>
+               when Gtk.Enums.Shadow_In =>
                   Outer_Size  := Outer_Size + 2.0 * Shadow_Depth;
                   Middle_Size := Outer_Size;
-               when Shadow_Out =>
+               when Gtk.Enums.Shadow_Out =>
                   Outer_Size  := Outer_Size + Shadow_Depth;
                   Middle_Size := Outer_Size - 2.0 * Shadow_Depth;
-               when Shadow_Etched_In | Shadow_Etched_Out =>
+               when Gtk.Enums.Shadow_Etched_In | Gtk.Enums.Shadow_Etched_Out =>
                   Outer_Size  := Outer_Size + 2.0 * Shadow_Depth;
                   Middle_Size := Outer_Size - 2.0 * Shadow_Depth;
             end case;
@@ -325,12 +330,12 @@ package body Gtk.Layered.Abstract_Bordered is
             Path := Cairo.Copy_Path (Context);
             Scaling := Inner_Size / Extent;
             case Layer.Border_Shadow is
-               when Shadow_None =>
+               when Gtk.Enums.Shadow_None =>
                   if Border_Width > 0.0 then
                      Set_Normal;
                      Draw (0.0, Middle_Size, 0.0, Region);
                   end if;
-               when Shadow_In =>
+               when Gtk.Enums.Shadow_In =>
                   if Border_Width > 0.0 then
                      Set_Normal;
                      Draw (0.0, Middle_Size, 0.0, Region);
@@ -339,7 +344,7 @@ package body Gtk.Layered.Abstract_Bordered is
                   Draw (-1.0, Inner_Size + Shadow_Depth, Shadow_Depth);
                   Set_Light;
                   Draw (1.0, Inner_Size + Shadow_Depth, Shadow_Depth);
-               when Shadow_Out =>
+               when Gtk.Enums.Shadow_Out =>
                   Set_Light;
                   Draw (-1.0, Outer_Size - Shadow_Depth, Shadow_Depth);
                   Set_Dark;
@@ -348,7 +353,7 @@ package body Gtk.Layered.Abstract_Bordered is
                      Set_Normal;
                      Draw (0.0, Middle_Size, 0.0, Region);
                   end if;
-               when Shadow_Etched_In =>
+               when Gtk.Enums.Shadow_Etched_In =>
                   Set_Dark;
                   Draw (-1.0, Outer_Size - Shadow_Depth, Shadow_Depth);
                   Set_Light;
@@ -361,7 +366,7 @@ package body Gtk.Layered.Abstract_Bordered is
                   Draw (-1.0, Inner_Size + Shadow_Depth, Shadow_Depth);
                   Set_Dark;
                   Draw (1.0, Inner_Size + Shadow_Depth, Shadow_Depth);
-               when Shadow_Etched_Out =>
+               when Gtk.Enums.Shadow_Etched_Out =>
                   Set_Light;
                   Draw (-1.0, Outer_Size - Shadow_Depth, Shadow_Depth);
                   Set_Dark;
@@ -420,43 +425,43 @@ package body Gtk.Layered.Abstract_Bordered is
    end Finalize;
 
    function Get_Aspected (Layer : Abstract_Bordered_Layer)
-      return Boolean is
+                          return Boolean is
    begin
       return Layer.Aspected;
    end Get_Aspected;
 
    function Get_Border_Color (Layer : Abstract_Bordered_Layer)
-      return Border_Color_Type is
+                              return Border_Color_Type is
    begin
       return Layer.Border_Color;
    end Get_Border_Color;
 
    function Get_Border_Depth (Layer : Abstract_Bordered_Layer)
-      return Gdouble is
+                              return Gdouble is
    begin
       return Layer.Border_Depth;
    end Get_Border_Depth;
 
    function Get_Border_Shadow (Layer : Abstract_Bordered_Layer)
-      return Gtk_Shadow_Type is
+                               return Gtk.Enums.Gtk_Shadow_Type is
    begin
       return Layer.Border_Shadow;
    end Get_Border_Shadow;
 
    function Get_Border_Width (Layer : Abstract_Bordered_Layer)
-      return Gdouble is
+                              return Gdouble is
    begin
       return Layer.Border_Width;
    end Get_Border_Width;
 
    function Get_Deepened (Layer : Abstract_Bordered_Layer)
-      return Boolean is
+                          return Boolean is
    begin
       return Layer.Deepened;
    end Get_Deepened;
 
    function Get_Foreground (Layer : Abstract_Bordered_Layer)
-      return access Foreground_Layer'Class is
+                            return access Foreground_Layer'Class is
    begin
       return Layer.Foreground;
    end Get_Foreground;
@@ -489,7 +494,7 @@ package body Gtk.Layered.Abstract_Bordered is
          case Layer_Property'Val (Property - 1) is
             when Property_Default_Color =>
                return
-                  Gnew_Boolean
+                 Glib.Properties.Creation.Gnew_Boolean
                    (Name    => "border-color-type",
                     Nick    => "border color type",
                     Default => True,
@@ -499,7 +504,7 @@ package body Gtk.Layered.Abstract_Bordered is
                       "color");
             when Property_Custom_Color =>
                return
-                  Gnew_Boxed
+                 Glib.Properties.Creation.Gnew_Boxed
                    (Name       => "border-color",
                     Boxed_Type => Gdk.Color.Gdk_Color_Type,
                     Nick       => "border color",
@@ -509,14 +514,14 @@ package body Gtk.Layered.Abstract_Bordered is
                       "set to true");
             when Property_Shadow =>
                return
-                  Gtk.Enums.Shadow_Property.Gnew_Enum
+                 Gtk.Enums.Shadow_Property.Gnew_Enum
                    (Name    => "border-shadow-style",
                     Nick    => "border shadow",
-                    Default => Shadow_None,
+                    Default => Gtk.Enums.Shadow_None,
                     Blurb   => "The type of the border's shadow");
             when Property_Width =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "border-width",
                     Nick    => "border width",
                     Minimum => 0.0,
@@ -525,7 +530,7 @@ package body Gtk.Layered.Abstract_Bordered is
                     Blurb   => "The border line width");
             when Property_Depth =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "border-depth",
                     Nick    => "border depth",
                     Minimum => 0.0,
@@ -535,7 +540,7 @@ package body Gtk.Layered.Abstract_Bordered is
                       "dropped by the border");
             when Property_Scaled =>
                return
-                  Gnew_Boolean
+                 Glib.Properties.Creation.Gnew_Boolean
                    (Name    => "scaled",
                     Nick    => "scaled",
                     Default => False,
@@ -544,7 +549,7 @@ package body Gtk.Layered.Abstract_Bordered is
                       "widget is resized");
             when Property_Deepened =>
                return
-                  Gnew_Boolean
+                 Glib.Properties.Creation.Gnew_Boolean
                    (Name    => "deepened",
                     Nick    => "deepened",
                     Default => False,
@@ -553,7 +558,7 @@ package body Gtk.Layered.Abstract_Bordered is
                       "the widget is resized");
             when Property_Aspected =>
                return
-                  Gnew_Boolean
+                 Glib.Properties.Creation.Gnew_Boolean
                    (Name    => "aspected",
                     Nick    => "aspected",
                     Default => False,
@@ -570,7 +575,7 @@ package body Gtk.Layered.Abstract_Bordered is
                       "borders should have this set to false.");
             when Property_Widened =>
                return
-                  Gnew_Boolean
+                 Glib.Properties.Creation.Gnew_Boolean
                    (Name    => "widened",
                     Nick    => "widened",
                     Default => False,
@@ -617,11 +622,12 @@ package body Gtk.Layered.Abstract_Bordered is
                when Property_Custom_Color =>
                   if Layer.Border_Color.Style_Color then
                      declare
-                        Color : Gdk_RGBA;
+                        Color : Gdk.RGBA.Gdk_RGBA;
                      begin
-                        Get_Style_Context (Layer.Widget).all.Get_Background_Color
-                          (Gtk_State_Flag_Normal,
-                           Color);
+                        Gtk.Style_Context.Get_Style_Context (Layer.Widget).all.
+                          Get_Background_Color
+                            (Gtk.Enums.Gtk_State_Flag_Normal,
+                             Color);
                         Gdk.Color.Set_Value (Value, Gtk.Missed.From_RGBA (Color));
                      end;
                   else
@@ -656,19 +662,19 @@ package body Gtk.Layered.Abstract_Bordered is
    end Get_Property_Value;
 
    overriding function Get_Scaled (Layer : Abstract_Bordered_Layer)
-      return Boolean is
+                                   return Boolean is
    begin
       return Layer.Scaled;
    end Get_Scaled;
 
    overriding function Get_Widened (Layer : Abstract_Bordered_Layer)
-      return Boolean is
+                                    return Boolean is
    begin
       return Layer.Widened;
    end Get_Widened;
 
    overriding function Is_Updated (Layer : Abstract_Bordered_Layer)
-      return Boolean is
+                                   return Boolean is
    begin
       return Layer.Updated;
    end Is_Updated;
@@ -693,21 +699,21 @@ package body Gtk.Layered.Abstract_Bordered is
       Layer  : in out Abstract_Bordered_Layer)
    is
       Color      : Gdk.Color.Gdk_Color;
-      Shadow     : Gtk_Shadow_Type;
+      Shadow     : Gtk.Enums.Gtk_Shadow_Type;
       Width      : Gdouble;
       Depth      : Gdouble;
       User_Color : Boolean;
    begin
-      Restore
+      Gtk.Layered.Stream_IO.Restore
         (Stream,
          Layer.Aspected,
          Layer.Scaled,
          Layer.Widened,
          Layer.Deepened,
          User_Color);
-      Restore (Stream, Shadow);
-      Restore (Stream, Width);
-      Restore (Stream, Depth);
+      Gtk.Layered.Stream_IO.Restore (Stream, Shadow);
+      Gtk.Layered.Stream_IO.Restore (Stream, Width);
+      Gtk.Layered.Stream_IO.Restore (Stream, Depth);
       if User_Color then
          Set
            (Layer         => Layer,
@@ -716,7 +722,7 @@ package body Gtk.Layered.Abstract_Bordered is
             Border_Color  => (Style_Color => True),
             Border_Shadow => Shadow);
       else
-         Restore (Stream, Color);
+         Gtk.Layered.Stream_IO.Restore (Stream, Color);
          Set
            (Layer         => Layer,
             Border_Width  => Width,
@@ -731,7 +737,7 @@ package body Gtk.Layered.Abstract_Bordered is
       Border_Width  : Gdouble;
       Border_Depth  : Gdouble;
       Border_Color  : Border_Color_Type;
-      Border_Shadow : Gtk_Shadow_Type) is
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type) is
    begin
       Layer.Border_Width  := Border_Width;
       Layer.Border_Depth  := Border_Depth;
@@ -767,7 +773,7 @@ package body Gtk.Layered.Abstract_Bordered is
          case Layer_Property'Val (Property - 1) is
             when Property_Shadow =>
                Layer.Border_Shadow :=
-                  Gtk.Enums.Shadow_Property.Get_Enum (Value);
+                 Gtk.Enums.Shadow_Property.Get_Enum (Value);
             when Property_Depth =>
                Layer.Border_Width := Glib.Values.Get_Double (Value);
                if Layer.Border_Depth < 0.0 then
@@ -783,11 +789,12 @@ package body Gtk.Layered.Abstract_Bordered is
                   Layer.Border_Color := (Style_Color => True);
                else
                   declare
-                     Color : Gdk_RGBA;
+                     Color : Gdk.RGBA.Gdk_RGBA;
                   begin
-                     Get_Style_Context (Layer.Widget).all.Get_Background_Color
-                       (Gtk_State_Flag_Normal,
-                        Color);
+                     Gtk.Style_Context.Get_Style_Context (Layer.Widget).all.
+                       Get_Background_Color
+                         (Gtk.Enums.Gtk_State_Flag_Normal,
+                          Color);
                      Layer.Border_Color :=
                        (Style_Color => False,
                         Color       => Gtk.Missed.From_RGBA (Color));
@@ -844,18 +851,18 @@ package body Gtk.Layered.Abstract_Bordered is
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Layer  : Abstract_Bordered_Layer) is
    begin
-      Store
+      Gtk.Layered.Stream_IO.Store
         (Stream,
          Layer.Aspected,
          Layer.Scaled,
          Layer.Widened,
          Layer.Deepened,
          Layer.Border_Color.Style_Color);
-      Store (Stream, Layer.Border_Shadow);
-      Store (Stream, Layer.Border_Width);
-      Store (Stream, Layer.Border_Depth);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Border_Shadow);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Border_Width);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Border_Depth);
       if not Layer.Border_Color.Style_Color then
-         Store (Stream, Layer.Border_Color.Color);
+         Gtk.Layered.Stream_IO.Store (Stream, Layer.Border_Color.Color);
       end if;
    end Store;
 

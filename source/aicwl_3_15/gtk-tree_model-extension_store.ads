@@ -38,7 +38,7 @@
 --  using Set_Extension. For this the reference model iterator should be
 --  converted to an iterator of the extension model with To_Extension.
 --
-with GLib.Values;                    use GLib.Values;
+with Glib.Values;                    use Glib.Values;
 with Gtk.Handlers;                   use Gtk.Handlers;
 with Gtk.Tree_Model.Abstract_Store;  use Gtk.Tree_Model.Abstract_Store;
 
@@ -150,7 +150,7 @@ package Gtk.Tree_Model.Extension_Store is
    overriding
       function Get_Column_Type
                (  Model : not null access Gtk_Extension_Store_Record;
-                  Index : GInt
+                  Index : Gint
                )  return GType;
 --
 -- Get_Extension_Types -- Get the reference model
@@ -193,7 +193,7 @@ package Gtk.Tree_Model.Extension_Store is
    overriding
       function Get_N_Columns
                (  Model : not null access Gtk_Extension_Store_Record
-               )  return GInt;
+               )  return Gint;
 --
 -- Get_Path -- Overrides Gtk.Tree_Model.Abstract_Store...
 --
@@ -306,7 +306,7 @@ package Gtk.Tree_Model.Extension_Store is
       function Nth_Child
                (  Model  : not null access Gtk_Extension_Store_Record;
                   Parent : Gtk_Tree_Iter;
-                  N      : GInt
+                  N      : Gint
                )  return Gtk_Tree_Iter;
 --
 -- N_Children -- Overrides Gtk.Tree_Model.Abstract_Store...
@@ -315,7 +315,7 @@ package Gtk.Tree_Model.Extension_Store is
       function N_Children
                (  Model : not null access Gtk_Extension_Store_Record;
                   Iter  : Gtk_Tree_Iter := Null_Iter
-               )  return GInt;
+               )  return Gint;
 --
 -- Parent -- Overrides Gtk.Tree_Model.Abstract_Store...
 --
@@ -366,7 +366,7 @@ package Gtk.Tree_Model.Extension_Store is
                          Gtk_Extension_Store_Record'Class;
                 Iter   : Gtk_Tree_Iter;
                 Column : Positive;
-                Value  : GInt
+                Value  : Gint
              );
    procedure Set_Extension
              (  Model  : not null access
@@ -443,14 +443,14 @@ package Gtk.Tree_Model.Extension_Store is
              );
 private
    type Row_Callbacks is (Changed, Inserted, Reordered, Deleted);
-   type Callback_ID is array (Row_Callbacks) of Handler_ID;
+   type Callback_ID is array (Row_Callbacks) of Handler_Id;
 
    type Gtk_Extension_Store_Record is
       new Gtk_Abstract_Model_Record with
    record                                                -- Reference
       Reference : Gtk_Tree_Model := Null_Gtk_Tree_Model; -- model
       Columns   : Gtk.Tree_Store.Gtk_Tree_Store; -- The columns added
-      Offset    : GInt := 0;                     -- Columns in the
+      Offset    : Gint := 0;                     -- Columns in the
       Callbacks : Callback_ID;                   -- reference model
    end record;
 --

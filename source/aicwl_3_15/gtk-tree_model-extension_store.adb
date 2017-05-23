@@ -26,7 +26,7 @@
 --____________________________________________________________________--
 
 with Ada.Exceptions;  use Ada.Exceptions;
-with GLib.Messages;   use GLib.Messages;
+with Glib.Messages;   use Glib.Messages;
 with Gtk.Missed;      use Gtk.Missed;
 with System;          use System;
 
@@ -50,7 +50,7 @@ package body Gtk.Tree_Model.Extension_Store is
              Gtk_Extension_Store
           );
 
-   subtype Flat_GInt_Array is GInt_Array (Natural'Range);
+   subtype Flat_GInt_Array is Gint_Array (Natural'Range);
    package Address_To_GInt_Array is
       new System.Address_To_Access_Conversions (Flat_GInt_Array);
 
@@ -186,7 +186,7 @@ package body Gtk.Tree_Model.Extension_Store is
 
    function Get_Column_Type
             (  Model : not null access Gtk_Extension_Store_Record;
-               Index : GInt
+               Index : Gint
             )  return GType is
    begin
       if Index < Model.Offset then
@@ -199,21 +199,21 @@ package body Gtk.Tree_Model.Extension_Store is
    function Get_Extension_Types
             (  Model : not null access Gtk_Extension_Store_Record
             )  return GType_Array is
-      Length : constant GInt := Model.Columns.Get_N_Columns;
+      Length : constant Gint := Model.Columns.Get_N_Columns;
    begin
       if Length = 0 then
          return (1..0 => GType_Invalid);
       else
          declare
             Result : GType_Array
-                     (  GUInt (Model.Offset)
-                     .. GUInt (Model.Offset + Length - 1)
+                     (  Guint (Model.Offset)
+                     .. Guint (Model.Offset + Length - 1)
                      );
          begin
             for Index in Result'Range loop
                Result (Index) :=
                   Model.Columns.Get_Column_Type
-                  (  GInt (Index) - Model.Offset
+                  (  Gint (Index) - Model.Offset
                   );
             end loop;
             return Result;
@@ -242,7 +242,7 @@ package body Gtk.Tree_Model.Extension_Store is
 
    function Get_N_Columns
             (  Model : not null access Gtk_Extension_Store_Record
-            )  return GInt is
+            )  return Gint is
    begin
       return Model.Columns.Get_N_Columns + Model.Offset;
    end Get_N_Columns;
@@ -269,7 +269,7 @@ package body Gtk.Tree_Model.Extension_Store is
    procedure Get_Value
              (  Model  : not null access Gtk_Extension_Store_Record;
                 Iter   : Gtk_Tree_Iter;
-                Column : GInt;
+                Column : Gint;
                 Value  : out GValue
              )  is
    begin
@@ -278,7 +278,7 @@ package body Gtk.Tree_Model.Extension_Store is
          (  GtkAda_Contributions_Domain,
             Log_Level_Critical,
             (  "Null extension model iterator"
-            &  GInt'Image (Column)
+            &  Gint'Image (Column)
             &  Where ("Get_Value")
          )  );
       elsif Column < Model.Offset then
@@ -291,7 +291,7 @@ package body Gtk.Tree_Model.Extension_Store is
                (  GtkAda_Contributions_Domain,
                   Log_Level_Critical,
                   (  "Null iterator of the reference column"
-                  &  GInt'Image (Column)
+                  &  Gint'Image (Column)
                   &  Where ("Get_Value")
                )  );
                Init (Value, GType_Invalid);
@@ -348,7 +348,7 @@ package body Gtk.Tree_Model.Extension_Store is
              )  is
       Ref_Child : Gtk_Tree_Iter;
       Ext_Child : Gtk_Tree_Iter;
-      Position  : GInt := 0;
+      Position  : Gint := 0;
    begin
       if Ref_Parent = Null_Iter then
          Ref_Child := Get_Iter_First (Model.Reference);
@@ -416,7 +416,7 @@ package body Gtk.Tree_Model.Extension_Store is
    function Nth_Child
             (  Model  : not null access Gtk_Extension_Store_Record;
                Parent : Gtk_Tree_Iter;
-               N      : GInt
+               N      : Gint
             )  return Gtk_Tree_Iter is
    begin
       return Model.Columns.Nth_Child (Parent, N);
@@ -425,7 +425,7 @@ package body Gtk.Tree_Model.Extension_Store is
    function N_Children
             (  Model : not null access Gtk_Extension_Store_Record;
                Iter  : Gtk_Tree_Iter := Null_Iter
-            )  return GInt is
+            )  return Gint is
    begin
       return Model.Columns.N_Children (Iter);
    end N_Children;
@@ -531,8 +531,8 @@ package body Gtk.Tree_Model.Extension_Store is
              )  is
       Path : constant Gtk_Tree_Path :=
                 Convert (Get_Address  (Nth (Params, 1)));
-      No   : constant GInt :=
-                GInt'Max
+      No   : constant Gint :=
+                Gint'Max
                 (  0,
                    Get_Row_No (To_Interface (Model.Columns), Path)
                 );
@@ -576,7 +576,7 @@ package body Gtk.Tree_Model.Extension_Store is
       use Address_To_GInt_Array;
       Path    : constant Gtk_Tree_Path :=
                    Convert (Get_Address (Nth (Params, 1)));
-      Indices : GInt_Array renames
+      Indices : Gint_Array renames
                    To_Pointer (Get_Address (Nth (Params, 3))).all;
    begin
       Model.Columns.Reorder
@@ -736,7 +736,7 @@ package body Gtk.Tree_Model.Extension_Store is
                 Value  : Boolean
              )  is
    begin
-      Model.Columns.Set (Iter, GInt (Column) - 1, Value);
+      Model.Columns.Set (Iter, Gint (Column) - 1, Value);
    end Set_Extension;
 
    procedure Set_Extension
@@ -744,10 +744,10 @@ package body Gtk.Tree_Model.Extension_Store is
                          Gtk_Extension_Store_Record'Class;
                 Iter   : Gtk_Tree_Iter;
                 Column : Positive;
-                Value  : GInt
+                Value  : Gint
              )  is
    begin
-      Model.Columns.Set (Iter, GInt (Column) - 1, Value);
+      Model.Columns.Set (Iter, Gint (Column) - 1, Value);
    end Set_Extension;
 
    procedure Set_Extension
@@ -758,7 +758,7 @@ package body Gtk.Tree_Model.Extension_Store is
                 Value  : UTF8_String
              )  is
    begin
-      Model.Columns.Set (Iter, GInt (Column) - 1, Value);
+      Model.Columns.Set (Iter, Gint (Column) - 1, Value);
    end Set_Extension;
 
    procedure Set_Extension
@@ -769,7 +769,7 @@ package body Gtk.Tree_Model.Extension_Store is
                 Value  : GValue
              )  is
    begin
-      Model.Columns.Set_Value (Iter, GInt (Column) - 1, Value);
+      Model.Columns.Set_Value (Iter, Gint (Column) - 1, Value);
    end Set_Extension;
 
 end Gtk.Tree_Model.Extension_Store;

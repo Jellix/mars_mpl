@@ -26,12 +26,12 @@
 --____________________________________________________________________--
 
 with Gdk.Pixbuf.Conversions;
-with GLib.Chars_Ptr_Vectors;
+with Glib.Chars_Ptr_Vectors;
 with Interfaces.C.Strings;
 
 package body Gtk.Recent_Manager_Alt is
    use Interfaces.C;
-   use type Interfaces.C.Strings.Chars_Ptr;
+   use type Interfaces.C.Strings.chars_ptr;
 
    function Add_Full
            (  Manager      : not null access Gtk_Recent_Manager_Record;
@@ -51,22 +51,22 @@ package body Gtk.Recent_Manager_Alt is
          App_Name     : System.Address;
          App_Exec     : System.Address;
          Groups       : System.Address;
-         Is_Private   : GBoolean;
+         Is_Private   : Gboolean;
       end record;
       pragma Convention (C, Gtk_Recent_Data);
       function Internal
                (  Manager     : System.Address;
-                  URI         : Char_Array;
+                  URI         : char_array;
                   Recent_Data : Gtk_Recent_Data
-               )  return GBoolean;
+               )  return Gboolean;
       pragma Import (C, Internal, "gtk_recent_manager_add_full");
-      C_Display_Name : aliased Char_Array := To_C (Display_Name);
-      C_Description  : aliased Char_Array := To_C (Description);
-      C_MIME_Type    : aliased Char_Array := To_C (MIME_Type);
-      C_App_Name     : aliased Char_Array := To_C (App_Name);
-      C_App_Exec     : aliased Char_Array := To_C (App_Exec);
+      C_Display_Name : aliased char_array := To_C (Display_Name);
+      C_Description  : aliased char_array := To_C (Description);
+      C_MIME_Type    : aliased char_array := To_C (MIME_Type);
+      C_App_Name     : aliased char_array := To_C (App_Name);
+      C_App_Exec     : aliased char_array := To_C (App_Exec);
       C_Groups       : aliased Chars_Ptr_Array (0..Groups'Length);
-      C_Is_Private   : GBoolean;
+      C_Is_Private   : Gboolean;
       use Interfaces.C.Strings;
    begin
       if Is_Private then
@@ -99,29 +99,29 @@ package body Gtk.Recent_Manager_Alt is
            )  return Boolean is
       function Internal
                (  Manager : System.Address;
-                  URI     : Char_Array
-               )  return GBoolean;
+                  URI     : char_array
+               )  return Gboolean;
       pragma Import (C, Internal, "gtk_recent_manager_add_item");
    begin
       return Internal (Get_Object (Manager), To_C (URI)) /= 0;
    end Add_Item;
 
    function Exists (Info : Gtk_Recent_Info) return Boolean is
-      function Internal (Info : Gtk_Recent_Info) return GBoolean;
+      function Internal (Info : Gtk_Recent_Info) return Gboolean;
       pragma Import (C, Internal, "gtk_recent_info_exists");
    begin
       return Internal (Info) /= 0;
    end Exists;
 
    function Get_Added (Info : Gtk_Recent_Info) return Time is
-      function Internal (Info : Gtk_Recent_Info) return Time_t;
+      function Internal (Info : Gtk_Recent_Info) return Time_T;
       pragma Import (C, Internal, "gtk_recent_info_get_added");
    begin
       return To_Time (Internal (Info));
    end Get_Added;
 
    function Get_Age (Info : Gtk_Recent_Info) return Duration is
-      function Internal (Info : Gtk_Recent_Info) return GInt;
+      function Internal (Info : Gtk_Recent_Info) return Gint;
       pragma Import (C, Internal, "gtk_recent_info_get_age");
       Day_Seconds : constant := 60.0 * 60.0 * 24.0;
    begin
@@ -134,18 +134,18 @@ package body Gtk.Recent_Manager_Alt is
             )  return Application_Info is
       function Internal
                (  Info     : Gtk_Recent_Info;
-                  App_Name : Char_Array;
+                  App_Name : char_array;
                   App_Exec : access Gtkada.Types.Chars_Ptr;
-                  Count    : access GUInt;
-                  Time     : access Time_t
-               )  return GBoolean;
+                  Count    : access Guint;
+                  Time     : access Time_T
+               )  return Gboolean;
       pragma Import
              (  C,
                 Internal,
                 "gtk_recent_info_get_application_info"
              );
       App_Exec : aliased Gtkada.Types.Chars_Ptr;
-      Count    : aliased GUInt;
+      Count    : aliased Guint;
       Time     : aliased Time_T;
    begin
       if (  0
@@ -166,7 +166,7 @@ package body Gtk.Recent_Manager_Alt is
                Result : constant Application_Info :=
                   (True, Exec'Length, Count, To_Time (Time), Exec);
             begin
-               Gtkada.Types.G_Free (App_Exec);
+               Gtkada.Types.g_free (App_Exec);
                return Result;
             end;
          end if;
@@ -177,13 +177,13 @@ package body Gtk.Recent_Manager_Alt is
 
    function Get_Applications (Info : Gtk_Recent_Info)
       return Chars_Ptr_Array is
-      use GLib.Chars_Ptr_Vectors;
+      use Glib.Chars_Ptr_Vectors;
       function Internal
                (  Info   : Gtk_Recent_Info;
-                  Length : access GSize
+                  Length : access Gsize
                )  return Chars_Ptr_Ptr;
       pragma Import (C, Internal, "gtk_recent_info_get_applications");
-      Length : aliased GSize;
+      Length : aliased Gsize;
    begin
       return Convert_And_Free (Internal (Info, Length'Access));
    end Get_Applications;
@@ -224,24 +224,24 @@ package body Gtk.Recent_Manager_Alt is
 
    function Get_Groups (Info : Gtk_Recent_Info)
       return Chars_Ptr_Array is
-      use GLib.Chars_Ptr_Vectors;
+      use Glib.Chars_Ptr_Vectors;
       function Internal
                (  Info   : Gtk_Recent_Info;
-                  Length : access GSize
+                  Length : access Gsize
                )  return Chars_Ptr_Ptr;
       pragma Import (C, Internal, "gtk_recent_info_get_groups");
-      Length : aliased GSize;
+      Length : aliased Gsize;
    begin
       return Convert_And_Free (Internal (Info, Length'Access));
    end Get_Groups;
 
    function Get_Icon
             (  Info : Gtk_Recent_Info;
-               Size : GInt
+               Size : Gint
             )  return Gdk_Pixbuf is
       function Internal
                (  Info : Gtk_Recent_Info;
-                  Size : GInt
+                  Size : Gint
                )  return System.Address;
       pragma Import (C, Internal, "gtk_recent_info_get_icon");
    begin
@@ -276,7 +276,7 @@ package body Gtk.Recent_Manager_Alt is
       pragma Convention (C, GList);
       procedure Free (List : GList_Ptr);
       pragma Import (C, Free, "g_list_free");
-      function Length (List : GList_Ptr) return GUInt;
+      function Length (List : GList_Ptr) return Guint;
       pragma Import (C, Length, "g_list_length");
 
       function Internal (Manager : System.Address)
@@ -303,14 +303,14 @@ package body Gtk.Recent_Manager_Alt is
    end Get_Items;
 
    function Get_Modified (Info : Gtk_Recent_Info) return Time is
-      function Internal (Info : Gtk_Recent_Info) return Time_t;
+      function Internal (Info : Gtk_Recent_Info) return Time_T;
       pragma Import (C, Internal, "gtk_recent_info_get_modified");
    begin
       return To_Time (Internal (Info));
    end Get_Modified;
 
    function Get_Private_Hint (Info : Gtk_Recent_Info) return Boolean is
-      function Internal (Info : Gtk_Recent_Info) return GBoolean;
+      function Internal (Info : Gtk_Recent_Info) return Gboolean;
       pragma Import (C, Internal, "gtk_recent_info_get_private_hint");
    begin
       return Internal (Info) /= 0;
@@ -323,7 +323,7 @@ package body Gtk.Recent_Manager_Alt is
       Ptr    : constant Chars_Ptr   := Internal (Info);
       Result : constant UTF8_String := Interfaces.C.Strings.Value (Ptr);
    begin
-      G_Free (Ptr);
+      g_free (Ptr);
       return Result;
    end Get_Short_Name;
 
@@ -346,12 +346,12 @@ package body Gtk.Recent_Manager_Alt is
       Ptr    : constant Chars_Ptr   := Internal (Info);
       Result : constant UTF8_String := Interfaces.C.Strings.Value (Ptr);
    begin
-      G_Free (Ptr);
+      g_free (Ptr);
       return Result;
    end Get_URI_Display;
 
    function Get_Visited (Info : Gtk_Recent_Info) return Time is
-      function Internal (Info : Gtk_Recent_Info) return Time_t;
+      function Internal (Info : Gtk_Recent_Info) return Time_T;
       pragma Import (C, Internal, "gtk_recent_info_get_visited");
    begin
       return To_Time (Internal (Info));
@@ -369,8 +369,8 @@ package body Gtk.Recent_Manager_Alt is
             )  return Boolean is
       function Internal
                (  Info       : Gtk_Recent_Info;
-                  Group_Name : Char_Array
-               )  return GBoolean;
+                  Group_Name : char_array
+               )  return Gboolean;
       pragma Import
              (C, Internal, "gtk_recent_info_has_application");
    begin
@@ -383,8 +383,8 @@ package body Gtk.Recent_Manager_Alt is
             )  return Boolean is
       function Internal
                (  Info       : Gtk_Recent_Info;
-                  Group_Name : Char_Array
-               )  return GBoolean;
+                  Group_Name : char_array
+               )  return Gboolean;
       pragma Import (C, Internal, "gtk_recent_info_has_group");
    begin
       return Internal (Info, To_C (Group_Name)) /= 0;
@@ -396,8 +396,8 @@ package body Gtk.Recent_Manager_Alt is
            )  return Boolean is
       function Internal
                (  Manager : System.Address;
-                  URI     : Char_Array
-               )  return GBoolean;
+                  URI     : char_array
+               )  return Gboolean;
       pragma Import (C, Internal, "gtk_recent_manager_has_item");
    begin
       return 0 /= Internal (Get_Object (Manager), To_C (URI));
@@ -414,7 +414,7 @@ package body Gtk.Recent_Manager_Alt is
    end Initialize;
 
    function Is_Local (Info : Gtk_Recent_Info) return Boolean is
-      function Internal (Info : Gtk_Recent_Info) return GBoolean;
+      function Internal (Info : Gtk_Recent_Info) return Gboolean;
       pragma Import (C, Internal, "gtk_recent_info_is_local");
    begin
       return Internal (Info) /= 0;
@@ -427,7 +427,7 @@ package body Gtk.Recent_Manager_Alt is
       Ptr    : constant Chars_Ptr   := Internal (Info);
       Result : constant UTF8_String := Interfaces.C.Strings.Value (Ptr);
    begin
-      G_Free (Ptr);
+      g_free (Ptr);
       return Result;
    end Last_Application;
 
@@ -437,7 +437,7 @@ package body Gtk.Recent_Manager_Alt is
             )  return Item_Info is
       function Internal
                (  Manager : System.Address;
-                  URI     : Char_Array;
+                  URI     : char_array;
                   Error   : access GError
                )  return Gtk_Recent_Info;
       pragma Import (C, Internal, "gtk_recent_manager_lookup_item");
@@ -461,7 +461,7 @@ package body Gtk.Recent_Manager_Alt is
    end Lookup_Item;
 
    function Match (Info_A, Info_B : Gtk_Recent_Info) return Boolean is
-      function Internal (A, B : Gtk_Recent_Info) return GBoolean;
+      function Internal (A, B : Gtk_Recent_Info) return Gboolean;
       pragma Import (C, Internal, "gtk_recent_info_match");
    begin
       return Internal (Info_A, Info_B) /= 0;
@@ -475,10 +475,10 @@ package body Gtk.Recent_Manager_Alt is
              )  is
       function Internal
                (  Manager : System.Address;
-                  URI     : Char_Array;
-                  New_URI : Char_Array;
+                  URI     : char_array;
+                  New_URI : char_array;
                   Error   : access GError
-               )  return GBoolean;
+               )  return Gboolean;
       pragma Import (C, Internal, "gtk_recent_manager_move_item");
       Code : aliased GError;
    begin
@@ -499,12 +499,12 @@ package body Gtk.Recent_Manager_Alt is
    procedure Purge_Items
              (  Manager : not null access Gtk_Recent_Manager_Record;
                 Error   : out GError;
-                Removed : out GInt
+                Removed : out Gint
              )  is
       function Internal
                (  Manager : System.Address;
                   Error   : access GError
-               )  return GInt;
+               )  return Gint;
       pragma Import (C, Internal, "gtk_recent_manager_purge_items");
       Code : aliased GError := null;
    begin
@@ -527,9 +527,9 @@ package body Gtk.Recent_Manager_Alt is
              )  is
       function Internal
                (  Manager : System.Address;
-                  URI     : Char_Array;
+                  URI     : char_array;
                   Error   : access GError
-               )  return GBoolean;
+               )  return Gboolean;
       pragma Import (C, Internal, "gtk_recent_manager_remove_item");
       Code : aliased GError;
    begin

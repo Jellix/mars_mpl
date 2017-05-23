@@ -56,13 +56,13 @@ package body Gtk.Source_Mark is
    function Get_Category
             (  Mark : not null access Gtk_Source_Mark_Record
             )  return UTF8_String is
-      function Internal (Object : Address) return Chars_Ptr;
+      function Internal (Object : Address) return chars_ptr;
       pragma Import
              (  C,
                 Internal,
                 "gtk_source_mark_get_category"
              );
-      Result : constant Chars_Ptr := Internal (Get_Object (Mark));
+      Result : constant chars_ptr := Internal (Get_Object (Mark));
    begin
       if Result = Null_Ptr then
          return "";
@@ -103,7 +103,7 @@ package body Gtk.Source_Mark is
                 Name     : UTF8_String;
                 Category : UTF8_String
              )  is
-      function Internal (Name, Category : Char_Array) return Address;
+      function Internal (Name, Category : char_array) return Address;
       pragma Import (C, Internal, "gtk_source_mark_new");
    begin
      Set_Object (Mark, Internal (To_C (Name), To_C (Category)));
@@ -113,7 +113,7 @@ package body Gtk.Source_Mark is
              (  Mark     : not null access Gtk_Source_Mark_Record'Class;
                 Category : UTF8_String
              )  is
-      function Internal (Name : Address; Category : Char_Array)
+      function Internal (Name : Address; Category : char_array)
          return Address;
       pragma Import (C, Internal, "gtk_source_mark_new");
    begin
@@ -124,7 +124,7 @@ package body Gtk.Source_Mark is
             (  Mark     : not null access Gtk_Source_Mark_Record;
                Category : UTF8_String
             )  return Gtk_Source_Mark is
-      function Internal (Mark : Address; Category : Char_Array)
+      function Internal (Mark : Address; Category : char_array)
          return Address;
       pragma Import (C, Internal, "gtk_source_mark_next");
       Stub : Gtk_Source_Mark_Record;
@@ -160,7 +160,7 @@ package body Gtk.Source_Mark is
             (  Mark     : not null access Gtk_Source_Mark_Record;
                Category : UTF8_String
             )  return Gtk_Source_Mark is
-      function Internal (Mark : Address; Category : Char_Array)
+      function Internal (Mark : Address; Category : char_array)
          return Address;
       pragma Import (C, Internal, "gtk_source_mark_prev");
       Stub : Gtk_Source_Mark_Record;

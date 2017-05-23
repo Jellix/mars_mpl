@@ -37,7 +37,7 @@
 --      root-changed - This   emitted   when  the  columned  store  root
 --                     directory has been changed
 --
-with GLib.Values;                    use GLib.Values;
+with Glib.Values;                    use Glib.Values;
 with Gtk.Tree_Model.Abstract_Store;  use Gtk.Tree_Model.Abstract_Store;
 with Gtk.Handlers;                   use Gtk.Handlers;
 
@@ -115,7 +115,7 @@ package Gtk.Tree_Model.Columned_Store is
    overriding
    function Get_Column_Type
             (  Model : not null access Gtk_Columned_Store_Record;
-               Index : GInt
+               Index : Gint
             )  return GType;
 --
 -- Get_Flags -- Overrides Gtk.Tree_Model.Abstract_Store...
@@ -156,7 +156,7 @@ package Gtk.Tree_Model.Columned_Store is
    overriding
    function Get_N_Columns
             (  Model : not null access Gtk_Columned_Store_Record
-            )  return GInt;
+            )  return Gint;
 --
 -- Get_Path -- Overrides Gtk.Tree_Model.Abstract_Store...
 --
@@ -355,7 +355,7 @@ package Gtk.Tree_Model.Columned_Store is
    function Nth_Child
             (  Model  : not null access Gtk_Columned_Store_Record;
                Parent : Gtk_Tree_Iter;
-               N      : GInt
+               N      : Gint
             )  return Gtk_Tree_Iter;
 --
 -- N_Children -- Overrides Gtk.Tree_Model.Abstract_Store...
@@ -364,7 +364,7 @@ package Gtk.Tree_Model.Columned_Store is
    function N_Children
             (  Model : not null access Gtk_Columned_Store_Record;
                Iter  : Gtk_Tree_Iter := Null_Iter
-            )  return GInt;
+            )  return Gint;
 --
 -- Parent -- Overrides Gtk.Tree_Model.Abstract_Store...
 --
@@ -464,16 +464,16 @@ package Gtk.Tree_Model.Columned_Store is
              );
 private
    type Row_Callbacks is (Changed, Inserted, Reordered, Deleted);
-   type Callback_ID is array (Row_Callbacks) of Handler_ID;
+   type Callback_ID is array (Row_Callbacks) of Handler_Id;
 
    type Gtk_Columned_Store_Record is
       new Gtk_Abstract_Model_Record with
    record                                       -- Reference model
       Reference : Gtk_Tree_Model := Null_Gtk_Tree_Model;
-      Columns   : GInt           := 1;          -- The number of columns
-      Rows      : GInt           := 0;          -- The number of rows
+      Columns   : Gint           := 1;          -- The number of columns
+      Rows      : Gint           := 0;          -- The number of rows
       Path      : Gtk_Tree_Path  := Null_Gtk_Tree_Path; -- The root path
-      Stamp     : GInt           := GInt'First;       -- Iterators stamp
+      Stamp     : Gint           := Gint'First;       -- Iterators stamp
       Callbacks : Callback_ID;
    end record;
 --

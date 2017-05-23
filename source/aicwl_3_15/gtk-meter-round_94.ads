@@ -75,7 +75,7 @@ package Gtk.Meter.Round_94 is
 --
    procedure Gtk_New
              (  Widget     : out Gtk_Meter_Round_94;
-                Texts      : Gtk.Enums.String_List.GList;
+                Texts      : Gtk.Enums.String_List.Glist;
                 Adjustment : Gtk_Adjustment := null;
                 Sectors    : Positive       := 5
              );
@@ -107,7 +107,7 @@ package Gtk.Meter.Round_94 is
    procedure Initialize
              (  Widget : not null access
                          Gtk_Meter_Round_94_Record'Class;
-                Texts      : Gtk.Enums.String_List.GList;
+                Texts      : Gtk.Enums.String_List.Glist;
                 Adjustment : Gtk_Adjustment;
                 Sectors    : Positive
              );
@@ -195,7 +195,7 @@ package Gtk.Meter.Round_94 is
    procedure Set_Value
              (  Widget : not null access
                          Gtk_Meter_Round_94_Record;
-                Value  : GDouble
+                Value  : Gdouble
              );
 
    overriding

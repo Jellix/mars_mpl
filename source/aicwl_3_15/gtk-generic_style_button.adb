@@ -23,16 +23,14 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Glib.Properties.Creation;     use Glib.Properties.Creation;
-with Glib.Properties.Icon_Size;    use Glib.Properties.Icon_Size;
-with Gtkada.Types;                 use Gtkada.Types;
-with Gtk.Widget.Styles;            use Gtk.Widget.Styles;
-with Gtk.Widget.Styles.Icon_Size;  use Gtk.Widget.Styles.Icon_Size;
-
+with Glib.Properties.Creation;
+with Glib.Properties.Icon_Size;
 with Glib.Properties.Relief_Style;
 with Glib.Types;
+
+with Gtk.Widget.Styles.Icon_Size;
 with Gtk.Widget.Styles.Relief_Style;
 
 package body Gtk.Generic_Style_Button is
@@ -40,87 +38,81 @@ package body Gtk.Generic_Style_Button is
    Class_Record : aliased Ada_GObject_Class := Uninitialized_Class;
 
    function Get_Box
-            (  Button : not null access Gtk_Style_Button_Record
-            )  return Gtk_Box is
+     (Button : not null access Gtk_Style_Button_Record)
+      return Gtk.Box.Gtk_Box is
    begin
-      return Button.Box;
+      return Button.all.Box;
    end Get_Box;
 
    function Get_Label
-            (  Button : not null access Gtk_Style_Button_Record
-            )  return Gtk_Label is
+     (Button : not null access Gtk_Style_Button_Record)
+      return Gtk.Label.Gtk_Label is
    begin
-      return Button.Label;
+      return Button.all.Label;
    end Get_Label;
 
    function Get_Type return GType is
    begin
-      if Initialize_Class_Record
-         (  Ancestor     => Gtk.Button.Get_Type,
-            Class_Record => Class_Record'Access,
-            Type_Name    => Class_Name
-         )
+      if
+        Initialize_Class_Record
+          (Ancestor     => Gtk.Button.Get_Type,
+           Class_Record => Class_Record'Access,
+           Type_Name    => Class_Name)
       then
-         Install_Style_Property
-         (  Glib.Types.Class_Ref (Class_Record.The_Type),
-            Gnew_Boolean
-            (  Name    => "icon-left",
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
+            Glib.Properties.Creation.Gnew_Boolean
+              (Name    => "icon-left",
                Nick    => "Left",
                Blurb   => "Button icon located left of the label",
-               Default => Icon_Left
-         )  );
-         Install_Style_Property
-         (  Glib.Types.Class_Ref (Class_Record.The_Type),
-            Gnew_String
-            (  Name    => "icon-id",
-               Nick    => "Icon",
-               Blurb   => "Button icon (stock id)",
-               Default => Icon
-         )  );
-         Install_Style_Property
-         (  Glib.Types.Class_Ref (Class_Record.The_Type),
+               Default => Icon_Left));
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
+            Glib.Properties.Creation.Gnew_String
+            (Name    => "icon-id",
+             Nick    => "Icon",
+             Blurb   => "Button icon (stock id)",
+             Default => Icon));
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
             Glib.Properties.Icon_Size.Property.Gnew_Enum
-            (  Name    => "icon-size",
+              (Name    => "icon-size",
                Nick    => "Size",
                Blurb   => "Button icon size",
-               Default => Gtk_Icon_Size_Enum'Val (Size)
-         )  );
-         Install_Style_Property
-         (  Glib.Types.Class_Ref (Class_Record.The_Type),
-            Gnew_String
-            (  Name    => "label",
+               Default =>
+                 Glib.Properties.Icon_Size.Gtk_Icon_Size_Enum'Val (Size)));
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
+            Glib.Properties.Creation.Gnew_String
+              (Name    => "label",
                Nick    => "Label",
                Blurb   => "Button label",
-               Default => Label
-         )  );
-         Install_Style_Property
-         (  Glib.Types.Class_Ref (Class_Record.The_Type),
+               Default => Label));
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
             Glib.Properties.Relief_Style.Property.Gnew_Enum
-            (  Name    => "relief-style",
+              (Name    => "relief-style",
                Nick    => "Relief",
                Blurb   => "Button relief style",
-               Default => Relief
-         )  );
-         Install_Style_Property
-         (  Glib.Types.Class_Ref (Class_Record.The_Type),
-            Gnew_Uint
-            (  Name    => "spacing",
+               Default => Relief));
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
+            Glib.Properties.Creation.Gnew_Uint
+              (Name    => "spacing",
                Nick    => "Spacing",
                Blurb   => "Spacing between icon and label",
                Minimum => 0,
                Maximum => Guint (Gint'Last),
-               Default => Spacing
-         )  );
-         Install_Style_Property
-         (  Glib.Types.Class_Ref (Class_Record.The_Type),
-            Gnew_String
-            (  Name    => "tip",
+               Default => Spacing));
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
+            Glib.Properties.Creation.Gnew_String
+              (Name    => "tip",
                Nick    => "Tip",
                Blurb   => "Button tip",
-               Default => Tip
-         )  );
+               Default => Tip));
       end if;
-      return Class_Record.The_Type;
+      return Class_Record.all.The_Type;
    end Get_Type;
 
    procedure Gtk_New (Button : out Gtk_Style_Button) is
@@ -138,70 +130,70 @@ package body Gtk.Generic_Style_Button is
    end Gtk_New;
 
    procedure Initialize
-             (  Button : not null access Gtk_Style_Button_Record'Class
-             )  is
+     (Button : not null access Gtk_Style_Button_Record'Class) is
    begin
       G_New (Button, Get_Type);
       Gtk.Button.Initialize (Button, ""); -- Parent's initialization
-      Gtk_New_Hbox (Button.Box, False, 0);
-      Button.Box.Set_Border_Width (0);
-      Button.Add (Button.Box);
+      Gtk.Box.Gtk_New_Hbox (Button.all.Box, False, 0);
+      Button.all.Box.all.Set_Border_Width (0);
+      Button.all.Add (Button.all.Box);
       Style_Handlers.Connect
-      (  Button,
+        (Button,
          "style-updated",
-         Style_Handlers.To_Marshaller (Style_Updated'Access)
-      );
+         Style_Handlers.To_Marshaller (Style_Updated'Access));
       Style_Updated (Button);
    end Initialize;
 
    procedure Style_Updated
-             (  Button : access Gtk_Style_Button_Record'Class
-             )  is
-      use Gtk.Widget.Styles.Relief_Style;
-      Text : constant String := Style_Get (Button, "label");
+     (Button : access Gtk_Style_Button_Record'Class)
+   is
+      Text : constant String := Gtk.Widget.Styles.Style_Get (Button, "label");
+
+      use type Gtk.Image.Gtk_Image;
+      use type Gtk.Label.Gtk_Label;
    begin
-      Button.Set_Relief (Style_Get (Button, "relief-style"));
+      Button.all.Set_Relief
+        (Gtk.Widget.Styles.Relief_Style.Style_Get (Button, "relief-style"));
       if Text'Length = 0 then
-         if Button.Label /= null then
-            Remove (Button.Box, Button.Label);
-            Button.Label := null;
+         if Button.all.Label /= null then
+            Gtk.Box.Remove (Button.all.Box, Button.all.Label);
+            Button.all.Label := null;
          end if;
       else
-         if Button.Label = null then
-            Gtk_New (Button.Label, Text);
-            Button.Label.Ref;
+         if Button.all.Label = null then
+            Gtk.Label.Gtk_New (Button.all.Label, Text);
+            Button.all.Label.all.Ref;
          else
-            Button.Label.Ref;
-            Remove (Button.Box, Button.Label);
-            Button.Label.Set_Text (Text);
+            Button.all.Label.all.Ref;
+            Gtk.Box.Remove (Button.all.Box, Button.all.Label);
+            Button.all.Label.all.Set_Text (Text);
          end if;
       end if;
-      if Button.Image /= null then
-         Remove (Button.Box, Button.Image);
+      if Button.all.Image /= null then
+         Gtk.Box.Remove (Button.all.Box, Button.all.Image);
       end if;
-      Gtk_New
-      (  Button.Image,
-         Style_Get (Button, "icon-id"),
-         Gtk_Icon_Size_Enum'Pos (Style_Get (Button, "icon-size"))
-      );
-      if Style_Get (Button, "icon-left") then
-         Button.Box.Pack_Start (Button.Image, False, False);
-         if Button.Label /= null then
-            Button.Box.Pack_Start (Button.Label, False, False);
-            Button.Label.Unref;
+      Gtk.Image.Gtk_New
+        (Button.all.Image,
+         Gtk.Widget.Styles.Style_Get (Button, "icon-id"),
+         Glib.Properties.Icon_Size.Gtk_Icon_Size_Enum'Pos
+           (Gtk.Widget.Styles.Icon_Size.Style_Get (Button, "icon-size")));
+      if Gtk.Widget.Styles.Style_Get (Button, "icon-left") then
+         Button.all.Box.all.Pack_Start (Button.all.Image, False, False);
+         if Button.all.Label /= null then
+            Button.all.Box.all.Pack_Start (Button.all.Label, False, False);
+            Button.all.Label.all.Unref;
          end if;
       else
-         if Button.Label /= null then
-            Button.Box.Pack_Start (Button.Label, False, False);
-            Button.Label.Unref;
+         if Button.all.Label /= null then
+            Button.all.Box.all.Pack_Start (Button.all.Label, False, False);
+            Button.all.Label.all.Unref;
          end if;
-         Button.Box.Pack_Start (Button.Image, False, False);
+         Button.all.Box.all.Pack_Start (Button.all.Image, False, False);
       end if;
-      Button.Box.Set_Spacing
-      (  Gint (Guint'(Style_Get (Button, "spacing")))
-      );
-      Button.Set_Tooltip_Text (Style_Get (Button, "tip"));
-      Button.Box.Show_All;
+      Button.all.Box.all.Set_Spacing
+        (Gint (Guint'(Gtk.Widget.Styles.Style_Get (Button, "spacing"))));
+      Button.all.Set_Tooltip_Text (Gtk.Widget.Styles.Style_Get (Button, "tip"));
+      Button.all.Box.all.Show_All;
    end Style_Updated;
 
 end Gtk.Generic_Style_Button;

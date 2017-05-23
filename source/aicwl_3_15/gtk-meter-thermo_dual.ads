@@ -103,15 +103,15 @@ package Gtk.Meter.Thermo_Dual is
 --
    procedure Gtk_New_Celsius
              (  Widget  : out Gtk_Meter_Thermo_Dual;
-                Lower   : GDouble   := -40.0;
-                Upper   : GDouble   := 50.0;
+                Lower   : Gdouble   := -40.0;
+                Upper   : Gdouble   := 50.0;
                 Sectors : Positive  := 8;
                 Color   : Gdk_Color := RGB (1.0, 0.0, 0.0)
              );
    procedure Gtk_New_Fahrenheit
              (  Widget  : out Gtk_Meter_Thermo_Dual;
-                Lower   : GDouble   := 20.0;
-                Upper   : GDouble   := 220.0;
+                Lower   : Gdouble   := 20.0;
+                Upper   : Gdouble   := 220.0;
                 Sectors : Positive  := 8;
                 Color   : Gdk_Color := RGB (1.0, 0.0, 0.0)
              );
@@ -129,16 +129,16 @@ package Gtk.Meter.Thermo_Dual is
    procedure Initialize_Celsius
              (  Widget  : not null access
                           Gtk_Meter_Thermo_Dual_Record'Class;
-                Lower   : GDouble;
-                Upper   : GDouble;
+                Lower   : Gdouble;
+                Upper   : Gdouble;
                 Sectors : Positive;
                 Color   : Gdk_Color
              );
    procedure Initialize_Fahrenheit
              (  Widget  : not null access
                           Gtk_Meter_Thermo_Dual_Record'Class;
-                Lower   : GDouble;
-                Upper   : GDouble;
+                Lower   : Gdouble;
+                Upper   : Gdouble;
                 Sectors : Positive;
                 Color   : Gdk_Color
              );
@@ -263,10 +263,10 @@ package Gtk.Meter.Thermo_Dual is
 --
    function Get_Celsius_Value
             (  Widget : not null access Gtk_Meter_Thermo_Dual_Record
-            )  return GDouble;
+            )  return Gdouble;
    function Get_Fahrenheit_Value
             (  Widget : not null access Gtk_Meter_Thermo_Dual_Record
-            )  return GDouble;
+            )  return Gdouble;
 --
 -- Set_Bar_Color -- Set the themperature bar color
 --
@@ -293,11 +293,11 @@ package Gtk.Meter.Thermo_Dual is
 --
    procedure Set_Celsius_Value
              (  Widget : not null access Gtk_Meter_Thermo_Dual_Record;
-                Value  : GDouble
+                Value  : Gdouble
              );
    procedure Set_Fahrenheit_Value
              (  Widget : not null access Gtk_Meter_Thermo_Dual_Record;
-                Value  : GDouble
+                Value  : Gdouble
              );
 
    overriding
@@ -315,12 +315,12 @@ private
       Major_Ticks  : access Flat_Scale_Layer;
       Annotation   : access Flat_Annotation_Layer;
       Label        : access Label_Layer;
-      Factor       : GDouble; -- length / span [gives screen coord]
-      First        : GDouble; -- Lower major tick location
-      Step         : GDouble; -- Major tick step
-      Lower        : GDouble; -- Value at the lower major tick
-      From         : GDouble; -- Lower value of the range
-      Span         : GDouble; -- Values span
+      Factor       : Gdouble; -- length / span [gives screen coord]
+      First        : Gdouble; -- Lower major tick location
+      Step         : Gdouble; -- Major tick step
+      Lower        : Gdouble; -- Value at the lower major tick
+      From         : Gdouble; -- Lower value of the range
+      Span         : Gdouble; -- Values span
       Small        : Integer; -- Least significant digit
       Sectors      : Integer; -- Number of sectors
    end record;

@@ -34,7 +34,7 @@
 --  counterparts from the parent package with addition of  the  symbolic
 --  callstack traceback following the text message.
 --
-with GLib.Messages;  use GLib.Messages;
+with Glib.Messages;  use Glib.Messages;
 
 package Gtk.Main.Router.GNAT_Stack is
 --

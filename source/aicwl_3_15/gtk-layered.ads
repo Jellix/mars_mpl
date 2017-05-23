@@ -26,19 +26,26 @@
 -- __________________________________________________________________ --
 
 with Ada.Finalization;
+with Ada.Numerics;
 with Ada.Real_Time;
 with Ada.Streams;
 with Ada.Unchecked_Deallocation;
+
 with Cairo.Ellipses;
+
 with Glib.Values;
+
 with Gdk.Color;
 with Gdk.Rectangle;
+
 with Gtk.Adjustment;
 with Gtk.Drawing_Area;
 with Gtk.Enums.String_Lists;
 with Gtk.Handlers;
 with Gtk.Widget;
+
 with Pango.Cairo.Fonts;
+
 with System;
 
 package Gtk.Layered is

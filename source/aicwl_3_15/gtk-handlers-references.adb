@@ -23,9 +23,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
-
-with System;  use System;
+-- __________________________________________________________________ --
 
 with System.Address_To_Access_Conversions;
 
@@ -35,55 +33,69 @@ package body Gtk.Handlers.References is
       new System.Address_To_Access_Conversions (Handler_Reference);
 
    type GClosureNotify is access
-      procedure (Data : Address; Closure : GClosure);
+      procedure (Data : System.Address; Closure : GClosure);
    pragma Convention (C, GClosureNotify);
-
-   procedure Add_Invalidate_Notifier
-             (  Closure     : GClosure;
-                Notify_Data : Address;
-                Notify_Func : GClosureNotify
-             );
-   pragma Import
-          (  C,
-             Add_Invalidate_Notifier,
-             "g_closure_add_invalidate_notifier"
-          );
 
    procedure Invalidate (Closure : GClosure);
    pragma Import (C, Invalidate, "g_closure_invalidate");
 
-   procedure Invalidated (Data : Address; Closure : GClosure);
+   procedure Invalidated (Data : System.Address; Closure : GClosure);
    pragma Convention (C, Invalidated);
+
+   procedure Add_Invalidate_Notifier
+     (Closure     : GClosure;
+      Notify_Data : System.Address;
+      Notify_Func : GClosureNotify);
+   pragma Import (C,
+                  Add_Invalidate_Notifier,
+                  "g_closure_add_invalidate_notifier");
+
+   overriding procedure Adjust (Reference : in out Handler_Reference) is
+   begin
+      if Reference.ID /= Null_Handler_Id then
+         Add_Invalidate_Notifier
+           (Reference.Closure,
+            Reference'Address,
+            Invalidated'Access);
+      end if;
+   end Adjust;
+
+   overriding procedure Finalize (Reference : in out Handler_Reference) is
+   begin
+      if Reference.ID /= Null_Handler_Id then
+         Invalidate (Reference.Closure);
+         Reference.ID := Null_Handler_Id;
+      end if;
+   end Finalize;
 
    function Get (Reference : Handler_Reference) return Handler_Id is
    begin
       return (Reference.ID, Reference.Closure);
    end Get;
 
-   procedure Invalidated (Data : Address; Closure : GClosure) is
+   procedure Invalidated (Data : System.Address; Closure : GClosure)
+   is
+      pragma Unreferenced (Closure);
    begin
-      Conversions.To_Pointer (Data).ID := Null_Handler_Id;
+      Conversions.To_Pointer (Data).all.ID := Null_Handler_Id;
    end Invalidated;
 
    procedure Set
-             (  Reference : in out Handler_Reference;
-                Handler   : Handler_Id
-             )  is
+     (Reference : in out Handler_Reference;
+      Handler   : Handler_Id) is
    begin
-      if (  Reference.ID /= Handler.Id
-         or else
-            Reference.Closure /= Handler.Closure
-         )
+      if
+        Reference.ID /= Handler.Id or else
+        Reference.Closure /= Handler.Closure
       then
          Finalize (Reference);
          if Handler.Id /= Null_Handler_Id then
             Reference.ID      := Handler.Id;
             Reference.Closure := Handler.Closure;
             Add_Invalidate_Notifier
-            (  Handler.Closure,
+              (Handler.Closure,
                Reference'Address,
-               Invalidated'Access
-            );
+               Invalidated'Access);
          end if;
       end if;
    end Set;
@@ -92,24 +104,5 @@ package body Gtk.Handlers.References is
    begin
       Finalize (Reference);
    end Set;
-
-   procedure Adjust (Reference : in out Handler_Reference) is
-   begin
-      if Reference.ID /= Null_Handler_Id then
-         Add_Invalidate_Notifier
-         (  Reference.Closure,
-            Reference'Address,
-            Invalidated'Access
-         );
-      end if;
-   end Adjust;
-
-   procedure Finalize (Reference : in out Handler_Reference) is
-   begin
-      if Reference.ID /= Null_Handler_Id then
-         Invalidate (Reference.Closure);
-         Reference.ID := Null_Handler_Id;
-      end if;
-   end Finalize;
 
 end Gtk.Handlers.References;

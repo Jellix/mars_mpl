@@ -25,11 +25,13 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Glib.Properties.Creation;  use Glib.Properties.Creation;
-with Gtk.Layered.Stream_IO;     use Gtk.Layered.Stream_IO;
-
 with Ada.Unchecked_Deallocation;
+
 with Cairo.Line_Cap_Property;
+
+with Glib.Properties.Creation;
+
+with Gtk.Layered.Stream_IO;
 
 package body Gtk.Layered.Arc is
    type Arc_Ptr is access all Arc_Layer;
@@ -71,7 +73,7 @@ package body Gtk.Layered.Arc is
      (Under    : not null access Layer_Location'Class;
       Ellipse  : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle;
       From     : Gdouble                           := 0.0;
-      Length   : Gdouble                           := 2.0 * Pi;
+      Length   : Gdouble                           := 2.0 * Ada.Numerics.Pi;
       Width    : Gdouble                           := 1.0;
       Color    : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Line_Cap : Cairo.Cairo_Line_Cap              := Cairo.Cairo_Line_Cap_Butt;
@@ -100,7 +102,7 @@ package body Gtk.Layered.Arc is
      (Under    : not null access Layer_Location'Class;
       Ellipse  : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle;
       From     : Gdouble                           := 0.0;
-      Length   : Gdouble                           := 2.0 * Pi;
+      Length   : Gdouble                           := 2.0 * Ada.Numerics.Pi;
       Width    : Gdouble                           := 1.0;
       Color    : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Line_Cap : Cairo.Cairo_Line_Cap              := Cairo.Cairo_Line_Cap_Butt;
@@ -208,7 +210,7 @@ package body Gtk.Layered.Arc is
          case Layer_Property'Val (Property - 1) is
             when Property_Center_X =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "x",
                     Nick    => "x",
                     Minimum => Gdouble'First,
@@ -217,7 +219,7 @@ package body Gtk.Layered.Arc is
                     Blurb   => "The x-coordinate of the arc's ellipse center");
             when Property_Center_Y =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "y",
                     Nick    => "y",
                     Minimum => Gdouble'First,
@@ -226,7 +228,7 @@ package body Gtk.Layered.Arc is
                     Blurb   => "The y-coordinate of the arc's ellipse center");
             when Property_Curvature =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "k",
                     Nick    => "k",
                     Minimum => 0.0,
@@ -235,7 +237,7 @@ package body Gtk.Layered.Arc is
                     Blurb   => "The curvature of the arc's ellipse major axis");
             when Property_Radius =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "r",
                     Nick    => "r",
                     Minimum => 1.0E-6,
@@ -244,35 +246,35 @@ package body Gtk.Layered.Arc is
                     Blurb   => "The radius of the arc's ellipse minor axis");
             when Property_Angle =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "angle",
                     Nick    => "angle",
-                    Minimum => -2.0 * Pi,
-                    Maximum => 2.0 * Pi,
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
                     Default => 0.0,
                     Blurb   =>
                        "The angle of the major ellipse axis of the arc");
             when Property_From =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "from",
                     Nick    => "from",
-                    Minimum => -2.0 * Pi,
-                    Maximum => 2.0 * Pi,
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
                     Default => 0.0,
                     Blurb   => "The angle of the arc beginning");
             when Property_Length =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "length",
                     Nick    => "length",
-                    Minimum => -2.0 * Pi,
-                    Maximum => 2.0 * Pi,
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
                     Default => 0.0,
                     Blurb   => "The angular length of the arc");
             when Property_Line_Width =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "width",
                     Nick    => "width",
                     Minimum => 0.0,
@@ -281,7 +283,7 @@ package body Gtk.Layered.Arc is
                     Blurb   => "The arc line width");
             when Property_Line_Color =>
                return
-                  Gnew_Boxed
+                 Glib.Properties.Creation.Gnew_Boxed
                    (Name       => "color",
                     Boxed_Type => Gdk.Color.Gdk_Color_Type,
                     Nick       => "color",
@@ -295,7 +297,7 @@ package body Gtk.Layered.Arc is
                     Blurb   => "The cap style of the arc's line");
             when Property_Scaled =>
                return
-                  Gnew_Boolean
+                 Glib.Properties.Creation.Gnew_Boolean
                    (Name    => "scaled",
                     Nick    => "scaled",
                     Default => False,
@@ -304,7 +306,7 @@ package body Gtk.Layered.Arc is
                        "the widget is resized");
             when Property_Widened =>
                return
-                  Gnew_Boolean
+                 Glib.Properties.Creation.Gnew_Boolean
                    (Name    => "widened",
                     Nick    => "widened",
                     Default => False,
@@ -402,11 +404,11 @@ package body Gtk.Layered.Arc is
       Length  : Gdouble;
       Line    : Line_Parameters;
    begin
-      Restore (Stream, Ellipse);
-      Restore (Stream, From);
-      Restore (Stream, Length);
-      Restore (Stream, Line);
-      Restore (Stream, Layer.Scaled, Layer.Widened);
+      Gtk.Layered.Stream_IO.Restore (Stream, Ellipse);
+      Gtk.Layered.Stream_IO.Restore (Stream, From);
+      Gtk.Layered.Stream_IO.Restore (Stream, Length);
+      Gtk.Layered.Stream_IO.Restore (Stream, Line);
+      Gtk.Layered.Stream_IO.Restore (Stream, Layer.Scaled, Layer.Widened);
       Set
         (Layer   => Layer,
          Ellipse => Ellipse,
@@ -475,20 +477,31 @@ package body Gtk.Layered.Arc is
                end if;
             when Property_Angle =>
                Layer.Ellipse.Angle := Glib.Values.Get_Double (Value);
-               if Layer.Ellipse.Angle not in -2.0 * Pi .. 2.0 * Pi then
+               if
+                 Layer.Ellipse.Angle not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
                   Layer.Ellipse.Angle :=
-                     Gdouble'Remainder (Layer.Ellipse.Angle, 2.0 * Pi);
+                    Gdouble'Remainder (Layer.Ellipse.Angle,
+                                       2.0 * Ada.Numerics.Pi);
                end if;
             when Property_From =>
                Layer.From := Glib.Values.Get_Double (Value);
-               if Layer.From not in -2.0 * Pi .. 2.0 * Pi then
-                  Layer.From := Gdouble'Remainder (Layer.From, 2.0 * Pi);
+               if
+                 Layer.From not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
+                  Layer.From := Gdouble'Remainder (Layer.From,
+                                                   2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Length =>
                Layer.Length := Glib.Values.Get_Double (Value);
-               if Layer.Length not in -2.0 * Pi .. 2.0 * Pi then
+               if
+                 Layer.Length not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
                   Layer.Length :=
-                     Gdouble'Remainder (Layer.Length, 2.0 * Pi);
+                    Gdouble'Remainder (Layer.Length, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Line_Width =>
                Layer.Line.Width := Glib.Values.Get_Double (Value);
@@ -529,11 +542,11 @@ package body Gtk.Layered.Arc is
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Layer  : Arc_Layer) is
    begin
-      Store (Stream, Layer.Ellipse);
-      Store (Stream, Layer.From);
-      Store (Stream, Layer.Length);
-      Store (Stream, Layer.Line);
-      Store (Stream, Layer.Scaled, Layer.Widened);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Ellipse);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.From);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Length);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Line);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Scaled, Layer.Widened);
    end Store;
 
 end Gtk.Layered.Arc;

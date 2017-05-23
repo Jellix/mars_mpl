@@ -33,22 +33,22 @@ with Glib.Generic_Properties;
 with Glib.Object.Strong_References;
 with Glib.Values;
 
-with Gtk.Box;                  use Gtk.Box;
-with Gtk.Check_Button;         use Gtk.Check_Button;
-with Gtk.Color_Button;         use Gtk.Color_Button;
-with Gtk.Enums;                use Gtk.Enums;
+with Gtk.Box;
+with Gtk.Check_Button;
+with Gtk.Color_Button;
+with Gtk.Enums;
 with Gtk.Generic_Enum_Combo_Box;
 with Gtk.Generic_Style_Button;
-with Gtk.GEntry;               use Gtk.GEntry;
-with Gtk.Handlers.References;  use Gtk.Handlers.References;
-with Gtk.Label;                use Gtk.Label;
+with Gtk.GEntry;
+with Gtk.Handlers.References;
+with Gtk.Label;
 with Gtk.Layered;
-with Gtk.List_Store;           use Gtk.List_Store;
-with Gtk.Spin_Button;          use Gtk.Spin_Button;
-with Gtk.Table;                use Gtk.Table;
-with Gtk.Toggle_Button;        use Gtk.Toggle_Button;
-with Gtk.Tree_View;            use Gtk.Tree_View;
-with Gtk.Viewport;             use Gtk.Viewport;
+with Gtk.List_Store;
+with Gtk.Spin_Button;
+with Gtk.Table;
+with Gtk.Toggle_Button;
+with Gtk.Tree_View;
+with Gtk.Viewport;
 with Gtk.Widget;
 
 with Pango.Enums;
@@ -88,7 +88,8 @@ package Gtk.Layered_Editor is
    --    The widget's box containing buttons
    --
    function Get_Buttons_Box
-     (Widget : not null access Gtk_Layered_Editor_Record) return Gtk_Box;
+     (Widget : not null access Gtk_Layered_Editor_Record)
+      return Gtk.Box.Gtk_Box;
 
    --
    -- Gtk_New -- Editor creation
@@ -163,10 +164,12 @@ private
       end record;
    type Delete_Button is access all Delete_Button_Record'Class;
 
-   type Markup_Button_Record is new Gtk_Check_Button_Record with record
+   type Markup_Button_Record is new Gtk.Check_Button.Gtk_Check_Button_Record
+     with record
       Position : Positive;
       Widget   : Gtk_Layered_Editor;
    end record;
+
    type Markup_Button is access all Markup_Button_Record'Class;
 
    package Down_Buttons is
@@ -283,14 +286,17 @@ private
      new Gtk.Generic_Enum_Combo_Box (Gtk.Layered.Interpolation_Mode);
    package Line_Cap_Box is
      new Gtk.Generic_Enum_Combo_Box (Cairo.Cairo_Line_Cap);
+
    package Shadow_Type_Box is
-     new Generic_Enum_Combo_Box (Gtk_Shadow_Type);
+     new Generic_Enum_Combo_Box (Gtk.Enums.Gtk_Shadow_Type);
+
    package Text_Transformation_Box is
      new Gtk.Generic_Enum_Combo_Box (Gtk.Layered.Text_Transformation);
    package Waveform_Drawing_Method_Box is
      new Gtk.Generic_Enum_Combo_Box (Gtk.Layered.Waveform_Drawing_Method);
 
-   type Gtk_Edit_Record is new Gtk_Entry_Record with record
+   type Gtk_Edit_Record is new Gtk.GEntry.Gtk_Entry_Record
+     with record
       No     : Property_Index;
       Widget : Gtk_Layered_Editor;
    end record;
@@ -298,19 +304,20 @@ private
 
    procedure Changed_String (Edit : access Gtk_Edit_Record'Class);
 
-   type Gtk_Text_Record is new Gtk_Entry_Record with record
+   type Gtk_Text_Record is new Gtk.GEntry.Gtk_Entry_Record
+     with record
       Position : Positive;
       Widget   : Gtk_Layered_Editor;
    end record;
    type Gtk_Text is access all Gtk_Text_Record'Class;
 
    procedure Changed_Markup
-     (Markup : access Gtk_Toggle_Button_Record'Class);
+     (Markup : access Gtk.Toggle_Button.Gtk_Toggle_Button_Record'Class);
 
    procedure Changed_Text (Edit : access Gtk_Text_Record'Class);
 
    type Annotation is record
-      Label  : Gtk_Label;
+      Label  : Gtk.Label.Gtk_Label;
       Edit   : Gtk_Text;
       Markup : Markup_Button;
       Delete : Delete_Button;
@@ -320,7 +327,8 @@ private
    --
    -- Annotation_Texts_Record -- Annotation texts
    --
-   type Gtk_Annotation_Texts_Record is new Gtk_Table_Record with record
+   type Gtk_Annotation_Texts_Record is new Gtk.Table.Gtk_Table_Record
+     with record
       Editor : Gtk_Layered_Editor;
       Length : Guint := 0;
       Add    : Add_Buttons.Gtk_Style_Button;
@@ -357,25 +365,30 @@ private
    procedure Destroyed
      (Widget : access Gtk_Annotation_Texts_Record'Class);
 
-   type Gtk_Check_Edit_Record is new Gtk_Check_Button_Record with record
+   type Gtk_Check_Edit_Record is new Gtk.Check_Button.Gtk_Check_Button_Record
+     with record
       No     : Property_Index;
       Widget : Gtk_Layered_Editor;
    end record;
+
    type Gtk_Check_Edit is access all Gtk_Check_Edit_Record'Class;
 
    procedure Toggled
      (Button : access Gtk_Check_Edit_Record'Class);
 
-   type Gtk_Color_Edit_Record is new Gtk_Color_Button_Record with record
+   type Gtk_Color_Edit_Record is new Gtk.Color_Button.Gtk_Color_Button_Record
+     with record
       No     : Property_Index;
       Widget : Gtk_Layered_Editor;
    end record;
+
    type Gtk_Color_Edit is access all Gtk_Color_Edit_Record'Class;
 
    procedure Color_Set
      (Button : access Gtk_Color_Edit_Record'Class);
 
-   type Gtk_Double_Edit_Record is new Gtk_Entry_Record with record
+   type Gtk_Double_Edit_Record is new Gtk.GEntry.Gtk_Entry_Record
+     with record
       No     : Property_Index;
       Widget : Gtk_Layered_Editor;
    end record;
@@ -384,7 +397,8 @@ private
    procedure Value_Set
      (Edit : access Gtk_Double_Edit_Record'Class);
 
-   type Gtk_UInt_Edit_Record is new Gtk_Entry_Record with record
+   type Gtk_UInt_Edit_Record is new Gtk.GEntry.Gtk_Entry_Record
+     with record
       No     : Property_Index;
       Widget : Gtk_Layered_Editor;
    end record;
@@ -455,23 +469,24 @@ private
 
    package Layer_Combo is new Gtk.Generic_Enum_Combo_Box (Layer_Type);
 
-   type Gtk_Layered_Editor_Record is new Gtk_Vbox_Record with record
+   type Gtk_Layered_Editor_Record is new Gtk.Box.Gtk_Vbox_Record
+     with record
       Layered             : Layered_References.Strong_Reference;
-      Layer_Added         : Handler_Reference;
-      Layer_Removed       : Handler_Reference;
-      View                : Gtk_Tree_View;
-      Store               : Gtk_List_Store;
-      Properties          : Gtk_Table;
-      Viewport            : Gtk_Viewport;
-      Panel_Box           : Gtk_Vbox;
-      Button_Box          : Gtk_Hbox;
+      Layer_Added         : Gtk.Handlers.References.Handler_Reference;
+      Layer_Removed       : Gtk.Handlers.References.Handler_Reference;
+      View                : Gtk.Tree_View.Gtk_Tree_View;
+      Store               : Gtk.List_Store.Gtk_List_Store;
+      Properties          : Gtk.Table.Gtk_Table;
+      Viewport            : Gtk.Viewport.Gtk_Viewport;
+      Panel_Box           : Gtk.Box.Gtk_Vbox;
+      Button_Box          : Gtk.Box.Gtk_Hbox;
       Add_Layer_Combo     : Layer_Combo.Gtk_Enum_Combo_Box;
       Move_Step           : Gdouble := 0.01;
       Gain_Step           : Gdouble := 1.01;
-      Aspect_Edit         : Gtk_Entry;
+      Aspect_Edit         : Gtk.GEntry.Gtk_Entry;
       Border_Color        : Gtk_Color_Edit;
-      Move_Step_Button    : Gtk_Spin_Button;
-      Gain_Step_Button    : Gtk_Spin_Button;
+      Move_Step_Button    : Gtk.Spin_Button.Gtk_Spin_Button;
+      Gain_Step_Button    : Gtk.Spin_Button.Gtk_Spin_Button;
       Selected_Layers     : Layer_List_Ptr;
       Remove              : Remove_Buttons.Gtk_Style_Button;
       Lift                : Lift_Buttons.Gtk_Style_Button;

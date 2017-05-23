@@ -65,7 +65,7 @@ package Gtk.Recent_Manager_Keys is
    procedure Restore
              (  Key     : UTF8_String;
                 Model   : Gtk_List_Store;
-                Column  : GInt;
+                Column  : Gint;
                 Max_Row : Positive := 10;
                 Manager : Gtk_Recent_Manager := Get_Default
              );
@@ -97,7 +97,7 @@ package Gtk.Recent_Manager_Keys is
    procedure Store
              (  Key     : UTF8_String;
                 Model   : Gtk_List_Store;
-                Column  : GInt;
+                Column  : Gint;
                 Max_Row : Positive := 10;
                 Manager : Gtk_Recent_Manager := Get_Default
              );
@@ -139,10 +139,10 @@ private
    type Model_Enumerator is new Key_Enumerator with record
       Model   : Gtk_List_Store;
       Length  : Natural;
-      Column  : GInt;
-      Max_Row : GInt;
+      Column  : Gint;
+      Max_Row : Gint;
    end record;
-   procedure Process
+   overriding procedure Process
              (  Enumerator : in out Model_Enumerator;
                 Key        : UTF8_String;
                 Value      : UTF8_String;

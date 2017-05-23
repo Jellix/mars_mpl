@@ -53,7 +53,7 @@ package Gtk.Source_Style_Scheme is
 --
    function Get_Authors
             (  Scheme : not null access Gtk_Source_Style_Scheme_Record
-            )  return Chars_Ptr_Array;
+            )  return chars_ptr_array;
 --
 -- Get_Description -- Get description of the style scheme
 --

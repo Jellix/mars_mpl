@@ -165,7 +165,7 @@ package Gtk.Source_Mark_Attributes is
             (  Attributes : not null access
                             Gtk_Source_Mark_Atributes_Record;
                Widget     : not null access Gtk_Widget_Record'Class;
-               Size       : GInt
+               Size       : Gint
             )  return Gdk_Pixbuf;
 --
 -- Set_Background -- Of a mark

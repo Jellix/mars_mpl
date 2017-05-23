@@ -25,16 +25,18 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
-with Glib.Properties.Creation;    use Glib.Properties.Creation;
-with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
-
 with Ada.Unchecked_Deallocation;
+
+with Cairo.Elementary_Functions;
 with Cairo.Line_Cap_Property;
+
+with Glib.Properties.Creation;
+
+with Gtk.Layered.Stream_IO;
 
 package body Gtk.Layered.Clock_Hand is
 
-   Sqrt_2 : constant Gdouble := Sqrt (2.0);
+   Sqrt_2 : constant Gdouble := Cairo.Elementary_Functions.Sqrt (2.0);
 
    type Clock_Hand_Ptr is access all Clock_Hand_Layer;
 
@@ -63,9 +65,8 @@ package body Gtk.Layered.Clock_Hand is
       new Ada.Unchecked_Deallocation (Clock_Hand_Layer, Clock_Hand_Ptr);
 
    procedure Changed
-             (  Adjustment : access GObject_Record'Class;
-                Needle     : Clock_Hand_Ptr
-             );
+     (Adjustment : access GObject_Record'Class;
+      Needle     : Clock_Hand_Ptr);
 
    procedure Add_Adjustment
      (Layer      : in out Clock_Hand_Layer;
@@ -75,19 +76,17 @@ package body Gtk.Layered.Clock_Hand is
       Gtk.Adjustment.Ref (Adjustment);
       Layer.Adjustment := Adjustment.all'Unchecked_Access;
       Layer.Changed :=
-         Handlers.Connect
-         (  Adjustment,
-            "changed",
-            Handlers.To_Marshaller (Changed'Access),
-            Layer'Unchecked_Access
-         );
+        Handlers.Connect
+          (Adjustment,
+           "changed",
+           Handlers.To_Marshaller (Changed'Access),
+           Layer'Unchecked_Access);
       Layer.Value_Changed :=
-         Handlers.Connect
-         (  Adjustment,
-            "value_changed",
-            Handlers.To_Marshaller (Changed'Access),
-            Layer'Unchecked_Access
-         );
+        Handlers.Connect
+          (Adjustment,
+           "value_changed",
+           Handlers.To_Marshaller (Changed'Access),
+           Layer'Unchecked_Access);
       declare
          Lower : constant Gdouble := Adjustment.all.Get_Lower;
          Upper : constant Gdouble := Adjustment.all.Get_Upper;
@@ -106,8 +105,8 @@ package body Gtk.Layered.Clock_Hand is
    procedure Add_Clock_Hand
      (Under         : not null access Layer_Location'Class;
       Center        : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 0.0);
-      From          : Gdouble                                           := 3.0 * Pi / 4.0;
-      Length        : Gdouble                                           := 3.0 * Pi / 2.0;
+      From          : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 4.0;
+      Length        : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 2.0;
       Tip_Length    : Gdouble                                           := 20.0;
       Tip_Width     : Gdouble                                           := 2.0;
       Tip_Cap       : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
@@ -127,23 +126,20 @@ package body Gtk.Layered.Clock_Hand is
       Layer.Scaled := Scaled;
       Add (Ptr, Under);
       Set
-      (  Layer  => Layer,
-         Center => Center,
-         From   => From,
-         Length => Length,
-         Tip    => (  Length => Tip_Length,
-                      Width  => Tip_Width,
-                      Cap    => Tip_Cap
-                   ),
-         Rear   => (  Length => Rear_Length,
-                      Width  => Rear_Width,
-                      Cap    => Rear_Cap
-                   ),
+        (Layer         => Layer,
+         Center        => Center,
+         From          => From,
+         Length        => Length,
+         Tip           => (Length => Tip_Length,
+                           Width  => Tip_Width,
+                           Cap    => Tip_Cap),
+         Rear          => (Length => Rear_Length,
+                           Width  => Rear_Width,
+                           Cap    => Rear_Cap),
          Bulb_Position => Bulb_Position,
          Bulb_Radius   => Bulb_Radius,
          Bulb_Width    => Bulb_Width,
-         Color         => Color
-      );
+         Color         => Color);
       if Adjustment /= null then
          Add_Adjustment (Ptr.all, Adjustment);
       end if;
@@ -156,8 +152,8 @@ package body Gtk.Layered.Clock_Hand is
    function Add_Clock_Hand
      (Under         : not null access Layer_Location'Class;
       Center        : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 0.0);
-      From          : Gdouble                                           := 3.0 * Pi / 4.0;
-      Length        : Gdouble                                           := 3.0 * Pi / 2.0;
+      From          : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 4.0;
+      Length        : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 2.0;
       Tip_Length    : Gdouble                                           := 20.0;
       Tip_Width     : Gdouble                                           := 2.0;
       Tip_Cap       : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
@@ -178,23 +174,20 @@ package body Gtk.Layered.Clock_Hand is
       Layer.Scaled := Scaled;
       Add (Ptr, Under);
       Set
-      (  Layer  => Layer,
-         Center => Center,
-         From   => From,
-         Length => Length,
-         Tip    => (  Length => Tip_Length,
-                      Width  => Tip_Width,
-                      Cap    => Tip_Cap
-                   ),
-         Rear   => (  Length => Rear_Length,
-                      Width  => Rear_Width,
-                      Cap    => Rear_Cap
-                   ),
+        (Layer         => Layer,
+         Center        => Center,
+         From          => From,
+         Length        => Length,
+         Tip           => (Length => Tip_Length,
+                           Width  => Tip_Width,
+                           Cap    => Tip_Cap),
+         Rear          => (Length => Rear_Length,
+                           Width  => Rear_Width,
+                           Cap    => Rear_Cap),
          Bulb_Position => Bulb_Position,
          Bulb_Radius   => Bulb_Radius,
          Bulb_Width    => Bulb_Width,
-         Color         => Color
-      );
+         Color         => Color);
       if Adjustment /= null then
          Add_Adjustment (Ptr.all, Adjustment);
       end if;
@@ -222,22 +215,22 @@ package body Gtk.Layered.Clock_Hand is
    end Add;
 
    procedure Changed
-             (  Adjustment : access GObject_Record'Class;
-                Needle     : Clock_Hand_Ptr
-             )  is
-      Lower : constant Gdouble := Gtk.Adjustment.Get_Lower (Needle.Adjustment);
-      Upper : constant Gdouble := Gtk.Adjustment.Get_Upper (Needle.Adjustment);
-      Value : constant Gdouble := Gtk.Adjustment.Get_Value (Needle.Adjustment);
+     (Adjustment : access GObject_Record'Class;
+      Needle     : Clock_Hand_Ptr)
+   is
+      Lower : constant Gdouble := Gtk.Adjustment.Get_Lower (Needle.all.Adjustment);
+      Upper : constant Gdouble := Gtk.Adjustment.Get_Upper (Needle.all.Adjustment);
+      Value : constant Gdouble := Gtk.Adjustment.Get_Value (Needle.all.Adjustment);
    begin
       if Upper <= Lower or else Value <= Lower then
-         Needle.Set_Value (0.0);
+         Needle.all.Set_Value (0.0);
       elsif Value >= Upper then
-         Needle.Set_Value (1.0);
+         Needle.all.Set_Value (1.0);
       else
-         Needle.Set_Value ((Value - Lower) / (Upper - Lower));
+         Needle.all.Set_Value ((Value - Lower) / (Upper - Lower));
       end if;
-      if not Needle.Widget.Drawing and then Needle.Updated then
-         Queue_Draw (Needle.Widget); -- Signal draw to the widget
+      if not Needle.all.Widget.all.Drawing and then Needle.all.Updated then
+         Queue_Draw (Needle.all.Widget); -- Signal draw to the widget
       end if;
    end Changed;
 
@@ -267,8 +260,8 @@ package body Gtk.Layered.Clock_Hand is
          if Layer.Scaled then
             declare
                Center : constant Cairo.Ellipses.Cairo_Tuple :=
-                          Layer.Widget.Get_Center;
-               Size   : constant Gdouble     := Layer.Widget.Get_Size;
+                          Layer.Widget.all.Get_Center;
+               Size   : constant Gdouble     := Layer.Widget.all.Get_Size;
             begin
                Tip_Length    := Size * Layer.Tip.Length;
                Tip_Radius    := Size * Layer.Tip.Width  / 2.0;
@@ -310,7 +303,7 @@ package body Gtk.Layered.Clock_Hand is
             Xc     => Bulb_Position,
             Yc     => 0.0,
             Radius => Bulb_Radius,
-            Angle1 => 2.0 * Pi,
+            Angle1 => 2.0 * Ada.Numerics.Pi,
             Angle2 => 0.0);
          Cairo.Close_Path (Context);
          declare
@@ -324,12 +317,13 @@ package body Gtk.Layered.Clock_Hand is
                when Cairo.Cairo_Line_Cap_Round =>
                   declare
                      Angle : constant Gdouble :=
-                                Arctan
-                                (  X => Tip_Length + Rear_Length,
-                                   Y => Tip_Radius - Rear_Radius
-                                );
-                     Cos_Angle : constant Gdouble := Cos (Angle);
-                     Sin_Angle : constant Gdouble := Sin (Angle);
+                               Cairo.Elementary_Functions.Arctan
+                                 (X => Tip_Length + Rear_Length,
+                                  Y => Tip_Radius - Rear_Radius);
+                     Cos_Angle : constant Gdouble :=
+                                   Cairo.Elementary_Functions.Cos (Angle);
+                     Sin_Angle : constant Gdouble :=
+                                   Cairo.Elementary_Functions.Sin (Angle);
                   begin
                      Cairo.Move_To
                        (Context,
@@ -340,8 +334,8 @@ package body Gtk.Layered.Clock_Hand is
                         Xc     => Tip_Length,
                         Yc     => 0.0,
                         Radius => Tip_Radius,
-                        Angle1 => Angle - Pi / 2.0,
-                        Angle2 => Pi / 2.0 - Angle);
+                        Angle1 => Angle - Ada.Numerics.Pi / 2.0,
+                        Angle2 => Ada.Numerics.Pi / 2.0 - Angle);
                      Cairo.Line_To
                        (Context,
                         Tip_Length + Tip_Radius * Sin_Angle,
@@ -362,12 +356,13 @@ package body Gtk.Layered.Clock_Hand is
                when Cairo.Cairo_Line_Cap_Round =>
                   declare
                      Angle : constant Gdouble :=
-                                Arctan
-                                (  X => Tip_Length + Rear_Length,
-                                   Y => Rear_Radius - Tip_Radius
-                                );
-                     Cos_Angle : constant Gdouble := Cos (Angle);
-                     Sin_Angle : constant Gdouble := Sin (Angle);
+                               Cairo.Elementary_Functions.Arctan
+                                 (X => Tip_Length + Rear_Length,
+                                  Y => Rear_Radius - Tip_Radius);
+                     Cos_Angle : constant Gdouble :=
+                                   Cairo.Elementary_Functions.Cos (Angle);
+                     Sin_Angle : constant Gdouble :=
+                                   Cairo.Elementary_Functions.Sin (Angle);
                   begin
                      Cairo.Line_To
                        (Context,
@@ -378,8 +373,8 @@ package body Gtk.Layered.Clock_Hand is
                         Xc     => -Rear_Length,
                         Yc     => 0.0,
                         Radius => Rear_Radius,
-                        Angle1 => Pi / 2.0 - Angle,
-                        Angle2 => Angle - Pi / 2.0);
+                        Angle1 => Ada.Numerics.Pi / 2.0 - Angle,
+                        Angle2 => Angle - Ada.Numerics.Pi / 2.0);
                      Cairo.Line_To
                        (Context,
                         -Rear_Length - Rear_Radius * Sin_Angle,
@@ -403,7 +398,7 @@ package body Gtk.Layered.Clock_Hand is
             Yc     => 0.0,
             Radius => Bulb_Radius,
             Angle1 => 0.0,
-            Angle2 => 2.0 * Pi);
+            Angle2 => 2.0 * Ada.Numerics.Pi);
          Cairo.Stroke (Context);
       end;
       Layer.Updated := False;
@@ -415,8 +410,8 @@ package body Gtk.Layered.Clock_Hand is
    begin
       Finalize (Abstract_Layer (Layer));
       if Layer.Adjustment /= null then
-         Disconnect (Layer.Adjustment, Layer.Changed);
-         Disconnect (Layer.Adjustment, Layer.Value_Changed);
+         Gtk.Handlers.Disconnect (Layer.Adjustment, Layer.Changed);
+         Gtk.Handlers.Disconnect (Layer.Adjustment, Layer.Value_Changed);
          Gtk.Adjustment.Unref (Layer.Adjustment);
          Layer.Adjustment := null;
       end if;
@@ -467,20 +462,17 @@ package body Gtk.Layered.Clock_Hand is
    end Get_Length;
 
    overriding function Get_Properties_Number
-            (  Layer : Clock_Hand_Layer
-            )  return Natural is
+     (Layer : Clock_Hand_Layer) return Natural is
    begin
       return
-      (  Layer_Property'Pos (Layer_Property'Last)
-      -  Layer_Property'Pos (Layer_Property'First)
-      +  1
-      );
+        (Layer_Property'Pos (Layer_Property'Last)
+         -  Layer_Property'Pos (Layer_Property'First)
+         +  1);
    end Get_Properties_Number;
 
    overriding function Get_Property_Specification
-            (  Layer    : Clock_Hand_Layer;
-               Property : Positive
-            )  return Param_Spec is
+     (Layer    : Clock_Hand_Layer;
+      Property : Positive) return Param_Spec is
    begin
       if Property > Get_Properties_Number (Layer) then
          raise Constraint_Error;
@@ -488,102 +480,91 @@ package body Gtk.Layered.Clock_Hand is
          case Layer_Property'Val (Property - 1) is
             when Property_Center_X =>
                return
-                  Gnew_Double
-                  (  Name    => "x",
-                     Nick    => "x",
-                     Minimum => Gdouble'First,
-                     Maximum => Gdouble'Last,
-                     Default => 0.0,
-                     Blurb   => "The x-coordinate of the needle's " &
-                                "center"
-                  );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "x",
+                    Nick    => "x",
+                    Minimum => Gdouble'First,
+                    Maximum => Gdouble'Last,
+                    Default => 0.0,
+                    Blurb   => "The x-coordinate of the needle's center");
             when Property_Center_Y =>
                return
-                  Gnew_Double
-                  (  Name    => "y",
-                     Nick    => "y",
-                     Minimum => Gdouble'First,
-                     Maximum => Gdouble'Last,
-                     Default => 0.0,
-                     Blurb   => "The y-coordinate of the needle's " &
-                                "center"
-                  );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "y",
+                    Nick    => "y",
+                    Minimum => Gdouble'First,
+                    Maximum => Gdouble'Last,
+                    Default => 0.0,
+                    Blurb   => "The y-coordinate of the needle's center");
             when Property_Value =>
                return
-                  Gnew_Double
-                  (  Name    => "value",
-                     Nick    => "value",
-                     Minimum => 0.0,
-                     Maximum => 1.0,
-                     Default => 0.0,
-                     Blurb   => "The indicated value"
-                  );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "value",
+                    Nick    => "value",
+                    Minimum => 0.0,
+                    Maximum => 1.0,
+                    Default => 0.0,
+                    Blurb   => "The indicated value");
             when Property_From =>
                return
-                  Gnew_Double
-                  (  Name    => "from",
-                     Nick    => "from",
-                     Minimum => -2.0 * Pi,
-                     Maximum => 2.0 * Pi,
-                     Default => 0.0,
-                     Blurb   => "The angle of corresponding to the " &
-                                "value 0"
-                  );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "from",
+                    Nick    => "from",
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
+                    Default => 0.0,
+                    Blurb   => "The angle of corresponding to the value 0");
             when Property_Length =>
                return
-                  Gnew_Double
-                  (  Name    => "length",
-                     Nick    => "length",
-                     Minimum => -2.0 * Pi,
-                     Maximum => 2.0 * Pi,
-                     Default => 0.0,
-                     Blurb   => "The length added to the value of " &
-                                "the property from is the angle " &
-                                "coresponding to the value 1"
-                  );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "length",
+                    Nick    => "length",
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
+                    Default => 0.0,
+                    Blurb   =>
+                       "The length added to the value of " &
+                       "the property from is the angle " &
+                       "corresponding to the value 1");
             when Property_Tip_Length =>
                return
-                  Gnew_Double
-                  (  Name    => "tip-length",
-                     Nick    => "tip length",
-                     Minimum => 0.0,
-                     Maximum => Gdouble'Last,
-                     Default => 1.0,
-                     Blurb   => "The length of the needle's tip"
-                  );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "tip-length",
+                    Nick    => "tip length",
+                    Minimum => 0.0,
+                    Maximum => Gdouble'Last,
+                    Default => 1.0,
+                    Blurb   => "The length of the needle's tip");
             when Property_Rear_Length =>
                return
-                  Gnew_Double
-                  (  Name    => "rear-length",
-                     Nick    => "rear length",
-                     Minimum => Gdouble'First,
-                     Maximum => Gdouble'Last,
-                     Default => 0.0,
-                     Blurb   => "The length of the rear needle's end"
-                  );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "rear-length",
+                    Nick    => "rear length",
+                    Minimum => Gdouble'First,
+                    Maximum => Gdouble'Last,
+                    Default => 0.0,
+                    Blurb   => "The length of the rear needle's end");
             when Property_Tip_Width =>
                return
-                  Gnew_Double
-                  (  Name    => "tip-width",
-                     Nick    => "tip width",
-                     Minimum => 0.0,
-                     Maximum => Gdouble'Last,
-                     Default => 1.0,
-                     Blurb   => "The needle width at its tip"
-                  );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "tip-width",
+                    Nick    => "tip width",
+                    Minimum => 0.0,
+                    Maximum => Gdouble'Last,
+                    Default => 1.0,
+                    Blurb   => "The needle width at its tip");
             when Property_Rear_Width =>
                return
-                  Gnew_Double
-                  (  Name    => "rear-width",
-                     Nick    => "read width",
-                     Minimum => 0.0,
-                     Maximum => Gdouble'Last,
-                     Default => 1.0,
-                     Blurb   => "The needle width at its rear end"
-                  );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "rear-width",
+                    Nick    => "read width",
+                    Minimum => 0.0,
+                    Maximum => Gdouble'Last,
+                    Default => 1.0,
+                    Blurb   => "The needle width at its rear end");
             when Property_Color =>
                return
-                 Gnew_Boxed
+                 Glib.Properties.Creation.Gnew_Boxed
                    (Name       => "color",
                     Boxed_Type => Gdk.Color.Gdk_Color_Type,
                     Nick       => "color",
@@ -597,54 +578,53 @@ package body Gtk.Layered.Clock_Hand is
                     Blurb   => "The cap style of the needle's tip");
             when Property_Rear_Cap =>
                return
-                  Cairo.Line_Cap_Property.Gnew_Enum
+                 Cairo.Line_Cap_Property.Gnew_Enum
                    (Name    => "rear-cap",
                     Nick    => "rear cap",
                     Default => Cairo.Cairo_Line_Cap_Butt,
                     Blurb   => "The cap style of the needle's rear end");
             when Property_Bulb_Position =>
                return
-                  Gnew_Double
-                  (  Name    => "bulb-position",
-                     Nick    => "bulb position",
-                     Minimum => 0.0,
-                     Maximum => Gdouble'Last,
-                     Default => 0.5,
-                     Blurb   => "The position of the needle's bulb, " &
-                                "its distance from the center " &
-                                "towards the needle's tip"
-                  );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "bulb-position",
+                    Nick    => "bulb position",
+                    Minimum => 0.0,
+                    Maximum => Gdouble'Last,
+                    Default => 0.5,
+                    Blurb   =>
+                       "The position of the needle's bulb, " &
+                       "its distance from the center " &
+                       "towards the needle's tip");
             when Property_Bulb_Radius =>
                return
-                  Gnew_Double
-                  (  Name    => "bulb-radius",
-                     Nick    => "bulb radius",
-                     Minimum => 0.0,
-                     Maximum => Gdouble'Last,
-                     Default => 1.0,
-                     Blurb   => "The radius of the needle's bulb. " &
-                                "The radius corresponds to the " &
-                                "center of the bulb's line"
-                  );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "bulb-radius",
+                    Nick    => "bulb radius",
+                    Minimum => 0.0,
+                    Maximum => Gdouble'Last,
+                    Default => 1.0,
+                    Blurb   =>
+                       "The radius of the needle's bulb. " &
+                       "The radius corresponds to the " &
+                       "center of the bulb's line");
             when Property_Bulb_Width =>
                return
-                  Gnew_Double
-                  (  Name    => "bulb-width",
-                     Nick    => "bulb width",
-                     Minimum => 0.0,
-                     Maximum => Gdouble'Last,
-                     Default => 1.0,
-                     Blurb   => "The line width of the needle's bulb"
-                  );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "bulb-width",
+                    Nick    => "bulb width",
+                    Minimum => 0.0,
+                    Maximum => Gdouble'Last,
+                    Default => 1.0,
+                    Blurb   => "The line width of the needle's bulb");
             when Property_Scaled =>
                return
-                  Gnew_Boolean
-                  (  Name    => "scaled",
-                     Nick    => "scaled",
-                     Default => False,
-                     Blurb   => "The needle size is changed when " &
-                                "the widget is resized"
-                  );
+                 Glib.Properties.Creation.Gnew_Boolean
+                   (Name    => "scaled",
+                    Nick    => "scaled",
+                    Default => False,
+                    Blurb   =>
+                       "The needle size is changed when " &
+                       "the widget is resized");
          end case;
       end if;
    end Get_Property_Specification;
@@ -766,18 +746,18 @@ package body Gtk.Layered.Clock_Hand is
       Color         : Gdk.Color.Gdk_Color;
       Adjustment    : Boolean;
    begin
-      Restore (Stream, Center);
-      Restore (Stream, From);
-      Restore (Stream, Length);
-      Restore (Stream, Tip);
-      Restore (Stream, Rear);
-      Restore (Stream, Bulb_Position);
-      Restore (Stream, Bulb_Radius);
-      Restore (Stream, Bulb_Width);
-      Restore (Stream, Color);
-      Restore (Stream, Layer.Scaled, Adjustment);
+      Gtk.Layered.Stream_IO.Restore (Stream, Center);
+      Gtk.Layered.Stream_IO.Restore (Stream, From);
+      Gtk.Layered.Stream_IO.Restore (Stream, Length);
+      Gtk.Layered.Stream_IO.Restore (Stream, Tip);
+      Gtk.Layered.Stream_IO.Restore (Stream, Rear);
+      Gtk.Layered.Stream_IO.Restore (Stream, Bulb_Position);
+      Gtk.Layered.Stream_IO.Restore (Stream, Bulb_Radius);
+      Gtk.Layered.Stream_IO.Restore (Stream, Bulb_Width);
+      Gtk.Layered.Stream_IO.Restore (Stream, Color);
+      Gtk.Layered.Stream_IO.Restore (Stream, Layer.Scaled, Adjustment);
       Set
-      (  Layer         => Layer,
+        (Layer         => Layer,
          Center        => Center,
          From          => From,
          Length        => Length,
@@ -786,48 +766,43 @@ package body Gtk.Layered.Clock_Hand is
          Bulb_Position => Bulb_Position,
          Bulb_Radius   => Bulb_Radius,
          Bulb_Width    => Bulb_Width,
-         Color         => Color
-      );
+         Color         => Color);
       if Adjustment then
          declare
             Adjustment : Gtk.Adjustment.Gtk_Adjustment;
          begin
-            Restore (Stream, Adjustment);
+            Gtk.Layered.Stream_IO.Restore (Stream, Adjustment);
             Add_Adjustment (Layer, Adjustment);
          end;
       else
          declare
             Value : Gdouble;
          begin
-            Restore (Stream, Value);
+            Gtk.Layered.Stream_IO.Restore (Stream, Value);
             Set_Value (Layer, Value);
          end;
       end if;
    end Restore;
 
    overriding procedure Scale
-             (  Layer  : in out Clock_Hand_Layer;
-                Factor : Gdouble
-             )  is
+     (Layer  : in out Clock_Hand_Layer;
+      Factor : Gdouble) is
    begin
       Set
-      (  Layer         => Layer,
+        (Layer         => Layer,
          Center        => Layer.Center,
          From          => Layer.From,
          Length        => Layer.Length,
-         Tip           => (  Length => Layer.Tip.Length * Factor,
-                             Width  => Layer.Tip.Width  * Factor,
-                             Cap    => Layer.Tip.Cap
-                          ),
-         Rear          => (  Length => Layer.Rear.Length * Factor,
-                             Width  => Layer.Rear.Width  * Factor,
-                             Cap    => Layer.Rear.Cap
-                          ),
+         Tip           => (Length => Layer.Tip.Length * Factor,
+                           Width  => Layer.Tip.Width  * Factor,
+                           Cap    => Layer.Tip.Cap),
+         Rear          => (Length => Layer.Rear.Length * Factor,
+                           Width  => Layer.Rear.Width  * Factor,
+                           Cap    => Layer.Rear.Cap),
          Bulb_Position => Layer.Bulb_Position * Factor,
          Bulb_Radius   => Layer.Bulb_Radius   * Factor,
          Bulb_Width    => Layer.Bulb_Width    * Factor,
-         Color         => Layer.Color
-      );
+         Color         => Layer.Color);
    end Scale;
 
    procedure Set
@@ -904,14 +879,21 @@ package body Gtk.Layered.Clock_Hand is
                end if;
             when Property_From =>
                Layer.From := Glib.Values.Get_Double (Value);
-               if Layer.From not in -2.0 * Pi .. 2.0 * Pi then
-                  Layer.From := Gdouble'Remainder (Layer.From, 2.0 * Pi);
+               if
+                 Layer.From not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
+                  Layer.From :=
+                    Gdouble'Remainder (Layer.From, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Length =>
                Layer.Length := Glib.Values.Get_Double (Value);
-               if Layer.Length not in -2.0 * Pi .. 2.0 * Pi then
+               if
+                 Layer.Length not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
                   Layer.Length :=
-                     Gdouble'Remainder (Layer.Length, 2.0 * Pi);
+                     Gdouble'Remainder (Layer.Length, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Color =>
                Layer.Color := Gdk.Color.Get_Value (Value);
@@ -991,23 +973,23 @@ package body Gtk.Layered.Clock_Hand is
    is
       use type Gtk.Adjustment.Gtk_Adjustment;
    begin
-      Store (Stream, Layer.Center);
-      Store (Stream, Layer.From);
-      Store (Stream, Layer.Length);
-      Store (Stream, Layer.Tip);
-      Store (Stream, Layer.Rear);
-      Store (Stream, Layer.Bulb_Position);
-      Store (Stream, Layer.Bulb_Radius);
-      Store (Stream, Layer.Bulb_Width);
-      Store (Stream, Layer.Color);
-      Store
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Center);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.From);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Length);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Tip);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Rear);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Bulb_Position);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Bulb_Radius);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Bulb_Width);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Color);
+      Gtk.Layered.Stream_IO.Store
         (Stream,
          Layer.Scaled,
          Layer.Adjustment /= null);
       if Layer.Adjustment = null then
-         Store (Stream, Layer.Value);
+         Gtk.Layered.Stream_IO.Store (Stream, Layer.Value);
       else
-         Store (Stream, Layer.Adjustment);
+         Gtk.Layered.Stream_IO.Store (Stream, Layer.Adjustment);
       end if;
    end Store;
 
