@@ -25,11 +25,14 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Ada.Numerics;  use Ada.Numerics;
-with Gtk.Handlers;  use Gtk.Handlers;
+with Ada.Numerics;
+
+with Gtk.Handlers;
 with Gtk.Missed;
 
 package Gtk.Layered.Elliptic_Bar is
+
+   pragma Warnings (Off, "declaration hides ""Adjustment""");
 
    --
    -- Elliptic_Bar_Layer -- An elliptic line indicating a value
@@ -84,8 +87,8 @@ package Gtk.Layered.Elliptic_Bar is
    procedure Add_Elliptic_Bar
      (Under      : not null access Layer_Location'Class;
       Ellipse    : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
-      From       : Gdouble                                           := 3.0 * Pi / 4.0;
-      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      From       : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 2.0;
       Width      : Gdouble                                           := 1.0;
       Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
       Line_Cap   : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
@@ -96,8 +99,8 @@ package Gtk.Layered.Elliptic_Bar is
    function Add_Elliptic_Bar
      (Under      : not null access Layer_Location'Class;
       Ellipse    : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
-      From       : Gdouble                                           := 3.0 * Pi / 4.0;
-      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      From       : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 2.0;
       Width      : Gdouble                                           := 1.0;
       Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
       Line_Cap   : Cairo.Cairo_Line_Cap                              := Cairo.Cairo_Line_Cap_Butt;
@@ -253,12 +256,14 @@ private
          Line          : Line_Parameters;
          Value         : Gdouble := 0.0;
          Adjustment    : Gtk.Adjustment.Gtk_Adjustment;
-         Changed       : Handler_Id;
-         Value_Changed : Handler_Id;
+         Changed       : Gtk.Handlers.Handler_Id;
+         Value_Changed : Gtk.Handlers.Handler_Id;
          Scaled        : Boolean := False;
          Widened       : Boolean := False;
          Updated       : Boolean := True;
          pragma Atomic (Value);
       end record;
+
+   pragma Warnings (On, "declaration hides ""Adjustment""");
 
 end Gtk.Layered.Elliptic_Bar;

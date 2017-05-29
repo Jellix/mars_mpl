@@ -25,13 +25,14 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Cairo;                     use Cairo;
-with Gdk.Color.IHLS;            use Gdk.Color.IHLS;
-with Glib.Properties.Creation;  use Glib.Properties.Creation;
-with Gtk.Layered.Stream_IO;     use Gtk.Layered.Stream_IO;
-
 with Ada.Unchecked_Deallocation;
+
+with Cairo;
+
+with Glib.Properties.Creation;
+
 with Gtk.Layered.Elliptic_Shape_Property;
+with Gtk.Layered.Stream_IO;
 
 package body Gtk.Layered.Elliptic_Background is
    type Elliptic_Background_Ptr is access Elliptic_Background_Layer;
@@ -57,244 +58,6 @@ package body Gtk.Layered.Elliptic_Background is
        (Elliptic_Background_Layer,
         Elliptic_Background_Ptr);
 
-   procedure Add_Elliptic_Background
-     (Under         : not null access Layer_Location'Class;
-      Outer         : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle;
-      Inner         : Cairo.Ellipses.Ellipse_Parameters;
-      From          : Gdouble                           := 0.0;
-      Length        : Gdouble                           := 2.0 * Pi;
-      Color         : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Border_Width  : Gdouble                           := 0.0;
-      Border_Depth  : Gdouble                           := 1.0;
-      Border_Color  : Border_Color_Type                 := Default_Color;
-      Border_Shadow : Gtk_Shadow_Type                   := Shadow_In;
-      Deepened      : Boolean                           := False;
-      Scaled        : Boolean                           := False;
-      Widened       : Boolean                           := False)
-   is
-      Ptr   : Elliptic_Background_Ptr := new Elliptic_Background_Layer;
-      Layer : Elliptic_Background_Layer renames Ptr.all;
-   begin
-      Set_Deepened (Layer, Deepened);
-      Set_Scaled   (Layer, Scaled);
-      Set_Widened  (Layer, Widened);
-      Add (Ptr, Under);
-      Set
-        (Layer         => Layer,
-         Outer         => Outer,
-         Inner         => (Bagel, Inner),
-         From          => From,
-         Length        => Length,
-         Color         => Color,
-         Border_Width  => Border_Width,
-         Border_Depth  => Border_Depth,
-         Border_Color  => Border_Color,
-         Border_Shadow => Border_Shadow);
-   exception
-      when others =>
-         Free (Ptr);
-         raise;
-   end Add_Elliptic_Background;
-
-   procedure Add_Elliptic_Background
-     (Under         : not null access Layer_Location'Class;
-      Outer         : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle;
-      Center        : Cairo.Ellipses.Cairo_Tuple;
-      From          : Gdouble                           := 0.0;
-      Length        : Gdouble                           := 2.0 * Pi;
-      Color         : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Border_Width  : Gdouble                           := 0.0;
-      Border_Depth  : Gdouble                           := 1.0;
-      Border_Color  : Border_Color_Type                 := Default_Color;
-      Border_Shadow : Gtk_Shadow_Type                   := Shadow_In;
-      Deepened      : Boolean                           := False;
-      Scaled        : Boolean                           := False;
-      Widened       : Boolean                           := False)
-   is
-      Ptr   : Elliptic_Background_Ptr := new Elliptic_Background_Layer;
-      Layer : Elliptic_Background_Layer renames Ptr.all;
-   begin
-      Set_Deepened (Layer, Deepened);
-      Set_Scaled   (Layer, Scaled);
-      Set_Widened  (Layer, Widened);
-      Add (Ptr, Under);
-      Set
-        (Layer         => Layer,
-         Outer         => Outer,
-         Inner         => (Sector, Center),
-         From          => From,
-         Length        => Length,
-         Color         => Color,
-         Border_Width  => Border_Width,
-         Border_Depth  => Border_Depth,
-         Border_Color  => Border_Color,
-         Border_Shadow => Border_Shadow);
-   exception
-      when others =>
-         Free (Ptr);
-         raise;
-   end Add_Elliptic_Background;
-
-   procedure Add_Elliptic_Background
-     (Under         : not null access Layer_Location'Class;
-      Outer         : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle;
-      From          : Gdouble                           := 0.0;
-      Length        : Gdouble                           := 2.0 * Pi;
-      Color         : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Border_Width  : Gdouble                           := 0.0;
-      Border_Depth  : Gdouble                           := 1.0;
-      Border_Color  : Border_Color_Type                 := Default_Color;
-      Border_Shadow : Gtk_Shadow_Type                   := Shadow_In;
-      Deepened      : Boolean                           := False;
-      Scaled        : Boolean                           := False;
-      Widened       : Boolean                           := False)
-   is
-      Ptr   : Elliptic_Background_Ptr := new Elliptic_Background_Layer;
-      Layer : Elliptic_Background_Layer renames Ptr.all;
-   begin
-      Set_Deepened (Layer, Deepened);
-      Set_Scaled   (Layer, Scaled);
-      Set_Widened  (Layer, Widened);
-      Add (Ptr, Under);
-      Set
-        (Layer         => Layer,
-         Outer         => Outer,
-         Inner         => (Shape => Segment),
-         From          => From,
-         Length        => Length,
-         Color         => Color,
-         Border_Width  => Border_Width,
-         Border_Depth  => Border_Depth,
-         Border_Color  => Border_Color,
-         Border_Shadow => Border_Shadow);
-   exception
-      when others =>
-         Free (Ptr);
-         raise;
-   end Add_Elliptic_Background;
-
-   function Add_Elliptic_Background
-     (Under         : not null access Layer_Location'Class;
-      Outer         : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle;
-      Inner         : Cairo.Ellipses.Ellipse_Parameters;
-      From          : Gdouble                           := 0.0;
-      Length        : Gdouble                           := 2.0 * Pi;
-      Color         : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Border_Width  : Gdouble                           := 0.0;
-      Border_Depth  : Gdouble                           := 1.0;
-      Border_Color  : Border_Color_Type                 := Default_Color;
-      Border_Shadow : Gtk_Shadow_Type                   := Shadow_In;
-      Deepened      : Boolean                           := False;
-      Scaled        : Boolean                           := False;
-      Widened       : Boolean                           := False)
-      return not null access Elliptic_Background_Layer
-   is
-      Ptr   : Elliptic_Background_Ptr := new Elliptic_Background_Layer;
-      Layer : Elliptic_Background_Layer renames Ptr.all;
-   begin
-      Set_Deepened (Layer, Deepened);
-      Set_Scaled   (Layer, Scaled);
-      Set_Widened  (Layer, Widened);
-      Add (Ptr, Under);
-      Set
-        (Layer         => Layer,
-         Outer         => Outer,
-         Inner         => (Bagel, Inner),
-         From          => From,
-         Length        => Length,
-         Color         => Color,
-         Border_Width  => Border_Width,
-         Border_Depth  => Border_Depth,
-         Border_Color  => Border_Color,
-         Border_Shadow => Border_Shadow);
-      return Layer'Unchecked_Access;
-   exception
-      when others =>
-         Free (Ptr);
-         raise;
-   end Add_Elliptic_Background;
-
-   function Add_Elliptic_Background
-     (Under         : not null access Layer_Location'Class;
-      Outer         : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle;
-      Center        : Cairo.Ellipses.Cairo_Tuple;
-      From          : Gdouble                           := 0.0;
-      Length        : Gdouble                           := 2.0 * Pi;
-      Color         : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Border_Width  : Gdouble                           := 0.0;
-      Border_Depth  : Gdouble                           := 1.0;
-      Border_Color  : Border_Color_Type                 := Default_Color;
-      Border_Shadow : Gtk_Shadow_Type                   := Shadow_In;
-      Deepened      : Boolean                           := False;
-      Scaled        : Boolean                           := False;
-      Widened       : Boolean                           := False)
-      return not null access Elliptic_Background_Layer
-   is
-      Ptr   : Elliptic_Background_Ptr := new Elliptic_Background_Layer;
-      Layer : Elliptic_Background_Layer renames Ptr.all;
-   begin
-      Set_Deepened (Layer, Deepened);
-      Set_Scaled   (Layer, Scaled);
-      Set_Widened  (Layer, Widened);
-      Add (Ptr, Under);
-      Set
-        (Layer         => Layer,
-         Outer         => Outer,
-         Inner         => (Sector, Center),
-         From          => From,
-         Length        => Length,
-         Color         => Color,
-         Border_Width  => Border_Width,
-         Border_Depth  => Border_Depth,
-         Border_Color  => Border_Color,
-         Border_Shadow => Border_Shadow);
-      return Layer'Unchecked_Access;
-   exception
-      when others =>
-         Free (Ptr);
-         raise;
-   end Add_Elliptic_Background;
-
-   function Add_Elliptic_Background
-     (Under         : not null access Layer_Location'Class;
-      Outer         : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle;
-      From          : Gdouble                           := 0.0;
-      Length        : Gdouble                           := 2.0 * Pi;
-      Color         : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Border_Width  : Gdouble                           := 0.0;
-      Border_Depth  : Gdouble                           := 1.0;
-      Border_Color  : Border_Color_Type                 := Default_Color;
-      Border_Shadow : Gtk_Shadow_Type                   := Shadow_In;
-      Deepened      : Boolean                           := False;
-      Scaled        : Boolean                           := False;
-      Widened       : Boolean                           := False)
-      return not null access Elliptic_Background_Layer
-   is
-      Ptr   : Elliptic_Background_Ptr := new Elliptic_Background_Layer;
-      Layer : Elliptic_Background_Layer renames Ptr.all;
-   begin
-      Set_Deepened (Layer, Deepened);
-      Set_Scaled   (Layer, Scaled);
-      Set_Widened  (Layer, Widened);
-      Add (Ptr, Under);
-      Set
-        (Layer         => Layer,
-         Outer         => Outer,
-         Inner         => (Shape => Segment),
-         From          => From,
-         Length        => Length,
-         Color         => Color,
-         Border_Width  => Border_Width,
-         Border_Depth  => Border_Depth,
-         Border_Color  => Border_Color,
-         Border_Shadow => Border_Shadow);
-      return Layer'Unchecked_Access;
-   exception
-      when others =>
-         Free (Ptr);
-         raise;
-   end Add_Elliptic_Background;
-
    overriding function Add
      (Under  : not null access Layer_Location'Class;
       Stream : not null access Ada.Streams.Root_Stream_Type'Class)
@@ -311,14 +74,252 @@ package body Gtk.Layered.Elliptic_Background is
          raise;
    end Add;
 
+   procedure Add_Elliptic_Background
+     (Under         : not null access Layer_Location'Class;
+      Outer         : Cairo.Ellipses.Ellipse_Parameters               := Cairo.Ellipses.Unit_Circle;
+      Inner         : Cairo.Ellipses.Ellipse_Parameters;
+      From          : Gdouble                                         := 0.0;
+      Length        : Gdouble                                         := 2.0 * Ada.Numerics.Pi;
+      Color         : Gdk.Color.Gdk_Color                             := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Border_Width  : Gdouble                                         := 0.0;
+      Border_Depth  : Gdouble                                         := 1.0;
+      Border_Color  : Gtk.Layered.Abstract_Bordered.Border_Color_Type := Gtk.Layered.Abstract_Bordered.Default_Color;
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type                       := Gtk.Enums.Shadow_In;
+      Deepened      : Boolean                                         := False;
+      Scaled        : Boolean                                         := False;
+      Widened       : Boolean                                         := False)
+   is
+      Ptr   : Elliptic_Background_Ptr := new Elliptic_Background_Layer;
+      Layer : Elliptic_Background_Layer renames Ptr.all;
+   begin
+      Set_Deepened (Layer, Deepened);
+      Set_Scaled   (Layer, Scaled);
+      Set_Widened  (Layer, Widened);
+      Add (Ptr, Under);
+      Set
+        (Layer         => Layer,
+         Outer         => Outer,
+         Inner         => (Bagel, Inner),
+         From          => From,
+         Length        => Length,
+         Color         => Color,
+         Border_Width  => Border_Width,
+         Border_Depth  => Border_Depth,
+         Border_Color  => Border_Color,
+         Border_Shadow => Border_Shadow);
+   exception
+      when others =>
+         Free (Ptr);
+         raise;
+   end Add_Elliptic_Background;
+
+   procedure Add_Elliptic_Background
+     (Under         : not null access Layer_Location'Class;
+      Outer         : Cairo.Ellipses.Ellipse_Parameters               := Cairo.Ellipses.Unit_Circle;
+      Center        : Cairo.Ellipses.Cairo_Tuple;
+      From          : Gdouble                                         := 0.0;
+      Length        : Gdouble                                         := 2.0 * Ada.Numerics.Pi;
+      Color         : Gdk.Color.Gdk_Color                             := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Border_Width  : Gdouble                                         := 0.0;
+      Border_Depth  : Gdouble                                         := 1.0;
+      Border_Color  : Gtk.Layered.Abstract_Bordered.Border_Color_Type := Gtk.Layered.Abstract_Bordered.Default_Color;
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type                       := Gtk.Enums.Shadow_In;
+      Deepened      : Boolean                                         := False;
+      Scaled        : Boolean                                         := False;
+      Widened       : Boolean                                         := False)
+   is
+      Ptr   : Elliptic_Background_Ptr := new Elliptic_Background_Layer;
+      Layer : Elliptic_Background_Layer renames Ptr.all;
+   begin
+      Set_Deepened (Layer, Deepened);
+      Set_Scaled   (Layer, Scaled);
+      Set_Widened  (Layer, Widened);
+      Add (Ptr, Under);
+      Set
+        (Layer         => Layer,
+         Outer         => Outer,
+         Inner         => (Sector, Center),
+         From          => From,
+         Length        => Length,
+         Color         => Color,
+         Border_Width  => Border_Width,
+         Border_Depth  => Border_Depth,
+         Border_Color  => Border_Color,
+         Border_Shadow => Border_Shadow);
+   exception
+      when others =>
+         Free (Ptr);
+         raise;
+   end Add_Elliptic_Background;
+
+   procedure Add_Elliptic_Background
+     (Under         : not null access Layer_Location'Class;
+      Outer         : Cairo.Ellipses.Ellipse_Parameters               := Cairo.Ellipses.Unit_Circle;
+      From          : Gdouble                                         := 0.0;
+      Length        : Gdouble                                         := 2.0 * Ada.Numerics.Pi;
+      Color         : Gdk.Color.Gdk_Color                             := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Border_Width  : Gdouble                                         := 0.0;
+      Border_Depth  : Gdouble                                         := 1.0;
+      Border_Color  : Gtk.Layered.Abstract_Bordered.Border_Color_Type := Gtk.Layered.Abstract_Bordered.Default_Color;
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type                       := Gtk.Enums.Shadow_In;
+      Deepened      : Boolean                                         := False;
+      Scaled        : Boolean                                         := False;
+      Widened       : Boolean                                         := False)
+   is
+      Ptr   : Elliptic_Background_Ptr := new Elliptic_Background_Layer;
+      Layer : Elliptic_Background_Layer renames Ptr.all;
+   begin
+      Set_Deepened (Layer, Deepened);
+      Set_Scaled   (Layer, Scaled);
+      Set_Widened  (Layer, Widened);
+      Add (Ptr, Under);
+      Set
+        (Layer         => Layer,
+         Outer         => Outer,
+         Inner         => (Shape => Segment),
+         From          => From,
+         Length        => Length,
+         Color         => Color,
+         Border_Width  => Border_Width,
+         Border_Depth  => Border_Depth,
+         Border_Color  => Border_Color,
+         Border_Shadow => Border_Shadow);
+   exception
+      when others =>
+         Free (Ptr);
+         raise;
+   end Add_Elliptic_Background;
+
+   function Add_Elliptic_Background
+     (Under         : not null access Layer_Location'Class;
+      Outer         : Cairo.Ellipses.Ellipse_Parameters               := Cairo.Ellipses.Unit_Circle;
+      Inner         : Cairo.Ellipses.Ellipse_Parameters;
+      From          : Gdouble                                         := 0.0;
+      Length        : Gdouble                                         := 2.0 * Ada.Numerics.Pi;
+      Color         : Gdk.Color.Gdk_Color                             := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Border_Width  : Gdouble                                         := 0.0;
+      Border_Depth  : Gdouble                                         := 1.0;
+      Border_Color  : Gtk.Layered.Abstract_Bordered.Border_Color_Type := Gtk.Layered.Abstract_Bordered.Default_Color;
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type                       := Gtk.Enums.Shadow_In;
+      Deepened      : Boolean                                         := False;
+      Scaled        : Boolean                                         := False;
+      Widened       : Boolean                                         := False)
+      return not null access Elliptic_Background_Layer
+   is
+      Ptr   : Elliptic_Background_Ptr := new Elliptic_Background_Layer;
+      Layer : Elliptic_Background_Layer renames Ptr.all;
+   begin
+      Set_Deepened (Layer, Deepened);
+      Set_Scaled   (Layer, Scaled);
+      Set_Widened  (Layer, Widened);
+      Add (Ptr, Under);
+      Set
+        (Layer         => Layer,
+         Outer         => Outer,
+         Inner         => (Bagel, Inner),
+         From          => From,
+         Length        => Length,
+         Color         => Color,
+         Border_Width  => Border_Width,
+         Border_Depth  => Border_Depth,
+         Border_Color  => Border_Color,
+         Border_Shadow => Border_Shadow);
+      return Layer'Unchecked_Access;
+   exception
+      when others =>
+         Free (Ptr);
+         raise;
+   end Add_Elliptic_Background;
+
+   function Add_Elliptic_Background
+     (Under         : not null access Layer_Location'Class;
+      Outer         : Cairo.Ellipses.Ellipse_Parameters               := Cairo.Ellipses.Unit_Circle;
+      Center        : Cairo.Ellipses.Cairo_Tuple;
+      From          : Gdouble                                         := 0.0;
+      Length        : Gdouble                                         := 2.0 * Ada.Numerics.Pi;
+      Color         : Gdk.Color.Gdk_Color                             := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Border_Width  : Gdouble                                         := 0.0;
+      Border_Depth  : Gdouble                                         := 1.0;
+      Border_Color  : Gtk.Layered.Abstract_Bordered.Border_Color_Type := Gtk.Layered.Abstract_Bordered.Default_Color;
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type                       := Gtk.Enums.Shadow_In;
+      Deepened      : Boolean                                         := False;
+      Scaled        : Boolean                                         := False;
+      Widened       : Boolean                                         := False)
+      return not null access Elliptic_Background_Layer
+   is
+      Ptr   : Elliptic_Background_Ptr := new Elliptic_Background_Layer;
+      Layer : Elliptic_Background_Layer renames Ptr.all;
+   begin
+      Set_Deepened (Layer, Deepened);
+      Set_Scaled   (Layer, Scaled);
+      Set_Widened  (Layer, Widened);
+      Add (Ptr, Under);
+      Set
+        (Layer         => Layer,
+         Outer         => Outer,
+         Inner         => (Sector, Center),
+         From          => From,
+         Length        => Length,
+         Color         => Color,
+         Border_Width  => Border_Width,
+         Border_Depth  => Border_Depth,
+         Border_Color  => Border_Color,
+         Border_Shadow => Border_Shadow);
+      return Layer'Unchecked_Access;
+   exception
+      when others =>
+         Free (Ptr);
+         raise;
+   end Add_Elliptic_Background;
+
+   function Add_Elliptic_Background
+     (Under         : not null access Layer_Location'Class;
+      Outer         : Cairo.Ellipses.Ellipse_Parameters               := Cairo.Ellipses.Unit_Circle;
+      From          : Gdouble                                         := 0.0;
+      Length        : Gdouble                                         := 2.0 * Ada.Numerics.Pi;
+      Color         : Gdk.Color.Gdk_Color                             := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Border_Width  : Gdouble                                         := 0.0;
+      Border_Depth  : Gdouble                                         := 1.0;
+      Border_Color  : Gtk.Layered.Abstract_Bordered.Border_Color_Type := Gtk.Layered.Abstract_Bordered.Default_Color;
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type                       := Gtk.Enums.Shadow_In;
+      Deepened      : Boolean                                         := False;
+      Scaled        : Boolean                                         := False;
+      Widened       : Boolean                                         := False)
+      return not null access Elliptic_Background_Layer
+   is
+      Ptr   : Elliptic_Background_Ptr := new Elliptic_Background_Layer;
+      Layer : Elliptic_Background_Layer renames Ptr.all;
+   begin
+      Set_Deepened (Layer, Deepened);
+      Set_Scaled   (Layer, Scaled);
+      Set_Widened  (Layer, Widened);
+      Add (Ptr, Under);
+      Set
+        (Layer         => Layer,
+         Outer         => Outer,
+         Inner         => (Shape => Segment),
+         From          => From,
+         Length        => Length,
+         Color         => Color,
+         Border_Width  => Border_Width,
+         Border_Depth  => Border_Depth,
+         Border_Color  => Border_Color,
+         Border_Shadow => Border_Shadow);
+      return Layer'Unchecked_Access;
+   exception
+      when others =>
+         Free (Ptr);
+         raise;
+   end Add_Elliptic_Background;
+
    overriding procedure Draw_Contents
      (Layer   : in out Elliptic_Background_Layer;
-      Context : Cairo_Context;
+      Context : Cairo.Cairo_Context;
       Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
       pragma Unreferenced (Area);
    begin
-      Set_Source_Rgb
+      Cairo.Set_Source_Rgb
         (Context,
          Gdouble (Gdk.Color.Red   (Layer.Color)) / Gdouble (Guint16'Last),
          Gdouble (Gdk.Color.Green (Layer.Color)) / Gdouble (Guint16'Last),
@@ -360,9 +361,10 @@ package body Gtk.Layered.Elliptic_Background is
      (Layer : Elliptic_Background_Layer) return Natural is
    begin
       return
-        (Layer_Property'Pos (Layer_Property'Last) -
-             Layer_Property'Pos (Layer_Property'First) + 1 +
-             Get_Properties_Number (Abstract_Bordered_Layer (Layer)));
+        (Layer_Property'Pos (Layer_Property'Last)
+         - Layer_Property'Pos (Layer_Property'First) + 1
+         + Gtk.Layered.Abstract_Bordered.Get_Properties_Number
+             (Gtk.Layered.Abstract_Bordered.Abstract_Bordered_Layer (Layer)));
    end Get_Properties_Number;
 
    overriding function Get_Property_Specification
@@ -370,18 +372,20 @@ package body Gtk.Layered.Elliptic_Background is
       Property : Positive) return Param_Spec
    is
       Inherited : constant Natural :=
-         Get_Properties_Number (Abstract_Bordered_Layer (Layer));
+                    Gtk.Layered.Abstract_Bordered.Get_Properties_Number
+                      (Gtk.Layered.Abstract_Bordered.Abstract_Bordered_Layer
+                         (Layer));
    begin
       if Property <= Inherited then
          return
-            Get_Property_Specification
-             (Abstract_Bordered_Layer (Layer),
+            Gtk.Layered.Abstract_Bordered.Get_Property_Specification
+             (Gtk.Layered.Abstract_Bordered.Abstract_Bordered_Layer (Layer),
               Property);
       elsif Property <= Get_Properties_Number (Layer) then
          case Layer_Property'Val (Property - Inherited - 1) is
             when Property_Outer_Center_X =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "outer-x",
                     Nick    => "outer x",
                     Minimum => Gdouble'First,
@@ -391,7 +395,7 @@ package body Gtk.Layered.Elliptic_Background is
                        "The x-coordinate of the outer ellipse's center");
             when Property_Outer_Center_Y =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "outer-y",
                     Nick    => "outer y",
                     Minimum => Gdouble'First,
@@ -401,7 +405,7 @@ package body Gtk.Layered.Elliptic_Background is
                        "The y-coordinate of the outer ellipse's center");
             when Property_Outer_Curvature =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "outer-k",
                     Nick    => "outer k",
                     Minimum => 0.0,
@@ -411,7 +415,7 @@ package body Gtk.Layered.Elliptic_Background is
                        "The curvature of the major axis of the outer ellipse");
             when Property_Outer_Radius =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "outer-r",
                     Nick    => "outer r",
                     Minimum => 1.0E-6,
@@ -421,11 +425,11 @@ package body Gtk.Layered.Elliptic_Background is
                        "The radius of the minor axis of outer ellipse");
             when Property_Outer_Angle =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "outer-angle",
                     Nick    => "outer angle",
-                    Minimum => -2.0 * Pi,
-                    Maximum => 2.0 * Pi,
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
                     Default => 0.0,
                     Blurb   =>
                        "The angle of the major axis of the outer ellipse");
@@ -438,7 +442,7 @@ package body Gtk.Layered.Elliptic_Background is
                     Blurb   => "The shape of the background");
             when Property_Inner_Center_X =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "inner-x",
                     Nick    => "inner x",
                     Minimum => Gdouble'First,
@@ -452,7 +456,7 @@ package body Gtk.Layered.Elliptic_Background is
                        "property value is ignored");
             when Property_Inner_Center_Y =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "inner-y",
                     Nick    => "inner y",
                     Minimum => Gdouble'First,
@@ -466,7 +470,7 @@ package body Gtk.Layered.Elliptic_Background is
                        "property value is ignored.");
             when Property_Inner_Curvature =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "inner-k",
                     Nick    => "inner k",
                     Minimum => 0.0,
@@ -478,7 +482,7 @@ package body Gtk.Layered.Elliptic_Background is
                        "arc. Otherwise the property value is ignored.");
             when Property_Inner_Radius =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "inner-r",
                     Nick    => "inner r",
                     Minimum => 1.0E-6,
@@ -490,11 +494,11 @@ package body Gtk.Layered.Elliptic_Background is
                        "Otherwise the property value is ignored.");
             when Property_Inner_Angle =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "inner-angle",
                     Nick    => "inner angle",
-                    Minimum => -2.0 * Pi,
-                    Maximum => 2.0 * Pi,
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
                     Default => 0.0,
                     Blurb   =>
                        "When background-shape is bagel, then this is the " &
@@ -502,25 +506,25 @@ package body Gtk.Layered.Elliptic_Background is
                        "Otherwise the property value is ignored");
             when Property_From =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "from",
                     Nick    => "from",
-                    Minimum => -2.0 * Pi,
-                    Maximum => 2.0 * Pi,
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
                     Default => 0.0,
                     Blurb   => "The angle of the outer elliptic arc beginning");
             when Property_Length =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "length",
                     Nick    => "length",
-                    Minimum => -2.0 * Pi,
-                    Maximum => 2.0 * Pi,
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
                     Default => 0.0,
                     Blurb   => "The angular length of the outer elliptic arc");
             when Property_Color =>
                return
-                  Gnew_Boxed
+                 Glib.Properties.Creation.Gnew_Boxed
                    (Name       => "color",
                     Boxed_Type => Gdk.Color.Gdk_Color_Type,
                     Nick       => "color",
@@ -536,12 +540,14 @@ package body Gtk.Layered.Elliptic_Background is
       Property : Positive) return Glib.Values.GValue
    is
       Inherited : constant Natural :=
-         Get_Properties_Number (Abstract_Bordered_Layer (Layer));
+                    Gtk.Layered.Abstract_Bordered.Get_Properties_Number
+                      (Gtk.Layered.Abstract_Bordered.Abstract_Bordered_Layer
+                         (Layer));
    begin
       if Property <= Inherited then
          return
-            Get_Property_Value
-             (Abstract_Bordered_Layer (Layer),
+            Gtk.Layered.Abstract_Bordered.Get_Property_Value
+             (Gtk.Layered.Abstract_Bordered.Abstract_Bordered_Layer (Layer),
               Property);
       elsif Property <= Get_Properties_Number (Layer) then
          declare
@@ -647,7 +653,7 @@ package body Gtk.Layered.Elliptic_Background is
          when Segment =>
             null;
       end case;
-      Set_Updated (Layer);
+      Gtk.Layered.Abstract_Bordered.Set_Updated (Layer);
    end Move;
 
    overriding procedure Restore
@@ -660,12 +666,13 @@ package body Gtk.Layered.Elliptic_Background is
       Length : Gdouble;
       Color  : Gdk.Color.Gdk_Color;
    begin
-      Restore (Stream, Outer);
-      Restore (Stream, Inner);
-      Restore (Stream, From);
-      Restore (Stream, Length);
-      Restore (Stream, Color);
-      Restore (Stream, Abstract_Bordered_Layer (Layer));
+      Gtk.Layered.Stream_IO.Restore (Stream, Outer);
+      Gtk.Layered.Stream_IO.Restore (Stream, Inner);
+      Gtk.Layered.Stream_IO.Restore (Stream, From);
+      Gtk.Layered.Stream_IO.Restore (Stream, Length);
+      Gtk.Layered.Stream_IO.Restore (Stream, Color);
+      Gtk.Layered.Abstract_Bordered.Restore
+        (Stream, Gtk.Layered.Abstract_Bordered.Abstract_Bordered_Layer (Layer));
       if Outer.Minor_Radius <= 0.0 then
          raise Constraint_Error with
                "Non-positive outer ellipse radius";
@@ -719,7 +726,7 @@ package body Gtk.Layered.Elliptic_Background is
       end if;
       Layer.Outer := Outer;
       Layer.Inner := Inner;
-      Set_Updated (Layer);
+      Gtk.Layered.Abstract_Bordered.Set_Updated (Layer);
    end Scale;
 
    procedure Set
@@ -731,8 +738,8 @@ package body Gtk.Layered.Elliptic_Background is
       Color         : Gdk.Color.Gdk_Color;
       Border_Width  : Gdouble;
       Border_Depth  : Gdouble;
-      Border_Color  : Border_Color_Type;
-      Border_Shadow : Gtk_Shadow_Type) is
+      Border_Color  : Gtk.Layered.Abstract_Bordered.Border_Color_Type;
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type) is
    begin
       if Outer.Minor_Radius <= 0.0 then
          raise Constraint_Error with
@@ -762,7 +769,7 @@ package body Gtk.Layered.Elliptic_Background is
 
    overriding procedure Set_Contents_Path
      (Layer   : in out Elliptic_Background_Layer;
-      Context : Cairo_Context;
+      Context : Cairo.Cairo_Context;
       Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
       pragma Unreferenced (Area);
@@ -779,12 +786,12 @@ package body Gtk.Layered.Elliptic_Background is
                Layer.Outer * Size + Center,
                Layer.From,
                Layer.Length);
-            if abs Layer.Length < 2.0 * Pi then
+            if abs Layer.Length < 2.0 * Ada.Numerics.Pi then
                case Layer.Inner.Shape is
                   when Segment =>
                      null;
                   when Sector =>
-                     Line_To
+                     Cairo.Line_To
                        (Cr => Context,
                         X  => Layer.Inner.Center.X * Size + Center.X,
                         Y  => Layer.Inner.Center.Y * Size + Center.Y);
@@ -803,12 +810,12 @@ package body Gtk.Layered.Elliptic_Background is
             Layer.Outer,
             Layer.From,
             Layer.Length);
-         if abs Layer.Length < 2.0 * Pi then
+         if abs Layer.Length < 2.0 * Ada.Numerics.Pi then
             case Layer.Inner.Shape is
                when Segment =>
                   null;
                when Sector =>
-                  Line_To
+                  Cairo.Line_To
                     (Cr => Context,
                      X  => Layer.Inner.Center.X,
                      Y  => Layer.Inner.Center.Y);
@@ -829,11 +836,13 @@ package body Gtk.Layered.Elliptic_Background is
       Value    : Glib.Values.GValue)
    is
       Inherited : constant Natural :=
-         Get_Properties_Number (Abstract_Bordered_Layer (Layer));
+                    Gtk.Layered.Abstract_Bordered.Get_Properties_Number
+                      (Gtk.Layered.Abstract_Bordered.Abstract_Bordered_Layer
+                         (Layer));
    begin
       if Property <= Inherited then
-         Set_Property_Value
-           (Abstract_Bordered_Layer (Layer),
+         Gtk.Layered.Abstract_Bordered.Set_Property_Value
+           (Gtk.Layered.Abstract_Bordered.Abstract_Bordered_Layer (Layer),
             Property,
             Value);
       elsif Property <= Get_Properties_Number (Layer) then
@@ -854,9 +863,13 @@ package body Gtk.Layered.Elliptic_Background is
                end if;
             when Property_Outer_Angle =>
                Layer.Outer.Angle := Glib.Values.Get_Double (Value);
-               if Layer.Outer.Angle not in -2.0 * Pi .. 2.0 * Pi then
+               if
+                 Layer.Outer.Angle not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
                   Layer.Outer.Angle :=
-                     Gdouble'Remainder (Layer.Outer.Angle, 2.0 * Pi);
+                    Gdouble'Remainder
+                      (Layer.Outer.Angle, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Shape =>
                case Gtk.Layered.
@@ -915,30 +928,39 @@ package body Gtk.Layered.Elliptic_Background is
                case Layer.Inner.Shape is
                   when Bagel =>
                      Layer.Inner.Arc.Angle := Glib.Values.Get_Double (Value);
-                     if Layer.Inner.Arc.Angle not in -2.0 * Pi .. 2.0 * Pi
+                     if
+                       Layer.Inner.Arc.Angle not in
+                         -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
                      then
                         Layer.Inner.Arc.Angle :=
                            Gdouble'Remainder
-                            (Layer.Inner.Arc.Angle, 2.0 * Pi);
+                            (Layer.Inner.Arc.Angle, 2.0 * Ada.Numerics.Pi);
                      end if;
                   when Segment | Sector =>
                      null;
                end case;
             when Property_From =>
                Layer.From := Glib.Values.Get_Double (Value);
-               if Layer.From not in -2.0 * Pi .. 2.0 * Pi then
-                  Layer.From := Gdouble'Remainder (Layer.From, 2.0 * Pi);
+               if
+                 Layer.From not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
+                  Layer.From :=
+                    Gdouble'Remainder (Layer.From, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Length =>
                Layer.Length := Glib.Values.Get_Double (Value);
-               if Layer.Length not in -2.0 * Pi .. 2.0 * Pi then
+               if
+                 Layer.Length not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
                   Layer.Length :=
-                     Gdouble'Remainder (Layer.Length, 2.0 * Pi);
+                     Gdouble'Remainder (Layer.Length, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Color =>
                Layer.Color := Gdk.Color.Get_Value (Value);
          end case;
-         Set_Updated (Layer);
+         Gtk.Layered.Abstract_Bordered.Set_Updated (Layer);
       else
          raise Constraint_Error;
       end if;
@@ -948,12 +970,13 @@ package body Gtk.Layered.Elliptic_Background is
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Layer  : Elliptic_Background_Layer) is
    begin
-      Store (Stream, Layer.Outer);
-      Store (Stream, Layer.Inner);
-      Store (Stream, Layer.From);
-      Store (Stream, Layer.Length);
-      Store (Stream, Layer.Color);
-      Store (Stream, Abstract_Bordered_Layer (Layer));
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Outer);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Inner);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.From);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Length);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Color);
+      Gtk.Layered.Abstract_Bordered.Store
+        (Stream, Gtk.Layered.Abstract_Bordered.Abstract_Bordered_Layer (Layer));
    end Store;
 
 end Gtk.Layered.Elliptic_Background;

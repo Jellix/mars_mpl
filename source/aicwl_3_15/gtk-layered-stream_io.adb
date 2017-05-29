@@ -25,11 +25,11 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Ada.IO_Exceptions;           use Ada.IO_Exceptions;
-with Ada.Tags;                    use Ada.Tags;
-with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
+with Ada.IO_Exceptions;
+with Ada.Tags;
+
+with Cairo.Elementary_Functions;
 with Cairo.Font_Face;
-with Interfaces.C;                use Interfaces;
 
 with Gtk.Layered.Arc;
 with Gtk.Layered.Bar;
@@ -48,6 +48,7 @@ with Gtk.Layered.Needle;
 with Gtk.Layered.Rectangular_Background;
 with Gtk.Layered.Rectangular_Clip_Region;
 with Gtk.Layered.Sector_Needle;
+
 with Interfaces.C.Strings;
 
 package body Gtk.Layered.Stream_IO is
@@ -90,15 +91,14 @@ package body Gtk.Layered.Stream_IO is
 
    end Generic_Modular_IO;
 
-   package GUInt_IO is new Generic_Modular_IO (GUInt);
-   package GUInt16_IO is new Generic_Modular_IO (GUInt16);
-   package Unsigned_32_IO is new Generic_Modular_IO (Unsigned_32);
-   package Unsigned_64_IO is new Generic_Modular_IO (Unsigned_64);
-   use GUInt_IO, GUInt16_IO, Unsigned_32_IO, Unsigned_64_IO;
+   package GUInt_IO       is new Generic_Modular_IO (GUInt);
+   package GUInt16_IO     is new Generic_Modular_IO (GUInt16);
+   package Unsigned_32_IO is new Generic_Modular_IO (Interfaces.Unsigned_32);
+   package Unsigned_64_IO is new Generic_Modular_IO (Interfaces.Unsigned_64);
 
    function Get_Type (Layer : Abstract_Layer'Class)
       return Layer_Type is
-      Name : constant String := Expanded_Name (Layer'Tag);
+      Name : constant String := Ada.Tags.Expanded_Name (Layer'Tag);
    begin
       for Index in reverse Name'Range loop
          if Name (Index) = '.' then
@@ -229,15 +229,15 @@ package body Gtk.Layered.Stream_IO is
 
    procedure Restore
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
-      Value  : out Alignment)
+      Value  : out Ada.Strings.Alignment)
    is
       Position : Guint16;
    begin
-      Restore (Stream, Position);
-      Value := Alignment'Val (Position);
+      GUInt16_IO.Restore (Stream, Position);
+      Value := Ada.Strings.Alignment'Val (Position);
    exception
       when Constraint_Error =>
-         raise Data_Error with "Alignment out of range";
+         raise Ada.IO_Exceptions.Data_Error with "Alignment out of range";
    end Restore;
 
    procedure Restore
@@ -246,7 +246,7 @@ package body Gtk.Layered.Stream_IO is
    is
       Data : Guint16;
    begin
-      Restore (Stream, Data);
+      GUInt16_IO.Restore (Stream, Data);
       Value := 0 /= (Data and 1);
    end Restore;
 
@@ -257,7 +257,7 @@ package body Gtk.Layered.Stream_IO is
    is
       Value : Guint16;
    begin
-      Restore (Stream, Value);
+      GUInt16_IO.Restore (Stream, Value);
       Value_1 := 0 /= (Value and 1);
       Value_2 := 0 /= (Value and 2);
    end Restore;
@@ -270,7 +270,7 @@ package body Gtk.Layered.Stream_IO is
    is
       Value : Guint16;
    begin
-      Restore (Stream, Value);
+      GUInt16_IO.Restore (Stream, Value);
       Value_1 := 0 /= (Value and 1);
       Value_2 := 0 /= (Value and 2);
       Value_3 := 0 /= (Value and 4);
@@ -285,7 +285,7 @@ package body Gtk.Layered.Stream_IO is
    is
       Value : Guint16;
    begin
-      Restore (Stream, Value);
+      GUInt16_IO.Restore (Stream, Value);
       Value_1 := 0 /= (Value and 1);
       Value_2 := 0 /= (Value and 2);
       Value_3 := 0 /= (Value and 4);
@@ -302,7 +302,7 @@ package body Gtk.Layered.Stream_IO is
    is
       Value : Guint16;
    begin
-      Restore (Stream, Value);
+      GUInt16_IO.Restore (Stream, Value);
       Value_1 := 0 /= (Value and 1);
       Value_2 := 0 /= (Value and 2);
       Value_3 := 0 /= (Value and 4);
@@ -321,7 +321,7 @@ package body Gtk.Layered.Stream_IO is
    is
       Value : Guint16;
    begin
-      Restore (Stream, Value);
+      GUInt16_IO.Restore (Stream, Value);
       Value_1 := 0 /= (Value and 1);
       Value_2 := 0 /= (Value and 2);
       Value_3 := 0 /= (Value and 4);
@@ -342,7 +342,7 @@ package body Gtk.Layered.Stream_IO is
    is
       Value : Guint16;
    begin
-      Restore (Stream, Value);
+      GUInt16_IO.Restore (Stream, Value);
       Value_1 := 0 /= (Value and 1);
       Value_2 := 0 /= (Value and 2);
       Value_3 := 0 /= (Value and 4);
@@ -365,7 +365,7 @@ package body Gtk.Layered.Stream_IO is
    is
       Value : Guint16;
    begin
-      Restore (Stream, Value);
+      GUInt16_IO.Restore (Stream, Value);
       Value_1 := 0 /= (Value and 1);
       Value_2 := 0 /= (Value and 2);
       Value_3 := 0 /= (Value and 4);
@@ -380,7 +380,6 @@ package body Gtk.Layered.Stream_IO is
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Value  : out Cairo.Cairo_Font_Face)
    is
-      use Interfaces.C.Strings;
       Family : aliased Interfaces.C.char_array :=
                   Interfaces.C.To_C (UTF8_String'(Restore (Stream'Access)));
       Slant  : Cairo.Cairo_Font_Slant;
@@ -390,7 +389,7 @@ package body Gtk.Layered.Stream_IO is
       Restore (Stream, Weight);
       Value :=
         Cairo.Font_Face.Toy_Font_Face_Create
-          (To_Chars_Ptr (Family'Unchecked_Access),
+          (Interfaces.C.Strings.To_Chars_Ptr (Family'Unchecked_Access),
            Slant,
            Weight);
    end Restore;
@@ -401,11 +400,12 @@ package body Gtk.Layered.Stream_IO is
    is
       Position : Guint16;
    begin
-      Restore (Stream, Position);
+      GUInt16_IO.Restore (Stream, Position);
       Value := Cairo.Cairo_Font_Slant'Val (Position);
    exception
       when Constraint_Error =>
-         raise Data_Error with "Cairo_Font_Slant out of range";
+         raise
+           Ada.IO_Exceptions.Data_Error with "Cairo_Font_Slant out of range";
    end Restore;
 
    procedure Restore
@@ -414,11 +414,12 @@ package body Gtk.Layered.Stream_IO is
    is
       Position : Guint16;
    begin
-      Restore (Stream, Position);
+      GUInt16_IO.Restore (Stream, Position);
       Value := Cairo.Cairo_Font_Weight'Val (Position);
    exception
       when Constraint_Error =>
-         raise Data_Error with "Cairo_Font_Weight out of range";
+         raise
+           Ada.IO_Exceptions.Data_Error with "Cairo_Font_Weight out of range";
    end Restore;
 
    procedure Restore
@@ -427,11 +428,11 @@ package body Gtk.Layered.Stream_IO is
    is
       Position : Guint16;
    begin
-      Restore (Stream, Position);
+      GUInt16_IO.Restore (Stream, Position);
       Value := Cairo.Cairo_Line_Cap'Val (Position);
    exception
       when Constraint_Error =>
-         raise Data_Error with "Cairo_Line_Cap out of range";
+         raise Ada.IO_Exceptions.Data_Error with "Cairo_Line_Cap out of range";
    end Restore;
 
    procedure Restore
@@ -475,11 +476,12 @@ package body Gtk.Layered.Stream_IO is
    is
       Position : Guint16;
    begin
-      Restore (Stream, Position);
+      GUInt16_IO.Restore (Stream, Position);
       Value := Elliptic_Shape_Type'Val (Position);
    exception
       when Constraint_Error =>
-         raise Data_Error with "Elliptic_Shape_Type out of range";
+         raise
+           Ada.IO_Exceptions.Data_Error with "Elliptic_Shape_Type out of range";
    end Restore;
 
    procedure Restore
@@ -497,23 +499,23 @@ package body Gtk.Layered.Stream_IO is
    is
       R, G, B : Guint16;
    begin
-      Restore (Stream, R);
-      Restore (Stream, G);
-      Restore (Stream, B);
+      GUInt16_IO.Restore (Stream, R);
+      GUInt16_IO.Restore (Stream, G);
+      GUInt16_IO.Restore (Stream, B);
       Gdk.Color.Set_Rgb (Value, R, G, B);
    end Restore;
 
    procedure Restore
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
-      Value  : out Gtk_Shadow_Type)
+      Value  : out Gtk.Enums.Gtk_Shadow_Type)
    is
       Position : Guint16;
    begin
-      Restore (Stream, Position);
-      Value := Gtk_Shadow_Type'Val (Position);
+      GUInt16_IO.Restore (Stream, Position);
+      Value := Gtk.Enums.Gtk_Shadow_Type'Val (Position);
    exception
       when Constraint_Error =>
-         raise Data_Error with "Gtk_Shadow_Type out of range";
+         raise Ada.IO_Exceptions.Data_Error with "Gtk_Shadow_Type out of range";
    end Restore;
 
    procedure Restore
@@ -522,22 +524,25 @@ package body Gtk.Layered.Stream_IO is
    is
       Position : Guint16;
    begin
-      Restore (Stream, Position);
+      GUInt16_IO.Restore (Stream, Position);
       Value := Interpolation_Mode'Val (Position);
    exception
       when Constraint_Error =>
-         raise Data_Error with "Interpolation_Mode out of range";
+         raise
+           Ada.IO_Exceptions.Data_Error with "Interpolation_Mode out of range";
    end Restore;
 
    procedure Restore
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Value  : out Gdouble)
    is
-      Fraction : Unsigned_32;
-      Exponent : Unsigned_32;
+      Fraction : Interfaces.Unsigned_32;
+      Exponent : Interfaces.Unsigned_32;
+
+      use type Interfaces.Unsigned_32;
    begin
-      Restore (Stream, Fraction);
-      Restore (Stream, Exponent);
+      Unsigned_32_IO.Restore (Stream, Fraction);
+      Unsigned_32_IO.Restore (Stream, Exponent);
       Value := Gdouble (Fraction) / 2.0**30;
       if 0 /= (Exponent and 1) then
          Value := -Value;
@@ -577,7 +582,7 @@ package body Gtk.Layered.Stream_IO is
       Value := Layer_Type'Val (Position);
    exception
       when Constraint_Error =>
-         raise Data_Error with "Layer_Type out of range";
+         raise Ada.IO_Exceptions.Data_Error with "Layer_Type out of range";
    end Restore;
 
    procedure Restore
@@ -594,8 +599,8 @@ package body Gtk.Layered.Stream_IO is
       Value  : out Tick_Parameters) is
    begin
       Restore (Stream, Value.Step);
-      Restore (Stream, Unsigned_64 (Value.First));
-      Restore (Stream, Unsigned_64 (Value.Skipped));
+      Unsigned_64_IO.Restore (Stream, Interfaces.Unsigned_64 (Value.First));
+      Unsigned_64_IO.Restore (Stream, Interfaces.Unsigned_64 (Value.Skipped));
    end Restore;
 
    function Restore
@@ -603,14 +608,16 @@ package body Gtk.Layered.Stream_IO is
       return Bit_Array
    is
       Count : Natural;
-      Octet : Unsigned_8;
-      Mask  : Unsigned_8 := 1;
+      Octet : Interfaces.Unsigned_8;
+      Mask  : Interfaces.Unsigned_8 := 1;
+
+      use type Interfaces.Unsigned_8;
    begin
-      Restore (Stream.all, Unsigned_32 (Count));
+      Unsigned_32_IO.Restore (Stream.all, Interfaces.Unsigned_32 (Count));
       return Result : Bit_Array (1 .. Count) do
          for Index in Result'Range loop
             if Mask = 1 then
-               Unsigned_8'Read (Stream, Octet);
+               Interfaces.Unsigned_8'Read (Stream, Octet);
             end if;
             Result (Index) := 0 /= (Octet and Mask);
             if Mask = 2#1000_0000# then
@@ -628,7 +635,7 @@ package body Gtk.Layered.Stream_IO is
    is
       Count : Natural;
    begin
-      Restore (Stream.all, Unsigned_32 (Count));
+      Unsigned_32_IO.Restore (Stream.all, Interfaces.Unsigned_32 (Count));
       return Text : String (1 .. Count) do
          String'Read (Stream, Text);
       end return;
@@ -644,7 +651,8 @@ package body Gtk.Layered.Stream_IO is
       Value := Text_Transformation'Val (Position);
    exception
       when Constraint_Error =>
-         raise Data_Error with "Text_Transformation out of range";
+         raise
+           Ada.IO_Exceptions.Data_Error with "Text_Transformation out of range";
    end Restore;
 
    procedure Restore
@@ -657,7 +665,8 @@ package body Gtk.Layered.Stream_IO is
       Value := Vertical_Alignment'Val (Position);
    exception
       when Constraint_Error =>
-         raise Data_Error with "Vertical alignment out of range";
+         raise
+           Ada.IO_Exceptions.Data_Error with "Vertical alignment out of range";
    end Restore;
 
    procedure Restore
@@ -670,7 +679,9 @@ package body Gtk.Layered.Stream_IO is
       Value := Waveform_Drawing_Method'Val (Position);
    exception
       when Constraint_Error =>
-         raise Data_Error with "Waveform_Drawing_Method out of range";
+         raise
+           Ada.IO_Exceptions.Data_Error with
+             "Waveform_Drawing_Method out of range";
    end Restore;
 
    procedure Store
@@ -704,9 +715,9 @@ package body Gtk.Layered.Stream_IO is
 
    procedure Store
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
-      Value  : Alignment) is
+      Value  : Ada.Strings.Alignment) is
    begin
-      Store (Stream, Guint16 (Alignment'Pos (Value)));
+      GUInt16_IO.Store (Stream, Guint16 (Ada.Strings.Alignment'Pos (Value)));
    end Store;
 
    procedure Store
@@ -718,7 +729,7 @@ package body Gtk.Layered.Stream_IO is
       if Value then
          Data := Data or 1;
       end if;
-      Store (Stream, Data);
+      GUInt16_IO.Store (Stream, Data);
    end Store;
 
    procedure Store
@@ -734,7 +745,7 @@ package body Gtk.Layered.Stream_IO is
       if Value_2 then
          Value := Value or 2;
       end if;
-      Store (Stream, Value);
+      GUInt16_IO.Store (Stream, Value);
    end Store;
 
    procedure Store
@@ -754,7 +765,7 @@ package body Gtk.Layered.Stream_IO is
       if Value_3 then
          Value := Value or 4;
       end if;
-      Store (Stream, Value);
+      GUInt16_IO.Store (Stream, Value);
    end Store;
 
    procedure Store
@@ -778,7 +789,7 @@ package body Gtk.Layered.Stream_IO is
       if Value_4 then
          Value := Value or 8;
       end if;
-      Store (Stream, Value);
+      GUInt16_IO.Store (Stream, Value);
    end Store;
 
    procedure Store
@@ -806,7 +817,7 @@ package body Gtk.Layered.Stream_IO is
       if Value_5 then
          Value := Value or 16;
       end if;
-      Store (Stream, Value);
+      GUInt16_IO.Store (Stream, Value);
    end Store;
 
    procedure Store
@@ -838,7 +849,7 @@ package body Gtk.Layered.Stream_IO is
       if Value_6 then
          Value := Value or 32;
       end if;
-      Store (Stream, Value);
+      GUInt16_IO.Store (Stream, Value);
    end Store;
 
    procedure Store
@@ -874,7 +885,7 @@ package body Gtk.Layered.Stream_IO is
       if Value_7 then
          Value := Value or 64;
       end if;
-      Store (Stream, Value);
+      GUInt16_IO.Store (Stream, Value);
    end Store;
 
    procedure Store
@@ -914,41 +925,40 @@ package body Gtk.Layered.Stream_IO is
       if Value_8 then
          Value := Value or 128;
       end if;
-      Store (Stream, Value);
+      GUInt16_IO.Store (Stream, Value);
    end Store;
 
    procedure Store
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
-      Value  : Cairo.Cairo_Font_Face)
-   is
-      use Cairo.Font_Face;
+      Value  : Cairo.Cairo_Font_Face) is
    begin
       Store
         (Stream,
-         Interfaces.C.Strings.Value (Toy_Font_Face_Get_Family (Value)));
-      Store (Stream, Toy_Font_Face_Get_Slant  (Value));
-      Store (Stream, Toy_Font_Face_Get_Weight (Value));
+         Interfaces.C.Strings.Value
+           (Cairo.Font_Face.Toy_Font_Face_Get_Family (Value)));
+      Store (Stream, Cairo.Font_Face.Toy_Font_Face_Get_Slant  (Value));
+      Store (Stream, Cairo.Font_Face.Toy_Font_Face_Get_Weight (Value));
    end Store;
 
    procedure Store
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Value  : Cairo.Cairo_Font_Slant) is
    begin
-      Store (Stream, Guint16 (Cairo.Cairo_Font_Slant'Pos (Value)));
+      GUInt16_IO.Store (Stream, Guint16 (Cairo.Cairo_Font_Slant'Pos (Value)));
    end Store;
 
    procedure Store
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Value  : Cairo.Cairo_Font_Weight) is
    begin
-      Store (Stream, Guint16 (Cairo.Cairo_Font_Weight'Pos (Value)));
+      GUInt16_IO.Store (Stream, Guint16 (Cairo.Cairo_Font_Weight'Pos (Value)));
    end Store;
 
    procedure Store
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Value  : Cairo.Cairo_Line_Cap) is
    begin
-      Store (Stream, Guint16 (Cairo.Cairo_Line_Cap'Pos (Value)));
+      GUInt16_IO.Store (Stream, Guint16 (Cairo.Cairo_Line_Cap'Pos (Value)));
    end Store;
 
    procedure Store
@@ -975,7 +985,7 @@ package body Gtk.Layered.Stream_IO is
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Value  : Elliptic_Shape_Type) is
    begin
-      Store (Stream, Guint16 (Elliptic_Shape_Type'Pos (Value)));
+      GUInt16_IO.Store (Stream, Guint16 (Elliptic_Shape_Type'Pos (Value)));
    end Store;
 
    procedure Store
@@ -991,9 +1001,9 @@ package body Gtk.Layered.Stream_IO is
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Value  : Gdk.Color.Gdk_Color) is
    begin
-      Store (Stream, Gdk.Color.Red   (Value));
-      Store (Stream, Gdk.Color.Green (Value));
-      Store (Stream, Gdk.Color.Blue  (Value));
+      GUInt16_IO.Store (Stream, Gdk.Color.Red   (Value));
+      GUInt16_IO.Store (Stream, Gdk.Color.Green (Value));
+      GUInt16_IO.Store (Stream, Gdk.Color.Blue  (Value));
    end Store;
 
    procedure Store
@@ -1010,23 +1020,30 @@ package body Gtk.Layered.Stream_IO is
    is
       Fraction : Gdouble  := abs Value;
       Exponent : Integer := 0;
+
+      use type Interfaces.Unsigned_32;
    begin
       if Fraction > 0.0 then
-         Exponent := Integer (Log (Fraction, 2.0));
+         Exponent := Integer (Cairo.Elementary_Functions.Log (Fraction, 2.0));
       end if;
       Fraction := Fraction / 2.0**Exponent;
-      Store (Stream, Unsigned_32 (Fraction * 2.0**30));
+      Unsigned_32_IO.Store
+        (Stream, Interfaces.Unsigned_32 (Fraction * 2.0 ** 30));
       if Exponent < 0 then
          if Value < 0.0 then
-            Store (Stream, Unsigned_32 ((-Exponent) * 4) + 3);
+            Unsigned_32_IO.Store
+              (Stream, Interfaces.Unsigned_32 ((-Exponent) * 4) + 3);
          else
-            Store (Stream, Unsigned_32 ((-Exponent) * 4) + 2);
+            Unsigned_32_IO.Store
+              (Stream, Interfaces.Unsigned_32 ((-Exponent) * 4) + 2);
          end if;
       else
          if Value < 0.0 then
-            Store (Stream, Unsigned_32 (Exponent * 4) + 1);
+            Unsigned_32_IO.Store
+              (Stream, Interfaces.Unsigned_32 (Exponent * 4) + 1);
          else
-            Store (Stream, Unsigned_32 (Exponent * 4));
+            Unsigned_32_IO.Store
+              (Stream, Interfaces.Unsigned_32 (Exponent * 4));
          end if;
       end if;
    end Store;
@@ -1043,9 +1060,9 @@ package body Gtk.Layered.Stream_IO is
 
    procedure Store
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
-      Value  : Gtk_Shadow_Type) is
+      Value  : Gtk.Enums.Gtk_Shadow_Type) is
    begin
-      Store (Stream, Guint16'(Gtk_Shadow_Type'Pos (Value)));
+      Store (Stream, Guint16'(Gtk.Enums.Gtk_Shadow_Type'Pos (Value)));
    end Store;
 
    procedure Store
@@ -1075,16 +1092,18 @@ package body Gtk.Layered.Stream_IO is
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Value  : Bit_Array)
    is
-      Mask  : Unsigned_8 := 1;
-      Octet : Unsigned_8 := 0;
+      Mask  : Interfaces.Unsigned_8 := 1;
+      Octet : Interfaces.Unsigned_8 := 0;
+
+      use type Interfaces.Unsigned_8;
    begin
-      Store (Stream, Unsigned_32 (Value'Length));
+      Unsigned_32_IO.Store (Stream, Interfaces.Unsigned_32 (Value'Length));
       for Index in Value'Range loop
          if Value (Index) then
             Octet := Octet or Mask;
          end if;
          if Mask = 2#1000_0000# then
-            Unsigned_8'Write (Stream'Access, Octet);
+            Interfaces.Unsigned_8'Write (Stream'Access, Octet);
             Mask  := 1;
             Octet := 0;
          else
@@ -1092,7 +1111,7 @@ package body Gtk.Layered.Stream_IO is
          end if;
       end loop;
       if Mask > 1 then
-         Unsigned_8'Write (Stream'Access, Octet);
+         Interfaces.Unsigned_8'Write (Stream'Access, Octet);
       end if;
    end Store;
 
@@ -1100,7 +1119,7 @@ package body Gtk.Layered.Stream_IO is
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Value  : UTF8_String) is
    begin
-      Store (Stream, Unsigned_32 (Value'Length));
+      Unsigned_32_IO.Store (Stream, Interfaces.Unsigned_32 (Value'Length));
       String'Write (Stream'Access, Value);
    end Store;
 
@@ -1116,8 +1135,8 @@ package body Gtk.Layered.Stream_IO is
       Value  : Tick_Parameters) is
    begin
       Store (Stream, Value.Step);
-      Store (Stream, Unsigned_64 (Value.First));
-      Store (Stream, Unsigned_64 (Value.Skipped));
+      Unsigned_64_IO.Store (Stream, Interfaces.Unsigned_64 (Value.First));
+      Unsigned_64_IO.Store (Stream, Interfaces.Unsigned_64 (Value.Skipped));
    end Store;
 
    procedure Store

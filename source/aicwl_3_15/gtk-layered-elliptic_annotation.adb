@@ -25,15 +25,18 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
-with Glib.Properties.Creation;    use Glib.Properties.Creation;
-with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
-
 with Ada.Unchecked_Deallocation;
+
+with Cairo.Elementary_Functions;
 with Cairo.Font_Slant_Property;
-with Pango.Enums.Weight_Property;
+
+with Glib.Properties.Creation;
+
+with Gtk.Layered.Stream_IO;
 with Gtk.Layered.Text_Transformation_Property;
+
 with Pango.Cairo.Fonts.Font_Type_Property;
+with Pango.Enums.Weight_Property;
 
 package body Gtk.Layered.Elliptic_Annotation is
 
@@ -500,14 +503,16 @@ package body Gtk.Layered.Elliptic_Annotation is
                         Cairo.Translate
                           (Cr => Context,
                            Tx => (-Extents.Width * 0.5 * Gain * Layer.Stretch *
-                                      Cos (Angle)),
-                           Ty => (-Extents.Height * 0.5 * Gain * Sin (Angle)));
+                                      Cairo.Elementary_Functions.Cos (Angle)),
+                           Ty => (-Extents.Height * 0.5 * Gain *
+                                      Cairo.Elementary_Functions.Sin (Angle)));
                      when Moved_Outside =>
                         Cairo.Translate
                           (Cr => Context,
                            Tx => (Extents.Width * 0.5 * Gain * Layer.Stretch *
-                                      Cos (Angle)),
-                           Ty => (Extents.Height * 0.5 * Gain * Sin (Angle)));
+                                      Cairo.Elementary_Functions.Cos (Angle)),
+                           Ty => (Extents.Height * 0.5 * Gain *
+                                      Cairo.Elementary_Functions.Sin (Angle)));
                      when Moved_Centered =>
                         null;
                      when Rotated =>
@@ -529,7 +534,8 @@ package body Gtk.Layered.Elliptic_Annotation is
                            Matrix.Xx := 1.0;
                            Matrix.Xy := 1.0;
                            Matrix.Xy :=
-                             Tan (Ellipse.Angle - Angle - Ada.Numerics.Pi / 2.0);
+                             Cairo.Elementary_Functions.Tan
+                               (Ellipse.Angle - Angle - Ada.Numerics.Pi / 2.0);
                            Matrix.X0 := 0.0;
                            Matrix.Yx := 0.0;
                            Matrix.Yy := 1.0;
@@ -613,13 +619,15 @@ package body Gtk.Layered.Elliptic_Annotation is
       Markup : Boolean) return Annotation_List_Ptr
    is
       pragma Unreferenced (Ticks);
-      use Gtk.Enums.String_List;
-      This  : Glist   := Texts;
-      Count : Natural := 0;
+
+      This  : Gtk.Enums.String_List.Glist := Texts;
+      Count : Natural                     := 0;
+
+      use type Gtk.Enums.String_List.Glist;
    begin
-      while This /= Null_List loop
+      while This /= Gtk.Enums.String_List.Null_List loop
          Count := Count + 1;
-         This  := Next (This);
+         This  := Gtk.Enums.String_List.Next (This);
       end loop;
       declare
          Result : constant Annotation_List_Ptr :=
@@ -629,7 +637,8 @@ package body Gtk.Layered.Elliptic_Annotation is
          This := Texts;
          for Index in List'Range loop
             declare
-               Text : constant UTF8_String := Get_Data (This);
+               Text : constant UTF8_String :=
+                        Gtk.Enums.String_List.Get_Data (This);
             begin
                List (Index) :=
                  new Annotation_Text'
@@ -637,7 +646,7 @@ package body Gtk.Layered.Elliptic_Annotation is
                     Markup => Markup,
                     Length => Text'Length,
                     Buffer => Text);
-               This := Next (This);
+               This := Gtk.Enums.String_List.Next (This);
             end;
          end loop;
          return Result;
@@ -722,7 +731,7 @@ package body Gtk.Layered.Elliptic_Annotation is
          case Layer_Property'Val (Property - 1) is
             when Property_Center_X =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "x",
                     Nick    => "x",
                     Minimum => Gdouble'First,
@@ -734,7 +743,7 @@ package body Gtk.Layered.Elliptic_Annotation is
                        "the ellipse");
             when Property_Center_Y =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "y",
                     Nick    => "y",
                     Minimum => Gdouble'First,
@@ -746,7 +755,7 @@ package body Gtk.Layered.Elliptic_Annotation is
                        "ellipse");
             when Property_Curvature =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "k",
                     Nick    => "k",
                     Minimum => 0.0,
@@ -758,7 +767,7 @@ package body Gtk.Layered.Elliptic_Annotation is
                        "ellipse");
             when Property_Radius =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "r",
                     Nick    => "r",
                     Minimum => 1.0E-6,
@@ -770,7 +779,7 @@ package body Gtk.Layered.Elliptic_Annotation is
                        "ellipse");
             when Property_Angle =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "angle",
                     Nick    => "angle",
                     Minimum => -2.0 * Ada.Numerics.Pi,
@@ -782,7 +791,7 @@ package body Gtk.Layered.Elliptic_Annotation is
                        "ellipse");
             when Property_From =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "from",
                     Nick    => "from",
                     Minimum => -2.0 * Ada.Numerics.Pi,
@@ -793,7 +802,7 @@ package body Gtk.Layered.Elliptic_Annotation is
                        "the ellipse used to arrange the annotation texts");
             when Property_Length =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "length",
                     Nick    => "length",
                     Minimum => -2.0 * Ada.Numerics.Pi,
@@ -804,7 +813,7 @@ package body Gtk.Layered.Elliptic_Annotation is
                        "to arrange the annotation texts");
             when Property_Stretch =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "stretch",
                     Nick    => "stretch",
                     Minimum => 0.0,
@@ -816,7 +825,7 @@ package body Gtk.Layered.Elliptic_Annotation is
                        "keeps texts unchanged");
             when Property_Height =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "height",
                     Nick    => "height",
                     Minimum => 0.0,
@@ -834,7 +843,7 @@ package body Gtk.Layered.Elliptic_Annotation is
                        "font");
             when Property_Family =>
                return
-                 Gnew_String
+                 Glib.Properties.Creation.Gnew_String
                    (Name    => "font-familiy",
                     Nick    => "font famility",
                     Default => "arial",
@@ -857,7 +866,7 @@ package body Gtk.Layered.Elliptic_Annotation is
                     Blurb   => "The annotation text font slant");
             when Property_Font_Size =>
                return
-                 Gnew_Uint
+                 Glib.Properties.Creation.Gnew_Uint
                    (Name    => "font-size",
                     Nick    => "font size",
                     Minimum => 1,
@@ -875,7 +884,7 @@ package body Gtk.Layered.Elliptic_Annotation is
                     Blurb   => "The annotation text font weight");
             when Property_Texts =>
                return
-                 Gnew_String
+                 Glib.Properties.Creation.Gnew_String
                    (Name    => "texts",
                     Nick    => "annotation texts",
                     Default => "",
@@ -883,7 +892,7 @@ package body Gtk.Layered.Elliptic_Annotation is
                        "The list of annotation texts, separated by LFs");
             when Property_Markup =>
                return
-                 Gnew_String
+                 Glib.Properties.Creation.Gnew_String
                    (Name    => "markup-flags",
                     Nick    => "annotation text markups",
                     Default => "",
@@ -893,14 +902,14 @@ package body Gtk.Layered.Elliptic_Annotation is
                        "text or M for markup");
             when Property_Color =>
                return
-                 Gnew_Boxed
+                 Glib.Properties.Creation.Gnew_Boxed
                    (Name       => "color",
                     Boxed_Type => Gdk.Color.Gdk_Color_Type,
                     Nick       => "color",
                     Blurb      => "The annotation texts color");
             when Property_Tick_Step =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "step",
                     Nick    => "step",
                     Minimum => 1.0E-6,
@@ -911,7 +920,7 @@ package body Gtk.Layered.Elliptic_Annotation is
                        "ticks at where annotation texts are drawn");
             when Property_Tick_First =>
                return
-                 Gnew_Uint
+                 Glib.Properties.Creation.Gnew_Uint
                    (Name    => "first-tick",
                     Nick    => "first tick",
                     Minimum => Guint (Tick_Number'First),
@@ -923,7 +932,7 @@ package body Gtk.Layered.Elliptic_Annotation is
                        "annotation texts are attached");
             when Property_Tick_Skipped =>
                return
-                 Gnew_Uint
+                 Glib.Properties.Creation.Gnew_Uint
                    (Name    => "skipped-tick",
                     Nick    => "skipped tick",
                     Minimum => 2,
@@ -935,7 +944,7 @@ package body Gtk.Layered.Elliptic_Annotation is
                        "this number annotations are not drawn");
             when Property_Scaled =>
                return
-                 Gnew_Boolean
+                 Glib.Properties.Creation.Gnew_Boolean
                    (Name    => "scaled",
                     Nick    => "scaled",
                     Default => False,
@@ -1155,16 +1164,16 @@ package body Gtk.Layered.Elliptic_Annotation is
       Ticks   : Tick_Parameters;
       Color   : Gdk.Color.Gdk_Color;
    begin
-      Restore (Stream, Ellipse);
+      Gtk.Layered.Stream_IO.Restore (Stream, Ellipse);
       Pango.Cairo.Fonts.Restore (Stream, Face);
-      Restore (Stream, Height);
-      Restore (Stream, Stretch);
-      Restore (Stream, From);
-      Restore (Stream, Length);
-      Restore (Stream, Mode);
-      Restore (Stream, Ticks);
-      Restore (Stream, Color);
-      Restore (Stream, Layer.Scaled);
+      Gtk.Layered.Stream_IO.Restore (Stream, Height);
+      Gtk.Layered.Stream_IO.Restore (Stream, Stretch);
+      Gtk.Layered.Stream_IO.Restore (Stream, From);
+      Gtk.Layered.Stream_IO.Restore (Stream, Length);
+      Gtk.Layered.Stream_IO.Restore (Stream, Mode);
+      Gtk.Layered.Stream_IO.Restore (Stream, Ticks);
+      Gtk.Layered.Stream_IO.Restore (Stream, Color);
+      Gtk.Layered.Stream_IO.Restore (Stream, Layer.Scaled);
       Set
         (Layer   => Layer,
          Ellipse => Ellipse,
@@ -1177,15 +1186,15 @@ package body Gtk.Layered.Elliptic_Annotation is
          Stretch => Stretch,
          Color   => Color);
       declare
-         use Gtk.Layered.Stream_IO;
-         Markup : constant Bit_Array := Restore (Stream'Access);
+         Markup : constant Gtk.Layered.Stream_IO.Bit_Array :=
+                    Gtk.Layered.Stream_IO.Restore (Stream'Access);
       begin
          Free (Layer.Texts);
          Layer.Texts := new Annotation_List (Markup'Range);
          for Index in Markup'Range loop
             Layer.Set_Text
               (Index,
-               Restore (Stream'Access),
+               Gtk.Layered.Stream_IO.Restore (Stream'Access),
                Markup (Index));
          end loop;
       end;
@@ -1511,26 +1520,26 @@ package body Gtk.Layered.Elliptic_Annotation is
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Layer  : Elliptic_Annotation_Layer) is
    begin
-      Store (Stream, Layer.Ellipse);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Ellipse);
       Pango.Cairo.Fonts.Store (Stream, Layer.Face);
-      Store (Stream, Layer.Height);
-      Store (Stream, Layer.Stretch);
-      Store (Stream, Layer.From);
-      Store (Stream, Layer.Length);
-      Store (Stream, Layer.Mode);
-      Store (Stream, Layer.Ticks);
-      Store (Stream, Layer.Color);
-      Store (Stream, Layer.Scaled);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Height);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Stretch);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.From);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Length);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Mode);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Ticks);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Color);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Scaled);
       declare
-         Markup : Bit_Array (1 .. Layer.Get_Texts_Number);
+         Markup : Gtk.Layered.Stream_IO.Bit_Array (1 .. Layer.Get_Texts_Number);
       begin
          for Index in 1 .. Layer.Get_Texts_Number loop
             Markup (Index) := Layer.Get_Markup (Index);
          end loop;
-         Store (Stream, Markup);
+         Gtk.Layered.Stream_IO.Store (Stream, Markup);
       end;
       for Index in 1 .. Layer.Get_Texts_Number loop
-         Store (Stream, Layer.Get_Text (Index));
+         Gtk.Layered.Stream_IO.Store (Stream, Layer.Get_Text (Index));
       end loop;
    end Store;
 

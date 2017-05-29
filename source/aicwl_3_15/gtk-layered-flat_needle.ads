@@ -25,7 +25,7 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Gtk.Handlers;  use Gtk.Handlers;
+with Gtk.Handlers;
 with Gtk.Missed;
 
 package Gtk.Layered.Flat_Needle is
@@ -316,8 +316,8 @@ private
          Rear          : End_Parameters;
          Color         : Gdk.Color.Gdk_Color;
          Adjustment    : Gtk.Adjustment.Gtk_Adjustment;
-         Changed       : Handler_Id;
-         Value_Changed : Handler_Id;
+         Changed       : Gtk.Handlers.Handler_Id;
+         Value_Changed : Gtk.Handlers.Handler_Id;
          Scaled        : Boolean := False;
          Updated       : Boolean := True;
          pragma Atomic (Value);

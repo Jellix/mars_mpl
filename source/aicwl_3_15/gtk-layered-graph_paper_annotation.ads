@@ -25,12 +25,12 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Ada.Strings;              use Ada.Strings;
-with Gtk.Layered.Graph_Paper;  use Gtk.Layered.Graph_Paper;
-with Gtk.Layered.Waveform;     use Gtk.Layered.Waveform;
-with Gtk.Missed;
-
 with Ada.Calendar;
+with Ada.Strings;
+
+with Gtk.Layered.Graph_Paper;
+with Gtk.Layered.Waveform;
+with Gtk.Missed;
 
 package Gtk.Layered.Graph_Paper_Annotation is
 
@@ -42,7 +42,7 @@ package Gtk.Layered.Graph_Paper_Annotation is
    type Graph_Paper_Annotation_Layer (<>) is
      new Abstract_Layer
      and Scalable_Layer
-     and Graph_Paper_Annotation_Interface with private;
+     and Gtk.Layered.Graph_Paper.Graph_Paper_Annotation_Interface with private;
 
    type Axis_Orientation is (Horizontal, Vertical);
    type Axis_Alignment is (Absolute, Relative);
@@ -59,7 +59,7 @@ package Gtk.Layered.Graph_Paper_Annotation is
                   when Absolute =>
                      Y_Position : Gdouble := 0.0;
                   when Relative =>
-                     Y_Value : Y_Axis := 0.0;
+                     Y_Value : Gtk.Layered.Waveform.Y_Axis := 0.0;
                end case;
             when Vertical =>
                Top    : Gdouble := -0.5;
@@ -68,7 +68,7 @@ package Gtk.Layered.Graph_Paper_Annotation is
                   when Absolute =>
                      X_Position : Gdouble := 0.0;
                   when Relative =>
-                     X_Value : X_Axis := 0.0;
+                     X_Value : Gtk.Layered.Waveform.X_Axis := 0.0;
                end case;
          end case;
       end record;
@@ -129,7 +129,7 @@ package Gtk.Layered.Graph_Paper_Annotation is
    --
    procedure Add_Graph_Paper_Annotation
      (Under       : not null access Layer_Location'Class;
-      Paper       : not null access Graph_Paper_Layer'Class;
+      Paper       : not null access Gtk.Layered.Graph_Paper.Graph_Paper_Layer'Class;
       Location    : Axis_Location                      :=
         (Orientation => Vertical,
          Alignment   => Absolute,
@@ -142,7 +142,7 @@ package Gtk.Layered.Graph_Paper_Annotation is
       Stretch     : Gdouble                            := 1.0;
       Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Text_Angle  : Gdouble                            := 0.0;
-      Justify_X   : Alignment                          := Center;
+      Justify_X   : Ada.Strings.Alignment              := Ada.Strings.Center;
       Justify_Y   : Vertical_Alignment                 := Center;
       Superscript : Boolean                            := True;
       Background  : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 1.0, 1.0);
@@ -154,7 +154,7 @@ package Gtk.Layered.Graph_Paper_Annotation is
 
    function Add_Graph_Paper_Annotation
      (Under       : not null access Layer_Location'Class;
-      Paper       : not null access Graph_Paper_Layer'Class;
+      Paper       : not null access Gtk.Layered.Graph_Paper.Graph_Paper_Layer'Class;
       Location    : Axis_Location                      :=
         (Orientation => Vertical,
          Alignment   => Absolute,
@@ -167,7 +167,7 @@ package Gtk.Layered.Graph_Paper_Annotation is
       Stretch     : Gdouble                            := 1.0;
       Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Text_Angle  : Gdouble                            := 0.0;
-      Justify_X   : Alignment                          := Center;
+      Justify_X   : Ada.Strings.Alignment              := Ada.Strings.Center;
       Justify_Y   : Vertical_Alignment                 := Center;
       Superscript : Boolean                            := True;
       Background  : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 1.0, 1.0);
@@ -253,7 +253,7 @@ package Gtk.Layered.Graph_Paper_Annotation is
    --    The text justification
    --
    function Get_Justify_X (Layer : Graph_Paper_Annotation_Layer)
-                           return Alignment;
+                           return Ada.Strings.Alignment;
 
    --
    -- Get_Justify_Y -- The text vertical justification
@@ -427,7 +427,7 @@ package Gtk.Layered.Graph_Paper_Annotation is
       Stretch     : Gdouble;
       Color       : Gdk.Color.Gdk_Color;
       Text_Angle  : Gdouble;
-      Justify_X   : Alignment;
+      Justify_X   : Ada.Strings.Alignment;
       Justify_Y   : Vertical_Alignment;
       Superscript : Boolean;
       Background  : Gdk.Color.Gdk_Color;
@@ -502,10 +502,10 @@ package Gtk.Layered.Graph_Paper_Annotation is
 
    overriding procedure Changed
      (Layer  : in out Graph_Paper_Annotation_Layer;
-      Paper  : Graph_Paper_Layer'Class;
+      Paper  : Gtk.Layered.Graph_Paper.Graph_Paper_Layer'Class;
       Box    : Cairo.Ellipses.Cairo_Box;
-      X1, X2 : X_Axis;
-      Y1, Y2 : Y_Axis);
+      X1, X2 : Gtk.Layered.Waveform.X_Axis;
+      Y1, Y2 : Gtk.Layered.Waveform.Y_Axis);
 
    overriding procedure Detached
      (Annotation : in out Graph_Paper_Annotation_Layer);
@@ -605,7 +605,7 @@ package Gtk.Layered.Graph_Paper_Annotation is
    --
    procedure Add_Graph_Paper_Time_Annotation
      (Under       : not null access Layer_Location'Class;
-      Paper       : not null access Graph_Paper_Layer'Class;
+      Paper       : not null access Gtk.Layered.Graph_Paper.Graph_Paper_Layer'Class;
       Location    : Axis_Location                      :=
         (Orientation => Horizontal,
          Alignment   => Absolute,
@@ -618,7 +618,7 @@ package Gtk.Layered.Graph_Paper_Annotation is
       Stretch     : Gdouble                            := 1.0;
       Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Text_Angle  : Gdouble                            := 0.0;
-      Justify_X   : Alignment                          := Center;
+      Justify_X   : Ada.Strings.Alignment              := Ada.Strings.Center;
       Justify_Y   : Vertical_Alignment                 := Center;
       Superscript : Boolean                            := True;
       Background  : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 1.0, 1.0);
@@ -630,7 +630,7 @@ package Gtk.Layered.Graph_Paper_Annotation is
 
    function Add_Graph_Paper_Time_Annotation
      (Under       : not null access Layer_Location'Class;
-      Paper       : not null access Graph_Paper_Layer'Class;
+      Paper       : not null access Gtk.Layered.Graph_Paper.Graph_Paper_Layer'Class;
       Location    : Axis_Location                      :=
         (Orientation => Horizontal,
          Alignment   => Absolute,
@@ -643,7 +643,7 @@ package Gtk.Layered.Graph_Paper_Annotation is
       Stretch     : Gdouble                            := 1.0;
       Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Text_Angle  : Gdouble                            := 0.0;
-      Justify_X   : Alignment                          := Center;
+      Justify_X   : Ada.Strings.Alignment              := Ada.Strings.Center;
       Justify_Y   : Vertical_Alignment                 := Center;
       Superscript : Boolean                            := True;
       Background  : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 1.0, 1.0);
@@ -661,14 +661,14 @@ package Gtk.Layered.Graph_Paper_Annotation is
 
    overriding function Add_Graph_Paper_Annotation
      (Under       : not null access Layer_Location'Class;
-      Paper       : not null access Graph_Paper_Layer'Class;
+      Paper       : not null access Gtk.Layered.Graph_Paper.Graph_Paper_Layer'Class;
       Location    : Axis_Location;
       Face        : Pango.Cairo.Fonts.Pango_Cairo_Font;
       Height      : Gdouble;
       Stretch     : Gdouble;
       Color       : Gdk.Color.Gdk_Color;
       Text_Angle  : Gdouble;
-      Justify_X   : Alignment;
+      Justify_X   : Ada.Strings.Alignment;
       Justify_Y   : Vertical_Alignment;
       Superscript : Boolean;
       Background  : Gdk.Color.Gdk_Color;
@@ -701,10 +701,10 @@ private
    type Graph_Paper_Annotation_Layer is
      new Abstract_Layer
      and Scalable_Layer
-     and Graph_Paper_Annotation_Interface with
+     and Gtk.Layered.Graph_Paper.Graph_Paper_Annotation_Interface with
       record
          Location     : Axis_Location;
-         Paper        : access Graph_Paper_Layer;
+         Paper        : access Gtk.Layered.Graph_Paper.Graph_Paper_Layer;
          Face         : Pango.Cairo.Fonts.Pango_Cairo_Font;
          Height       : Gdouble;
          Stretch      : Gdouble;
@@ -716,7 +716,7 @@ private
          Opacity      : Fill_Opacity;
          Texts        : Annotation_List_Ptr;
          Suffix       : Annotation_Text_Ptr;
-         Justify_X    : Alignment;
+         Justify_X    : Ada.Strings.Alignment;
          Justify_Y    : Vertical_Alignment;
          Renderer     : Renderer_Function;
          Enlarged     : Boolean                            := False;

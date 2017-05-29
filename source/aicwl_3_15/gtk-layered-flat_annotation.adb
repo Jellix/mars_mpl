@@ -25,15 +25,18 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
-with Glib.Properties.Creation;    use Glib.Properties.Creation;
-with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
-
 with Ada.Unchecked_Deallocation;
+
+with Cairo.Elementary_Functions;
 with Cairo.Font_Slant_Property;
+
+with Glib.Properties.Creation;
+
+with Gtk.Layered.Alignment_Property;
+with Gtk.Layered.Stream_IO;
+
 with Pango.Cairo.Fonts.Font_Type_Property;
 with Pango.Enums.Weight_Property;
-with Gtk.Layered.Alignment_Property;
 
 package body Gtk.Layered.Flat_Annotation is
 
@@ -128,7 +131,7 @@ package body Gtk.Layered.Flat_Annotation is
       Stretch     : Gdouble;
       Color       : Gdk.Color.Gdk_Color;
       Text_Angle  : Gdouble;
-      Justify     : Alignment;
+      Justify     : Ada.Strings.Alignment;
       Scaled      : Boolean) return Annotation_Ptr
    is
       Ptr   : Annotation_Ptr := new Flat_Annotation_Layer;
@@ -174,7 +177,7 @@ package body Gtk.Layered.Flat_Annotation is
       Stretch     : Gdouble                            := 1.0;
       Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Text_Angle  : Gdouble                            := 0.0;
-      Justify     : Alignment                          := Center;
+      Justify     : Ada.Strings.Alignment              := Ada.Strings.Center;
       Markup      : Boolean                            := False;
       Scaled      : Boolean                            := False)
    is
@@ -222,7 +225,7 @@ package body Gtk.Layered.Flat_Annotation is
       Stretch     : Gdouble                            := 1.0;
       Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Text_Angle  : Gdouble                            := 0.0;
-      Justify     : Alignment                          := Center;
+      Justify     : Ada.Strings.Alignment              := Ada.Strings.Center;
       Markup      : Boolean                            := False;
       Scaled      : Boolean                            := False) is
    begin
@@ -263,7 +266,7 @@ package body Gtk.Layered.Flat_Annotation is
       Stretch     : Gdouble                            := 1.0;
       Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Text_Angle  : Gdouble                            := 0.0;
-      Justify     : Alignment                          := Center;
+      Justify     : Ada.Strings.Alignment              := Ada.Strings.Center;
       Delimiter   : Character                          := ' ';
       Markup      : Boolean                            := False;
       Scaled      : Boolean                            := False)
@@ -313,7 +316,7 @@ package body Gtk.Layered.Flat_Annotation is
       Stretch     : Gdouble                            := 1.0;
       Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Text_Angle  : Gdouble                            := 0.0;
-      Justify     : Alignment                          := Center;
+      Justify     : Ada.Strings.Alignment              := Ada.Strings.Center;
       Markup      : Boolean                            := False;
       Scaled      : Boolean                            := False)
       return not null access Flat_Annotation_Layer
@@ -362,7 +365,7 @@ package body Gtk.Layered.Flat_Annotation is
       Stretch     : Gdouble                            := 1.0;
       Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Text_Angle  : Gdouble                            := 0.0;
-      Justify     : Alignment                          := Center;
+      Justify     : Ada.Strings.Alignment              := Ada.Strings.Center;
       Markup      : Boolean                            := False;
       Scaled      : Boolean                            := False)
       return not null access Flat_Annotation_Layer is
@@ -405,7 +408,7 @@ package body Gtk.Layered.Flat_Annotation is
       Stretch     : Gdouble                            := 1.0;
       Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Text_Angle  : Gdouble                            := 0.0;
-      Justify     : Alignment                          := Center;
+      Justify     : Ada.Strings.Alignment              := Ada.Strings.Center;
       Delimiter   : Character                          := ' ';
       Markup      : Boolean                            := False;
       Scaled      : Boolean                            := False)
@@ -454,8 +457,8 @@ package body Gtk.Layered.Flat_Annotation is
       Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
       pragma Unreferenced (Area);
-      X_Size  : Gdouble := Cos (Layer.Scale_Angle);
-      Y_Size  : Gdouble := Sin (Layer.Scale_Angle);
+      X_Size  : Gdouble := Cairo.Elementary_Functions.Cos (Layer.Scale_Angle);
+      Y_Size  : Gdouble := Cairo.Elementary_Functions.Sin (Layer.Scale_Angle);
       Gain    : Gdouble;
       This    : Gdouble;
       From    : Cairo.Ellipses.Cairo_Tuple;
@@ -526,17 +529,17 @@ package body Gtk.Layered.Flat_Annotation is
                   Cairo.Rotate (Context, Layer.Text_Angle);
                   Cairo.Scale (Context, Gain * Layer.Stretch, Gain);
                   case Layer.Justify is
-                     when Left =>
+                     when Ada.Strings.Left =>
                         Cairo.Move_To
                           (Cr => Context,
                            X  => -Extents.X_Bearing,
                            Y  => -Extents.Y_Bearing - Extents.Height * 0.5);
-                     when Right =>
+                     when Ada.Strings.Right =>
                         Cairo.Move_To
                           (Cr => Context,
                            X  => -Extents.X_Bearing - Extents.Width,
                            Y  => -Extents.Y_Bearing - Extents.Height * 0.5);
-                     when Center =>
+                     when Ada.Strings.Center =>
                         Cairo.Move_To
                           (Cr => Context,
                            X  => -Extents.X_Bearing - Extents.Width * 0.5,
@@ -592,7 +595,7 @@ package body Gtk.Layered.Flat_Annotation is
    end Get_Height;
 
    function Get_Justify (Layer : Flat_Annotation_Layer)
-                         return Alignment is
+                         return Ada.Strings.Alignment is
    begin
       return Layer.Justify;
    end Get_Justify;
@@ -609,13 +612,14 @@ package body Gtk.Layered.Flat_Annotation is
       Markup : Boolean) return Annotation_List_Ptr
    is
       pragma Unreferenced (Ticks);
-      use Gtk.Enums.String_List;
-      This  : Glist   := Texts;
-      Count : Natural := 0;
+      This  : Gtk.Enums.String_List.Glist := Texts;
+      Count : Natural                     := 0;
+
+      use type Gtk.Enums.String_List.Glist;
    begin
-      while This /= Null_List loop
+      while This /= Gtk.Enums.String_List.Null_List loop
          Count := Count + 1;
-         This  := Next (This);
+         This  := Gtk.Enums.String_List.Next (This);
       end loop;
       declare
          Result : constant Annotation_List_Ptr :=
@@ -625,7 +629,8 @@ package body Gtk.Layered.Flat_Annotation is
          This := Texts;
          for Index in List'Range loop
             declare
-               Text : constant UTF8_String := Get_Data (This);
+               Text : constant UTF8_String :=
+                        Gtk.Enums.String_List.Get_Data (This);
             begin
                List (Index) :=
                  new Annotation_Text'
@@ -633,7 +638,7 @@ package body Gtk.Layered.Flat_Annotation is
                     Markup => Markup,
                     Length => Text'Length,
                     Buffer => Text);
-               This := Next (This);
+               This := Gtk.Enums.String_List.Next (This);
             end;
          end loop;
          return Result;
@@ -722,7 +727,7 @@ package body Gtk.Layered.Flat_Annotation is
                        "e.g. toy font, pango font");
             when Property_From_X =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "x0",
                     Nick    => "x0",
                     Minimum => Gdouble'First,
@@ -734,7 +739,7 @@ package body Gtk.Layered.Flat_Annotation is
                        "the first annotation text");
             when Property_From_Y =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "y0",
                     Nick    => "y0",
                     Minimum => Gdouble'First,
@@ -746,7 +751,7 @@ package body Gtk.Layered.Flat_Annotation is
                        "the first annotation text");
             when Property_Length =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "length",
                     Nick    => "length",
                     Minimum => Gdouble'First,
@@ -755,7 +760,7 @@ package body Gtk.Layered.Flat_Annotation is
                     Blurb   => "The annotation length");
             when Property_Scale_Angle =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "annotation-angle",
                     Nick    => "annotation line angle",
                     Minimum => -2.0 * Ada.Numerics.Pi,
@@ -766,7 +771,7 @@ package body Gtk.Layered.Flat_Annotation is
                        "annotation texts are located");
             when Property_Text_Angle =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "text-angle",
                     Nick    => "text angle",
                     Minimum => -2.0 * Ada.Numerics.Pi,
@@ -775,7 +780,7 @@ package body Gtk.Layered.Flat_Annotation is
                     Blurb   => "The angle of the annotation texts base line");
             when Property_Tick_Step =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "step",
                     Nick    => "step",
                     Minimum => 1.0E-6,
@@ -786,7 +791,7 @@ package body Gtk.Layered.Flat_Annotation is
                        "consequent annotation texts");
             when Property_Tick_First =>
                return
-                 Gnew_Uint
+                 Glib.Properties.Creation.Gnew_Uint
                    (Name    => "first-tick",
                     Nick    => "first tick",
                     Minimum => Guint (Tick_Number'First),
@@ -798,7 +803,7 @@ package body Gtk.Layered.Flat_Annotation is
                       "annotation texts are attached");
             when Property_Tick_Skipped =>
                return
-                 Gnew_Uint
+                 Glib.Properties.Creation.Gnew_Uint
                    (Name    => "skipped-tick",
                     Nick    => "skipped tick",
                     Minimum => 2,
@@ -811,7 +816,7 @@ package body Gtk.Layered.Flat_Annotation is
                        "this number annotations are not drawn");
             when Property_Stretch =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "stretch",
                     Nick    => "stretch",
                     Minimum => 0.0,
@@ -824,7 +829,7 @@ package body Gtk.Layered.Flat_Annotation is
                        "1 keeps texts unchanged");
             when Property_Height =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "height",
                     Nick    => "height",
                     Minimum => 0.0,
@@ -833,7 +838,7 @@ package body Gtk.Layered.Flat_Annotation is
                     Blurb   => "The annotation text font height");
             when Property_Family =>
                return
-                 Gnew_String
+                 Glib.Properties.Creation.Gnew_String
                    (Name    => "font-familiy",
                     Nick    => "font famility",
                     Default => "arial",
@@ -845,7 +850,7 @@ package body Gtk.Layered.Flat_Annotation is
                  Gtk.Layered.Alignment_Property.Gnew_Enum
                    (Name    => "text-alignment",
                     Nick    => "text alignment",
-                    Default => Center,
+                    Default => Ada.Strings.Center,
                     Blurb   =>
                        "The text alignment " &
                        "relatively to the annotation " &
@@ -859,7 +864,7 @@ package body Gtk.Layered.Flat_Annotation is
                     Blurb   => "The annotation text font slant");
             when Property_Font_Size =>
                return
-                 Gnew_Uint
+                 Glib.Properties.Creation.Gnew_Uint
                    (Name    => "font-size",
                     Nick    => "font size",
                     Minimum => 1,
@@ -872,7 +877,7 @@ package body Gtk.Layered.Flat_Annotation is
                        "is ignored");
             when Property_Texts =>
                return
-                 Gnew_String
+                 Glib.Properties.Creation.Gnew_String
                    (Name    => "texts",
                     Nick    => "annotation texts",
                     Default => "",
@@ -881,7 +886,7 @@ package body Gtk.Layered.Flat_Annotation is
                        "separated by LFs");
             when Property_Markup =>
                return
-                 Gnew_String
+                 Glib.Properties.Creation.Gnew_String
                    (Name    => "markup-flags",
                     Nick    => "annotation text markups",
                     Default => "",
@@ -901,14 +906,14 @@ package body Gtk.Layered.Flat_Annotation is
                     Blurb   => "The annotation text font weight");
             when Property_Color =>
                return
-                 Gnew_Boxed
+                 Glib.Properties.Creation.Gnew_Boxed
                    (Name       => "color",
                     Boxed_Type => Gdk.Color.Gdk_Color_Type,
                     Nick       => "color",
                     Blurb      => "The annotation texts color");
             when Property_Scaled =>
                return
-                 Gnew_Boolean
+                 Glib.Properties.Creation.Gnew_Boolean
                    (Name    => "scaled",
                     Nick    => "scaled",
                     Default => False,
@@ -1132,19 +1137,19 @@ package body Gtk.Layered.Flat_Annotation is
       Text_Angle  : Gdouble;
       Ticks       : Tick_Parameters;
       Color       : Gdk.Color.Gdk_Color;
-      Justify     : Alignment;
+      Justify     : Ada.Strings.Alignment;
    begin
       Pango.Cairo.Fonts.Restore (Stream, Face);
-      Restore (Stream, Height);
-      Restore (Stream, Stretch);
-      Restore (Stream, From);
-      Restore (Stream, Length);
-      Restore (Stream, Scale_Angle);
-      Restore (Stream, Text_Angle);
-      Restore (Stream, Ticks);
-      Restore (Stream, Color);
-      Restore (Stream, Justify);
-      Restore (Stream, Layer.Scaled);
+      Gtk.Layered.Stream_IO.Restore (Stream, Height);
+      Gtk.Layered.Stream_IO.Restore (Stream, Stretch);
+      Gtk.Layered.Stream_IO.Restore (Stream, From);
+      Gtk.Layered.Stream_IO.Restore (Stream, Length);
+      Gtk.Layered.Stream_IO.Restore (Stream, Scale_Angle);
+      Gtk.Layered.Stream_IO.Restore (Stream, Text_Angle);
+      Gtk.Layered.Stream_IO.Restore (Stream, Ticks);
+      Gtk.Layered.Stream_IO.Restore (Stream, Color);
+      Gtk.Layered.Stream_IO.Restore (Stream, Justify);
+      Gtk.Layered.Stream_IO.Restore (Stream, Layer.Scaled);
       Set
         (Layer       => Layer,
          Ticks       => Ticks,
@@ -1158,15 +1163,15 @@ package body Gtk.Layered.Flat_Annotation is
          Text_Angle  => Text_Angle,
          Justify     => Justify);
       declare
-         use Gtk.Layered.Stream_IO;
-         Markup : constant Bit_Array := Restore (Stream'Access);
+         Markup : constant Gtk.Layered.Stream_IO.Bit_Array :=
+                    Gtk.Layered.Stream_IO.Restore (Stream'Access);
       begin
          Free (Layer.Texts);
          Layer.Texts := new Annotation_List (Markup'Range);
          for Index in Markup'Range loop
             Layer.Set_Text
               (Index,
-               Restore (Stream'Access),
+               Gtk.Layered.Stream_IO.Restore (Stream'Access),
                Markup (Index));
          end loop;
       end;
@@ -1202,7 +1207,7 @@ package body Gtk.Layered.Flat_Annotation is
       Stretch     : Gdouble;
       Color       : Gdk.Color.Gdk_Color;
       Text_Angle  : Gdouble;
-      Justify     : Alignment) is
+      Justify     : Ada.Strings.Alignment) is
    begin
       if Ticks.Step < Min_Step then
          raise Constraint_Error with "Step is too small";
@@ -1464,26 +1469,26 @@ package body Gtk.Layered.Flat_Annotation is
       Layer  : Flat_Annotation_Layer) is
    begin
       Pango.Cairo.Fonts.Store (Stream, Layer.Face);
-      Store (Stream, Layer.Height);
-      Store (Stream, Layer.Stretch);
-      Store (Stream, Layer.From);
-      Store (Stream, Layer.Length);
-      Store (Stream, Layer.Scale_Angle);
-      Store (Stream, Layer.Text_Angle);
-      Store (Stream, Layer.Ticks);
-      Store (Stream, Layer.Color);
-      Store (Stream, Layer.Justify);
-      Store (Stream, Layer.Scaled);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Height);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Stretch);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.From);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Length);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Scale_Angle);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Text_Angle);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Ticks);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Color);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Justify);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Scaled);
       declare
-         Markup : Bit_Array (1 .. Layer.Get_Texts_Number);
+         Markup : Gtk.Layered.Stream_IO.Bit_Array (1 .. Layer.Get_Texts_Number);
       begin
          for Index in 1 .. Layer.Get_Texts_Number loop
             Markup (Index) := Layer.Get_Markup (Index);
          end loop;
-         Store (Stream, Markup);
+         Gtk.Layered.Stream_IO.Store (Stream, Markup);
       end;
       for Index in 1 .. Layer.Get_Texts_Number loop
-         Store (Stream, Layer.Get_Text (Index));
+         Gtk.Layered.Stream_IO.Store (Stream, Layer.Get_Text (Index));
       end loop;
    end Store;
 

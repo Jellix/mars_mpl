@@ -25,11 +25,13 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Glib.Properties.Creation;  use Glib.Properties.Creation;
-with Gtk.Layered.Stream_IO;     use Gtk.Layered.Stream_IO;
-
 with Ada.Unchecked_Deallocation;
+
 with Cairo.Line_Cap_Property;
+
+with Glib.Properties.Creation;
+
+with Gtk.Layered.Stream_IO;
 
 package body Gtk.Layered.Elliptic_Scale is
    type Scale_Ptr is access all Elliptic_Scale_Layer;
@@ -81,7 +83,7 @@ package body Gtk.Layered.Elliptic_Scale is
       Outer    : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle;
       Inner    : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle / 2.0;
       From     : Gdouble                           := 0.0;
-      Length   : Gdouble                           := 2.0 * Pi;
+      Length   : Gdouble                           := 2.0 * Ada.Numerics.Pi;
       Width    : Gdouble                           := 1.0;
       Color    : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Line_Cap : Cairo.Cairo_Line_Cap              := Cairo.Cairo_Line_Cap_Butt;
@@ -116,7 +118,7 @@ package body Gtk.Layered.Elliptic_Scale is
       Outer    : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle;
       Inner    : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle / 2.0;
       From     : Gdouble                           := 0.0;
-      Length   : Gdouble                           := 2.0 * Pi;
+      Length   : Gdouble                           := 2.0 * Ada.Numerics.Pi;
       Width    : Gdouble                           := 1.0;
       Color    : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Line_Cap : Cairo.Cairo_Line_Cap              := Cairo.Cairo_Line_Cap_Butt;
@@ -280,7 +282,7 @@ package body Gtk.Layered.Elliptic_Scale is
          case Layer_Property'Val (Property - 1) is
             when Property_Center_X =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "x",
                     Nick    => "x",
                     Minimum => Gdouble'First,
@@ -291,7 +293,7 @@ package body Gtk.Layered.Elliptic_Scale is
                        "center");
             when Property_Center_Y =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "y",
                     Nick    => "y",
                     Minimum => Gdouble'First,
@@ -302,7 +304,7 @@ package body Gtk.Layered.Elliptic_Scale is
                        "center");
             when Property_Outer_Curvature =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "outer-k",
                     Nick    => "outer k",
                     Minimum => 0.0,
@@ -312,7 +314,7 @@ package body Gtk.Layered.Elliptic_Scale is
                        "The curvature of the major axis of the outer ellipse");
             when Property_Outer_Radius =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "outer-r",
                     Nick    => "outer r",
                     Minimum => 1.0E-6,
@@ -322,17 +324,17 @@ package body Gtk.Layered.Elliptic_Scale is
                        "The radius of the minor axis of the outer ellipse");
             when Property_Outer_Angle =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "outer-angle",
                     Nick    => "outer angle",
-                    Minimum => -2.0 * Pi,
-                    Maximum => 2.0 * Pi,
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
                     Default => 0.0,
                     Blurb   =>
                        "The angle of the major axis of the outer ellipse");
             when Property_Inner_Curvature =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "inner-k",
                     Nick    => "inner k",
                     Minimum => 0.0,
@@ -342,7 +344,7 @@ package body Gtk.Layered.Elliptic_Scale is
                        "The curvature of the major axis of the inner ellipse");
             when Property_Inner_Radius =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "inner-r",
                     Nick    => "inner r",
                     Minimum => 1.0E-6,
@@ -352,47 +354,47 @@ package body Gtk.Layered.Elliptic_Scale is
                        "The radius of the minor axis of the inner ellipse");
             when Property_Inner_Angle =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "inner-angle",
                     Nick    => "inner angle",
-                    Minimum => -2.0 * Pi,
-                    Maximum => 2.0 * Pi,
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
                     Default => 0.0,
                     Blurb   =>
                        "The angle of the major axis of the outer ellipse");
             when Property_From =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "from",
                     Nick    => "from",
-                    Minimum => -2.0 * Pi,
-                    Maximum => 2.0 * Pi,
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
                     Default => 0.0,
                     Blurb   =>
                        "The angle of the scale beginning, which corresponds " &
                        "to the first tick");
             when Property_Length =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "length",
                     Nick    => "length",
-                    Minimum => -2.0 * Pi,
-                    Maximum => 2.0 * Pi,
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
                     Default => 0.0,
                     Blurb   => "The angular length of the scale");
             when Property_Tick_Step =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "step",
                     Nick    => "step",
                     Minimum => 1.0E-6,
-                    Maximum => 2.0 * Pi,
-                    Default => Pi / 12.0,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
+                    Default => Ada.Numerics.Pi / 12.0,
                     Blurb   =>
                        "The angular distance between two consequent ticks");
             when Property_Tick_First =>
                return
-                  Gnew_Uint
+                 Glib.Properties.Creation.Gnew_Uint
                    (Name    => "first-tick",
                     Nick    => "first tick",
                     Minimum => Guint (Tick_Number'First),
@@ -403,7 +405,7 @@ package body Gtk.Layered.Elliptic_Scale is
                        "located at the beginning of the scale");
             when Property_Tick_Skipped =>
                return
-                  Gnew_Uint
+                 Glib.Properties.Creation.Gnew_Uint
                    (Name    => "skipped-tick",
                     Nick    => "skipped tick",
                     Minimum => 2,
@@ -415,7 +417,7 @@ package body Gtk.Layered.Elliptic_Scale is
                        "number are not drawn");
             when Property_Line_Width =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "line-width",
                     Nick    => "line width",
                     Minimum => 0.0,
@@ -424,7 +426,7 @@ package body Gtk.Layered.Elliptic_Scale is
                     Blurb   => "The tick line's width");
             when Property_Line_Color =>
                return
-                  Gnew_Boxed
+                 Glib.Properties.Creation.Gnew_Boxed
                    (Name       => "color",
                     Boxed_Type => Gdk.Color.Gdk_Color_Type,
                     Nick       => "color",
@@ -438,7 +440,7 @@ package body Gtk.Layered.Elliptic_Scale is
                     Blurb   => "The cap style of the tick lines");
             when Property_Scaled =>
                return
-                  Gnew_Boolean
+                 Glib.Properties.Creation.Gnew_Boolean
                    (Name    => "scaled",
                     Nick    => "scaled",
                     Default => False,
@@ -446,7 +448,7 @@ package body Gtk.Layered.Elliptic_Scale is
                        "The scale size is changed when the widget is resized");
             when Property_Widened =>
                return
-                  Gnew_Boolean
+                 Glib.Properties.Creation.Gnew_Boolean
                    (Name    => "widened",
                     Nick    => "widened",
                     Default => False,
@@ -571,13 +573,13 @@ package body Gtk.Layered.Elliptic_Scale is
       From   : Gdouble;
       Length : Gdouble;
    begin
-      Restore (Stream, Outer);
-      Restore (Stream, Inner);
-      Restore (Stream, Ticks);
-      Restore (Stream, Line);
-      Restore (Stream, From);
-      Restore (Stream, Length);
-      Restore (Stream, Layer.Scaled, Layer.Widened);
+      Gtk.Layered.Stream_IO.Restore (Stream, Outer);
+      Gtk.Layered.Stream_IO.Restore (Stream, Inner);
+      Gtk.Layered.Stream_IO.Restore (Stream, Ticks);
+      Gtk.Layered.Stream_IO.Restore (Stream, Line);
+      Gtk.Layered.Stream_IO.Restore (Stream, From);
+      Gtk.Layered.Stream_IO.Restore (Stream, Length);
+      Gtk.Layered.Stream_IO.Restore (Stream, Layer.Scaled, Layer.Widened);
       Set
         (Layer  => Layer,
          Outer  => Outer,
@@ -677,9 +679,13 @@ package body Gtk.Layered.Elliptic_Scale is
                end if;
             when Property_Outer_Angle =>
                Layer.Outer.Angle := Glib.Values.Get_Double (Value);
-               if Layer.Outer.Angle not in -2.0 * Pi .. 2.0 * Pi then
+               if
+                 Layer.Outer.Angle not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
                   Layer.Outer.Angle :=
-                     Gdouble'Remainder (Layer.Outer.Angle, 2.0 * Pi);
+                    Gdouble'Remainder
+                      (Layer.Outer.Angle, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Inner_Curvature =>
                Layer.Inner.Major_Curvature := Glib.Values.Get_Double (Value);
@@ -693,20 +699,31 @@ package body Gtk.Layered.Elliptic_Scale is
                end if;
             when Property_Inner_Angle =>
                Layer.Inner.Angle := Glib.Values.Get_Double (Value);
-               if Layer.Inner.Angle not in -2.0 * Pi .. 2.0 * Pi then
+               if
+                 Layer.Inner.Angle not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
                   Layer.Inner.Angle :=
-                     Gdouble'Remainder (Layer.Inner.Angle, 2.0 * Pi);
+                    Gdouble'Remainder
+                      (Layer.Inner.Angle, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_From =>
                Layer.From := Glib.Values.Get_Double (Value);
-               if Layer.From not in -2.0 * Pi .. 2.0 * Pi then
-                  Layer.From := Gdouble'Remainder (Layer.From, 2.0 * Pi);
+               if
+                 Layer.From not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
+                  Layer.From :=
+                    Gdouble'Remainder (Layer.From, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Length =>
                Layer.Length := Glib.Values.Get_Double (Value);
-               if Layer.Length not in -2.0 * Pi .. 2.0 * Pi then
+               if
+                 Layer.Length not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
                   Layer.Length :=
-                     Gdouble'Remainder (Layer.Length, 2.0 * Pi);
+                     Gdouble'Remainder (Layer.Length, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Line_Width =>
                Layer.Line.Width := Glib.Values.Get_Double (Value);
@@ -770,13 +787,13 @@ package body Gtk.Layered.Elliptic_Scale is
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Layer  : Elliptic_Scale_Layer) is
    begin
-      Store (Stream, Layer.Outer);
-      Store (Stream, Layer.Inner);
-      Store (Stream, Layer.Ticks);
-      Store (Stream, Layer.Line);
-      Store (Stream, Layer.From);
-      Store (Stream, Layer.Length);
-      Store (Stream, Layer.Scaled, Layer.Widened);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Outer);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Inner);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Ticks);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Line);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.From);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Length);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Scaled, Layer.Widened);
    end Store;
 
 end Gtk.Layered.Elliptic_Scale;

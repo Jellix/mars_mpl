@@ -25,14 +25,17 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Ada.Exceptions;            use Ada.Exceptions;
-with Ada.IO_Exceptions;         use Ada.IO_Exceptions;
-with Glib.Messages;             use Glib.Messages;
-with Glib.Properties.Creation;  use Glib.Properties.Creation;
-with Gtk.Layered.Stream_IO;     use Gtk.Layered.Stream_IO;
-with Interfaces.C;
+with Ada.Exceptions;
+with Ada.IO_Exceptions;
 
 with Cairo.Line_Cap_Property;
+
+with Glib.Messages;
+with Glib.Properties.Creation;
+
+with Gtk.Layered.Stream_IO;
+
+with Interfaces.C;
 
 package body Gtk.Layered.Graph_Paper is
 
@@ -61,6 +64,30 @@ package body Gtk.Layered.Graph_Paper is
       new Gtk.Handlers.User_Callback
        (GObject_Record,
         Graph_Paper_Ptr);
+
+   overriding procedure Finalize (Layer : in out Graph_Paper_Layer)
+   is
+      use type Gtk.Adjustment.Gtk_Adjustment;
+   begin
+      while Layer.Annotations /= null loop
+         Detach (Layer, Layer.Annotations.all.Annotation.all);
+      end loop;
+      if Layer.X_Axis /= null then
+         Layer.X_Axis.all.Unref;
+      end if;
+      if Layer.Y_Axis /= null then
+         Layer.Y_Axis.all.Unref;
+      end if;
+      Finalize (Abstract_Layer (Layer));
+   end Finalize;
+
+   overriding procedure Set_Widened
+     (Layer   : in out Graph_Paper_Layer;
+      Widened : Boolean) is
+   begin
+      Layer.Widened := Widened;
+      Layer.Updated := True;
+   end Set_Widened;
 
    function Where (Name : String) return String is
    begin
@@ -103,18 +130,19 @@ package body Gtk.Layered.Graph_Paper is
    begin
       Adjustment.all.Ref;
       Layer.X_Axis := Adjustment.all'Unchecked_Access;
-      if Adjustment.all in Waveform_Sweeper'Class then
+      if Adjustment.all in Gtk.Layered.Waveform.Waveform_Sweeper'Class then
          Layer.X_Sweeper :=
-            Waveform_Sweeper'Class (Adjustment.all)'Unchecked_Access;
+           Gtk.Layered.Waveform.Waveform_Sweeper'Class
+             (Adjustment.all)'Unchecked_Access;
       end if;
-      Set
+      Gtk.Handlers.References.Set
         (Layer.Handlers (1),
          Handlers.Connect
            (Adjustment,
             "changed",
             Handlers.To_Marshaller (Changed_X'Access),
             Layer'Unchecked_Access));
-      Set
+      Gtk.Handlers.References.Set
         (Layer.Handlers (2),
          Handlers.Connect
            (Adjustment,
@@ -130,18 +158,19 @@ package body Gtk.Layered.Graph_Paper is
    begin
       Adjustment.all.Ref;
       Layer.Y_Axis := Adjustment.all'Unchecked_Access;
-      if Adjustment.all in Waveform_Sweeper'Class then
+      if Adjustment.all in Gtk.Layered.Waveform.Waveform_Sweeper'Class then
          Layer.Y_Sweeper :=
-            Waveform_Sweeper'Class (Adjustment.all)'Unchecked_Access;
+           Gtk.Layered.Waveform.Waveform_Sweeper'Class
+             (Adjustment.all)'Unchecked_Access;
       end if;
-      Set
+      Gtk.Handlers.References.Set
         (Layer.Handlers (3),
          Handlers.Connect
            (Adjustment,
             "changed",
             Handlers.To_Marshaller (Changed_Y'Access),
             Layer'Unchecked_Access));
-      Set
+      Gtk.Handlers.References.Set
         (Layer.Handlers (4),
          Handlers.Connect
            (Adjustment,
@@ -260,17 +289,21 @@ package body Gtk.Layered.Graph_Paper is
       if
         not Layer.all.Widget.all.Drawing and then
         Layer.all.Updated and then
-        (Adjustment.all not in Waveform_Sweeper'Class or else
-           not Waveform_Sweeper'Class (Adjustment.all).Is_Active)
+        (Adjustment.all not in Gtk.Layered.Waveform.Waveform_Sweeper'Class
+         or else
+           not Gtk.Layered.Waveform.Waveform_Sweeper'Class
+             (Adjustment.all).Is_Active)
       then
          Queue_Draw (Layer.all.Widget); -- Signal draw to the widget
       end if;
    exception
       when Error : others =>
-         Log
+         Glib.Messages.Log
            (Gtk.Missed.GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) & Where ("Changed_X"));
+            Glib.Messages.Log_Level_Critical,
+            "Fault: "
+            & Ada.Exceptions.Exception_Information (Error)
+            & Where ("Changed_X"));
    end Changed_X;
 
    procedure Changed_Y
@@ -286,10 +319,12 @@ package body Gtk.Layered.Graph_Paper is
       end if;
    exception
       when Error : others =>
-         Log
+         Glib.Messages.Log
            (Gtk.Missed.GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) & Where ("Changed_Y"));
+            Glib.Messages.Log_Level_Critical,
+            "Fault: "
+            & Ada.Exceptions.Exception_Information (Error)
+            & Where ("Changed_Y"));
    end Changed_Y;
 
    procedure Detach
@@ -313,11 +348,12 @@ package body Gtk.Layered.Graph_Paper is
             This.all.Annotation.all.Detached;
          exception
             when Error : others =>
-               Log
+               Glib.Messages.Log
                  (Gtk.Missed.GtkAda_Contributions_Domain,
-                  Log_Level_Critical,
-                  "Detach notification fault: " &
-                    Exception_Information (Error) & Where ("Detach"));
+                  Glib.Messages.Log_Level_Critical,
+                  "Detach notification fault: "
+                  & Ada.Exceptions.Exception_Information (Error)
+                  & Where ("Detach"));
          end;
          Free (This);
       end if;
@@ -329,7 +365,6 @@ package body Gtk.Layered.Graph_Paper is
       Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
       pragma Unreferenced (Area);
-      use Gtk.Layered.Waveform.Rasters;
       X1, X2 : Gdouble;
       Y1, Y2 : Gdouble;
       T1, T2 : Gdouble := 0.0;
@@ -447,7 +482,7 @@ package body Gtk.Layered.Graph_Paper is
          end if;
          if Layer.Changed then
             Layer.X_Raster :=
-               Create
+              Gtk.Layered.Waveform.Rasters.Create
                 (T1,
                  T2,
                  Natural
@@ -463,7 +498,7 @@ package body Gtk.Layered.Graph_Paper is
          end if;
          if Layer.Changed then
             Layer.Y_Raster :=
-               Create
+              Gtk.Layered.Waveform.Rasters.Create
                 (V1,
                  V2,
                  Natural
@@ -481,19 +516,20 @@ package body Gtk.Layered.Graph_Paper is
                   begin
                      This.all.Annotation.all.Changed
                        (Layer => Layer,
-                        From  => X_Axis (T1),
-                        To    => X_Axis (T2),
-                        Lower => Y_Axis (V1),
-                        Upper => Y_Axis (V2),
+                        From  => Gtk.Layered.Waveform.X_Axis (T1),
+                        To    => Gtk.Layered.Waveform.X_Axis (T2),
+                        Lower => Gtk.Layered.Waveform.Y_Axis (V1),
+                        Upper => Gtk.Layered.Waveform.Y_Axis (V2),
                         Box   => (X1 => X1, X2 => X2,
                                   Y1 => Y1, Y2 => Y2));
                   exception
                      when Error : others =>
-                        Log
+                        Glib.Messages.Log
                           (Gtk.Missed.GtkAda_Contributions_Domain,
-                           Log_Level_Critical,
-                           "Change notification fault: " &
-                             Exception_Information (Error) & Where ("Draw"));
+                           Glib.Messages.Log_Level_Critical,
+                           "Change notification fault: "
+                           & Ada.Exceptions.Exception_Information (Error)
+                           & Where ("Draw"));
                   end;
                   This := This.all.Next;
                   exit when This = Layer.Annotations;
@@ -574,22 +610,6 @@ package body Gtk.Layered.Graph_Paper is
       end if;
    end Find;
 
-   overriding procedure Finalize (Layer : in out Graph_Paper_Layer)
-   is
-      use type Gtk.Adjustment.Gtk_Adjustment;
-   begin
-      while Layer.Annotations /= null loop
-         Detach (Layer, Layer.Annotations.all.Annotation.all);
-      end loop;
-      if Layer.X_Axis /= null then
-         Layer.X_Axis.all.Unref;
-      end if;
-      if Layer.Y_Axis /= null then
-         Layer.Y_Axis.all.Unref;
-      end if;
-      Finalize (Abstract_Layer (Layer));
-   end Finalize;
-
    function Get_Box
      (Layer : Graph_Paper_Layer) return Cairo.Ellipses.Cairo_Box is
    begin
@@ -643,7 +663,7 @@ package body Gtk.Layered.Graph_Paper is
          case Layer_Property'Val (Property - 1) is
             when Property_X1 =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "x1",
                     Nick    => "x1",
                     Minimum => Gdouble'First,
@@ -653,7 +673,7 @@ package body Gtk.Layered.Graph_Paper is
                        "The x-coordinate of the waveform's box left margin");
             when Property_X2 =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "x2",
                     Nick    => "x2",
                     Minimum => Gdouble'First,
@@ -663,7 +683,7 @@ package body Gtk.Layered.Graph_Paper is
                        "The x-coordinate of the waveform's box right margin");
             when Property_Y1 =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "y1",
                     Nick    => "y1",
                     Minimum => Gdouble'First,
@@ -673,7 +693,7 @@ package body Gtk.Layered.Graph_Paper is
                        "The x-coordinate of the waveform's box top margin");
             when Property_Y2 =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "y2",
                     Nick    => "y2",
                     Minimum => Gdouble'First,
@@ -683,7 +703,7 @@ package body Gtk.Layered.Graph_Paper is
                        "The y-coordinate of the waveform's box bottom margin");
             when Property_X_Tick_Length =>
                return
-                  Gnew_Uint
+                 Glib.Properties.Creation.Gnew_Uint
                    (Name    => "x-tick-width",
                     Nick    => "x tick",
                     Minimum => 1,
@@ -694,7 +714,7 @@ package body Gtk.Layered.Graph_Paper is
                        "ticks in pixels.");
             when Property_Y_Tick_Length =>
                return
-                  Gnew_Uint
+                 Glib.Properties.Creation.Gnew_Uint
                    (Name    => "y-tick-width",
                     Nick    => "y tick",
                     Minimum => 1,
@@ -705,7 +725,7 @@ package body Gtk.Layered.Graph_Paper is
                        "ticks in pixels.");
             when Property_Major_Line_Width =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "major-tick-line-width",
                     Nick    => "major width",
                     Minimum => 0.0,
@@ -716,7 +736,7 @@ package body Gtk.Layered.Graph_Paper is
                        "drawn");
             when Property_Major_Line_Color =>
                return
-                  Gnew_Boxed
+                 Glib.Properties.Creation.Gnew_Boxed
                    (Name       => "major-tick-line-color",
                     Boxed_Type => Gdk.Color.Gdk_Color_Type,
                     Nick       => "major tick line color",
@@ -730,7 +750,7 @@ package body Gtk.Layered.Graph_Paper is
                     Blurb   => "The cap style of the major tick lines");
             when Property_Minor_Line_Width =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "minor-tick-line-width",
                     Nick    => "minor width",
                     Minimum => 0.0,
@@ -741,7 +761,7 @@ package body Gtk.Layered.Graph_Paper is
                        "drawn");
             when Property_Minor_Line_Color =>
                return
-                  Gnew_Boxed
+                 Glib.Properties.Creation.Gnew_Boxed
                    (Name       => "minor-tick-line-color",
                     Boxed_Type => Gdk.Color.Gdk_Color_Type,
                     Nick       => "minor tick line color",
@@ -755,7 +775,7 @@ package body Gtk.Layered.Graph_Paper is
                     Blurb   => "The cap style of the minor tick lines");
             when Property_Scaled =>
                return
-                  Gnew_Boolean
+                 Glib.Properties.Creation.Gnew_Boolean
                    (Name    => "scaled",
                     Nick    => "scaled",
                     Default => False,
@@ -763,7 +783,7 @@ package body Gtk.Layered.Graph_Paper is
                        "The scale size is changed when the widget is resized");
             when Property_Widened =>
                return
-                  Gnew_Boolean
+                 Glib.Properties.Creation.Gnew_Boolean
                    (Name    => "widened",
                     Nick    => "widened",
                     Default => False,
@@ -855,9 +875,13 @@ package body Gtk.Layered.Graph_Paper is
       use type Gtk.Adjustment.Gtk_Adjustment;
    begin
       if Layer.Changed then
-         raise Use_Error with "The graph paper is not yet drawn";
+         raise
+           Ada.IO_Exceptions.Use_Error with
+             "The graph paper is not yet drawn";
       elsif Layer.X_Axis = null then
-         raise Use_Error with "The graph paper has no vertical axis";
+         raise
+           Ada.IO_Exceptions.Use_Error with
+             "The graph paper has no vertical axis";
       end if;
       return Layer.X_Raster;
    end Get_X_Raster;
@@ -880,9 +904,13 @@ package body Gtk.Layered.Graph_Paper is
       use type Gtk.Adjustment.Gtk_Adjustment;
    begin
       if Layer.Changed then
-         raise Use_Error with "The graph paper is not yet drawn";
+         raise
+           Ada.IO_Exceptions.Use_Error with
+             "The graph paper is not yet drawn";
       elsif Layer.Y_Axis = null then
-         raise Use_Error with "The graph paper has no vertical axis";
+         raise
+           Ada.IO_Exceptions.Use_Error with
+             "The graph paper has no vertical axis";
       end if;
       return Layer.Y_Raster;
    end Get_Y_Raster;
@@ -929,10 +957,12 @@ package body Gtk.Layered.Graph_Paper is
 --        end if;
    exception
       when Error : others =>
-         Log
+         Glib.Messages.Log
            (Gtk.Missed.GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) & Where ("Prepare"));
+            Glib.Messages.Log_Level_Critical,
+            "Fault: "
+            & Ada.Exceptions.Exception_Information (Error)
+            & Where ("Prepare"));
    end Prepare;
 
    overriding procedure Resized
@@ -956,15 +986,15 @@ package body Gtk.Layered.Graph_Paper is
       X_Axis        : Boolean;
       Y_Axis        : Boolean;
    begin
-      Restore (Stream, Box.X1);
-      Restore (Stream, Box.X2);
-      Restore (Stream, Box.Y1);
-      Restore (Stream, Box.Y2);
-      Restore (Stream, Major_Line);
-      Restore (Stream, Minor_Line);
-      Restore (Stream, X_Tick_Length);
-      Restore (Stream, Y_Tick_Length);
-      Restore (Stream, Layer.Scaled, Layer.Widened, X_Axis, Y_Axis);
+      Gtk.Layered.Stream_IO.Restore (Stream, Box.X1);
+      Gtk.Layered.Stream_IO.Restore (Stream, Box.X2);
+      Gtk.Layered.Stream_IO.Restore (Stream, Box.Y1);
+      Gtk.Layered.Stream_IO.Restore (Stream, Box.Y2);
+      Gtk.Layered.Stream_IO.Restore (Stream, Major_Line);
+      Gtk.Layered.Stream_IO.Restore (Stream, Minor_Line);
+      Gtk.Layered.Stream_IO.Restore (Stream, X_Tick_Length);
+      Gtk.Layered.Stream_IO.Restore (Stream, Y_Tick_Length);
+      Gtk.Layered.Stream_IO.Restore (Stream, Layer.Scaled, Layer.Widened, X_Axis, Y_Axis);
       Set
         (Layer         => Layer,
          Box           => Box,
@@ -978,7 +1008,7 @@ package body Gtk.Layered.Graph_Paper is
          declare
             Adjustment : Gtk.Adjustment.Gtk_Adjustment;
          begin
-            Restore (Stream, Adjustment);
+            Gtk.Layered.Stream_IO.Restore (Stream, Adjustment);
             Add_X_Adjustment (Layer, Adjustment);
          end;
       end if;
@@ -986,7 +1016,7 @@ package body Gtk.Layered.Graph_Paper is
          declare
             Adjustment : Gtk.Adjustment.Gtk_Adjustment;
          begin
-            Restore (Stream, Adjustment);
+            Gtk.Layered.Stream_IO.Restore (Stream, Adjustment);
             Add_Y_Adjustment (Layer, Adjustment);
          end;
       end if;
@@ -1034,10 +1064,10 @@ package body Gtk.Layered.Graph_Paper is
          raise Constraint_Error with "Negative box width";
       elsif Box.Y1 > Box.Y2 then
          raise Constraint_Error with "Negative box height";
-      elsif X_Tick_Length <= 0 then
-         raise Constraint_Error with "Non-positive x-axis tick length";
-      elsif Y_Tick_Length <= 0 then
-         raise Constraint_Error with "Non-positive y-axis tick length";
+--        elsif X_Tick_Length <= 0 then
+--           raise Constraint_Error with "Non-positive x-axis tick length";
+--        elsif Y_Tick_Length <= 0 then
+--           raise Constraint_Error with "Non-positive y-axis tick length";
       end if;
       Layer.Box           := Box;
       Layer.X_Tick_Length := Guint (X_Tick_Length);
@@ -1174,8 +1204,8 @@ package body Gtk.Layered.Graph_Paper is
    is
       procedure Reset_Axis is
       begin
-         Set (Layer.all.Handlers (1));
-         Set (Layer.all.Handlers (2));
+         Gtk.Handlers.References.Set (Layer.all.Handlers (1));
+         Gtk.Handlers.References.Set (Layer.all.Handlers (2));
          Layer.all.X_Axis.all.Unref;
          Layer.all.X_Axis := null;
       end Reset_Axis;
@@ -1219,8 +1249,8 @@ package body Gtk.Layered.Graph_Paper is
    is
       procedure Reset_Axis is
       begin
-         Set (Layer.all.Handlers (3));
-         Set (Layer.all.Handlers (4));
+         Gtk.Handlers.References.Set (Layer.all.Handlers (3));
+         Gtk.Handlers.References.Set (Layer.all.Handlers (4));
          Layer.all.Y_Axis.all.Unref;
          Layer.all.Y_Axis := null;
       end Reset_Axis;
@@ -1258,39 +1288,31 @@ package body Gtk.Layered.Graph_Paper is
       Layer.all.Updated := True;
    end Set_Y_Tick_Length;
 
-   overriding procedure Set_Widened
-     (Layer   : in out Graph_Paper_Layer;
-      Widened : Boolean) is
-   begin
-      Layer.Widened := Widened;
-      Layer.Updated := True;
-   end Set_Widened;
-
    overriding procedure Store
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Layer  : Graph_Paper_Layer)
    is
       use type Gtk.Adjustment.Gtk_Adjustment;
    begin
-      Store (Stream, Layer.Box.X1);
-      Store (Stream, Layer.Box.X2);
-      Store (Stream, Layer.Box.Y1);
-      Store (Stream, Layer.Box.Y2);
-      Store (Stream, Layer.Major_Line);
-      Store (Stream, Layer.Minor_Line);
-      Store (Stream, Layer.X_Tick_Length);
-      Store (Stream, Layer.Y_Tick_Length);
-      Store
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Box.X1);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Box.X2);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Box.Y1);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Box.Y2);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Major_Line);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Minor_Line);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.X_Tick_Length);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Y_Tick_Length);
+      Gtk.Layered.Stream_IO.Store
         (Stream,
          Layer.Scaled,
          Layer.Widened,
          Layer.X_Axis /= null,
          Layer.Y_Axis /= null);
       if Layer.X_Axis /= null then
-         Store (Stream, Layer.X_Axis);
+         Gtk.Layered.Stream_IO.Store (Stream, Layer.X_Axis);
       end if;
       if Layer.Y_Axis /= null then
-         Store (Stream, Layer.Y_Axis);
+         Gtk.Layered.Stream_IO.Store (Stream, Layer.Y_Axis);
       end if;
    end Store;
 

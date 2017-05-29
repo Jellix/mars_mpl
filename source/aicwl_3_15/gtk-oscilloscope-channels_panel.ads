@@ -25,77 +25,73 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Glib.Values;           use Glib.Values;
-with Gtk.Box;               use Gtk.Box;
-with Gtk.Cell_Renderer;     use Gtk.Cell_Renderer;
-with Gtk.Check_Button;      use Gtk.Check_Button;
-with Gtk.Combo_Box;         use Gtk.Combo_Box;
-with Gtk.GEntry;            use Gtk.GEntry;
-with Gtk.Handlers;          use Gtk.Handlers;
-with Gtk.Label;             use Gtk.Label;
-with Gtk.Missed;            use Gtk.Missed;
-with Gtk.Scale;             use Gtk.Scale;
-with Gtk.Tree_Model;        use Gtk.Tree_Model;
-with Gtk.Tree_View;         use Gtk.Tree_View;
-with Gtk.Tree_View_Column;  use Gtk.Tree_View_Column;
+with Glib.Values;
+with Gtk.Cell_Renderer;
+with Gtk.Handlers;
+with Gtk.Missed;
+with Gtk.Tree_Model;
+with Gtk.Tree_View;
+with Gtk.Tree_View_Column;
 
 package Gtk.Oscilloscope.Channels_Panel is
---
--- Class_Name - Of the widget
---
+
+   --
+   -- Class_Name - Of the widget
+   --
    Class_Name : constant String :=
-                   Gtk.Oscilloscope.Class_Name & "ChannelPanel";
---
--- Gtk_Oscilloscope_Channels_Panel -- Amplifier control panel
---
+                  Gtk.Oscilloscope.Class_Name & "ChannelPanel";
+
+   --
+   -- Gtk_Oscilloscope_Channels_Panel -- Amplifier control panel
+   --
    type Gtk_Oscilloscope_Channels_Panel_Record is
-      new Gtk_Tree_View_Record with private;
+     new Gtk.Tree_View.Gtk_Tree_View_Record with private;
    type Gtk_Oscilloscope_Channels_Panel is
-      access all Gtk_Oscilloscope_Channels_Panel_Record'Class;
---
--- Get_Type -- The type of the widget
---
--- Returns :
---
---    The GTK type of the widget
---
+     access all Gtk_Oscilloscope_Channels_Panel_Record'Class;
+
+   --
+   -- Get_Type -- The type of the widget
+   --
+   -- Returns :
+   --
+   --    The GTK type of the widget
+   --
    function Get_Type return GType;
---
--- Gtk_New -- Widget construction
---
---    Widget       - The result
---    Oscilloscope - The oscilloscope
---
+
+   --
+   -- Gtk_New -- Widget construction
+   --
+   --    Widget       - The result
+   --    Oscilloscope - The oscilloscope
+   --
    procedure Gtk_New
-             (  Widget       : out Gtk_Oscilloscope_Channels_Panel;
-                Oscilloscope : not null access
-                               Gtk_Oscilloscope_Record'Class
-             );
---
--- Initialize -- The widget initialization
---
---    Widget       - The widget to initialize
---    Oscilloscope - The oscilloscope
---
+     (Widget       : out Gtk_Oscilloscope_Channels_Panel;
+      Oscilloscope : not null access Gtk_Oscilloscope_Record'Class);
+
+   --
+   -- Initialize -- The widget initialization
+   --
+   --    Widget       - The widget to initialize
+   --    Oscilloscope - The oscilloscope
+   --
    procedure Initialize
-             (  Widget  : not null access
-                          Gtk_Oscilloscope_Channels_Panel_Record'Class;
-                Oscilloscope : not null access
-                               Gtk_Oscilloscope_Record'Class
-             );
+     (Widget       : not null access Gtk_Oscilloscope_Channels_Panel_Record'Class;
+      Oscilloscope : not null access Gtk_Oscilloscope_Record'Class);
+
 private
+
    type Gtk_Oscilloscope_Channels_Panel_Record is
-      new Gtk_Tree_View_Record with
-   record
-      Oscilloscope   : Gtk_Oscilloscope;
-      Channel        : Channel_Count;
-      Name_Column    : Gint;
-      Group_Column   : Gint;
-      Mode_Column    : Gint;
-      Color_Column   : Gint;
-      Values_Column  : Gint;
-      Visible_Column : Gint;
-   end record;
+     new Gtk.Tree_View.Gtk_Tree_View_Record with
+      record
+         Oscilloscope   : Gtk_Oscilloscope;
+         Channel        : Channel_Count;
+         Name_Column    : Gint;
+         Group_Column   : Gint;
+         Mode_Column    : Gint;
+         Color_Column   : Gint;
+         Values_Column  : Gint;
+         Visible_Column : Gint;
+      end record;
 
    function On_Button_Press
      (Object : access GObject_Record'Class;
@@ -103,68 +99,61 @@ private
       Panel  : Gtk_Oscilloscope_Channels_Panel) return Boolean;
 
    procedure On_Menu_Delete
-             (  Widget : access GObject_Record'Class;
-                Panel  : Gtk_Oscilloscope_Channels_Panel
-             );
+     (Widget : access GObject_Record'Class;
+      Panel  : Gtk_Oscilloscope_Channels_Panel);
+
    procedure On_Menu_Down
-             (  Widget : access GObject_Record'Class;
-                Panel  : Gtk_Oscilloscope_Channels_Panel
-             );
+     (Widget : access GObject_Record'Class;
+      Panel  : Gtk_Oscilloscope_Channels_Panel);
+
    procedure On_Menu_Select_Color
-             (  Widget : access GObject_Record'Class;
-                Panel  : Gtk_Oscilloscope_Channels_Panel
-             );
+     (Widget : access GObject_Record'Class;
+      Panel  : Gtk_Oscilloscope_Channels_Panel);
+
    procedure On_Menu_Up
-             (  Widget : access GObject_Record'Class;
-                Panel  : Gtk_Oscilloscope_Channels_Panel
-             );
+     (Widget : access GObject_Record'Class;
+      Panel  : Gtk_Oscilloscope_Channels_Panel);
+
    procedure On_Mode_Toggled
-             (  Widget : access GObject_Record'Class;
-                Values : GValues;
-                Panel  : Gtk_Oscilloscope_Channels_Panel
-             );
+     (Widget : access GObject_Record'Class;
+      Values : Glib.Values.GValues;
+      Panel  : Gtk_Oscilloscope_Channels_Panel);
+
    procedure On_Render_Color
-             (  Column : not null access
-                         Gtk_Tree_View_Column_Record'Class;
-                Cell   : not null access Gtk_Cell_Renderer_Record'Class;
-                Model  : Gtk_Tree_Model;
-                Iter   : Gtk_Tree_Iter;
-                Panel  : Gtk_Oscilloscope_Channels_Panel
-             );
+     (Column : not null access Gtk.Tree_View_Column.Gtk_Tree_View_Column_Record'Class;
+      Cell   : not null access Gtk.Cell_Renderer.Gtk_Cell_Renderer_Record'Class;
+      Model  : Gtk.Tree_Model.Gtk_Tree_Model;
+      Iter   : Gtk.Tree_Model.Gtk_Tree_Iter;
+      Panel  : Gtk_Oscilloscope_Channels_Panel);
+
    procedure On_Render_Group
-             (  Column : not null access
-                         Gtk_Tree_View_Column_Record'Class;
-                Cell   : not null access Gtk_Cell_Renderer_Record'Class;
-                Model  : Gtk_Tree_Model;
-                Iter   : Gtk_Tree_Iter;
-                Panel  : Gtk_Oscilloscope_Channels_Panel
-             );
+     (Column : not null access Gtk.Tree_View_Column.Gtk_Tree_View_Column_Record'Class;
+      Cell   : not null access Gtk.Cell_Renderer.Gtk_Cell_Renderer_Record'Class;
+      Model  : Gtk.Tree_Model.Gtk_Tree_Model;
+      Iter   : Gtk.Tree_Model.Gtk_Tree_Iter;
+      Panel  : Gtk_Oscilloscope_Channels_Panel);
+
    procedure On_Visible_Toggled
-             (  Widget : access GObject_Record'Class;
-                Values : GValues;
-                Panel  : Gtk_Oscilloscope_Channels_Panel
-             );
+     (Widget : access GObject_Record'Class;
+      Values : Glib.Values.GValues;
+      Panel  : Gtk_Oscilloscope_Channels_Panel);
+
    procedure On_Style_Updated
-             (  Widget : access GObject_Record'Class;
-                Panel  : Gtk_Oscilloscope_Channels_Panel
-             );
+     (Widget : access GObject_Record'Class;
+      Panel  : Gtk_Oscilloscope_Channels_Panel);
 
    package Panel_Handlers is
-      new Gtk.Handlers.User_Callback
-          (  GObject_Record,
-             Gtk_Oscilloscope_Channels_Panel
-          );
-   use Panel_Handlers;
+     new Gtk.Handlers.User_Callback
+       (GObject_Record,
+        Gtk_Oscilloscope_Channels_Panel);
 
    package Button_Handlers is
-      new Gtk.Handlers.User_Return_Callback
-          (  GObject_Record,
-             Boolean,
-             Gtk_Oscilloscope_Channels_Panel
-          );
-   use Button_Handlers;
+     new Gtk.Handlers.User_Return_Callback
+       (GObject_Record,
+        Boolean,
+        Gtk_Oscilloscope_Channels_Panel);
 
    package Tree_Functions is
-      new Set_Column_Cell_Data (Gtk_Oscilloscope_Channels_Panel);
+     new Gtk.Missed.Set_Column_Cell_Data (Gtk_Oscilloscope_Channels_Panel);
 
 end Gtk.Oscilloscope.Channels_Panel;

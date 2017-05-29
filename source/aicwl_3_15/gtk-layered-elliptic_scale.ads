@@ -25,7 +25,8 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Ada.Numerics;  use Ada.Numerics;
+with Ada.Numerics;
+
 with Gtk.Missed;
 
 package Gtk.Layered.Elliptic_Scale is
@@ -86,7 +87,7 @@ package Gtk.Layered.Elliptic_Scale is
       Outer    : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle;
       Inner    : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle / 2.0;
       From     : Gdouble                           := 0.0;
-      Length   : Gdouble                           := 2.0 * Pi;
+      Length   : Gdouble                           := 2.0 * Ada.Numerics.Pi;
       Width    : Gdouble                           := 1.0;
       Color    : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Line_Cap : Cairo.Cairo_Line_Cap              := Cairo.Cairo_Line_Cap_Butt;
@@ -101,7 +102,7 @@ package Gtk.Layered.Elliptic_Scale is
       Outer    : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle;
       Inner    : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle / 2.0;
       From     : Gdouble                           := 0.0;
-      Length   : Gdouble                           := 2.0 * Pi;
+      Length   : Gdouble                           := 2.0 * Ada.Numerics.Pi;
       Width    : Gdouble                           := 1.0;
       Color    : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Line_Cap : Cairo.Cairo_Line_Cap              := Cairo.Cairo_Line_Cap_Butt;

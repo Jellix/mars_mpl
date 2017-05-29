@@ -25,9 +25,10 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Ada.Numerics;                   use Ada.Numerics;
-with Gtk.Enums;                      use Gtk.Enums;
-with Gtk.Layered.Abstract_Bordered;  use Gtk.Layered.Abstract_Bordered;
+with Ada.Numerics;
+
+with Gtk.Enums;
+with Gtk.Layered.Abstract_Bordered;
 with Gtk.Missed;
 
 package Gtk.Layered.Elliptic_Background is
@@ -38,7 +39,7 @@ package Gtk.Layered.Elliptic_Background is
    -- Elliptic_Background_Layer -- A filled elliptic background
    --
    type Elliptic_Background_Layer (<>) is
-     new Abstract_Bordered_Layer with private;
+     new Gtk.Layered.Abstract_Bordered.Abstract_Bordered_Layer with private;
 
    --
    -- Add_Elliptic_Background -- Add an elliptic background
@@ -85,94 +86,94 @@ package Gtk.Layered.Elliptic_Background is
    --
    procedure Add_Elliptic_Background
      (Under         : not null access Layer_Location'Class;
-      Outer         : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle;
+      Outer         : Cairo.Ellipses.Ellipse_Parameters               := Cairo.Ellipses.Unit_Circle;
       Inner         : Cairo.Ellipses.Ellipse_Parameters;
-      From          : Gdouble                           := 0.0;
-      Length        : Gdouble                           := 2.0 * Pi;
-      Color         : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Border_Width  : Gdouble                           := 0.0;
-      Border_Depth  : Gdouble                           := 1.0;
-      Border_Color  : Border_Color_Type                 := Default_Color;
-      Border_Shadow : Gtk_Shadow_Type                   := Shadow_In;
-      Deepened      : Boolean                           := False;
-      Scaled        : Boolean                           := False;
-      Widened       : Boolean                           := False);
+      From          : Gdouble                                         := 0.0;
+      Length        : Gdouble                                         := 2.0 * Ada.Numerics.Pi;
+      Color         : Gdk.Color.Gdk_Color                             := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Border_Width  : Gdouble                                         := 0.0;
+      Border_Depth  : Gdouble                                         := 1.0;
+      Border_Color  : Gtk.Layered.Abstract_Bordered.Border_Color_Type := Gtk.Layered.Abstract_Bordered.Default_Color;
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type                       := Gtk.Enums.Shadow_In;
+      Deepened      : Boolean                                         := False;
+      Scaled        : Boolean                                         := False;
+      Widened       : Boolean                                         := False);
 
    procedure Add_Elliptic_Background
      (Under         : not null access Layer_Location'Class;
-      Outer         : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle;
+      Outer         : Cairo.Ellipses.Ellipse_Parameters               := Cairo.Ellipses.Unit_Circle;
       Center        : Cairo.Ellipses.Cairo_Tuple;
-      From          : Gdouble                           := 0.0;
-      Length        : Gdouble                           := 2.0 * Pi;
-      Color         : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Border_Width  : Gdouble                           := 0.0;
-      Border_Depth  : Gdouble                           := 1.0;
-      Border_Color  : Border_Color_Type                 := Default_Color;
-      Border_Shadow : Gtk_Shadow_Type                   := Shadow_In;
-      Deepened      : Boolean                           := False;
-      Scaled        : Boolean                           := False;
-      Widened       : Boolean                           := False);
+      From          : Gdouble                                         := 0.0;
+      Length        : Gdouble                                         := 2.0 * Ada.Numerics.Pi;
+      Color         : Gdk.Color.Gdk_Color                             := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Border_Width  : Gdouble                                         := 0.0;
+      Border_Depth  : Gdouble                                         := 1.0;
+      Border_Color  : Gtk.Layered.Abstract_Bordered.Border_Color_Type := Gtk.Layered.Abstract_Bordered.Default_Color;
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type                       := Gtk.Enums.Shadow_In;
+      Deepened      : Boolean                                         := False;
+      Scaled        : Boolean                                         := False;
+      Widened       : Boolean                                         := False);
 
    procedure Add_Elliptic_Background
      (Under         : not null access Layer_Location'Class;
-      Outer         : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle;
-      From          : Gdouble                           := 0.0;
-      Length        : Gdouble                           := 2.0 * Pi;
-      Color         : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Border_Width  : Gdouble                           := 0.0;
-      Border_Depth  : Gdouble                           := 1.0;
-      Border_Color  : Border_Color_Type                 := Default_Color;
-      Border_Shadow : Gtk_Shadow_Type                   := Shadow_In;
-      Deepened      : Boolean                           := False;
-      Scaled        : Boolean                           := False;
-      Widened       : Boolean                           := False);
+      Outer         : Cairo.Ellipses.Ellipse_Parameters               := Cairo.Ellipses.Unit_Circle;
+      From          : Gdouble                                         := 0.0;
+      Length        : Gdouble                                         := 2.0 * Ada.Numerics.Pi;
+      Color         : Gdk.Color.Gdk_Color                             := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Border_Width  : Gdouble                                         := 0.0;
+      Border_Depth  : Gdouble                                         := 1.0;
+      Border_Color  : Gtk.Layered.Abstract_Bordered.Border_Color_Type := Gtk.Layered.Abstract_Bordered.Default_Color;
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type                       := Gtk.Enums.Shadow_In;
+      Deepened      : Boolean                                         := False;
+      Scaled        : Boolean                                         := False;
+      Widened       : Boolean                                         := False);
 
    function Add_Elliptic_Background
      (Under         : not null access Layer_Location'Class;
-      Outer         : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle;
+      Outer         : Cairo.Ellipses.Ellipse_Parameters               := Cairo.Ellipses.Unit_Circle;
       Inner         : Cairo.Ellipses.Ellipse_Parameters;
-      From          : Gdouble                           := 0.0;
-      Length        : Gdouble                           := 2.0 * Pi;
-      Color         : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Border_Width  : Gdouble                           := 0.0;
-      Border_Depth  : Gdouble                           := 1.0;
-      Border_Color  : Border_Color_Type                 := Default_Color;
-      Border_Shadow : Gtk_Shadow_Type                   := Shadow_In;
-      Deepened      : Boolean                           := False;
-      Scaled        : Boolean                           := False;
-      Widened       : Boolean                           := False)
+      From          : Gdouble                                         := 0.0;
+      Length        : Gdouble                                         := 2.0 * Ada.Numerics.Pi;
+      Color         : Gdk.Color.Gdk_Color                             := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Border_Width  : Gdouble                                         := 0.0;
+      Border_Depth  : Gdouble                                         := 1.0;
+      Border_Color  : Gtk.Layered.Abstract_Bordered.Border_Color_Type := Gtk.Layered.Abstract_Bordered.Default_Color;
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type                       := Gtk.Enums.Shadow_In;
+      Deepened      : Boolean                                         := False;
+      Scaled        : Boolean                                         := False;
+      Widened       : Boolean                                         := False)
       return not null access Elliptic_Background_Layer;
 
    function Add_Elliptic_Background
      (Under         : not null access Layer_Location'Class;
-      Outer         : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle;
+      Outer         : Cairo.Ellipses.Ellipse_Parameters               := Cairo.Ellipses.Unit_Circle;
       Center        : Cairo.Ellipses.Cairo_Tuple;
-      From          : Gdouble                           := 0.0;
-      Length        : Gdouble                           := 2.0 * Pi;
-      Color         : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Border_Width  : Gdouble                           := 0.0;
-      Border_Depth  : Gdouble                           := 1.0;
-      Border_Color  : Border_Color_Type                 := Default_Color;
-      Border_Shadow : Gtk_Shadow_Type                   := Shadow_In;
-      Deepened      : Boolean                           := False;
-      Scaled        : Boolean                           := False;
-      Widened       : Boolean                           := False)
+      From          : Gdouble                                         := 0.0;
+      Length        : Gdouble                                         := 2.0 * Ada.Numerics.Pi;
+      Color         : Gdk.Color.Gdk_Color                             := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Border_Width  : Gdouble                                         := 0.0;
+      Border_Depth  : Gdouble                                         := 1.0;
+      Border_Color  : Gtk.Layered.Abstract_Bordered.Border_Color_Type := Gtk.Layered.Abstract_Bordered.Default_Color;
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type                       := Gtk.Enums.Shadow_In;
+      Deepened      : Boolean                                         := False;
+      Scaled        : Boolean                                         := False;
+      Widened       : Boolean                                         := False)
       return not null access Elliptic_Background_Layer;
 
    function Add_Elliptic_Background
      (Under         : not null access Layer_Location'Class;
-      Outer         : Cairo.Ellipses.Ellipse_Parameters := Cairo.Ellipses.Unit_Circle;
-      From          : Gdouble                           := 0.0;
-      Length        : Gdouble                           := 2.0 * Pi;
-      Color         : Gdk.Color.Gdk_Color               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Border_Width  : Gdouble                           := 0.0;
-      Border_Depth  : Gdouble                           := 1.0;
-      Border_Color  : Border_Color_Type                 := Default_Color;
-      Border_Shadow : Gtk_Shadow_Type                   := Shadow_In;
-      Deepened      : Boolean                           := False;
-      Scaled        : Boolean                           := False;
-      Widened       : Boolean                           := False
-     )  return not null access Elliptic_Background_Layer;
+      Outer         : Cairo.Ellipses.Ellipse_Parameters               := Cairo.Ellipses.Unit_Circle;
+      From          : Gdouble                                         := 0.0;
+      Length        : Gdouble                                         := 2.0 * Ada.Numerics.Pi;
+      Color         : Gdk.Color.Gdk_Color                             := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Border_Width  : Gdouble                                         := 0.0;
+      Border_Depth  : Gdouble                                         := 1.0;
+      Border_Color  : Gtk.Layered.Abstract_Bordered.Border_Color_Type := Gtk.Layered.Abstract_Bordered.Default_Color;
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type                       := Gtk.Enums.Shadow_In;
+      Deepened      : Boolean                                         := False;
+      Scaled        : Boolean                                         := False;
+      Widened       : Boolean                                         := False)
+      return not null access Elliptic_Background_Layer;
 
    --
    -- Get_Color -- The text color
@@ -257,8 +258,8 @@ package Gtk.Layered.Elliptic_Background is
       Color         : Gdk.Color.Gdk_Color;
       Border_Width  : Gdouble;
       Border_Depth  : Gdouble;
-      Border_Color  : Border_Color_Type;
-      Border_Shadow : Gtk_Shadow_Type);
+      Border_Color  : Gtk.Layered.Abstract_Bordered.Border_Color_Type;
+      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type);
 
    overriding function Add
      (Under  : not null access Layer_Location'Class;
@@ -310,7 +311,7 @@ package Gtk.Layered.Elliptic_Background is
 private
 
    type Elliptic_Background_Layer is
-     new Abstract_Bordered_Layer with
+     new Gtk.Layered.Abstract_Bordered.Abstract_Bordered_Layer with
       record
          Outer  : Cairo.Ellipses.Ellipse_Parameters;
          Inner  : Elliptic_Arc_Closure;

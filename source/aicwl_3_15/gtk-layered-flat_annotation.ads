@@ -25,7 +25,7 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Ada.Strings;   use Ada.Strings;
+with Ada.Strings;
 
 with Gtk.Missed;
 
@@ -39,6 +39,7 @@ package Gtk.Layered.Flat_Annotation is
      new Abstract_Layer
      and Annotation_Layer
      and Scalable_Layer with private;
+
    --
    -- Add_Flat_Annotation -- Add annotation texts
    --
@@ -99,7 +100,7 @@ package Gtk.Layered.Flat_Annotation is
       Stretch     : Gdouble                            := 1.0;
       Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Text_Angle  : Gdouble                            := 0.0;
-      Justify     : Alignment                          := Center;
+      Justify     : Ada.Strings.Alignment              := Ada.Strings.Center;
       Markup      : Boolean                            := False;
       Scaled      : Boolean                            := False);
 
@@ -121,7 +122,7 @@ package Gtk.Layered.Flat_Annotation is
       Stretch     : Gdouble                            := 1.0;
       Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Text_Angle  : Gdouble                            := 0.0;
-      Justify     : Alignment                          := Center;
+      Justify     : Ada.Strings.Alignment              := Ada.Strings.Center;
       Markup      : Boolean                            := False;
       Scaled      : Boolean                            := False);
 
@@ -143,7 +144,7 @@ package Gtk.Layered.Flat_Annotation is
       Stretch     : Gdouble                            := 1.0;
       Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Text_Angle  : Gdouble                            := 0.0;
-      Justify     : Alignment                          := Center;
+      Justify     : Ada.Strings.Alignment              := Ada.Strings.Center;
       Delimiter   : Character                          := ' ';
       Markup      : Boolean                            := False;
       Scaled      : Boolean                            := False);
@@ -166,7 +167,7 @@ package Gtk.Layered.Flat_Annotation is
       Stretch     : Gdouble                            := 1.0;
       Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Text_Angle  : Gdouble                            := 0.0;
-      Justify     : Alignment                          := Center;
+      Justify     : Ada.Strings.Alignment              := Ada.Strings.Center;
       Markup      : Boolean                            := False;
       Scaled      : Boolean                            := False)
       return not null access Flat_Annotation_Layer;
@@ -189,7 +190,7 @@ package Gtk.Layered.Flat_Annotation is
       Stretch     : Gdouble                            := 1.0;
       Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Text_Angle  : Gdouble                            := 0.0;
-      Justify     : Alignment                          := Center;
+      Justify     : Ada.Strings.Alignment              := Ada.Strings.Center;
       Markup      : Boolean                            := False;
       Scaled      : Boolean                            := False)
       return not null access Flat_Annotation_Layer;
@@ -212,7 +213,7 @@ package Gtk.Layered.Flat_Annotation is
       Stretch     : Gdouble                            := 1.0;
       Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Text_Angle  : Gdouble                            := 0.0;
-      Justify     : Alignment                          := Center;
+      Justify     : Ada.Strings.Alignment              := Ada.Strings.Center;
       Delimiter   : Character                          := ' ';
       Markup      : Boolean                            := False;
       Scaled      : Boolean                            := False)
@@ -229,6 +230,7 @@ package Gtk.Layered.Flat_Annotation is
    --
    function Get_Color
      (Layer : Flat_Annotation_Layer) return Gdk.Color.Gdk_Color;
+
    --
    -- Get_From -- The point where texts begins
    --
@@ -251,7 +253,8 @@ package Gtk.Layered.Flat_Annotation is
    --    The text justification
    --
    function Get_Justify (Layer : Flat_Annotation_Layer)
-                         return Alignment;
+                         return Ada.Strings.Alignment;
+
    --
    -- Get_Length -- The length of the line of texts
    --
@@ -263,6 +266,7 @@ package Gtk.Layered.Flat_Annotation is
    --
    function Get_Length (Layer : Flat_Annotation_Layer)
                         return Gdouble;
+
    --
    -- Get_Scale_Angle -- The angle of the annotation line
    --
@@ -274,6 +278,7 @@ package Gtk.Layered.Flat_Annotation is
    --
    function Get_Scale_Angle (Layer : Flat_Annotation_Layer)
                              return Gdouble;
+
    --
    -- Get_Text_Angle -- The angle of the annotation texts
    --
@@ -285,6 +290,7 @@ package Gtk.Layered.Flat_Annotation is
    --
    function Get_Text_Angle (Layer : Flat_Annotation_Layer)
                             return Gdouble;
+
    --
    -- Set -- Parameters of the annotation
    --
@@ -315,7 +321,7 @@ package Gtk.Layered.Flat_Annotation is
       Stretch     : Gdouble;
       Color       : Gdk.Color.Gdk_Color;
       Text_Angle  : Gdouble;
-      Justify     : Alignment);
+      Justify     : Ada.Strings.Alignment);
 
    overriding function Add
      (Under  : not null access Layer_Location'Class;
@@ -351,12 +357,11 @@ package Gtk.Layered.Flat_Annotation is
      (Layer    : Flat_Annotation_Layer;
       Property : Positive) return Glib.Values.GValue;
 
-   overriding
-   function Get_Scaled (Layer : Flat_Annotation_Layer)
-                        return Boolean;
-   overriding
-   function Get_Stretch (Layer : Flat_Annotation_Layer)
-                         return Gdouble;
+   overriding function Get_Scaled (Layer : Flat_Annotation_Layer)
+                                   return Boolean;
+
+   overriding function Get_Stretch (Layer : Flat_Annotation_Layer)
+                                    return Gdouble;
 
    overriding function Get_Text
      (Layer    : Flat_Annotation_Layer;
@@ -426,8 +431,7 @@ private
          Buffer : UTF8_String (1 .. Size);
       end record;
    type Annotation_Text_Ptr is access Annotation_Text;
-   function "+" (Value : Annotation_Text_Ptr) return UTF8_String;
-   pragma Inline ("+");
+   function "+" (Value : Annotation_Text_Ptr) return UTF8_String with Inline;
 
    type Annotation_List is
      array (Positive range <>) of Annotation_Text_Ptr;
@@ -446,7 +450,7 @@ private
          Ticks       : Tick_Parameters;
          Color       : Gdk.Color.Gdk_Color;
          Texts       : Annotation_List_Ptr;
-         Justify     : Alignment;
+         Justify     : Ada.Strings.Alignment;
          Scaled      : Boolean := False;
          Updated     : Boolean := True;
       end record;

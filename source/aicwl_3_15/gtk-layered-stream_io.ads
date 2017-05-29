@@ -25,8 +25,8 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Ada.Strings;      use Ada.Strings;
-with Gtk.Enums;        use Gtk.Enums;
+with Ada.Strings;
+with Gtk.Enums;
 
 package Gtk.Layered.Stream_IO is
 
@@ -83,7 +83,7 @@ package Gtk.Layered.Stream_IO is
 
    procedure Restore
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
-      Value  : out Alignment);
+      Value  : out Ada.Strings.Alignment);
 
    procedure Restore
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
@@ -191,7 +191,7 @@ package Gtk.Layered.Stream_IO is
 
    procedure Restore
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
-      Value  : out Gtk_Shadow_Type);
+      Value  : out Gtk.Enums.Gtk_Shadow_Type);
 
    procedure Restore
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
@@ -245,7 +245,7 @@ package Gtk.Layered.Stream_IO is
 
    procedure Store
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
-      Value  : Alignment);
+      Value  : Ada.Strings.Alignment);
 
    procedure Store
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
@@ -353,7 +353,7 @@ package Gtk.Layered.Stream_IO is
 
    procedure Store
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
-      Value  : Gtk_Shadow_Type);
+      Value  : Gtk.Enums.Gtk_Shadow_Type);
 
    procedure Store
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;

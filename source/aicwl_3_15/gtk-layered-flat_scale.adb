@@ -25,13 +25,15 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Ada.Numerics;                use Ada.Numerics;
-with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
-with Glib.Properties.Creation;    use Glib.Properties.Creation;
-with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
-
+with Ada.Numerics;
 with Ada.Unchecked_Deallocation;
+
+with Cairo.Elementary_Functions;
 with Cairo.Line_Cap_Property;
+
+with Glib.Properties.Creation;
+
+with Gtk.Layered.Stream_IO;
 
 package body Gtk.Layered.Flat_Scale is
    type Scale_Ptr is access all Flat_Scale_Layer;
@@ -148,8 +150,8 @@ package body Gtk.Layered.Flat_Scale is
       Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
       pragma Unreferenced (Area);
-      X_Size : Gdouble := Cos (Layer.Angle);
-      Y_Size : Gdouble := Sin (Layer.Angle);
+      X_Size : Gdouble := Cairo.Elementary_Functions.Cos (Layer.Angle);
+      Y_Size : Gdouble := Cairo.Elementary_Functions.Sin (Layer.Angle);
       This   : Gdouble;
       From   : Cairo.Ellipses.Cairo_Tuple;
       Width  : constant Gdouble := Layer.Breadth * 0.5;
@@ -259,7 +261,7 @@ package body Gtk.Layered.Flat_Scale is
          case Layer_Property'Val (Property - 1) is
             when Property_From_X =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "x0",
                     Nick    => "x0",
                     Minimum => Gdouble'First,
@@ -270,7 +272,7 @@ package body Gtk.Layered.Flat_Scale is
                        "corresponding to the value 0");
             when Property_From_Y =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "y0",
                     Nick    => "y0",
                     Minimum => Gdouble'First,
@@ -281,7 +283,7 @@ package body Gtk.Layered.Flat_Scale is
                        "corresponding to the value 0");
             when Property_Length =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "length",
                     Nick    => "length",
                     Minimum => Gdouble'First,
@@ -292,11 +294,11 @@ package body Gtk.Layered.Flat_Scale is
                        "scale corresponds to the value 1");
             when Property_Angle =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "angle",
                     Nick    => "angle",
-                    Minimum => -2.0 * Pi,
-                    Maximum => 2.0 * Pi,
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
                     Default => 0.0,
                     Blurb   =>
                        "The angle of the scale line. The " &
@@ -304,7 +306,7 @@ package body Gtk.Layered.Flat_Scale is
                        "this line");
             when Property_Tick_Length =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "tick-length",
                     Nick    => "tick length",
                     Minimum => 0.0,
@@ -316,7 +318,7 @@ package body Gtk.Layered.Flat_Scale is
                        "scale line");
             when Property_Tick_Step =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "step",
                     Nick    => "step",
                     Minimum => 1.0E-6,
@@ -325,7 +327,7 @@ package body Gtk.Layered.Flat_Scale is
                     Blurb   => "The distance between two consecutive ticks");
             when Property_Tick_First =>
                return
-                 Gnew_Uint
+                 Glib.Properties.Creation.Gnew_Uint
                    (Name    => "first-tick",
                     Nick    => "first tick",
                     Minimum => Guint (Tick_Number'First),
@@ -337,7 +339,7 @@ package body Gtk.Layered.Flat_Scale is
                        "the beginning of the scale");
             when Property_Tick_Skipped =>
                return
-                 Gnew_Uint
+                 Glib.Properties.Creation.Gnew_Uint
                    (Name    => "skipped-tick",
                     Nick    => "skipped tick",
                     Minimum => 2,
@@ -350,7 +352,7 @@ package body Gtk.Layered.Flat_Scale is
                        "number are not drawn");
             when Property_Line_Width =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "line-width",
                     Nick    => "line width",
                     Minimum => 0.0,
@@ -359,7 +361,7 @@ package body Gtk.Layered.Flat_Scale is
                     Blurb   => "The tick line's width");
             when Property_Line_Color =>
                return
-                 Gnew_Boxed
+                 Glib.Properties.Creation.Gnew_Boxed
                    (Name       => "color",
                     Boxed_Type => Gdk.Color.Gdk_Color_Type,
                     Nick       => "color",
@@ -373,7 +375,7 @@ package body Gtk.Layered.Flat_Scale is
                     Blurb   => "The cap style of the tick lines");
             when Property_Scaled =>
                return
-                 Gnew_Boolean
+                 Glib.Properties.Creation.Gnew_Boolean
                    (Name    => "scaled",
                     Nick    => "scaled",
                     Default => False,
@@ -381,7 +383,7 @@ package body Gtk.Layered.Flat_Scale is
                        "The scale size is changed when the widget is resized");
             when Property_Widened =>
                return
-                 Gnew_Boolean
+                 Glib.Properties.Creation.Gnew_Boolean
                    (Name    => "widened",
                     Nick    => "widened",
                     Default => False,
@@ -489,13 +491,13 @@ package body Gtk.Layered.Flat_Scale is
       Breadth : Gdouble;
       Angle   : Gdouble;
    begin
-      Restore (Stream, Ticks);
-      Restore (Stream, Line);
-      Restore (Stream, From);
-      Restore (Stream, Length);
-      Restore (Stream, Breadth);
-      Restore (Stream, Angle);
-      Restore (Stream, Layer.Scaled, Layer.Widened);
+      Gtk.Layered.Stream_IO.Restore (Stream, Ticks);
+      Gtk.Layered.Stream_IO.Restore (Stream, Line);
+      Gtk.Layered.Stream_IO.Restore (Stream, From);
+      Gtk.Layered.Stream_IO.Restore (Stream, Length);
+      Gtk.Layered.Stream_IO.Restore (Stream, Breadth);
+      Gtk.Layered.Stream_IO.Restore (Stream, Angle);
+      Gtk.Layered.Stream_IO.Restore (Stream, Layer.Scaled, Layer.Widened);
       Set
         (Layer   => Layer,
          Line    => Line,
@@ -572,9 +574,12 @@ package body Gtk.Layered.Flat_Scale is
                Layer.Length := Glib.Values.Get_Double (Value);
             when Property_Angle =>
                Layer.Angle := Glib.Values.Get_Double (Value);
-               if Layer.Angle not in -2.0 * Pi .. 2.0 * Pi then
+               if
+                 Layer.Angle not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
                   Layer.Angle :=
-                    Gdouble'Remainder (Layer.Angle, 2.0 * Pi);
+                    Gdouble'Remainder (Layer.Angle, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Line_Width =>
                Layer.Line.Width := Glib.Values.Get_Double (Value);
@@ -641,13 +646,13 @@ package body Gtk.Layered.Flat_Scale is
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Layer  : Flat_Scale_Layer) is
    begin
-      Store (Stream, Layer.Ticks);
-      Store (Stream, Layer.Line);
-      Store (Stream, Layer.From);
-      Store (Stream, Layer.Length);
-      Store (Stream, Layer.Breadth);
-      Store (Stream, Layer.Angle);
-      Store (Stream, Layer.Scaled, Layer.Widened);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Ticks);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Line);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.From);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Length);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Breadth);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Angle);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Scaled, Layer.Widened);
    end Store;
 
 end Gtk.Layered.Flat_Scale;

@@ -25,15 +25,13 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Gtk.Handlers.References;  use Gtk.Handlers.References;
-with Gtk.Layered.Waveform;     use Gtk.Layered.Waveform;
+with Gtk.Handlers.References;
+with Gtk.Layered.Waveform;
 with Gtk.Missed;
 
 package Gtk.Layered.Graph_Paper is
 
    pragma Warnings (Off, "declaration hides ""Adjustment""");
-   pragma Warnings (Off, "declaration hides ""X_Axis""");
-   pragma Warnings (Off, "declaration hides ""Y_Axis""");
 
    --
    -- Graph_Paper_Layer -- A layer showing graph paper
@@ -68,8 +66,8 @@ package Gtk.Layered.Graph_Paper is
      (Annotation   : in out Graph_Paper_Annotation_Interface;
       Layer        : Graph_Paper_Layer'Class;
       Box          : Cairo.Ellipses.Cairo_Box;
-      From,  To    : X_Axis;
-      Lower, Upper : Y_Axis) is abstract;
+      From,  To    : Gtk.Layered.Waveform.X_Axis;
+      Lower, Upper : Gtk.Layered.Waveform.Y_Axis) is abstract;
 
    --
    -- Detached -- Notification that the annotatioc was detached
@@ -396,7 +394,9 @@ package Gtk.Layered.Graph_Paper is
 
 private
 
-   type References_List is array (1 .. 4) of Handler_Reference;
+   type References_List is array (1 .. 4) of
+     Gtk.Handlers.References.Handler_Reference;
+
    type Item
      (Annotation : not null access Graph_Paper_Annotation_Interface'Class)
    is limited
@@ -423,8 +423,8 @@ private
          Widened       : Boolean := False;
          Updated       : Boolean := True;
          Handlers      : References_List;
-         X_Sweeper     : access Waveform_Sweeper'Class;
-         Y_Sweeper     : access Waveform_Sweeper'Class;
+         X_Sweeper     : access Gtk.Layered.Waveform.Waveform_Sweeper'Class;
+         Y_Sweeper     : access Gtk.Layered.Waveform.Waveform_Sweeper'Class;
          Annotations   : access Item;
       end record;
    type Graph_Paper_Ptr is access all Graph_Paper_Layer;
@@ -433,8 +433,6 @@ private
      (Layer      : Graph_Paper_Layer;
       Annotation : Graph_Paper_Annotation_Interface'Class) return Item_Ptr;
 
-   pragma Warnings (On, "declaration hides ""Y_Axis""");
-   pragma Warnings (On, "declaration hides ""X_Axis""");
    pragma Warnings (On, "declaration hides ""Adjustment""");
 
 end Gtk.Layered.Graph_Paper;

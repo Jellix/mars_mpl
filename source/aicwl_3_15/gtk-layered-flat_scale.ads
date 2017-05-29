@@ -43,6 +43,7 @@ package Gtk.Layered.Flat_Scale is
      new Abstract_Layer
      and Scalable_Layer
      and Widened_Layer with private;
+
    --
    -- Add_Flat_Scale -- Add scale ticks
    --
@@ -113,6 +114,7 @@ package Gtk.Layered.Flat_Scale is
    --    The scale angle
    --
    function Get_Angle (Layer : Flat_Scale_Layer) return Gdouble;
+
    --
    -- Get_Breadth -- The tick length
    --
@@ -146,6 +148,7 @@ package Gtk.Layered.Flat_Scale is
    --    The scale length
    --
    function Get_Length (Layer : Flat_Scale_Layer) return Gdouble;
+
    --
    -- Get_Line -- Ticks line parameters
    --
@@ -156,6 +159,7 @@ package Gtk.Layered.Flat_Scale is
    --    The line parameters
    --
    function Get_Line (Layer : Flat_Scale_Layer) return Line_Parameters;
+
    --
    -- Get_Ticks -- The parameters of the scale
    --
@@ -167,6 +171,7 @@ package Gtk.Layered.Flat_Scale is
    --
    function Get_Ticks (Layer : Flat_Scale_Layer)
                        return Tick_Parameters;
+
    --
    -- Set -- Parameters of the scale
    --

@@ -25,28 +25,28 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Ada.Exceptions;              use Ada.Exceptions;
-with Ada.Numerics;                use Ada.Numerics;
-with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
-with Glib.Messages;               use Glib.Messages;
-with Glib.Properties.Creation;    use Glib.Properties.Creation;
-with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
-with Interfaces.C;
-with Strings_Edit.Integers;       use Strings_Edit.Integers;
+with Ada.Exceptions;
+with Ada.Numerics;
 
+with Cairo.Elementary_Functions;
 with Cairo.Font_Slant_Property;
-with Pango.Enums.Weight_Property;
+
+with Glib.Messages;
+with Glib.Properties.Creation;
+
 with Gtk.Layered.Alignment_Property;
+with Gtk.Layered.Stream_IO;
 with Gtk.Layered.Vertical_Alignment_Property;
+
+with Interfaces.C;
+
+with Pango.Enums.Weight_Property;
 with Pango.Cairo.Fonts.Font_Type_Property;
+
+with Strings_Edit.Integers;
 with Strings_Edit.Integers.Superscript;
 
 package body Gtk.Layered.Graph_Paper_Annotation is
-
-   pragma Warnings (Off, "declaration hides ""Superscript""");
-   pragma Warnings (Off, "declaration hides ""Value""");
-
-   use Gtk.Layered.Waveform.Edit;
 
    type Layer_Property is
      (Property_Scaled,
@@ -140,14 +140,14 @@ package body Gtk.Layered.Graph_Paper_Annotation is
 
    function Add_Annotation_Implementation
      (Under       : not null access Layer_Location'Class;
-      Paper       : access Graph_Paper_Layer'Class;
+      Paper       : access Gtk.Layered.Graph_Paper.Graph_Paper_Layer'Class;
       Location    : Axis_Location;
       Face        : Pango.Cairo.Fonts.Pango_Cairo_Font;
       Height      : Gdouble;
       Stretch     : Gdouble;
       Color       : Gdk.Color.Gdk_Color;
       Text_Angle  : Gdouble;
-      Justify_X   : Alignment;
+      Justify_X   : Ada.Strings.Alignment;
       Justify_Y   : Vertical_Alignment;
       Superscript : Boolean;
       Background  : Gdk.Color.Gdk_Color;
@@ -192,14 +192,14 @@ package body Gtk.Layered.Graph_Paper_Annotation is
 
    function Add_Annotation_Implementation
      (Under       : not null access Layer_Location'Class;
-      Paper       : access Graph_Paper_Layer'Class;
+      Paper       : access Gtk.Layered.Graph_Paper.Graph_Paper_Layer'Class;
       Location    : Axis_Location;
       Face        : Pango.Cairo.Fonts.Pango_Cairo_Font;
       Height      : Gdouble;
       Stretch     : Gdouble;
       Color       : Gdk.Color.Gdk_Color;
       Text_Angle  : Gdouble;
-      Justify_X   : Alignment;
+      Justify_X   : Ada.Strings.Alignment;
       Justify_Y   : Vertical_Alignment;
       Superscript : Boolean;
       Background  : Gdk.Color.Gdk_Color;
@@ -244,7 +244,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
 
    procedure Add_Graph_Paper_Annotation
      (Under       : not null access Layer_Location'Class;
-      Paper       : not null access Graph_Paper_Layer'Class;
+      Paper       : not null access Gtk.Layered.Graph_Paper.Graph_Paper_Layer'Class;
       Location    : Axis_Location                      :=
         (Orientation => Vertical,
          Alignment   => Absolute,
@@ -257,7 +257,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       Stretch     : Gdouble                            := 1.0;
       Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Text_Angle  : Gdouble                            := 0.0;
-      Justify_X   : Alignment                          := Center;
+      Justify_X   : Ada.Strings.Alignment              := Ada.Strings.Center;
       Justify_Y   : Vertical_Alignment                 := Center;
       Superscript : Boolean                            := True;
       Background  : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 1.0, 1.0);
@@ -293,7 +293,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
 
    function Add_Graph_Paper_Annotation
      (Under       : not null access Layer_Location'Class;
-      Paper       : not null access Graph_Paper_Layer'Class;
+      Paper       : not null access Gtk.Layered.Graph_Paper.Graph_Paper_Layer'Class;
       Location    : Axis_Location                      :=
         (Orientation => Vertical,
          Alignment   => Absolute,
@@ -306,7 +306,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       Stretch     : Gdouble                            := 1.0;
       Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Text_Angle  : Gdouble                            := 0.0;
-      Justify_X   : Alignment                          := Center;
+      Justify_X   : Ada.Strings.Alignment              := Ada.Strings.Center;
       Justify_Y   : Vertical_Alignment                 := Center;
       Superscript : Boolean                            := True;
       Background  : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 1.0, 1.0);
@@ -343,7 +343,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
 
    procedure Add_Graph_Paper_Time_Annotation
      (Under       : not null access Layer_Location'Class;
-      Paper       : not null access Graph_Paper_Layer'Class;
+      Paper       : not null access Gtk.Layered.Graph_Paper.Graph_Paper_Layer'Class;
       Location    : Axis_Location                      :=
         (Orientation => Horizontal,
          Alignment   => Absolute,
@@ -356,7 +356,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       Stretch     : Gdouble                            := 1.0;
       Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Text_Angle  : Gdouble                            := 0.0;
-      Justify_X   : Alignment                          := Center;
+      Justify_X   : Ada.Strings.Alignment              := Ada.Strings.Center;
       Justify_Y   : Vertical_Alignment                 := Center;
       Superscript : Boolean                            := True;
       Background  : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 1.0, 1.0);
@@ -392,7 +392,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
 
    function Add_Graph_Paper_Time_Annotation
      (Under       : not null access Layer_Location'Class;
-      Paper       : not null access Graph_Paper_Layer'Class;
+      Paper       : not null access Gtk.Layered.Graph_Paper.Graph_Paper_Layer'Class;
       Location    : Axis_Location                      :=
         (Orientation => Horizontal,
          Alignment   => Absolute,
@@ -405,7 +405,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       Stretch     : Gdouble                            := 1.0;
       Color       : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
       Text_Angle  : Gdouble                            := 0.0;
-      Justify_X   : Alignment                          := Center;
+      Justify_X   : Ada.Strings.Alignment              := Ada.Strings.Center;
       Justify_Y   : Vertical_Alignment                 := Center;
       Superscript : Boolean                            := True;
       Background  : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (1.0, 1.0, 1.0);
@@ -448,13 +448,13 @@ package body Gtk.Layered.Graph_Paper_Annotation is
 
    overriding procedure Changed
      (Layer  : in out Graph_Paper_Annotation_Layer;
-      Paper  : Graph_Paper_Layer'Class;
+      Paper  : Gtk.Layered.Graph_Paper.Graph_Paper_Layer'Class;
       Box    : Cairo.Ellipses.Cairo_Box;
-      X1, X2 : X_Axis;
-      Y1, Y2 : Y_Axis)
+      X1, X2 : Gtk.Layered.Waveform.X_Axis;
+      Y1, Y2 : Gtk.Layered.Waveform.Y_Axis)
    is
-      use Gtk.Layered.Waveform.Rasters;
       use type Cairo.Ellipses.Cairo_Box;
+      use type Gtk.Layered.Waveform.Rasters.Scale;
       Changed : Boolean := Layer.Updated;
    begin
       case Layer.Location.Orientation is
@@ -489,10 +489,12 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       end if;
    exception
       when Error : others =>
-         Log
+         Glib.Messages.Log
            (Gtk.Missed.GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) & Where ("Changed"));
+            Glib.Messages.Log_Level_Critical,
+            "Fault: "
+            & Ada.Exceptions.Exception_Information (Error)
+            & Where ("Changed"));
    end Changed;
 
    procedure Delete (List : in out Annotation_List_Ptr) is
@@ -534,8 +536,10 @@ package body Gtk.Layered.Graph_Paper_Annotation is
             Gdouble (Y0 - Interfaces.C.long_double'Rounding (FY * Interfaces.C.long_double (V)));
       end To_Y;
 
-      Cos_A   : constant Gdouble := abs Cos (Layer.Text_Angle);
-      Sin_A   : constant Gdouble := abs Sin (Layer.Text_Angle);
+      Cos_A   : constant Gdouble :=
+                  abs Cairo.Elementary_Functions.Cos (Layer.Text_Angle);
+      Sin_A   : constant Gdouble :=
+                  abs Cairo.Elementary_Functions.Sin (Layer.Text_Angle);
       Old_Box : Cairo.Ellipses.Cairo_Box := (others => Gdouble'First);
       New_Box : Cairo.Ellipses.Cairo_Box;
       Border  : Gdouble := Layer.Border;
@@ -577,9 +581,9 @@ package body Gtk.Layered.Graph_Paper_Annotation is
          Width  := Cos_A * Box.X + Sin_A * Box.Y;
          Height := Sin_A * Box.X + Cos_A * Box.Y;
          case Layer.Justify_X is
-            when Left   => New_Box.X1 := X;
-            when Center => New_Box.X1 := X - Width / 2.0;
-            when Right  => New_Box.X1 := X - Width;
+            when Ada.Strings.Left   => New_Box.X1 := X;
+            when Ada.Strings.Center => New_Box.X1 := X - Width / 2.0;
+            when Ada.Strings.Right  => New_Box.X1 := X - Width;
          end case;
          New_Box.X2 := New_Box.X1 + Width;
          case Layer.Justify_Y is
@@ -761,8 +765,6 @@ package body Gtk.Layered.Graph_Paper_Annotation is
             end if;
          end if;
       end Draw_Y;
-
-      use Gtk.Layered.Waveform.Rasters;
 
       function Set_X return Boolean is
          use type Interfaces.C.long_double;
@@ -956,10 +958,12 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       Layer.Updated := False;
    exception
       when Error : others =>
-         Log
+         Glib.Messages.Log
            (Gtk.Missed.GtkAda_Contributions_Domain,
-            Log_Level_Critical,
-            "Fault: " & Exception_Information (Error) & Where ("Draw"));
+            Glib.Messages.Log_Level_Critical,
+            "Fault: "
+            & Ada.Exceptions.Exception_Information (Error)
+            & Where ("Draw"));
    end Draw;
 
    overriding procedure Finalize (Layer : in out Graph_Paper_Annotation_Layer) is
@@ -1011,7 +1015,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
    end Get_Height;
 
    function Get_Justify_X (Layer : Graph_Paper_Annotation_Layer)
-      return Alignment is
+      return Ada.Strings.Alignment is
    begin
       return Layer.Justify_X;
    end Get_Justify_X;
@@ -1069,7 +1073,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                        "font");
             when Property_Border =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "border-width",
                     Nick    => "border",
                     Minimum => Gdouble'First,
@@ -1081,7 +1085,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                       "background box");
             when Property_Overlap =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "border-overlap",
                     Nick    => "overlap",
                     Minimum => Gdouble'First,
@@ -1091,7 +1095,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                       "to overlap other boxes");
             when Property_From =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "from",
                     Nick    => "from",
                     Minimum => Gdouble'First,
@@ -1108,7 +1112,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                       "than the property value");
             when Property_To =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "to",
                     Nick    => "to",
                     Minimum => Gdouble'First,
@@ -1125,7 +1129,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                       "than the property value");
             when Property_Value =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "value",
                     Nick    => "value",
                     Minimum => Gdouble'First,
@@ -1144,17 +1148,17 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                       "graph paper box");
             when Property_Text_Angle =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "text-angle",
                     Nick    => "text angle",
-                    Minimum => -2.0 * Pi,
-                    Maximum => 2.0 * Pi,
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
                     Default => 0.0,
                     Blurb   => "The angle of the annotation texts " &
                       "base line");
             when Property_Stretch =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "stretch",
                     Nick    => "stretch",
                     Minimum => 0.0,
@@ -1166,7 +1170,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                       "1 keeps texts unchanged");
             when Property_Height =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "height",
                     Nick    => "height",
                     Minimum => 0.0,
@@ -1175,7 +1179,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                     Blurb   => "The annotation text font height");
             when Property_Family =>
                return
-                  Gnew_String
+                 Glib.Properties.Creation.Gnew_String
                    (Name    => "font-familiy",
                     Nick    => "font famility",
                     Default => "arial",
@@ -1183,7 +1187,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                       "e.g. courier");
             when Property_Opacity =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "background-opacity",
                     Nick    => "opacity",
                     Minimum => 0.0,
@@ -1196,7 +1200,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                   Gtk.Layered.Alignment_Property.Gnew_Enum
                    (Name    => "text-alignment",
                     Nick    => "text X-alignment",
-                    Default => Center,
+                    Default => Ada.Strings.Center,
                     Blurb   => "The text horizontal alignment " &
                       "relatively to the annotation " &
                       "line");
@@ -1218,7 +1222,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                     Blurb   => "The annotation text font slant");
             when Property_Font_Size =>
                return
-                  Gnew_Uint
+                 Glib.Properties.Creation.Gnew_Uint
                    (Name    => "font-size",
                     Nick    => "font size",
                     Minimum => 1,
@@ -1237,14 +1241,14 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                     Blurb   => "The annotation text font weight");
             when Property_Color =>
                return
-                  Gnew_Boxed
+                 Glib.Properties.Creation.Gnew_Boxed
                    (Name       => "color",
                     Boxed_Type => Gdk.Color.Gdk_Color_Type,
                     Nick       => "color",
                     Blurb      => "The annotation texts color");
             when Property_Background_Color =>
                return
-                  Gnew_Boxed
+                 Glib.Properties.Creation.Gnew_Boxed
                    (Name       => "background-color",
                     Boxed_Type => Gdk.Color.Gdk_Color_Type,
                     Nick       => "background",
@@ -1252,7 +1256,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                       "color");
             when Property_Scaled =>
                return
-                  Gnew_Boolean
+                 Glib.Properties.Creation.Gnew_Boolean
                    (Name    => "scaled",
                     Nick    => "scaled",
                     Default => False,
@@ -1260,7 +1264,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                       "the widget is resized");
             when Property_Use_Superscript =>
                return
-                  Gnew_Boolean
+                 Glib.Properties.Creation.Gnew_Boolean
                    (Name    => "use-superscript",
                     Nick    => "superscript",
                     Default => False,
@@ -1270,7 +1274,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                       "the Eyy notation is used instead");
             when Property_Enlarged =>
                return
-                  Gnew_Boolean
+                 Glib.Properties.Creation.Gnew_Boolean
                    (Name    => "enlarged",
                     Nick    => "enlarged",
                     Default => False,
@@ -1278,7 +1282,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                       "changed when the widget is resized");
             when Property_Orientation =>
                return
-                  Gnew_Boolean
+                 Glib.Properties.Creation.Gnew_Boolean
                    (Name    => "orientation",
                     Nick    => "orientation",
                     Default => False,
@@ -1287,7 +1291,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                       "otherwise");
             when Property_Alignment =>
                return
-                  Gnew_Boolean
+                 Glib.Properties.Creation.Gnew_Boolean
                    (Name    => "alignment",
                     Nick    => "alignment",
                     Default => False,
@@ -1475,92 +1479,91 @@ package body Gtk.Layered.Graph_Paper_Annotation is
    end Image;
 
    function Image (Interval : Duration) return String is
-      use Strings_Edit;
    begin
       if Interval > 10.0 then
-         return Image (Gdouble (Interval), AbsSmall => 0);
+         return
+           Gtk.Layered.Waveform.Edit.Image (Gdouble (Interval), AbsSmall => 0);
       elsif Interval > 1.0 then
-         return Image (Gdouble (Interval), AbsSmall => -3);
+         return
+           Gtk.Layered.Waveform.Edit.Image (Gdouble (Interval), AbsSmall => -3);
       else
-         return Image (Gdouble (Interval), AbsSmall => -6);
+         return
+           Gtk.Layered.Waveform.Edit.Image (Gdouble (Interval), AbsSmall => -6);
       end if;
    end Image;
 
    function Image (Stamp : Ada.Calendar.Time) return String is
-      use Ada.Calendar;
-      use Gtk.Layered.Waveform.Edit;
-      use Strings_Edit;
-      Now     : constant Ada.Calendar.Time := Clock;
+      Now     : constant Ada.Calendar.Time := Ada.Calendar.Clock;
       Text    : String (1 .. 80);
-      Value   : constant Gdouble := Gdouble (Seconds (Stamp));
+      Value   : constant Gdouble := Gdouble (Ada.Calendar.Seconds (Stamp));
       Second  : constant Integer := Integer (Gdouble'Floor (Value));
       Pointer : Integer := Text'First;
    begin
-      Put
+      Strings_Edit.Integers.Put
         (Destination => Text,
          Pointer     => Pointer,
          Value       => Second / 3600,
          Justify     => Strings_Edit.Right,
          Field       => 2,
          Fill        => '0');
-      Put
+      Strings_Edit.Put
         (Destination => Text,
          Pointer     => Pointer,
          Value       => ':');
-      Put
+      Strings_Edit.Integers.Put
         (Destination => Text,
          Pointer     => Pointer,
          Value       => (Second / 60) mod 60,
          Justify     => Strings_Edit.Right,
          Field       => 2,
          Fill        => '0');
-      Put
+      Strings_Edit.Put
         (Destination => Text,
          Pointer     => Pointer,
          Value       => ':');
       if Second mod 60 < 10 then
-         Put
+         Strings_Edit.Put
            (Destination => Text,
             Pointer     => Pointer,
             Value       => '0');
       end if;
-      Put
+      Gtk.Layered.Waveform.Edit.Put
         (Destination => Text,
          Pointer     => Pointer,
          Value       => Value - Gdouble (60 * (Second / 60)),
          AbsSmall    => -3);
       if
-        Year (Now) /= Year (Stamp) or else
-        Month (Now) /= Month (Stamp) or else
-        Day (Now) /= Day (Stamp)
+        Ada.Calendar.Year (Now) /= Ada.Calendar.Year (Stamp) or else
+        Ada.Calendar.Month (Now) /= Ada.Calendar.Month (Stamp) or else
+        Ada.Calendar.Day (Now) /= Ada.Calendar.Day (Stamp)
       then
-         Put
+         Strings_Edit.Put
            (Destination => Text,
             Pointer     => Pointer,
             Value       => " ");
-         Put
+         Strings_Edit.Integers.Put
            (Destination => Text,
             Pointer     => Pointer,
-            Value       => Integer (Year (Stamp)));
-         Put
+            Value       => Integer (Ada.Calendar.Year (Stamp)));
+         Strings_Edit.Put
            (Destination => Text,
             Pointer     => Pointer,
             Value       => ".");
-         Put
+         Strings_Edit.Integers.Put
            (Destination => Text,
             Pointer     => Pointer,
-            Value       => Integer (Month (Stamp)),
+            Value       => Integer (Ada.Calendar.Month (Stamp)),
             Field       => 2,
             Fill        => '0',
             Justify     => Strings_Edit.Right);
-         Put
+         Strings_Edit.Put
            (Destination => Text,
             Pointer     => Pointer,
             Value       => ".");
-         Put
+         Strings_Edit.Integers.Put
            (Destination => Text,
             Pointer     => Pointer,
-            Value       => Integer (Day (Stamp)),
+            Value       => Integer (Ada.Calendar.Day (Stamp)),
             Field       => 2,
             Fill        => '0',
             Justify     => Strings_Edit.Right);
@@ -1616,11 +1619,13 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       elsif Raster.Small < -3 then
          Power := -3 * ((2 - Raster.Small) / 3);
       else
-         return Image (Value, AbsSmall => Raster.Small);
+         return
+           Gtk.Layered.Waveform.Edit.Image (Value, AbsSmall => Raster.Small);
       end if;
       declare
          Text : constant String :=
-                  Image (Value / 10.0 ** Power, AbsSmall => Small);
+                  Gtk.Layered.Waveform.Edit.Image (Value / 10.0 ** Power,
+                                                   AbsSmall => Small);
       begin
          if Text = "0" or else Power = 0 then
             return Text;
@@ -1633,7 +1638,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                   &  "10"
                   &  Strings_Edit.Integers.Superscript.Image (Power));
             else
-               return Text & "E" & Image (Power);
+               return Text & "E" & Strings_Edit.Integers.Image (Power);
             end if;
          end if;
       end;
@@ -1645,15 +1650,15 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       Raster : Gtk.Layered.Waveform.Rasters.Scale) return UTF8_String
    is
       pragma Unreferenced (Raster);
-      use Ada.Calendar;
-      use Strings_Edit;
       Text    : String (1 .. 80);
       Stamp   : constant Gdouble :=
-                Gdouble (Seconds (To_Time (Value)));
+                  Gdouble
+                    (Ada.Calendar.Seconds
+                       (Gtk.Layered.Waveform.To_Time (Value)));
       Second  : constant Integer := Integer (Gdouble'Floor (Stamp));
       Pointer : Integer := Text'First;
    begin
-      Put
+      Strings_Edit.Integers.Put
         (Destination => Text,
          Pointer     => Pointer,
          Value       => Second / 3600,
@@ -1661,11 +1666,11 @@ package body Gtk.Layered.Graph_Paper_Annotation is
          Field       => 2,
          Fill        => '0');
       if Layer.Raster.Small < 4 then
-         Put
+         Strings_Edit.Put
            (Destination => Text,
             Pointer     => Pointer,
             Value       => ':');
-         Put
+         Strings_Edit.Integers.Put
            (Destination => Text,
             Pointer     => Pointer,
             Value       => (Second / 60) mod 60,
@@ -1673,11 +1678,11 @@ package body Gtk.Layered.Graph_Paper_Annotation is
             Field       => 2,
             Fill        => '0');
          if Layer.Raster.Small < 2 then
-            Put
+            Strings_Edit.Put
               (Destination => Text,
                Pointer     => Pointer,
                Value       => ':');
-            Put
+            Strings_Edit.Integers.Put
               (Destination => Text,
                Pointer     => Pointer,
                Value       => Second mod 60,
@@ -1687,11 +1692,11 @@ package body Gtk.Layered.Graph_Paper_Annotation is
             if Layer.Raster.Small < 0 then
                declare
                   Fraction : constant String :=
-                               Image
+                               Gtk.Layered.Waveform.Edit.Image
                                  (Value    => Stamp - Gdouble (Second),
                                   AbsSmall => Layer.Raster.Small);
                begin
-                  Put
+                  Strings_Edit.Put
                     (Destination => Text,
                      Pointer     => Pointer,
                      Value       =>
@@ -1715,7 +1720,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       Value       : Gdouble;
       Text_Angle  : Gdouble;
       Color       : Gdk.Color.Gdk_Color;
-      Justify_X   : Alignment;
+      Justify_X   : Ada.Strings.Alignment;
       Justify_Y   : Vertical_Alignment;
       Location    : Axis_Location;
       Background  : Gdk.Color.Gdk_Color;
@@ -1727,20 +1732,20 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       Superscript : Boolean;
    begin
       Pango.Cairo.Fonts.Restore (Stream, Face);
-      Restore (Stream, Height);
-      Restore (Stream, Stretch);
-      Restore (Stream, From);
-      Restore (Stream, To);
-      Restore (Stream, Value);
-      Restore (Stream, Text_Angle);
-      Restore (Stream, Color);
-      Restore (Stream, Justify_X);
-      Restore (Stream, Justify_Y);
-      Restore (Stream, Background);
-      Restore (Stream, Border);
-      Restore (Stream, Overlap);
-      Restore (Stream, Opacity);
-      Restore
+      Gtk.Layered.Stream_IO.Restore (Stream, Height);
+      Gtk.Layered.Stream_IO.Restore (Stream, Stretch);
+      Gtk.Layered.Stream_IO.Restore (Stream, From);
+      Gtk.Layered.Stream_IO.Restore (Stream, To);
+      Gtk.Layered.Stream_IO.Restore (Stream, Value);
+      Gtk.Layered.Stream_IO.Restore (Stream, Text_Angle);
+      Gtk.Layered.Stream_IO.Restore (Stream, Color);
+      Gtk.Layered.Stream_IO.Restore (Stream, Justify_X);
+      Gtk.Layered.Stream_IO.Restore (Stream, Justify_Y);
+      Gtk.Layered.Stream_IO.Restore (Stream, Background);
+      Gtk.Layered.Stream_IO.Restore (Stream, Border);
+      Gtk.Layered.Stream_IO.Restore (Stream, Overlap);
+      Gtk.Layered.Stream_IO.Restore (Stream, Opacity);
+      Gtk.Layered.Stream_IO.Restore
         (Stream,
          Layer.Scaled,
          Layer.Enlarged,
@@ -1754,7 +1759,11 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                   Location := (Horizontal, Absolute, From, To, Value);
                when True =>
                   Location :=
-                     (Horizontal, Relative, From, To, Y_Axis (Value));
+                    (Horizontal,
+                     Relative,
+                     From,
+                     To,
+                     Gtk.Layered.Waveform.Y_Axis (Value));
             end case;
          when True =>
             case Alignment is
@@ -1762,7 +1771,11 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                   Location := (Vertical, Absolute, From, To, Value);
                when True =>
                   Location :=
-                     (Vertical, Relative, From, To, X_Axis (Value));
+                    (Vertical,
+                     Relative,
+                     From,
+                     To,
+                     Gtk.Layered.Waveform.X_Axis (Value));
             end case;
       end case;
       Set
@@ -1819,7 +1832,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       Stretch     : Gdouble;
       Color       : Gdk.Color.Gdk_Color;
       Text_Angle  : Gdouble;
-      Justify_X   : Alignment;
+      Justify_X   : Ada.Strings.Alignment;
       Justify_Y   : Vertical_Alignment;
       Superscript : Boolean;
       Background  : Gdk.Color.Gdk_Color;
@@ -1933,7 +1946,8 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                               Glib.Values.Get_Double (Value);
                         when Relative =>
                            Layer.Location.Y_Value :=
-                              Y_Axis (Glib.Values.Get_Double (Value));
+                             Gtk.Layered.Waveform.Y_Axis
+                               (Glib.Values.Get_Double (Value));
                      end case;
                   when Vertical =>
                      case Layer.Location.Alignment is
@@ -1942,7 +1956,8 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                               Glib.Values.Get_Double (Value);
                         when Relative =>
                            Layer.Location.X_Value :=
-                              X_Axis (Glib.Values.Get_Double (Value));
+                             Gtk.Layered.Waveform.X_Axis
+                               (Glib.Values.Get_Double (Value));
                      end case;
                end case;
             when Property_Background_Color =>
@@ -1956,9 +1971,12 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                end if;
             when Property_Text_Angle =>
                Layer.Text_Angle := Glib.Values.Get_Double (Value);
-               if Layer.Text_Angle not in -2.0 * Pi .. 2.0 * Pi then
+               if
+                 Layer.Text_Angle not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
                   Layer.Text_Angle :=
-                     Gdouble'Remainder (Layer.Text_Angle, 2.0 * Pi);
+                    Gdouble'Remainder (Layer.Text_Angle, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Height =>
                Layer.Height := Glib.Values.Get_Double (Value);
@@ -2080,14 +2098,16 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                                     Relative,
                                     Layer.Location.Left,
                                     Layer.Location.Right,
-                                    Y_Axis (Layer.Location.Y_Position));
+                                    Gtk.Layered.Waveform.Y_Axis
+                                      (Layer.Location.Y_Position));
                               when Vertical =>
                                  Layer.Location :=
                                    (Vertical,
                                     Relative,
                                     Layer.Location.Top,
                                     Layer.Location.Bottom,
-                                    X_Axis (Layer.Location.X_Position));
+                                    Gtk.Layered.Waveform.X_Axis
+                                      (Layer.Location.X_Position));
                            end case;
                         when Relative =>
                            null;
@@ -2197,36 +2217,36 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       Layer  : Graph_Paper_Annotation_Layer) is
    begin
       Pango.Cairo.Fonts.Store (Stream, Layer.Face);
-      Store (Stream, Layer.Height);
-      Store (Stream, Layer.Stretch);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Height);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Stretch);
       case Layer.Location.Orientation is
          when Horizontal =>
-            Store (Stream, Layer.Location.Left);
-            Store (Stream, Layer.Location.Right);
+            Gtk.Layered.Stream_IO.Store (Stream, Layer.Location.Left);
+            Gtk.Layered.Stream_IO.Store (Stream, Layer.Location.Right);
             case Layer.Location.Alignment is
                when Absolute =>
-                  Store (Stream, Layer.Location.Y_Position);
+                  Gtk.Layered.Stream_IO.Store (Stream, Layer.Location.Y_Position);
                when Relative =>
-                  Store (Stream, Gdouble (Layer.Location.Y_Value));
+                  Gtk.Layered.Stream_IO.Store (Stream, Gdouble (Layer.Location.Y_Value));
             end case;
          when Vertical =>
-            Store (Stream, Layer.Location.Top);
-            Store (Stream, Layer.Location.Bottom);
+            Gtk.Layered.Stream_IO.Store (Stream, Layer.Location.Top);
+            Gtk.Layered.Stream_IO.Store (Stream, Layer.Location.Bottom);
             case Layer.Location.Alignment is
                when Absolute =>
-                  Store (Stream, Layer.Location.X_Position);
+                  Gtk.Layered.Stream_IO.Store (Stream, Layer.Location.X_Position);
                when Relative =>
-                  Store (Stream, Gdouble (Layer.Location.X_Value));
+                  Gtk.Layered.Stream_IO.Store (Stream, Gdouble (Layer.Location.X_Value));
             end case;
       end case;
-      Store (Stream, Layer.Text_Angle);
-      Store (Stream, Layer.Color);
-      Store (Stream, Layer.Justify_X);
-      Store (Stream, Layer.Justify_Y);
-      Store (Stream, Layer.Background);
-      Store (Stream, Layer.Border);
-      Store (Stream, Layer.Opacity);
-      Store
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Text_Angle);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Color);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Justify_X);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Justify_Y);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Background);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Border);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Opacity);
+      Gtk.Layered.Stream_IO.Store
         (Stream,
          Layer.Scaled,
          Layer.Enlarged,
@@ -2234,8 +2254,5 @@ package body Gtk.Layered.Graph_Paper_Annotation is
          Layer.Location.Alignment   = Relative,
          Layer.Superscript);
    end Store;
-
-   pragma Warnings (On, "declaration hides ""Value""");
-   pragma Warnings (On, "declaration hides ""Superscript""");
 
 end Gtk.Layered.Graph_Paper_Annotation;

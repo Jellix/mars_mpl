@@ -23,7 +23,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 --
 --  This  package  provides  tracing  with  symbolick  stack   traceback
 --  information provided by the GNAT Ada  compiler.  The  implementation
@@ -34,137 +34,145 @@
 --  counterparts from the parent package with addition of  the  symbolic
 --  callstack traceback following the text message.
 --
-with Glib.Messages;  use Glib.Messages;
+with Glib.Messages;
 
 package Gtk.Main.Router.GNAT_Stack is
---
--- Indent -- Messages trace box
---
---    Message - To show
---    Break   - Force break flag
---    Step    - Identation step per call
---
--- This procedure shows  Message in the messages box prefixed by a chain
--- of spaces. The length of the chain is Step multiplied by the caller's
--- depth.
---
--- Exceptions :
---
---    Program_Error - Init wasn't called
---    Quit_Error    - Main loop quitted
---
+
+   --
+   -- Indent -- Messages trace box
+   --
+   --    Message - To show
+   --    Break   - Force break flag
+   --    Step    - Identation step per call
+   --
+   -- This procedure shows  Message in the messages box prefixed by a chain
+   -- of spaces. The length of the chain is Step multiplied by the caller's
+   -- depth.
+   --
+   -- Exceptions :
+   --
+   --    Program_Error - Init wasn't called
+   --    Quit_Error    - Main loop quitted
+   --
    procedure Indent
-             (  Message : UTF8_String;
-                Break   : Boolean  := Standard.False;
-                Step    : Positive := 2
-             );
---
--- Say -- Message box
---
---    Message       - To show
---    Title         - Of the message box
---    Mode          - Of the dialog
---    Justification - Of the message text
---    Parent        - Of the box
---
--- Exceptions :
---
---    Program_Error - Init wasn't called
---    Quit_Error    - Main loop quitted
---
+     (Message : UTF8_String;
+      Break   : Boolean  := Standard.False;
+      Step    : Positive := 2);
+
+   --
+   -- Say -- Message box
+   --
+   --    Message       - To show
+   --    Title         - Of the message box
+   --    Mode          - Of the dialog
+   --    Justification - Of the message text
+   --    Parent        - Of the box
+   --
+   -- Exceptions :
+   --
+   --    Program_Error - Init wasn't called
+   --    Quit_Error    - Main loop quitted
+   --
    procedure Say
-             (  Message       : UTF8_String;
-                Title         : UTF8_String := "";
-                Mode          : UTF8_String := Stock_Dialog_Info;
-                Justification : Gtk_Justification := Justify_Left;
-                Parent        : access Gtk_Widget_Record'Class := null
-             );
---
--- Trace -- Messages trace box
---
---    Message - To show
---    Break   - Force break flag
---
--- Exceptions :
---
---    Program_Error - Init wasn't called
---    Quit_Error    - Main loop quitted
---
+     (Message       : UTF8_String;
+      Title         : UTF8_String                    := "";
+      Mode          : UTF8_String                    := Gtk.Stock.Stock_Dialog_Info;
+      Justification : Gtk.Enums.Gtk_Justification    := Gtk.Enums.Justify_Left;
+      Parent        : access Gtk_Widget_Record'Class := null);
+
+   --
+   -- Trace -- Messages trace box
+   --
+   --    Message - To show
+   --    Break   - Force break flag
+   --
+   -- Exceptions :
+   --
+   --    Program_Error - Init wasn't called
+   --    Quit_Error    - Main loop quitted
+   --
    procedure Trace
-             (  Message : UTF8_String;
-                Break   : Boolean := Standard.False
-             );
---
--- Trace -- Messages trace box
---
---    Error - Exception
---    Break - Force break flag
---
--- Exceptions :
---
---    Program_Error - Init wasn't called
---    Quit_Error    - Main loop quitted
---
+     (Message : UTF8_String;
+      Break   : Boolean := Standard.False);
+
+   --
+   -- Trace -- Messages trace box
+   --
+   --    Error - Exception
+   --    Break - Force break flag
+   --
+   -- Exceptions :
+   --
+   --    Program_Error - Init wasn't called
+   --    Quit_Error    - Main loop quitted
+   --
    procedure Trace
-             (  Error : Exception_Occurrence;
-                Break : Boolean := Standard.True
-             );
---
--- Set_Log_Trace -- GTK+ errors
---
---    Domain - The GTK+ domain log messages to trace
---    Level  - The log messages mask
---
--- This procedure is intended for catching GTK+ log messages. It  causes
--- a messages from the Domain of severity levels indicated by  Level  to
--- be  raced together with the call stack. The application is stopped at
--- the spot. Set_Log_Trace can be called multiple times, the effects  of
--- are  accumulated.   Without  parameters  the  procedure  catches  all
---  messages (which are not catched by other means).
---
+     (Error : Ada.Exceptions.Exception_Occurrence;
+      Break : Boolean := Standard.True);
+
+   --
+   -- Set_Log_Trace -- GTK+ errors
+   --
+   --    Domain - The GTK+ domain log messages to trace
+   --    Level  - The log messages mask
+   --
+   -- This procedure is intended for catching GTK+ log messages. It  causes
+   -- a messages from the Domain of severity levels indicated by  Level  to
+   -- be  raced together with the call stack. The application is stopped at
+   -- the spot. Set_Log_Trace can be called multiple times, the effects  of
+   -- are  accumulated.   Without  parameters  the  procedure  catches  all
+   --  messages (which are not catched by other means).
+   --
+   use type Glib.Messages.Log_Level_Flags;
+
    procedure Set_Log_Trace
-             (  Domain : String;
-                Level  : Log_Level_Flags :=
-                            Log_Fatal_Mask or Log_Level_Critical
-             );
+     (Domain : String;
+      Level  : Glib.Messages.Log_Level_Flags :=
+        Glib.Messages.Log_Fatal_Mask or Glib.Messages.Log_Level_Critical);
+
    procedure Set_Log_Trace;
---
--- Log_Filter -- GTK+ errors filter
---
+
+   --
+   -- Log_Filter -- GTK+ errors filter
+   --
    type Log_Filter is abstract tagged limited private;
---
--- Ignore -- GTK+ errors filter
---
---    Domain  - The GTK+ domain log messages to trace
---    Level   - The log messages mask
---    Message - The log message
---
--- Returns :
---
---    True if the message must be ignored
---
+
+   --
+   -- Ignore -- GTK+ errors filter
+   --
+   --    Domain  - The GTK+ domain log messages to trace
+   --    Level   - The log messages mask
+   --    Message - The log message
+   --
+   -- Returns :
+   --
+   --    True if the message must be ignored
+   --
    function Ignore
-            (  Filter  : not null access Log_Filter;
-               Domain  : String;
-               Level   : Log_Level_Flags;
-               Message : UTF8_String
-            )  return Boolean is abstract;
---
--- Dump_Call_Stack -- Write call stack to the standard output
---
---    Prefix - To the stack trace
---
+     (Filter  : not null access Log_Filter;
+      Domain  : String;
+      Level   : Glib.Messages.Log_Level_Flags;
+      Message : UTF8_String) return Boolean is abstract;
+
+   --
+   -- Dump_Call_Stack -- Write call stack to the standard output
+   --
+   --    Prefix - To the stack trace
+   --
    procedure Dump_Call_Stack (Prefix : String := "");
 
 private
+
    type Log_Filter_Ptr is access all Log_Filter'Class;
    type Log_Filter is abstract
-      new Ada.Finalization.Limited_Controlled with
-   record
-      Previous : Log_Filter_Ptr;
-      Next     : Log_Filter_Ptr;
-   end record;
+   new Ada.Finalization.Limited_Controlled with
+      record
+         Previous : Log_Filter_Ptr;
+         Next     : Log_Filter_Ptr;
+      end record;
+
    overriding procedure Finalize   (Filter : in out Log_Filter);
+
    overriding procedure Initialize (Filter : in out Log_Filter);
 
 end Gtk.Main.Router.GNAT_Stack;
