@@ -23,67 +23,79 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 --
 --  This  package  provides  mappings  of  code  points  as  defined  by
 --  UnicodeData file.
 --
 package Strings_Edit.UTF8.Mapping is
+
+   pragma Warnings (Off, "declaration hides ""Value""");
+
    pragma Elaborate_Body (Strings_Edit.UTF8.Mapping);
---
--- Has_Case -- Case test
---
---    Value - Code point
---
--- Returns :
---
---    True if Value has either an  upper  or  a  lower  case  equivalent
---    different from Code.
---
+
+   --
+   -- Has_Case -- Case test
+   --
+   --    Value - Code point
+   --
+   -- Returns :
+   --
+   --    True if Value has either an  upper  or  a  lower  case  equivalent
+   --    different from Code.
+   --
    function Has_Case (Value : UTF8_Code_Point) return Boolean;
---
--- Is_Lowercase -- Case test
---
---    Value - Code point
---
--- Returns :
---
---    True if Value is a lower case point
---
+
+   --
+   -- Is_Lowercase -- Case test
+   --
+   --    Value - Code point
+   --
+   -- Returns :
+   --
+   --    True if Value is a lower case point
+   --
    function Is_Lowercase (Value : UTF8_Code_Point) return Boolean;
---
--- Is_Uppercase -- Case test
---
---    Value - Code point
---
--- Returns :
---
---    True if Value is a lower case point
---
+
+   --
+   -- Is_Uppercase -- Case test
+   --
+   --    Value - Code point
+   --
+   -- Returns :
+   --
+   --    True if Value is a lower case point
+   --
    function Is_Uppercase (Value : UTF8_Code_Point) return Boolean;
---
--- To_Lowercase -- Convert to lower case
---
---    Value - Code point or UTF-8 encoded string
---
--- Returns :
---
---    The lower case eqivalent or else Value itself
---
+
+   --
+   -- To_Lowercase -- Convert to lower case
+   --
+   --    Value - Code point or UTF-8 encoded string
+   --
+   -- Returns :
+   --
+   --    The lower case eqivalent or else Value itself
+   --
    function To_Lowercase (Value : UTF8_Code_Point)
-      return UTF8_Code_Point;
+                          return UTF8_Code_Point;
+
    function To_Lowercase (Value : String) return String;
---
--- To_Uppercase -- Convert to upper case
---
---    Value - Code point or UTF-8 encoded string
---
--- Returns :
---
---    The upper case eqivalent or else Value itself
---
+
+   --
+   -- To_Uppercase -- Convert to upper case
+   --
+   --    Value - Code point or UTF-8 encoded string
+   --
+   -- Returns :
+   --
+   --    The upper case eqivalent or else Value itself
+   --
    function To_Uppercase (Value : UTF8_Code_Point)
-      return UTF8_Code_Point;
+                          return UTF8_Code_Point;
+
    function To_Uppercase (Value : String) return String;
+
+   pragma Warnings (On, "declaration hides ""Value""");
 
 end Strings_Edit.UTF8.Mapping;

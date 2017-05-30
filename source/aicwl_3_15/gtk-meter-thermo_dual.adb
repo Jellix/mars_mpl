@@ -26,22 +26,21 @@
 -- __________________________________________________________________ --
 
 with Ada.Numerics;
-with Ada.Strings;               use Ada.Strings;
+with Ada.Strings;
 
-with Cairo;                     use Cairo;
-with Cairo.Line_Cap_Property;   use Cairo.Line_Cap_Property;
+with Cairo.Line_Cap_Property;
 
-with Gdk.Color.IHLS;            use Gdk.Color.IHLS;
+with Gdk.Color.IHLS;
 
 with Glib.Object.Checked_Destroy;
-with Glib.Properties.Creation;  use Glib.Properties.Creation;
-with Glib.Types;                use Glib.Types;
+with Glib.Properties.Creation;
+with Glib.Types;
 
-with Gtk.Enums;                 use Gtk.Enums;
-with Gtk.Widget.Styles;         use Gtk.Widget.Styles;
-with Gtk.Widget.Styles.Line_Cap_Property; use  Gtk.Widget.Styles.Line_Cap_Property;
+with Gtk.Enums;
+with Gtk.Layered.Waveform;
+with Gtk.Widget.Styles.Line_Cap_Property;
 
-with Pango.Cairo.Fonts;         use Pango.Cairo.Fonts;
+with Pango.Cairo.Fonts;
 
 with Strings_Edit;
 
@@ -49,11 +48,11 @@ package body Gtk.Meter.Thermo_Dual is
 
    type Bar_Mode is (Celsius_Mode, Fahrenheit_Mode);
 
-   Background_Color  : constant Gdk_Color := RGB (1.0, 1.0, 1.0);
-   Major_Tick_Color  : constant Gdk_Color := RGB (0.0, 0.0, 0.0);
-   Middle_Tick_Color : constant Gdk_Color := RGB (1.0, 0.0, 0.0);
-   Minor_Tick_Color  : constant Gdk_Color := RGB (0.0, 0.0, 0.0);
-   Text_Color        : constant Gdk_Color := RGB (0.0, 0.0, 0.0);
+   Background_Color  : constant Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 1.0, 1.0);
+   Major_Tick_Color  : constant Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+   Middle_Tick_Color : constant Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+   Minor_Tick_Color  : constant Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+   Text_Color        : constant Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
 
    Class_Record : aliased Ada_GObject_Class := Uninitialized_Class;
 
@@ -68,18 +67,23 @@ package body Gtk.Meter.Thermo_Dual is
    Bar_Width               : constant := 0.09;
    Reflection_Offset       : constant := Bar_Width * 0.35;
    Bar_Offset              : constant := 0.00;
-   Left_Annotation_Offset  : constant :=-0.19;
-   Left_Tick_Offset        : constant :=-0.07;
-   Left_Label_Offset       : constant :=-0.30;
+   Left_Annotation_Offset  : constant := -0.19;
+   Left_Tick_Offset        : constant := -0.07;
+   Left_Label_Offset       : constant := -0.30;
    Right_Annotation_Offset : constant := 0.23;
    Right_Tick_Offset       : constant := 0.07;
    Right_Label_Offset      : constant := 0.30;
    Stem_Length             : constant := 0.15;
-   Label_Height            : constant :=-1.45;
+   Label_Height            : constant := -1.45;
 
-   Reflection_Shift : constant Gdk_Luminance := Gdk_Luminance'Last / 2;
+   use type Gdk.Color.IHLS.Gdk_Luminance;
 
-   Color_Span : constant Gdk_Luminance := Gdk_Luminance'Last / 2;
+   Reflection_Shift : constant Gdk.Color.IHLS.Gdk_Luminance :=
+                        Gdk.Color.IHLS.Gdk_Luminance'Last / 2;
+
+   Color_Span : constant Gdk.Color.IHLS.Gdk_Luminance :=
+                  Gdk.Color.IHLS.Gdk_Luminance'Last / 2;
+   pragma Unreferenced (Color_Span);
 
    function Celsius (T : Gdouble) return Gdouble is
       F : constant := 5.0 / 9.0;
@@ -108,173 +112,161 @@ package body Gtk.Meter.Thermo_Dual is
    end Fahrenheit;
 
    function Get_Background
-            (  Widget : not null access Gtk_Meter_Thermo_Dual_Record
-            )  return not null access Rectangular_Background_Layer is
+     (Widget : not null access Gtk_Meter_Thermo_Dual_Record)
+      return not null access Gtk.Layered.Rectangular_Background.Rectangular_Background_Layer
+   is
    begin
-      return Widget.Background;
+      return Widget.all.Background;
    end Get_Background;
 
    function Get_Bar
-            (  Widget : not null access Gtk_Meter_Thermo_Dual_Record
-            )  return not null access Bar_Layer is
+     (Widget : not null access Gtk_Meter_Thermo_Dual_Record)
+      return not null access Gtk.Layered.Bar.Bar_Layer is
    begin
-      return Widget.Bar;
+      return Widget.all.Bar;
    end Get_Bar;
 
    function Get_Bar_Color
-            (  Widget : not null access Gtk_Meter_Thermo_Dual_Record
-            )  return Gdk_Color is
+     (Widget : not null access Gtk_Meter_Thermo_Dual_Record)
+      return Gdk.Color.Gdk_Color is
    begin
-      return Widget.Bar.Get_Line.Color;
+      return Widget.all.Bar.all.Get_Line.Color;
    end Get_Bar_Color;
 
    function Get_Cache
-            (  Widget : not null access Gtk_Meter_Thermo_Dual_Record
-            )  return not null access Cache_Layer is
+     (Widget : not null access Gtk_Meter_Thermo_Dual_Record)
+      return not null access Gtk.Layered.Cache.Cache_Layer is
    begin
-      return Widget.Cache;
+      return Widget.all.Cache;
    end Get_Cache;
 
-   function Get_Celsius_Label
-            (  Widget : not null access Gtk_Meter_Thermo_Dual_Record
-            )  return not null access Label_Layer is
-   begin
-      return Widget.Celsius.Label;
-   end Get_Celsius_Label;
-
    function Get_Celsius_Annotation
-            (  Widget : not null access Gtk_Meter_Thermo_Dual_Record
-            )  return not null access Flat_Annotation_Layer is
+     (Widget : not null access Gtk_Meter_Thermo_Dual_Record)
+      return not null access Gtk.Layered.Flat_Annotation.Flat_Annotation_Layer
+   is
    begin
-      return Widget.Celsius.Annotation;
+      return Widget.all.Celsius.Annotation;
    end Get_Celsius_Annotation;
 
+   function Get_Celsius_Label
+     (Widget : not null access Gtk_Meter_Thermo_Dual_Record)
+      return not null access Gtk.Layered.Label.Label_Layer is
+   begin
+      return Widget.all.Celsius.Label;
+   end Get_Celsius_Label;
+
    function Get_Celsius_Value
-            (  Widget : not null access Gtk_Meter_Thermo_Dual_Record
-            )  return Gdouble is
+     (Widget : not null access Gtk_Meter_Thermo_Dual_Record) return Gdouble is
    begin
       return
-      (  Widget.Bar.Get_Value * Widget.Celsius.Span
-      +  Widget.Celsius.From
-      );
+        (Widget.all.Bar.all.Get_Value * Widget.all.Celsius.Span
+         +  Widget.all.Celsius.From);
    end Get_Celsius_Value;
 
    function Get_Fahrenheit_Annotation
-            (  Widget : not null access Gtk_Meter_Thermo_Dual_Record
-            )  return not null access Flat_Annotation_Layer is
+     (Widget : not null access Gtk_Meter_Thermo_Dual_Record)
+      return not null access Gtk.Layered.Flat_Annotation.Flat_Annotation_Layer
+   is
    begin
-      return Widget.Fahrenheit.Annotation;
+      return Widget.all.Fahrenheit.Annotation;
    end Get_Fahrenheit_Annotation;
 
    function Get_Fahrenheit_Label
-            (  Widget : not null access Gtk_Meter_Thermo_Dual_Record
-            )  return not null access Label_Layer is
+     (Widget : not null access Gtk_Meter_Thermo_Dual_Record)
+      return not null access Gtk.Layered.Label.Label_Layer is
    begin
-      return Widget.Fahrenheit.Label;
+      return Widget.all.Fahrenheit.Label;
    end Get_Fahrenheit_Label;
 
    function Get_Fahrenheit_Value
-            (  Widget : not null access Gtk_Meter_Thermo_Dual_Record
-            )  return Gdouble is
+     (Widget : not null access Gtk_Meter_Thermo_Dual_Record) return Gdouble is
    begin
       return
-      (  Widget.Bar.Get_Value * Widget.Fahrenheit.Span
-      +  Widget.Fahrenheit.From
-      );
+        (Widget.all.Bar.all.Get_Value * Widget.all.Fahrenheit.Span
+         +  Widget.all.Fahrenheit.From);
    end Get_Fahrenheit_Value;
 
    function Get_Type return GType is
    begin
-      if Initialize_Class_Record
-         (  Ancestor     => Gtk.Layered.Get_Type,
-            Class_Record => Class_Record'Access,
-            Type_Name    => Class_Name
-         )
+      if
+        Initialize_Class_Record
+          (Ancestor     => Gtk.Layered.Get_Type,
+           Class_Record => Class_Record'Access,
+           Type_Name    => Class_Name)
       then
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
-            Gnew_Boxed
-            (  Name       => "backgound-color",
-               Boxed_Type => Gdk_Color_Type,
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
+            Glib.Properties.Creation.Gnew_Boxed
+              (Name       => "backgound-color",
+               Boxed_Type => Gdk.Color.Gdk_Color_Type,
                Nick       => "Background color",
-               Blurb      => "The background color"
-         )  );
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
-            Gnew_Boxed
-            (  Name       => "line-color",
-               Boxed_Type => Gdk_Color_Type,
+               Blurb      => "The background color"));
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
+            Glib.Properties.Creation.Gnew_Boxed
+              (Name       => "line-color",
+               Boxed_Type => Gdk.Color.Gdk_Color_Type,
                Nick       => "Line color",
                Blurb      =>
-                  "The color of the circle bounding the ticks"
-         )  );
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
-            Gnew_Boxed
-            (  Name       => "major-tick-color",
-               Boxed_Type => Gdk_Color_Type,
+                  "The color of the circle bounding the ticks"));
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
+            Glib.Properties.Creation.Gnew_Boxed
+              (Name       => "major-tick-color",
+               Boxed_Type => Gdk.Color.Gdk_Color_Type,
                Nick       => "Major ticks color",
-               Blurb      => "Major ticks color"
-         )  );
-         Install_Style
-         (  Class_Ref (Class_Record.The_Type),
+               Blurb      => "Major ticks color"));
+         Gtk.Widget.Styles.Line_Cap_Property.Install_Style
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
             Cairo.Line_Cap_Property.Gnew_Enum
-            (  Name    => "major-tick-line-cap",
+              (Name    => "major-tick-line-cap",
                Nick    => "Major tick cap",
                Blurb   => "The line cap style used for major ticks",
-               Default => Cairo_Line_Cap_Butt
-         )  );
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
-            Gnew_Boxed
-            (  Name       => "middle-tick-color",
-               Boxed_Type => Gdk_Color_Type,
+               Default => Cairo.Cairo_Line_Cap_Butt));
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
+            Glib.Properties.Creation.Gnew_Boxed
+              (Name       => "middle-tick-color",
+               Boxed_Type => Gdk.Color.Gdk_Color_Type,
                Nick       => "Middle ticks color",
-               Blurb      => "Middle ticks color"
-         )  );
-         Install_Style
-         (  Class_Ref (Class_Record.The_Type),
+               Blurb      => "Middle ticks color"));
+         Gtk.Widget.Styles.Line_Cap_Property.Install_Style
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
             Cairo.Line_Cap_Property.Gnew_Enum
-            (  Name    => "middle-tick-line-cap",
+              (Name    => "middle-tick-line-cap",
                Nick    => "Middle tick cap",
                Blurb   => "The line cap style used for middle ticks",
-               Default => Cairo_Line_Cap_Butt
-         )  );
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
-            Gnew_Boxed
-            (  Name       => "minor-tick-color",
-               Boxed_Type => Gdk_Color_Type,
+               Default => Cairo.Cairo_Line_Cap_Butt));
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
+            Glib.Properties.Creation.Gnew_Boxed
+              (Name       => "minor-tick-color",
+               Boxed_Type => Gdk.Color.Gdk_Color_Type,
                Nick       => "Minor ticks color",
-               Blurb      => "Minor ticks color"
-         )  );
-         Install_Style
-         (  Class_Ref (Class_Record.The_Type),
+               Blurb      => "Minor ticks color"));
+         Gtk.Widget.Styles.Line_Cap_Property.Install_Style
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
             Cairo.Line_Cap_Property.Gnew_Enum
-            (  Name    => "minor-tick-line-cap",
+              (Name    => "minor-tick-line-cap",
                Nick    => "Minor tick cap",
                Blurb   => "The line cap style used for minor ticks",
-               Default => Cairo_Line_Cap_Butt
-         )  );
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
-            Gnew_Boxed
-            (  Name       => "text-color",
-               Boxed_Type => Gdk_Color_Type,
+               Default => Cairo.Cairo_Line_Cap_Butt));
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
+            Glib.Properties.Creation.Gnew_Boxed
+              (Name       => "text-color",
+               Boxed_Type => Gdk.Color.Gdk_Color_Type,
                Nick       => "Text color",
-               Blurb      => "Text color"
-         )  );
+               Blurb      => "Text color"));
       end if;
-      return Class_Record.The_Type;
+      return Class_Record.all.The_Type;
    end Get_Type;
 
    procedure Gtk_New_Celsius
-             (  Widget     : out Gtk_Meter_Thermo_Dual;
-                Adjustment : not null access
-                             Gtk_Adjustment_Record'Class;
-                Sectors    : Positive  := 8;
-                Color      : Gdk_Color := RGB (1.0, 0.0, 0.0)
-             )  is
+     (Widget     : out Gtk_Meter_Thermo_Dual;
+      Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class;
+      Sectors    : Positive            := 8;
+      Color      : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 0.0, 0.0)) is
    begin
       Widget := new Gtk_Meter_Thermo_Dual_Record;
       Initialize_Celsius (Widget, Adjustment, Sectors, Color);
@@ -286,12 +278,11 @@ package body Gtk.Meter.Thermo_Dual is
    end Gtk_New_Celsius;
 
    procedure Gtk_New_Celsius
-             (  Widget  : out Gtk_Meter_Thermo_Dual;
-                Lower   : Gdouble    := -40.0;
-                Upper   : Gdouble    := 50.0;
-                Sectors : Positive  := 8;
-                Color   : Gdk_Color := RGB (1.0, 0.0, 0.0)
-             )  is
+     (Widget  : out Gtk_Meter_Thermo_Dual;
+      Lower   : Gdouble             := -40.0;
+      Upper   : Gdouble             := 50.0;
+      Sectors : Positive            := 8;
+      Color   : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 0.0, 0.0)) is
    begin
       Widget := new Gtk_Meter_Thermo_Dual_Record;
       Initialize_Celsius (Widget, Lower, Upper, Sectors, Color);
@@ -303,12 +294,10 @@ package body Gtk.Meter.Thermo_Dual is
    end Gtk_New_Celsius;
 
    procedure Gtk_New_Fahrenheit
-             (  Widget     : out Gtk_Meter_Thermo_Dual;
-                Adjustment : not null access
-                             Gtk_Adjustment_Record'Class;
-                Sectors    : Positive  := 8;
-                Color      : Gdk_Color := RGB (1.0, 0.0, 0.0)
-             )  is
+     (Widget     : out Gtk_Meter_Thermo_Dual;
+      Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class;
+      Sectors    : Positive            := 8;
+      Color      : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 0.0, 0.0)) is
    begin
       Widget := new Gtk_Meter_Thermo_Dual_Record;
       Initialize_Fahrenheit (Widget, Adjustment, Sectors, Color);
@@ -320,12 +309,11 @@ package body Gtk.Meter.Thermo_Dual is
    end Gtk_New_Fahrenheit;
 
    procedure Gtk_New_Fahrenheit
-             (  Widget  : out Gtk_Meter_Thermo_Dual;
-                Lower   : Gdouble    := 20.0;
-                Upper   : Gdouble    := 220.0;
-                Sectors : Positive  := 8;
-                Color   : Gdk_Color := RGB (1.0, 0.0, 0.0)
-             )  is
+     (Widget  : out Gtk_Meter_Thermo_Dual;
+      Lower   : Gdouble             := 20.0;
+      Upper   : Gdouble             := 220.0;
+      Sectors : Positive            := 8;
+      Color   : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 0.0, 0.0)) is
    begin
       Widget := new Gtk_Meter_Thermo_Dual_Record;
       Initialize_Fahrenheit (Widget, Lower, Upper, Sectors, Color);
@@ -337,39 +325,36 @@ package body Gtk.Meter.Thermo_Dual is
    end Gtk_New_Fahrenheit;
 
    procedure Initialize
-             (  Widget     : not null access
-                             Gtk_Meter_Thermo_Dual_Record'Class;
-                Mode       : Bar_Mode;
-                Adjustment : Gtk_Adjustment;
-                Lower      : Gdouble;
-                Upper      : Gdouble;
-                Count      : Positive;
-                Color      : Gdk_Color
-             )  is
+     (Widget     : not null access Gtk_Meter_Thermo_Dual_Record'Class;
+      Mode       : Bar_Mode;
+      Adjustment : Gtk.Adjustment.Gtk_Adjustment;
+      Lower      : Gdouble;
+      Upper      : Gdouble;
+      Count      : Positive;
+      Color      : Gdk.Color.Gdk_Color)
+   is
       procedure Create_Annotation
-                (  Scale   : in out Temperature_Scale;
-                   Justify : Alignment;
-                   Offset  : Gdouble
-                )  is
-         use Strings_Edit;
-         Texts   : UTF8_String (1..2048);
+        (Scale   : in out Temperature_Scale;
+         Justify : Ada.Strings.Alignment;
+         Offset  : Gdouble)
+      is
+         Texts   : UTF8_String (1 .. 2048);
          Pointer : Integer := Texts'First;
       begin
-         for Index in 0..Scale.Sectors + 3 loop
+         for Index in 0 .. Scale.Sectors + 3 loop
             Gtk.Layered.Waveform.Edit.Put
-            (  Destination => Texts,
+              (Destination => Texts,
                Pointer     => Pointer,
                AbsSmall    => Scale.Small,
                Value       =>
-                  (  Scale.Lower
+                 (Scale.Lower
                   +  Gdouble (Index)
-                  *  Gdouble (Scale.Step / Scale.Factor)
-            )     );
-            Put (Texts, Pointer, " ");
+                  *  Gdouble (Scale.Step / Scale.Factor)));
+            Strings_Edit.Put (Texts, Pointer, " ");
          end loop;
          Scale.Annotation :=
-           Add_Flat_Annotation
-             (Under       => Widget.Cache,
+           Gtk.Layered.Flat_Annotation.Add_Flat_Annotation
+             (Under       => Widget.all.Cache,
               From        => (Offset, First - Scale.First),
               Length      => Length - Scale.First,
               Scale_Angle => 3.0 * Ada.Numerics.Pi / 2.0,
@@ -380,26 +365,23 @@ package body Gtk.Meter.Thermo_Dual is
               Color       => Text_Color,
               Scaled      => True,
               Face        =>
-                Create_Toy
+                Pango.Cairo.Fonts.Create_Toy
                   (Family => "arial",
-                   Slant  => Cairo_Font_Slant_Normal,
-                   Weight => Cairo_Font_Weight_Normal));
+                   Slant  => Cairo.Cairo_Font_Slant_Normal,
+                   Weight => Cairo.Cairo_Font_Weight_Normal));
       end Create_Annotation;
 
       procedure Create_Ticks
-                (  Scale   : in out Temperature_Scale;
-                   Lower   : Gdouble;
-                   Upper   : Gdouble;
-                   Offset  : Gdouble;
-                   Sign    : Gdouble;
-                   Sectors : Positive
-                )  is
+        (Scale   : in out Temperature_Scale;
+         Lower   : Gdouble;
+         Upper   : Gdouble;
+         Offset  : Gdouble;
+         Sign    : Gdouble;
+         Sectors : Positive)
+      is
          Raster : constant Gtk.Layered.Waveform.Rasters.Scale :=
-                           Gtk.Layered.Waveform.Rasters.Create
-                           (  Lower,
-                              Upper,
-                              Sectors
-                           );
+                    Gtk.Layered.Waveform.Rasters.Create
+                      (Lower, Upper, Sectors);
       begin
          Scale.Sectors := Sectors;
          Scale.From := Lower;
@@ -407,23 +389,21 @@ package body Gtk.Meter.Thermo_Dual is
          Scale.Factor := Length / Scale.Span;
          Scale.Small  := Integer'Min (Raster.Small, 0);
          Scale.Step :=
-            (  Gdouble (Raster.Minor)
+           (Gdouble (Raster.Minor)
             *  Scale.Factor
-            *  Gdouble (Raster.Ticks + 1)
-            );
+            *  Gdouble (Raster.Ticks + 1));
          if Raster.Low_Tick = 0 then
             Scale.Lower := Raster.Low_Value;
          else
             Scale.Lower :=
-               (  Raster.Low_Value
+              (Raster.Low_Value
                +  Raster.Minor
-               *  Gdouble (Raster.Ticks + 1 - Raster.Low_Tick)
-               );
+               *  Gdouble (Raster.Ticks + 1 - Raster.Low_Tick));
          end if;
          Scale.First := Scale.Factor * Gdouble (Scale.Lower - Lower);
          Scale.Major_Ticks :=
-           Add_Flat_Scale
-             (Under   => Widget.Background.Get_Foreground,
+           Gtk.Layered.Flat_Scale.Add_Flat_Scale
+             (Under   => Widget.all.Background.all.Get_Foreground,
               From    => (Offset + Sign * 0.07, First - Scale.First),
               Length  => Length - Scale.First,
               Angle   => 3.0 * Ada.Numerics.Pi / 2.0,
@@ -435,7 +415,7 @@ package body Gtk.Meter.Thermo_Dual is
               Widened => True);
          declare
             Start : Gdouble := Scale.First;
-            Tick  : Tick_Number;
+            Tick  : Gtk.Layered.Tick_Number;
          begin
             if Start >= 0.5 * Scale.Step then
                Start := Start - 0.5 * Scale.Step;
@@ -444,8 +424,8 @@ package body Gtk.Meter.Thermo_Dual is
                Tick := 2;
             end if;
             Scale.Middle_Ticks :=
-              Add_Flat_Scale
-                (Under   => Widget.Background.Get_Foreground,
+              Gtk.Layered.Flat_Scale.Add_Flat_Scale
+                (Under   => Widget.all.Background.all.Get_Foreground,
                  From    => (Offset + Sign * 0.05, First - Start),
                  Length  => Length - Start,
                  Angle   => 3.0 * Ada.Numerics.Pi / 2.0,
@@ -460,7 +440,7 @@ package body Gtk.Meter.Thermo_Dual is
          end;
          declare
             Start : Gdouble := Scale.First;
-            Tick  : Tick_Number := 10;
+            Tick  : Gtk.Layered.Tick_Number := 10;
          begin
             if Start > 0.1 * Scale.Step then
                while Start >= 0.1 * Scale.Step loop
@@ -472,8 +452,8 @@ package body Gtk.Meter.Thermo_Dual is
                end if;
             end if;
             Scale.Minor_Ticks :=
-              Add_Flat_Scale
-                (Under   => Widget.Background.Get_Foreground,
+              Gtk.Layered.Flat_Scale.Add_Flat_Scale
+                (Under   => Widget.all.Background.all.Get_Foreground,
                  From    => (Offset + Sign * 0.04, First - Start),
                  Length  => Length - Start,
                  Angle   => 3.0 * Ada.Numerics.Pi / 2.0,
@@ -516,154 +496,142 @@ package body Gtk.Meter.Thermo_Dual is
       G_New (Widget, Get_Type);
       Gtk.Layered.Initialize (Widget);
       Set_Aspect_Ratio (Widget, 1.0 / 3.0);
-      Widget.Background :=
-         Add_Rectangular_Background
-         (  Under         => Widget,
-            Height        => 3.0,
-            Width         => 1.0,
-            Center        => (0.0, 0.0),
-            Corner_Radius => Corner,
-            Color         => Background_Color,
-            Border_Width  => 0.03,
-            Border_Depth  => 0.01,
-            Border_Shadow => Shadow_Etched_Out,
-            Deepened      => True,
-            Widened       => True,
-            Scaled        => True
-         );
+      Widget.all.Background :=
+        Gtk.Layered.Rectangular_Background.Add_Rectangular_Background
+          (Under         => Widget,
+           Height        => 3.0,
+           Width         => 1.0,
+           Center        => (0.0, 0.0),
+           Corner_Radius => Corner,
+           Color         => Background_Color,
+           Border_Width  => 0.03,
+           Border_Depth  => 0.01,
+           Border_Shadow => Gtk.Enums.Shadow_Etched_Out,
+           Deepened      => True,
+           Widened       => True,
+           Scaled        => True);
       case Mode is
          when Celsius_Mode =>
             Create_Ticks
-            (  Widget.Celsius,
+              (Widget.all.Celsius,
                Lower,
                Upper,
                Right_Tick_Offset,
                1.0,
-               Count
-            );
+               Count);
             Create_Ticks
-            (  Widget.Fahrenheit,
+              (Widget.all.Fahrenheit,
                Fahrenheit (Lower),
                Fahrenheit (Upper),
                Left_Tick_Offset,
                -1.0,
-               Integer'Max (1, (Count * 9) / 5)
-            );
+               Integer'Max (1, (Count * 9) / 5));
          when Fahrenheit_Mode =>
             Create_Ticks
-            (  Widget.Celsius,
+              (Widget.all.Celsius,
                Celsius (Lower),
                Celsius (Upper),
                Left_Tick_Offset,
                1.0,
-               Integer'Max (1, (Count * 5) / 9)
-            );
+               Integer'Max (1, (Count * 5) / 9));
             Create_Ticks
-            (  Widget.Fahrenheit,
+              (Widget.all.Fahrenheit,
                Lower,
                Upper,
                Right_Tick_Offset,
                -1.0,
-               Count
-            );
+               Count);
       end case;
-      Widget.Stem :=
-         Add_Line
-         (  Under    => Widget.Background.Get_Foreground,
-            From     => (Bar_Offset, First + Stem_Length),
-            To       => (Bar_Offset, First),
-            Width    => Bar_Width,
-            Color    => Color,
-            Line_Cap => Cairo_Line_Cap_Butt,
-            Scaled   => True,
-            Widened  => True
-         );
-       Widget.Bulb :=
-          Add_Line
-          (  Under    => Widget.Background.Get_Foreground,
-             From     => (Bar_Offset, First + Stem_Length),
-             To       => (Bar_Offset, First + Stem_Length),
-             Width    => Bar_Width * 2.0,
-             Color    => Color,
-             Line_Cap => Cairo_Line_Cap_Round,
-             Scaled   => True,
-             Widened  => True
-          );
-       Widget.Reflection :=
-          Add_Line
-          (  Under    => Widget.Background.Get_Foreground,
-             From     => (  Bar_Offset          - Reflection_Offset,
-                            First + Stem_Length - Reflection_Offset
-                         ),
-             To       => (  Bar_Offset          - Reflection_Offset,
-                            First + Stem_Length - Reflection_Offset
-                         ),
-             Width    => Reflection_Offset * 2.0,
-             Line_Cap => Cairo_Line_Cap_Round,
-             Scaled   => True,
-             Widened  => True,
-             Color    => Lighten
-                         (  Widget.Bulb.Get_Line.Color,
-                            Reflection_Shift,
-                            True
-          )              );
-      Widget.Cache := Add_Cache (Widget.Background.Get_Foreground);
+      Widget.all.Stem :=
+        Gtk.Layered.Line.Add_Line
+          (Under    => Widget.all.Background.all.Get_Foreground,
+           From     => (Bar_Offset, First + Stem_Length),
+           To       => (Bar_Offset, First),
+           Width    => Bar_Width,
+           Color    => Color,
+           Line_Cap => Cairo.Cairo_Line_Cap_Butt,
+           Scaled   => True,
+           Widened  => True);
+      Widget.all.Bulb :=
+        Gtk.Layered.Line.Add_Line
+          (Under    => Widget.all.Background.all.Get_Foreground,
+           From     => (Bar_Offset, First + Stem_Length),
+           To       => (Bar_Offset, First + Stem_Length),
+           Width    => Bar_Width * 2.0,
+           Color    => Color,
+           Line_Cap => Cairo.Cairo_Line_Cap_Round,
+           Scaled   => True,
+           Widened  => True);
+      Widget.all.Reflection :=
+        Gtk.Layered.Line.Add_Line
+          (Under    => Widget.all.Background.all.Get_Foreground,
+           From     => (Bar_Offset          - Reflection_Offset,
+                        First + Stem_Length - Reflection_Offset),
+           To       => (Bar_Offset          - Reflection_Offset,
+                        First + Stem_Length - Reflection_Offset),
+           Width    => Reflection_Offset * 2.0,
+           Line_Cap => Cairo.Cairo_Line_Cap_Round,
+           Scaled   => True,
+           Widened  => True,
+           Color    =>
+             Gdk.Color.IHLS.Lighten
+               (Widget.all.Bulb.all.Get_Line.Color,
+                Reflection_Shift,
+                True));
+      Widget.all.Cache :=
+        Gtk.Layered.Cache.Add_Cache (Widget.all.Background.all.Get_Foreground);
       --
       -- Create annotation
       --
       Create_Annotation
-      (  Widget.Fahrenheit,
-         Right,
-         Left_Annotation_Offset
-      );
-      Widget.Fahrenheit.Label :=
-         Add_Label
-         (  Under    => Widget.Get_Cache,
-            Face     => Create_Toy
-                        (  Family => "arial",
-                           Slant  => Cairo_Font_Slant_Normal,
-                           Weight => Cairo_Font_Weight_Bold
-                        ),
-            Color    => Text_Color,
-            Height   => 0.12,
-            Mode     => Moved_Centered,
-            Scaled   => True,
-            Text     => Character'Val (16#C2#) &
-                        Character'Val (16#B0#) & 'F',
-            Location => (Left_Label_Offset, Label_Height)
-         );
+        (Widget.all.Fahrenheit,
+         Ada.Strings.Right,
+         Left_Annotation_Offset);
+      Widget.all.Fahrenheit.Label :=
+        Gtk.Layered.Label.Add_Label
+          (Under    => Widget.all.Get_Cache,
+           Face     =>
+             Pango.Cairo.Fonts.Create_Toy
+               (Family => "arial",
+                Slant  => Cairo.Cairo_Font_Slant_Normal,
+                Weight => Cairo.Cairo_Font_Weight_Bold),
+           Color    => Text_Color,
+           Height   => 0.12,
+           Mode     => Gtk.Layered.Moved_Centered,
+           Scaled   => True,
+           Text     => Character'Val (16#C2#) &
+               Character'Val (16#B0#) & 'F',
+           Location => (Left_Label_Offset, Label_Height));
       Create_Annotation
-      (  Widget.Celsius,
-         Left,
-         Right_Annotation_Offset
-      );
-      Widget.Celsius.Label :=
-         Add_Label
-         (  Under    => Widget.Get_Cache,
-            Face     => Create_Toy
-                        (  Family => "arial",
-                           Slant  => Cairo_Font_Slant_Normal,
-                           Weight => Cairo_Font_Weight_Bold
-                        ),
-            Color    => Text_Color,
-            Height   => 0.12,
-            Mode     => Moved_Centered,
-            Scaled   => True,
-            Text     => Character'Val (16#C2#) &
-                        Character'Val (16#B0#) & 'C',
-            Location => (Right_Label_Offset, Label_Height)
-         );
+        (Widget.all.Celsius,
+         Ada.Strings.Left,
+         Right_Annotation_Offset);
+      Widget.all.Celsius.Label :=
+        Gtk.Layered.Label.Add_Label
+          (Under    => Widget.all.Get_Cache,
+           Face     =>
+             Pango.Cairo.Fonts.Create_Toy
+               (Family => "arial",
+                Slant  => Cairo.Cairo_Font_Slant_Normal,
+                Weight => Cairo.Cairo_Font_Weight_Bold),
+           Color    => Text_Color,
+           Height   => 0.12,
+           Mode     => Gtk.Layered.Moved_Centered,
+           Scaled   => True,
+           Text     => Character'Val (16#C2#) &
+               Character'Val (16#B0#) & 'C',
+           Location => (Right_Label_Offset, Label_Height));
       --
       -- Create foreground
       --
-      Widget.Bar :=
-        Add_Bar
-          (Under      => Widget.Background.Get_Foreground,
+      Widget.all.Bar :=
+        Gtk.Layered.Bar.Add_Bar
+          (Under      => Widget.all.Background.all.Get_Foreground,
            From       => (Bar_Offset, First),
            Length     => Length,
            Angle      => 3.0 * Ada.Numerics.Pi / 2.0,
            Adjustment => Adjustment,
-           Line_Cap   => Cairo_Line_Cap_Butt,
+           Line_Cap   => Cairo.Cairo_Line_Cap_Butt,
            Width      => Bar_Width,
            Color      => Color,
            Scaled     => True,
@@ -671,234 +639,204 @@ package body Gtk.Meter.Thermo_Dual is
    end Initialize;
 
    procedure Initialize_Celsius
-             (  Widget     : not null access
-                             Gtk_Meter_Thermo_Dual_Record'Class;
-                Adjustment : not null access
-                             Gtk_Adjustment_Record'Class;
-                Sectors    : Positive;
-                Color      : Gdk_Color
-             )  is
+     (Widget     : not null access Gtk_Meter_Thermo_Dual_Record'Class;
+      Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class;
+      Sectors    : Positive;
+      Color      : Gdk.Color.Gdk_Color) is
    begin
       Initialize
-      (  Widget,
+        (Widget,
          Celsius_Mode,
          Adjustment.all'Unchecked_Access,
-         Adjustment.Get_Lower,
-         Adjustment.Get_Upper,
+         Adjustment.all.Get_Lower,
+         Adjustment.all.Get_Upper,
          Sectors,
-         Color
-      );
+         Color);
    end Initialize_Celsius;
 
    procedure Initialize_Celsius
-             (  Widget  : not null access
-                          Gtk_Meter_Thermo_Dual_Record'Class;
-                Lower   : Gdouble;
-                Upper   : Gdouble;
-                Sectors : Positive;
-                Color   : Gdk_Color
-             )  is
+     (Widget  : not null access Gtk_Meter_Thermo_Dual_Record'Class;
+      Lower   : Gdouble;
+      Upper   : Gdouble;
+      Sectors : Positive;
+      Color   : Gdk.Color.Gdk_Color) is
    begin
       Initialize
-      (  Widget,
+        (Widget,
          Celsius_Mode,
          null,
          Lower,
          Upper,
          Sectors,
-         Color
-      );
+         Color);
    end Initialize_Celsius;
 
    procedure Initialize_Fahrenheit
-             (  Widget     : not null access
-                             Gtk_Meter_Thermo_Dual_Record'Class;
-                Adjustment : not null access
-                             Gtk_Adjustment_Record'Class;
-                Sectors    : Positive;
-                Color      : Gdk_Color
-             )  is
+     (Widget     : not null access Gtk_Meter_Thermo_Dual_Record'Class;
+      Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class;
+      Sectors    : Positive;
+      Color      : Gdk.Color.Gdk_Color) is
    begin
       Initialize
-      (  Widget,
+        (Widget,
          Fahrenheit_Mode,
          Adjustment.all'Unchecked_Access,
-         Adjustment.Get_Lower,
-         Adjustment.Get_Upper,
+         Adjustment.all.Get_Lower,
+         Adjustment.all.Get_Upper,
          Sectors,
-         Color
-      );
+         Color);
    end Initialize_Fahrenheit;
 
    procedure Initialize_Fahrenheit
-             (  Widget  : not null access
-                          Gtk_Meter_Thermo_Dual_Record'Class;
-                Lower   : Gdouble;
-                Upper   : Gdouble;
-                Sectors : Positive;
-                Color   : Gdk_Color
-             )  is
+     (Widget  : not null access Gtk_Meter_Thermo_Dual_Record'Class;
+      Lower   : Gdouble;
+      Upper   : Gdouble;
+      Sectors : Positive;
+      Color   : Gdk.Color.Gdk_Color) is
    begin
       Initialize
-      (  Widget,
+        (Widget,
          Fahrenheit_Mode,
          null,
          Lower,
          Upper,
          Sectors,
-         Color
-      );
+         Color);
    end Initialize_Fahrenheit;
 
    procedure Set_Bar_Color
-             (  Widget : not null access Gtk_Meter_Thermo_Dual_Record;
-                Color  : Gdk_Color
-             )  is
+     (Widget : not null access Gtk_Meter_Thermo_Dual_Record;
+      Color  : Gdk.Color.Gdk_Color) is
    begin
-      Widget.Bar.Set
-      (  From => Widget.Bar.Get_From,
-         To   => Widget.Bar.Get_To,
-         Line => (  Width    => Widget.Bar.Get_Line.Width,
-                    Color    => Color,
-                    Line_Cap => Widget.Bar.Get_Line.Line_Cap
-      )          );
-      Widget.Bulb.Set
-      (  From => Widget.Bulb.Get_From,
-         To   => Widget.Bulb.Get_To,
-         Line => (  Width    => Widget.Bulb.Get_Line.Width,
-                    Color    => Color,
-                    Line_Cap => Widget.Bulb.Get_Line.Line_Cap
-      )          );
-      Widget.Reflection.Set
-      (  From => Widget.Reflection.Get_From,
-         To   => Widget.Reflection.Get_To,
-         Line => (  Width    => Widget.Reflection.Get_Line.Width,
-                    Line_Cap => Widget.Reflection.Get_Line.Line_Cap,
-                    Color    => Lighten
-                                (  Color,
-                                   Reflection_Shift,
-                                   True
-      )          )              );
-      Widget.Stem.Set
-      (  From   => Widget.Stem.Get_From,
-         To     => Widget.Stem.Get_To,
-         Line   => (  Width    => Widget.Stem.Get_Line.Width,
-                      Color    => Color,
-                      Line_Cap => Widget.Stem.Get_Line.Line_Cap
-      )            );
+      Widget.all.Bar.all.Set
+        (From => Widget.all.Bar.all.Get_From,
+         To   => Widget.all.Bar.all.Get_To,
+         Line => (Width    => Widget.all.Bar.all.Get_Line.Width,
+                  Color    => Color,
+                  Line_Cap => Widget.all.Bar.all.Get_Line.Line_Cap));
+      Widget.all.Bulb.all.Set
+        (From => Widget.all.Bulb.all.Get_From,
+         To   => Widget.all.Bulb.all.Get_To,
+         Line =>
+           (Width    => Widget.all.Bulb.all.Get_Line.Width,
+            Color    => Color,
+            Line_Cap => Widget.all.Bulb.all.Get_Line.Line_Cap));
+      Widget.all.Reflection.all.Set
+        (From => Widget.all.Reflection.all.Get_From,
+         To   => Widget.all.Reflection.all.Get_To,
+         Line =>
+           (Width    => Widget.all.Reflection.all.Get_Line.Width,
+            Line_Cap => Widget.all.Reflection.all.Get_Line.Line_Cap,
+            Color    =>
+              Gdk.Color.IHLS.Lighten
+                (Color, Reflection_Shift, True)));
+      Widget.all.Stem.all.Set
+        (From   => Widget.all.Stem.all.Get_From,
+         To     => Widget.all.Stem.all.Get_To,
+         Line   =>
+           (Width    => Widget.all.Stem.all.Get_Line.Width,
+            Color    => Color,
+            Line_Cap => Widget.all.Stem.all.Get_Line.Line_Cap));
    end Set_Bar_Color;
 
    procedure Set_Celsius_Value
-             (  Widget : not null access Gtk_Meter_Thermo_Dual_Record;
-                Value  : Gdouble
-             )  is
+     (Widget : not null access Gtk_Meter_Thermo_Dual_Record;
+      Value  : Gdouble) is
    begin
-      Widget.Bar.Set_Value
-      (  (Value - Widget.Celsius.From)
-      /  Widget.Celsius.Span
-      );
+      Widget.all.Bar.all.Set_Value
+        ((Value - Widget.all.Celsius.From)
+         /  Widget.all.Celsius.Span);
    end Set_Celsius_Value;
 
    procedure Set_Fahrenheit_Value
-             (  Widget : not null access Gtk_Meter_Thermo_Dual_Record;
-                Value  : Gdouble
-             )  is
+     (Widget : not null access Gtk_Meter_Thermo_Dual_Record;
+      Value  : Gdouble) is
    begin
-      Widget.Bar.Set_Value
-      (  (Value - Widget.Fahrenheit.From)
-      /  Widget.Fahrenheit.Span
-      );
+      Widget.all.Bar.all.Set_Value
+        ((Value - Widget.all.Fahrenheit.From)
+         /  Widget.all.Fahrenheit.Span);
    end Set_Fahrenheit_Value;
 
-   procedure Style_Changed
-             (  Widget : not null access Gtk_Meter_Thermo_Dual_Record
-             )  is
+   overriding procedure Style_Changed
+     (Widget : not null access Gtk_Meter_Thermo_Dual_Record)
+   is
       procedure Set (Scale : in out Temperature_Scale) is
       begin
-         Scale.Minor_Ticks.Set
-         (  From    => Scale.Minor_Ticks.Get_From,
-            Length  => Scale.Minor_Ticks.Get_Length,
-            Breadth => Scale.Minor_Ticks.Get_Breadth,
-            Angle   => Scale.Minor_Ticks.Get_Angle,
-            Ticks   => Scale.Minor_Ticks.Get_Ticks,
-            Line =>
-               (  Scale.Minor_Ticks.Get_Line.Width,
-                  Style_Get
-                  (  Widget,
-                     "minor-tick-color",
-                     Minor_Tick_Color
-                  ),
-                  Style_Get (Widget, "minor-tick-line-cap")
-         )     );
-         Scale.Middle_Ticks.Set
-         (  From    => Scale.Middle_Ticks.Get_From,
-            Length  => Scale.Middle_Ticks.Get_Length,
-            Breadth => Scale.Middle_Ticks.Get_Breadth,
-            Angle   => Scale.Middle_Ticks.Get_Angle,
-            Ticks   => Scale.Middle_Ticks.Get_Ticks,
-            Line =>
-               (  Scale.Middle_Ticks.Get_Line.Width,
-                  Style_Get
-                  (  Widget,
-                     "middle-tick-color",
-                     Middle_Tick_Color
-                  ),
-                  Style_Get (Widget, "middle-tick-line-cap")
-         )     );
-         Scale.Major_Ticks.Set
-         (  From    => Scale.Major_Ticks.Get_From,
-            Length  => Scale.Major_Ticks.Get_Length,
-            Breadth => Scale.Major_Ticks.Get_Breadth,
-            Angle   => Scale.Major_Ticks.Get_Angle,
-            Ticks   => Scale.Major_Ticks.Get_Ticks,
-            Line =>
-               (  Scale.Major_Ticks.Get_Line.Width,
-                  Style_Get
-                  (  Widget,
-                     "major-tick-color",
-                     Major_Tick_Color
-                  ),
-                  Style_Get (Widget, "major-tick-line-cap")
-         )     );
-         Scale.Annotation.Set
-         (  Ticks       => Scale.Annotation.Get_Ticks,
-            From        => Scale.Annotation.Get_From,
-            Length      => Scale.Annotation.Get_Length,
-            Face        => Scale.Annotation.Get_Face,
-            Scale_Angle => Scale.Annotation.Get_Scale_Angle,
-            Height      => Scale.Annotation.Get_Height,
-            Stretch     => Scale.Annotation.Get_Stretch,
-            Text_Angle  => Scale.Annotation.Get_Text_Angle,
-            Justify     => Scale.Annotation.Get_Justify,
-            Color       => Style_Get (Widget, "text-color", Text_Color)
-         );
-         Scale.Label.Set
-         (  Location => Scale.Label.Get_Location,
-            Face     => Scale.Label.Get_Face,
-            Height   => Scale.Label.Get_Height,
-            Stretch  => Scale.Label.Get_Stretch,
-            Mode     => Scale.Label.Get_Mode,
-            Angle    => Scale.Label.Get_Angle,
-            Skew     => Scale.Label.Get_Skew,
-            Color    => Style_Get (Widget, "text-color", Text_Color)
-         );
+         Scale.Minor_Ticks.all.Set
+           (From    => Scale.Minor_Ticks.all.Get_From,
+            Length  => Scale.Minor_Ticks.all.Get_Length,
+            Breadth => Scale.Minor_Ticks.all.Get_Breadth,
+            Angle   => Scale.Minor_Ticks.all.Get_Angle,
+            Ticks   => Scale.Minor_Ticks.all.Get_Ticks,
+            Line    =>
+              (Scale.Minor_Ticks.all.Get_Line.Width,
+               Gtk.Widget.Styles.Style_Get
+                 (Widget, "minor-tick-color", Minor_Tick_Color),
+               Gtk.Widget.Styles.Line_Cap_Property.Style_Get
+                 (Widget, "minor-tick-line-cap")));
+         Scale.Middle_Ticks.all.Set
+           (From    => Scale.Middle_Ticks.all.Get_From,
+            Length  => Scale.Middle_Ticks.all.Get_Length,
+            Breadth => Scale.Middle_Ticks.all.Get_Breadth,
+            Angle   => Scale.Middle_Ticks.all.Get_Angle,
+            Ticks   => Scale.Middle_Ticks.all.Get_Ticks,
+            Line    =>
+              (Scale.Middle_Ticks.all.Get_Line.Width,
+               Gtk.Widget.Styles.Style_Get
+                 (Widget, "middle-tick-color", Middle_Tick_Color),
+               Gtk.Widget.Styles.Line_Cap_Property.Style_Get
+                 (Widget, "middle-tick-line-cap")));
+         Scale.Major_Ticks.all.Set
+           (From    => Scale.Major_Ticks.all.Get_From,
+            Length  => Scale.Major_Ticks.all.Get_Length,
+            Breadth => Scale.Major_Ticks.all.Get_Breadth,
+            Angle   => Scale.Major_Ticks.all.Get_Angle,
+            Ticks   => Scale.Major_Ticks.all.Get_Ticks,
+            Line    =>
+              (Scale.Major_Ticks.all.Get_Line.Width,
+               Gtk.Widget.Styles.Style_Get
+                 (Widget, "major-tick-color", Major_Tick_Color),
+               Gtk.Widget.Styles.Line_Cap_Property.Style_Get
+                 (Widget, "major-tick-line-cap")));
+         Scale.Annotation.all.Set
+           (Ticks       => Scale.Annotation.all.Get_Ticks,
+            From        => Scale.Annotation.all.Get_From,
+            Length      => Scale.Annotation.all.Get_Length,
+            Face        => Scale.Annotation.all.Get_Face,
+            Scale_Angle => Scale.Annotation.all.Get_Scale_Angle,
+            Height      => Scale.Annotation.all.Get_Height,
+            Stretch     => Scale.Annotation.all.Get_Stretch,
+            Text_Angle  => Scale.Annotation.all.Get_Text_Angle,
+            Justify     => Scale.Annotation.all.Get_Justify,
+            Color       =>
+              Gtk.Widget.Styles.Style_Get (Widget, "text-color", Text_Color));
+         Scale.Label.all.Set
+           (Location => Scale.Label.all.Get_Location,
+            Face     => Scale.Label.all.Get_Face,
+            Height   => Scale.Label.all.Get_Height,
+            Stretch  => Scale.Label.all.Get_Stretch,
+            Mode     => Scale.Label.all.Get_Mode,
+            Angle    => Scale.Label.all.Get_Angle,
+            Skew     => Scale.Label.all.Get_Skew,
+            Color    =>
+              Gtk.Widget.Styles.Style_Get (Widget, "text-color", Text_Color));
       end Set;
    begin
-      Widget.Background.Set
-      (  Height         => Widget.Background.Get_Height,
-         Width          => Widget.Background.Get_Width,
-         Center         => Widget.Background.Get_Center,
-         Rotation_Angle => Widget.Background.Get_Rotation_Angle,
-         Corner_Radius  => Widget.Background.Get_Corner_Radius,
-         Border_Width   => Widget.Background.Get_Border_Width,
-         Border_Depth   => Widget.Background.Get_Border_Depth,
-         Border_Color   => Widget.Background.Get_Border_Color,
-         Border_Shadow  => Widget.Background.Get_Border_Shadow,
-         Color =>
-            Style_Get (Widget, "backgound-color", Background_Color)
-      );
-      Set (Widget.Celsius);
-      Set (Widget.Fahrenheit);
+      Widget.all.Background.all.Set
+        (Height         => Widget.all.Background.all.Get_Height,
+         Width          => Widget.all.Background.all.Get_Width,
+         Center         => Widget.all.Background.all.Get_Center,
+         Rotation_Angle => Widget.all.Background.all.Get_Rotation_Angle,
+         Corner_Radius  => Widget.all.Background.all.Get_Corner_Radius,
+         Border_Width   => Widget.all.Background.all.Get_Border_Width,
+         Border_Depth   => Widget.all.Background.all.Get_Border_Depth,
+         Border_Color   => Widget.all.Background.all.Get_Border_Color,
+         Border_Shadow  => Widget.all.Background.all.Get_Border_Shadow,
+         Color          =>
+           Gtk.Widget.Styles.Style_Get
+             (Widget, "backgound-color", Background_Color));
+      Set (Widget.all.Celsius);
+      Set (Widget.all.Fahrenheit);
    end Style_Changed;
 
 end Gtk.Meter.Thermo_Dual;

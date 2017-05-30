@@ -1,439 +1,104 @@
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-wall_clock-modern.adb
-1        44:4    use Cairo.Line_Cap_Property;
-2        45:4    use Gtk.Widget.Styles.Line_Cap_Property;
-3        29:33 with Cairo;                     use Cairo;
-4        30:33 with Glib.Properties.Creation;  use Glib.Properties.Creation;
-5        31:33 with Glib.Types;                use Glib.Types;
-6        33:33 with Gtk.Enums;                 use Gtk.Enums;
-7        34:33 with Gtk.Missed;                use Gtk.Missed;
-8        35:33 with Gtk.Widget.Styles;         use Gtk.Widget.Styles;
-9        32:33 with Gtkada.Types;              use Gtkada.Types;
-10        36:33 with Pango.Cairo.Fonts;         use Pango.Cairo.Fonts;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-wall_clock-modern.ads
-1        184:4    use Gtk.Layered.Cache;
-2        46:4    use Gtk.Layered.Elliptic_Annotation;
-3        47:4    use Gtk.Layered.Elliptic_Background;
-4        185:4    use Gtk.Layered.Elliptic_Background;
-5        186:4    use Gtk.Layered.Elliptic_Scale;
-6        28:32 with Ada.Calendar;             use Ada.Calendar;
-7        29:32 with Gdk.Color;                use Gdk.Color;
-8        30:32 with Gtk.Adjustment;           use Gtk.Adjustment;
-9        31:32 with Gtk.Enums.String_Lists;   use Gtk.Enums.String_Lists;
-10        33:32 with Gtk.Handlers.References;  use Gtk.Handlers.References;
-11        32:32 with Gtk.Handlers;             use Gtk.Handlers;
-12        36:32 with Gtk.Layered.Cache;        use Gtk.Layered.Cache;
-13        35:32 with Gtk.Layered.Needle;       use Gtk.Layered.Needle;
-14        34:32 with Gtk.Layered;              use Gtk.Layered;
-15        37:32 with Gtk.Widget;               use Gtk.Widget;
-16        38:32 with Interfaces.C;             use Interfaces.C;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-meter-thermo.adb
-1        29:33 with Ada.Strings;               use Ada.Strings;
-2        32:33 with Cairo.Line_Cap_Property;   use Cairo.Line_Cap_Property;
-3        31:33 with Cairo;                     use Cairo;
-4        34:33 with Gdk.Color.IHLS;            use Gdk.Color.IHLS;
-5        37:33 with Glib.Properties.Creation;  use Glib.Properties.Creation;
-6        38:33 with Glib.Types;                use Glib.Types;
-7        40:33 with Gtk.Enums;                 use Gtk.Enums;
-8        44:33 with Pango.Cairo.Fonts;         use Pango.Cairo.Fonts;
-9        42:43 with Gtk.Widget.Styles.Line_Cap_Property; use  Gtk.Widget.Styles.Line_Cap_Property;
-10        41:33 with Gtk.Widget.Styles;         use Gtk.Widget.Styles;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-meter-thermo.ads
-1        259:4    use Gtk.Layered.Cache;
-2        260:4    use Gtk.Layered.Flat_Scale;
-3        44:1 use  Gtk.Layered.Rectangular_Background;
-4        28:36 with Gdk.Color;                    use Gdk.Color;
-5        29:36 with Gtk.Adjustment;               use Gtk.Adjustment;
-6        30:36 with Gtk.Enums.String_Lists;       use Gtk.Enums.String_Lists;
-7        32:36 with Gtk.Layered.Bar;              use Gtk.Layered.Bar;
-8        33:36 with Gtk.Layered.Cache;            use Gtk.Layered.Cache;
-9        34:36 with Gtk.Layered.Flat_Annotation;  use Gtk.Layered.Flat_Annotation;
-10        35:36 with Gtk.Layered.Label;            use Gtk.Layered.Label;
-11        36:36 with Gtk.Layered.Line;             use Gtk.Layered.Line;
-12        31:36 with Gtk.Layered;                  use Gtk.Layered;
-13        37:36 with Gtk.Missed;                   use Gtk.Missed;
-14        38:36 with Gtk.Widget;                   use Gtk.Widget;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-meter-thermo_dual.adb
-1        354:10          use Strings_Edit;
-2        29:33 with Ada.Strings;               use Ada.Strings;
-3        32:33 with Cairo.Line_Cap_Property;   use Cairo.Line_Cap_Property;
-4        31:33 with Cairo;                     use Cairo;
-5        34:33 with Gdk.Color.IHLS;            use Gdk.Color.IHLS;
-6        37:33 with Glib.Properties.Creation;  use Glib.Properties.Creation;
-7        38:33 with Glib.Types;                use Glib.Types;
-8        40:33 with Gtk.Enums;                 use Gtk.Enums;
-9        44:33 with Pango.Cairo.Fonts;         use Pango.Cairo.Fonts;
-10        42:43 with Gtk.Widget.Styles.Line_Cap_Property; use  Gtk.Widget.Styles.Line_Cap_Property;
-11        41:33 with Gtk.Widget.Styles;         use Gtk.Widget.Styles;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-meter-thermo_dual.ads
-1        309:4    use Gtk.Layered.Cache;
-2        310:4    use Gtk.Layered.Flat_Scale;
-3        45:1 use  Gtk.Layered.Rectangular_Background;
-4        28:36 with Gdk.Color;                    use Gdk.Color;
-5        29:36 with Gtk.Adjustment;               use Gtk.Adjustment;
-6        30:36 with Gtk.Enums.String_Lists;       use Gtk.Enums.String_Lists;
-7        32:36 with Gtk.Layered.Bar;              use Gtk.Layered.Bar;
-8        33:36 with Gtk.Layered.Cache;            use Gtk.Layered.Cache;
-9        34:36 with Gtk.Layered.Flat_Annotation;  use Gtk.Layered.Flat_Annotation;
-10        35:36 with Gtk.Layered.Label;            use Gtk.Layered.Label;
-11        36:36 with Gtk.Layered.Line;             use Gtk.Layered.Line;
-12        31:36 with Gtk.Layered;                  use Gtk.Layered;
-13        37:36 with Gtk.Missed;                   use Gtk.Missed;
-14        38:36 with Gtk.Widget;                   use Gtk.Widget;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-layered-label-digital.adb
-1       646:7       use Gtk.Layered.Waveform.Edit;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-layered-label-digital.ads
-1       28:26 with Ada.Numerics;       use Ada.Numerics;
-2       29:26 with Gtk.Handlers;       use Gtk.Handlers;
-3       30:26 with Pango.Cairo.Fonts;  use Pango.Cairo.Fonts;
-4       31:26 with Strings_Edit;       use Strings_Edit;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-layered-label.adb
-1       28:35 with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
-2       29:35 with Glib.Properties.Creation;    use Glib.Properties.Creation;
-3       30:35 with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-layered-label.ads
-1       28:26 with Ada.Numerics;       use Ada.Numerics;
-2       30:26 with Pango.Cairo.Fonts;  use Pango.Cairo.Fonts;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-layered-line.adb
-1       28:35 with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
-2       29:38 with Glib.Properties.Creation;       use Glib.Properties.Creation;
-3       30:38 with Gtk.Layered.Stream_IO;          use Gtk.Layered.Stream_IO;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-layered-rectangle.adb
-1        28:35 with Glib.Properties.Creation;    use Glib.Properties.Creation;
-2        29:35 with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-layered-refresh_engine.adb
-1        28:26 with Ada.IO_Exceptions;  use Ada.IO_Exceptions;
-2        29:26 with Glib.Messages;      use Glib.Messages;
-3        30:26 with Gtk.Missed;         use Gtk.Missed;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-layered-refresh_engine.ads
-1        106:4    use Layered_Reference;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-layered-sector_needle.adb
-1        28:35 with Glib.Properties.Creation;    use Glib.Properties.Creation;
-2        29:35 with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-layered-sector_needle.ads
-1        28:21 with Ada.Numerics;  use Ada.Numerics;
-2        29:21 with Gtk.Handlers;  use Gtk.Handlers;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-layered-waveform-ring_data_buffer.adb
-1        28:26 with Ada.Exceptions;     use Ada.Exceptions;
-2        29:26 with Ada.IO_Exceptions;  use Ada.IO_Exceptions;
-3        30:26 with Glib.Messages;      use Glib.Messages;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-layered-waveform.ads
-1        31:32 with Gtk.Handlers.References;  use Gtk.Handlers.References;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-meter-elliptic_90.adb
-1        47:4    use Cairo.Line_Cap_Property;
-2        48:4    use Gtk.Layered.Rectangular_Clip_Region;
-3        49:4    use Gtk.Widget.Styles.Line_Cap_Property;
-4        35:33 with Glib.Properties.Creation;  use Glib.Properties.Creation;
-5        36:33 with Glib.Types;                use Glib.Types;
-6        38:33 with Gtk.Enums;                 use Gtk.Enums;
-7        40:33 with Gtk.Missed;                use Gtk.Missed;
-8        41:33 with Gtk.Widget.Styles;         use Gtk.Widget.Styles;
-9        44:33 with Pango.Cairo.Fonts;         use Pango.Cairo.Fonts;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-meter-elliptic_90.ads
-1        206:4    use Gtk.Layered.Cache;
-2        41:4    use Gtk.Layered.Elliptic_Annotation;
-3        207:4    use Gtk.Layered.Elliptic_Scale;
-4        42:4    use Gtk.Layered.Rectangular_Background;
-5        28:31 with Gtk.Adjustment;          use Gtk.Adjustment;
-6        29:31 with Gtk.Enums.String_Lists;  use Gtk.Enums.String_Lists;
-7        32:31 with Gtk.Layered.Cache;       use Gtk.Layered.Cache;
-8        31:31 with Gtk.Layered.Needle;      use Gtk.Layered.Needle;
-9        30:31 with Gtk.Layered;             use Gtk.Layered;
-10        33:31 with Gtk.Widget;              use Gtk.Widget;
     C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-meter-round_90.adb
-1        44:4    use Gtk.Layered.Rectangular_Clip_Region;
-2        45:4    use Gtk.Widget.Styles.Line_Cap_Property;
-3        30:33 with Cairo.Line_Cap_Property;   use Cairo.Line_Cap_Property;
-4        29:33 with Cairo;                     use Cairo;
-5        31:33 with Glib.Properties.Creation;  use Glib.Properties.Creation;
-6        32:33 with Glib.Types;                use Glib.Types;
-7        34:33 with Gtk.Enums;                 use Gtk.Enums;
-8        35:33 with Gtk.Missed;                use Gtk.Missed;
-9        36:33 with Gtk.Widget.Styles;         use Gtk.Widget.Styles;
-10        33:33 with Gtkada.Types;              use Gtkada.Types;
-11        37:33 with Pango.Cairo.Fonts;         use Pango.Cairo.Fonts;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-meter-round_90.ads
-1        207:4    use Gtk.Layered.Cache;
-2        42:4    use Gtk.Layered.Elliptic_Annotation;
-3        208:4    use Gtk.Layered.Elliptic_Scale;
-4        43:4    use Gtk.Layered.Rectangular_Background;
-5        28:31 with Gdk.Color;               use Gdk.Color;
-6        29:31 with Gtk.Adjustment;          use Gtk.Adjustment;
-7        30:31 with Gtk.Enums.String_Lists;  use Gtk.Enums.String_Lists;
-8        33:31 with Gtk.Layered.Cache;       use Gtk.Layered.Cache;
-9        32:31 with Gtk.Layered.Needle;      use Gtk.Layered.Needle;
-10        31:31 with Gtk.Layered;             use Gtk.Layered;
-11        34:31 with Gtk.Widget;              use Gtk.Widget;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-meter-round_94.adb
-1        44:4    use Gtk.Widget.Styles.Line_Cap_Property;
-2        30:33 with Cairo.Ellipses;            use Cairo.Ellipses;
-3        31:33 with Cairo.Line_Cap_Property;   use Cairo.Line_Cap_Property;
-4        29:33 with Cairo;                     use Cairo;
-5        32:33 with Glib.Properties.Creation;  use Glib.Properties.Creation;
-6        33:33 with Glib.Types;                use Glib.Types;
-7        35:33 with Gtk.Enums;                 use Gtk.Enums;
-8        36:33 with Gtk.Missed;                use Gtk.Missed;
-9        37:33 with Gtk.Widget.Styles;         use Gtk.Widget.Styles;
-10        34:33 with Gtkada.Types;              use Gtkada.Types;
-11        38:33 with Pango.Cairo.Fonts;         use Pango.Cairo.Fonts;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-meter-round_94.ads
-1        208:4    use Gtk.Layered.Arc;
-2        209:4    use Gtk.Layered.Cache;
-3        43:4    use Gtk.Layered.Elliptic_Annotation;
-4        44:4    use Gtk.Layered.Elliptic_Background;
-5        210:4    use Gtk.Layered.Elliptic_Scale;
-6        28:31 with Gdk.Color;               use Gdk.Color;
-7        29:31 with Gtk.Adjustment;          use Gtk.Adjustment;
-8        30:31 with Gtk.Enums.String_Lists;  use Gtk.Enums.String_Lists;
-9        33:31 with Gtk.Layered.Cache;       use Gtk.Layered.Cache;
-10        32:31 with Gtk.Layered.Needle;      use Gtk.Layered.Needle;
-11        31:31 with Gtk.Layered;             use Gtk.Layered;
-12        34:31 with Gtk.Widget;              use Gtk.Widget;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-meter-thermo_symmetric.adb
-1        29:33 with Ada.Strings;               use Ada.Strings;
-2        32:33 with Cairo.Line_Cap_Property;   use Cairo.Line_Cap_Property;
-3        31:33 with Cairo;                     use Cairo;
-4        34:33 with Gdk.Color.IHLS;            use Gdk.Color.IHLS;
-5        37:33 with Glib.Properties.Creation;  use Glib.Properties.Creation;
-6        38:33 with Glib.Types;                use Glib.Types;
-7        40:33 with Gtk.Enums;                 use Gtk.Enums;
-8        44:33 with Pango.Cairo.Fonts;         use Pango.Cairo.Fonts;
-9        42:43 with Gtk.Widget.Styles.Line_Cap_Property; use  Gtk.Widget.Styles.Line_Cap_Property;
-10        41:33 with Gtk.Widget.Styles;         use Gtk.Widget.Styles;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-meter-thermo_symmetric.ads
-1        304:4    use Gtk.Layered.Cache;
-2        305:4    use Gtk.Layered.Flat_Scale;
-3        44:1 use  Gtk.Layered.Rectangular_Background;
-4        28:36 with Gdk.Color;                    use Gdk.Color;
-5        29:36 with Gtk.Adjustment;               use Gtk.Adjustment;
-6        30:36 with Gtk.Enums.String_Lists;       use Gtk.Enums.String_Lists;
-7        32:36 with Gtk.Layered.Bar;              use Gtk.Layered.Bar;
-8        33:36 with Gtk.Layered.Cache;            use Gtk.Layered.Cache;
-9        34:36 with Gtk.Layered.Flat_Annotation;  use Gtk.Layered.Flat_Annotation;
-10        35:36 with Gtk.Layered.Label;            use Gtk.Layered.Label;
-11        36:36 with Gtk.Layered.Line;             use Gtk.Layered.Line;
-12        31:36 with Gtk.Layered;                  use Gtk.Layered;
-13        37:36 with Gtk.Missed;                   use Gtk.Missed;
-14        38:36 with Gtk.Widget;                   use Gtk.Widget;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-missed.adb
-1        1784:7       use Gtk.Css_Provider;
-2        338:10          use Gdk.Pixbuf;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-oscilloscope-get_type.adb
-1        28:19 with Glib.Types;  use Glib.Types;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-oscilloscope-on_button_press.adb
-1        39:4    use Menu_Handlers;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-oscilloscope-on_button_release.adb
-1        35:4    use Menu_Handlers;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-oscilloscope-on_motion.adb
-1        92:13             use Strings_Edit.Integers;
-2        91:13             use Strings_Edit;
-3        45:7       use Cairo.Elementary_Functions;
-4        44:7       use Gtk.Layered.Waveform.Edit;
-5        43:7       use Strings_Edit;
+22  C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-meter-round_90.ads
+
+    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-meter-elliptic_90.adb
+19  C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-meter-elliptic_90.ads
+
     C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-recent_manager_alt.adb
-1        180:7       use Glib.Chars_Ptr_Vectors;
-2        227:7       use Glib.Chars_Ptr_Vectors;
-3        70:7       use Interfaces.C.Strings;
-4        33:4    use Interfaces.C;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-recent_manager_alt.ads
-1        28:21 with Ada.Calendar;  use Ada.Calendar;
-2        29:21 with Gdk.Pixbuf;    use Gdk.Pixbuf;
-3        30:21 with Gdk.Screen;    use Gdk.Screen;
-4        31:21 with Glib.Error;    use Glib.Error;
-5        32:21 with Gtk.Enums;     use Gtk.Enums;
-6        33:21 with Gtk.Missed;    use Gtk.Missed;
-7        34:21 with Gtkada.Types;  use Gtkada.Types;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-recent_manager_keys.adb
-1        28:26 with Ada.Exceptions;     use Ada.Exceptions;
-2        29:26 with Ada.IO_Exceptions;  use Ada.IO_Exceptions;
-3        30:26 with Glib.Messages;      use Glib.Messages;
-4        31:26 with Glib.Values;        use Glib.Values;
-5        32:26 with Gtk.Missed;         use Gtk.Missed;
-6        33:26 with Gtk.Tree_Model;     use Gtk.Tree_Model;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-recent_manager_keys.ads
-1        28:31 with Gtk.List_Store;          use Gtk.List_Store;
-2        29:31 with Gtk.Recent_Manager_Alt;  use Gtk.Recent_Manager_Alt;
+11  C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-recent_manager_alt.ads
+
     C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_buffer.adb
-1        81:7       use Marks_List;
-2        28:21 with Interfaces.C;  use Interfaces.C;
-3        29:21 with System;        use System;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_buffer.ads
-1        28:32 with Glib.Properties;          use Glib.Properties;
-2        29:32 with Gtk.Source_Language;      use Gtk.Source_Language;
-3        30:32 with Gtk.Source_Mark;          use Gtk.Source_Mark;
-4        31:32 with Gtk.Source_Style_Scheme;  use Gtk.Source_Style_Scheme;
-5        33:32 with Gtk.Text_Buffer;          use Gtk.Text_Buffer;
-6        32:32 with Gtk.Text_Iter;            use Gtk.Text_Iter;
-7        34:32 with Gtk.Text_Tag_Table;       use Gtk.Text_Tag_Table;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_language.adb
-1        39:7       use Glib.Chars_Ptr_Vectors;
-2        91:7       use Glib.Chars_Ptr_Vectors;
-3        162:7       use Glib.Chars_Ptr_Vectors;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_language_manager.adb
-1        28:31 with Glib.Chars_Ptr_Vectors;  use Glib.Chars_Ptr_Vectors;
-2        29:31 with Interfaces.C;            use Interfaces.C;
-3        30:31 with System;                  use System;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_language_manager.ads
-1        28:29 with Gtk.Source_Language;   use Gtk.Source_Language;
-2        29:29 with Interfaces.C.Strings;  use Interfaces.C.Strings;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_mark.adb
-1        28:29 with Interfaces.C.Strings;  use Interfaces.C.Strings;
-2        29:29 with Interfaces.C;          use Interfaces.C;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_mark.ads
-1        28:22 with Gtk.Text_Mark;  use Gtk.Text_Mark;
-2        29:22 with System;         use System;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_mark_attributes.adb
-1        28:29 with Interfaces.C.Strings;  use Interfaces.C.Strings;
-2        29:29 with Interfaces.C;          use Interfaces.C;
-3        30:29 with System;                use System;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_mark_attributes.ads
-1        28:24 with Gdk.Pixbuf;       use Gdk.Pixbuf;
-2        29:24 with Gdk.RGBA;         use Gdk.RGBA;
-3        30:24 with Gtk.Source_Mark;  use Gtk.Source_Mark;
-4        31:24 with Gtk.Widget;       use Gtk.Widget;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_style.adb
-1        28:15 with System;  use System;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_style_scheme.adb
-1        38:7       use Glib.Chars_Ptr_Vectors;
-2        117:7       use Interfaces.C;
-3        28:15 with System;  use System;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_style_scheme.ads
-1        29:29 with Gtk.Source_Style;      use Gtk.Source_Style;
-2        28:29 with Interfaces.C.Strings;  use Interfaces.C.Strings;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_style_scheme_manager.adb
-1        28:31 with Glib.Chars_Ptr_Vectors;  use Glib.Chars_Ptr_Vectors;
-2        29:31 with Interfaces.C;            use Interfaces.C;
-3        30:31 with System;                  use System;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_style_scheme_manager.ads
-1        28:32 with Gtk.Source_Style_Scheme;  use Gtk.Source_Style_Scheme;
-2        29:32 with Interfaces.C.Strings;     use Interfaces.C.Strings;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_view.adb
-1        28:21 with Interfaces.C;  use Interfaces.C;
-2        29:21 with System;        use System;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_view.ads
-1        28:35 with Gdk.Color;                   use Gdk.Color;
-2        29:35 with Gdk.Pixbuf;                  use Gdk.Pixbuf;
-3        30:35 with Gtk.Source_Buffer;           use Gtk.Source_Buffer;
-4        31:35 with Gtk.Source_Mark_Attributes;  use Gtk.Source_Mark_Attributes;
-5        32:35 with Gtk.Text_View;               use Gtk.Text_View;
+10  C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_buffer.ads
+
     C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-tree_model-abstract_store.adb
-1        946:7       use System.Storage_Elements;
-2        28:29 with Ada.Exceptions;        use Ada.Exceptions;
-3       30:29 with Glib.Messages;         use Glib.Messages;
-4        29:29 with Glib;                  use Glib;
-5        31:29 with Gtk.Missed;            use Gtk.Missed;
-6        33:29 with Interfaces.C.Strings;  use Interfaces.C.Strings;
-7        32:29 with Interfaces.C;          use Interfaces.C;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-tree_model-abstract_store.ads
-1        323:4    use System;
-2        36:21 with Glib.Values;   use Glib.Values;
-3        37:21 with Gtkada.Types;  use Gtkada.Types;
+10  C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-tree_model-abstract_store.ads
+
     C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-tree_model-columned_store.adb
-1        970:4    use Index_Array_Pointers;
-2        28:29 with Ada.Exceptions;        use Ada.Exceptions;
-3        29:29 with Glib.Messages;         use Glib.Messages;
-4        30:29 with Gtk.Missed;            use Gtk.Missed;
-5        31:29 with Interfaces.C.Strings;  use Interfaces.C.Strings;
-6        32:29 with System;                use System;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-tree_model-columned_store.ads
-1        40:38 with Glib.Values;                    use Glib.Values;
-2        42:38 with Gtk.Handlers;                   use Gtk.Handlers;
-3        41:38 with Gtk.Tree_Model.Abstract_Store;  use Gtk.Tree_Model.Abstract_Store;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-tree_model-extension_store.adb
-1        576:7       use Address_To_GInt_Array;
-2        28:23 with Ada.Exceptions;  use Ada.Exceptions;
-3        29:23 with Glib.Messages;   use Glib.Messages;
-4        30:23 with Gtk.Missed;      use Gtk.Missed;
-5        31:23 with System;          use System;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-tree_model-extension_store.ads
-1        41:38 with Glib.Values;                    use Glib.Values;
-2        42:38 with Gtk.Handlers;                   use Gtk.Handlers;
-3        43:38 with Gtk.Tree_Model.Abstract_Store;  use Gtk.Tree_Model.Abstract_Store;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-tree_model-generic_sort.ads
-1        33:38 with Gtk.Enums;                      use Gtk.Enums;
-2        34:38 with Gtk.Tree_Model.Abstract_Store;  use Gtk.Tree_Model.Abstract_Store;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-widget-styles-css_store.adb
-1        149:13             use Widget_List;
-2        46:7       use Conversions;
-3        28:33 with Gdk.Color;                 use Gdk.Color;
-4        32:33 with Glib.Properties.Creation;  use Glib.Properties.Creation;
-5        29:33 with Gtk.Container;             use Gtk.Container;
-6        30:33 with Gtk.Missed;                use Gtk.Missed;
-7        31:33 with Gtk.Style;                 use Gtk.Style;
-8        33:33 with System;                    use System;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-widget-styles-css_store.ads
-1        28:20 with Ada.Text_IO;  use Ada.Text_IO;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-widget-styles-generic_enumeration.ads
-1        56:4    use Enumeration_Property;
+9   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-tree_model-columned_store.ads
+
     C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-widget-styles-store.adb
-1        149:13             use Widget_List;
-2        46:7       use Conversions;
-3        28:33 with Gdk.Color;                 use Gdk.Color;
-4        32:33 with Glib.Properties.Creation;  use Glib.Properties.Creation;
-5        29:33 with Gtk.Container;             use Gtk.Container;
-6        30:33 with Gtk.Missed;                use Gtk.Missed;
-7        31:33 with Gtk.Style;                 use Gtk.Style;
-8        33:33 with System;                    use System;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-widget-styles-store.ads
-1        28:20 with Ada.Text_IO;  use Ada.Text_IO;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-widget-styles.adb
-1        188:7       use Conversions;
-2        88:7       use Interfaces.C.Strings;
-3        128:7       use Interfaces.C.Strings;
-4        34:4    use System;
-5        28:33 with Glib.Properties.Creation;  use Glib.Properties.Creation;
-6        29:33 with Gtk.Missed;                use Gtk.Missed;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-widget-styles.ads
-1        109:29 with Gdk.Color;             use Gdk.Color;
-2        110:29 with Glib.Values;           use Glib.Values;
-3        111:29 with Gtk.Widget;            use Gtk.Widget;
-4        112:29 with Interfaces.C.Strings;  use Interfaces.C.Strings;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\pango-cairo-fonts.adb
-1        61:7       use Ada.IO_Exceptions;
-2        76:7       use Ada.IO_Exceptions;
-3        720:7       use Glib.Error;
-4        722:7       use Interfaces.C;
-5        721:7       use System;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-base64.adb
-1        28:26 with Ada.Exceptions;     use Ada.Exceptions;
-2        29:26 with Ada.IO_Exceptions;  use Ada.IO_Exceptions;
-3        30:26 with Interfaces;         use Interfaces;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-fields.adb
-1        28:25 with Ada.IO_Exceptions; use Ada.IO_Exceptions;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-integer_edit.adb
-1        28:30 with Ada.IO_Exceptions;      use Ada.IO_Exceptions;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-quoted.adb
-1        28:28 with Ada.IO_Exceptions;    use Ada.IO_Exceptions;
-2        29:28 with Strings_Edit.Fields;  use Strings_Edit.Fields;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-roman_edit.adb
-1        28:31 with Ada.Characters.Handling; use Ada.Characters.Handling;
-2        29:31 with Ada.IO_Exceptions;       use Ada.IO_Exceptions;
+9   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-widget-styles-store.ads
+
+    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-recent_manager_keys.adb
+8   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-recent_manager_keys.ads
+
+    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-tree_model-extension_store.adb
+8   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-tree_model-extension_store.ads
+
+    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_mark_attributes.adb
+7   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_mark_attributes.ads
+
+    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_view.adb
+7   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_view.ads
+
+5   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-oscilloscope-on_motion.adb
+
+    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_language_manager.adb
+5   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_language_manager.ads
+
+    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_style_scheme.adb
+5   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_style_scheme.ads
+
+    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_style_scheme_manager.adb
+5   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_style_scheme_manager.ads
+
+5   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\pango-cairo-fonts.adb
+
+    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-layered-refresh_engine.adb
+4   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-layered-refresh_engine.ads
+
+    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-layered-sector_needle.adb
+4   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-layered-sector_needle.ads
+
+    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_mark.adb
+4   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_mark.ads
+
+3   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-layered-line.adb
+
+3   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-layered-waveform-ring_data_buffer.adb
+
+3   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_language.adb
+
+3   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-base64.adb
+
     C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-streams-generic_integer.adb
-1        28:26 with Ada.Exceptions;     use Ada.Exceptions;
-2        29:26 with Ada.IO_Exceptions;  use Ada.IO_Exceptions;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-streams-generic_integer.ads
-1        28:20 with Ada.Streams;  use Ada.Streams;
+3   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-streams-generic_integer.ads
+
     C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-streams-generic_modular.adb
-1        28:26 with Ada.Exceptions;     use Ada.Exceptions;
-2        29:26 with Ada.IO_Exceptions;  use Ada.IO_Exceptions;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-streams-generic_modular.ads
-1        28:20 with Ada.Streams;  use Ada.Streams;
+3   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-streams-generic_modular.ads
+
     C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-streams-generic_unsigned.adb
-1        29:26 with Ada.Exceptions;     use Ada.Exceptions;
-2        30:26 with Ada.IO_Exceptions;  use Ada.IO_Exceptions;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-streams-generic_unsigned.ads
-1        28:20 with Ada.Streams;  use Ada.Streams;
+3   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-streams-generic_unsigned.ads
+
     C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-streams.adb
-1        28:26 with Ada.IO_Exceptions;  use Ada.IO_Exceptions;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-streams.ads
-1        113:4    use System.Storage_Elements;
-2        31:20 with Ada.Streams;  use Ada.Streams;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-utf8-integer_edit.adb
-1        28:26 with Ada.IO_Exceptions;  use Ada.IO_Exceptions;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-utf8-mapping.adb
-1        28:26 with Ada.IO_Exceptions;  use Ada.IO_Exceptions;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-utf8-maps-constants.ads
-1        31:1 use  Strings_Edit.UTF8.Categorization;
-2        28:34 with Strings_Edit.UTF8.Mapping;  use Strings_Edit.UTF8.Mapping;
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-utf8-maps.adb
-1        28:26 with Ada.IO_Exceptions;  use Ada.IO_Exceptions;
-2        29:26 with Ada.Strings;        use Ada.Strings;
+3   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-streams.ads
+
+2   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-layered-rectangle.adb
+
+2   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-missed.adb
+
+2   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-tree_model-generic_sort.ads
+
+2   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-roman_edit.adb
+
+2   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-quoted.adb
+
+2   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-utf8-maps-constants.ads
+
+1   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-layered-waveform.ads
+
+1   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-oscilloscope-get_type.adb
+
+1   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-oscilloscope-on_button_press.adb
+
+1   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-oscilloscope-on_button_release.adb
+
+1   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_style.adb
+
+1   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-widget-styles-generic_enumeration.ads
+
+1   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-fields.adb
+
+1   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-integer_edit.adb
+
+1   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\strings_edit-utf8-integer_edit.adb

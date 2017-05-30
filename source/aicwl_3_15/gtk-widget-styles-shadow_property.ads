@@ -23,12 +23,11 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 with Gtk.Enums.Shadow_Property;
 with Gtk.Widget.Styles.Generic_Enumeration;
 
 package Gtk.Widget.Styles.Shadow_Property is
-   new Gtk.Widget.Styles.Generic_Enumeration
-       (  Gtk.Enums.Shadow_Property
-       );
+  new Gtk.Widget.Styles.Generic_Enumeration
+    (Gtk.Enums.Shadow_Property);

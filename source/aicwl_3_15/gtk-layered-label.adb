@@ -25,15 +25,18 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
-with Glib.Properties.Creation;    use Glib.Properties.Creation;
-with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
-
 with Ada.Unchecked_Deallocation;
+
+with Cairo.Elementary_Functions;
 with Cairo.Font_Slant_Property;
+
+with Glib.Properties.Creation;
+
+with Gtk.Layered.Stream_IO;
 with Gtk.Layered.Text_Transformation_Property;
-with Pango.Enums.Weight_Property;
+
 with Pango.Cairo.Fonts.Font_Type_Property;
+with Pango.Enums.Weight_Property;
 
 package body Gtk.Layered.Label is
 
@@ -111,21 +114,21 @@ package body Gtk.Layered.Label is
 
    procedure Add_Label
      (Under    : not null access Layer_Location'Class;
-      Text     : UTF8_String                := "";
-      Location : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
-      Face     : Pango_Cairo_Font           :=
-        Create_Toy
+      Text     : UTF8_String                        := "";
+      Location : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
+      Face     : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+        Pango.Cairo.Fonts.Create_Toy
           (Family => "sans",
            Slant  => Cairo.Cairo_Font_Slant_Normal,
            Weight => Cairo.Cairo_Font_Weight_Normal);
-      Height   : Gdouble                    := 12.0;
-      Stretch  : Gdouble                    := 1.0;
-      Mode     : Text_Transformation        := Moved_Centered;
-      Color    : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Angle    : Gdouble                    := 3.0 * Pi / 2.0;
-      Skew     : Gdouble                    := 0.0;
-      Markup   : Boolean                    := False;
-      Scaled   : Boolean                    := False)
+      Height   : Gdouble                            := 12.0;
+      Stretch  : Gdouble                            := 1.0;
+      Mode     : Text_Transformation                := Moved_Centered;
+      Color    : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Angle    : Gdouble                            := 3.0 * Ada.Numerics.Pi / 2.0;
+      Skew     : Gdouble                            := 0.0;
+      Markup   : Boolean                            := False;
+      Scaled   : Boolean                            := False)
    is
       Ptr   : Label_Ptr := new Label_Layer;
       Layer : Label_Layer renames Ptr.all;
@@ -152,21 +155,21 @@ package body Gtk.Layered.Label is
 
    function Add_Label
      (Under    : not null access Layer_Location'Class;
-      Text     : UTF8_String                := "";
-      Location : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
-      Face     : Pango_Cairo_Font           :=
-        Create_Toy
+      Text     : UTF8_String                        := "";
+      Location : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
+      Face     : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+        Pango.Cairo.Fonts.Create_Toy
           (Family => "sans",
            Slant  => Cairo.Cairo_Font_Slant_Normal,
            Weight => Cairo.Cairo_Font_Weight_Normal);
-      Height   : Gdouble                    := 12.0;
-      Stretch  : Gdouble                    := 1.0;
-      Mode     : Text_Transformation        := Moved_Centered;
-      Color    : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Angle    : Gdouble                    := 3.0 * Pi / 2.0;
-      Skew     : Gdouble                    := 0.0;
-      Markup   : Boolean                    := False;
-      Scaled   : Boolean                    := False)
+      Height   : Gdouble                            := 12.0;
+      Stretch  : Gdouble                            := 1.0;
+      Mode     : Text_Transformation                := Moved_Centered;
+      Color    : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Angle    : Gdouble                            := 3.0 * Ada.Numerics.Pi / 2.0;
+      Skew     : Gdouble                            := 0.0;
+      Markup   : Boolean                            := False;
+      Scaled   : Boolean                            := False)
       return not null access Label_Layer
    is
       Ptr   : Label_Ptr := new Label_Layer;
@@ -177,7 +180,7 @@ package body Gtk.Layered.Label is
       Layer.Scaled := Scaled;
       Add (Ptr, Under);
       Set
-      (  Layer    => Layer,
+        (Layer    => Layer,
          Location => Location,
          Face     => Face,
          Height   => Height,
@@ -185,8 +188,7 @@ package body Gtk.Layered.Label is
          Mode     => Mode,
          Color    => Color,
          Angle    => Angle,
-         Skew     => Skew
-      );
+         Skew     => Skew);
       return Layer'Unchecked_Access;
    exception
       when others =>
@@ -222,9 +224,11 @@ package body Gtk.Layered.Label is
       end if;
       Cairo.Move_To (Context, X, Y);
       if Layer.Markup then
-         Get_Markup_Extents (Layer.Face, Context, Text, Extents);
+         Pango.Cairo.Fonts.Get_Markup_Extents
+           (Layer.Face, Context, Text, Extents);
       else
-         Get_Text_Extents (Layer.Face, Context, Text, Extents);
+         Pango.Cairo.Fonts.Get_Text_Extents
+           (Layer.Face, Context, Text, Extents);
       end if;
       if Extents.Height > 0.0 and then Extents.Width > 0.0 then
          Gain := Layer.Height / Extents.Height;
@@ -256,38 +260,28 @@ package body Gtk.Layered.Label is
                Cairo.Translate
                  (Cr => Context,
                   Tx => (Extents.Width * 0.5 * Gain * Layer.Stretch *
-                             Cos (Layer.Angle)),
-                  Ty => (-Extents.Height * 0.5 * Gain * Sin (Layer.Angle)));
+                             Cairo.Elementary_Functions.Cos (Layer.Angle)),
+                  Ty => (-Extents.Height * 0.5 * Gain *
+                             Cairo.Elementary_Functions.Sin (Layer.Angle)));
             when Moved_Outside =>
                Cairo.Translate
                  (Cr => Context,
                   Tx => (Extents.Width * 0.5 * Gain * Layer.Stretch *
-                             Cos (Layer.Angle)),
-                  Ty => (Extents.Height * 0.5 * Gain * Sin (Layer.Angle)));
+                             Cairo.Elementary_Functions.Cos (Layer.Angle)),
+                  Ty => (Extents.Height * 0.5 * Gain *
+                             Cairo.Elementary_Functions.Sin (Layer.Angle)));
             when Moved_Centered =>
                null;
             when Rotated =>
---                 declare
---                    Cos_Angle : constant GDouble := cos (Layer.Angle);
---                    Sin_Angle : constant GDouble := sin (Layer.Angle);
---                 begin
---                    Translate
---                    (  Cr => Context,
---                       Tx => (  Extents.Width  * Sin_Angle
---                             +  Extents.Height * Cos_Angle
---                             ),
---                       Ty => ( -Extents.Width  * Cos_Angle
---                             +  Extents.Height * Sin_Angle
---                    )        );
---                 end;
-               Cairo.Rotate (Context, Layer.Angle + Pi / 2.0);
+               Cairo.Rotate (Context, Layer.Angle + Ada.Numerics.Pi / 2.0);
             when Skewed =>
                Cairo.Rotate (Context, Layer.Angle);
                declare
                   Matrix : aliased Cairo.Cairo_Matrix;
                begin
                   Matrix.Xx := 1.0;
-                  Matrix.Xy := -1.0 * Tan (Layer.Skew);
+                  Matrix.Xy :=
+                    -1.0 * Cairo.Elementary_Functions.Tan (Layer.Skew);
                   Matrix.X0 := 0.0;
                   Matrix.Yx := 0.0;
                   Matrix.Yy := 1.0;
@@ -351,9 +345,9 @@ package body Gtk.Layered.Label is
             X  => -(Extents.X_Bearing + Extents.Width  * 0.5),
             Y  => -(Extents.Y_Bearing + Extents.Height * 0.5));
          if Layer.Markup then
-            Show_Markup (Layer.Face, Context, Text);
+            Pango.Cairo.Fonts.Show_Markup (Layer.Face, Context, Text);
          else
-            Show_Text (Layer.Face, Context, Text);
+            Pango.Cairo.Fonts.Show_Text (Layer.Face, Context, Text);
          end if;
       end if;
       Layer.Updated := False;
@@ -375,7 +369,8 @@ package body Gtk.Layered.Label is
       return Layer.Color;
    end Get_Color;
 
-   function Get_Face (Layer : Label_Layer) return Pango_Cairo_Font is
+   function Get_Face (Layer : Label_Layer)
+                      return Pango.Cairo.Fonts.Pango_Cairo_Font is
    begin
       return Layer.Face;
    end Get_Face;
@@ -407,16 +402,13 @@ package body Gtk.Layered.Label is
       pragma Unreferenced (Layer);
    begin
       return
-      (  Layer_Property'Pos (Layer_Property'Last)
-      -  Layer_Property'Pos (Layer_Property'First)
-      +  1
-      );
+        (Layer_Property'Pos (Layer_Property'Last)
+         - Layer_Property'Pos (Layer_Property'First) + 1);
    end Get_Properties_Number;
 
    overriding function Get_Property_Specification
-            (  Layer    : Label_Layer;
-               Property : Positive
-            )  return Param_Spec is
+     (Layer    : Label_Layer;
+      Property : Positive) return Param_Spec is
    begin
       if Property > Get_Properties_Number (Layer) then
          raise Constraint_Error;
@@ -424,76 +416,68 @@ package body Gtk.Layered.Label is
          case Layer_Property'Val (Property - 1) is
             when Property_X =>
                return
-                  Gnew_Double
-                  (  Name    => "x",
-                     Nick    => "x",
-                     Minimum => Gdouble'First,
-                     Maximum => Gdouble'Last,
-                     Default => 0.0,
-                     Blurb   => "The x-coordinate of the label's " &
-                                "center"
-                  );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "x",
+                    Nick    => "x",
+                    Minimum => Gdouble'First,
+                    Maximum => Gdouble'Last,
+                    Default => 0.0,
+                    Blurb   => "The x-coordinate of the label's center");
             when Property_Y =>
                return
-                  Gnew_Double
-                  (  Name    => "y",
-                     Nick    => "y",
-                     Minimum => Gdouble'First,
-                     Maximum => Gdouble'Last,
-                     Default => 0.0,
-                     Blurb   => "The y-coordinate of the label's " &
-                                "center"
-                  );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "y",
+                    Nick    => "y",
+                    Minimum => Gdouble'First,
+                    Maximum => Gdouble'Last,
+                    Default => 0.0,
+                    Blurb   => "The y-coordinate of the label's center");
             when Property_Stretch =>
                return
-                  Gnew_Double
-                  (  Name    => "stretch",
-                     Nick    => "stretch",
-                     Minimum => 0.0,
-                     Maximum => Gdouble'Last,
-                     Default => 1.0,
-                     Blurb   => "The relation of the rendered width " &
-                                "of the text to its original width. " &
-                                "The stretch value 1 keeps text " &
-                                "unchanged"
-                  );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "stretch",
+                    Nick    => "stretch",
+                    Minimum => 0.0,
+                    Maximum => Gdouble'Last,
+                    Default => 1.0,
+                    Blurb   =>
+                      "The relation of the rendered width " &
+                      "of the text to its original width. " &
+                      "The stretch value 1 keeps text " &
+                      "unchanged");
             when Property_Height =>
                return
-                  Gnew_Double
-                  (  Name    => "height",
-                     Nick    => "height",
-                     Minimum => 0.0,
-                     Maximum => Gdouble'Last,
-                     Default => 12.0,
-                     Blurb   => "The text font height"
-                  );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "height",
+                    Nick    => "height",
+                    Minimum => 0.0,
+                    Maximum => Gdouble'Last,
+                    Default => 12.0,
+                    Blurb   => "The text font height");
             when Property_Font_Type =>
                return
                   Pango.Cairo.Fonts.Font_Type_Property.Gnew_Enum
-                  (  Name    => "font-type",
-                     Nick    => "font type",
-                     Default => Pango_Font,
-                     Blurb   => "The backend used for the font, " &
-                                "e.g. toy font, pango font"
-                  );
+                   (Name    => "font-type",
+                    Nick    => "font type",
+                    Default => Pango.Cairo.Fonts.Pango_Font,
+                    Blurb   => "The backend used for the font, " &
+                               "e.g. toy font, pango font");
             when Property_Family =>
                return
-                  Gnew_String
-                  (  Name    => "font-familiy",
-                     Nick    => "font famility",
-                     Default => "arial",
-                     Blurb   => "The text font family, " &
-                                "e.g. courier"
-                  );
+                 Glib.Properties.Creation.Gnew_String
+                   (Name    => "font-family",
+                    Nick    => "font family",
+                    Default => "arial",
+                    Blurb   => "The text font family, " &
+                               "e.g. courier");
             when Property_Mode =>
                return
-                  Gtk.Layered.Text_Transformation_Property.Gnew_Enum
-                  (  Name    => "text-transformation-mode",
-                     Nick    => "text transformation mode",
-                     Default => Moved_Centered,
-                     Blurb   => "The method how the text is " &
-                                "transformed and aligned"
-                  );
+                 Gtk.Layered.Text_Transformation_Property.Gnew_Enum
+                   (Name    => "text-transformation-mode",
+                    Nick    => "text transformation mode",
+                    Default => Moved_Centered,
+                    Blurb   => "The method how the text is " &
+                               "transformed and aligned");
             when Property_Slant =>
                return
                  Cairo.Font_Slant_Property.Gnew_Enum
@@ -503,85 +487,78 @@ package body Gtk.Layered.Label is
                     Blurb   => "The text font slant");
             when Property_Font_Size =>
                return
-                  Gnew_Uint
-                  (  Name    => "font-size",
-                     Nick    => "font size",
-                     Minimum => 1,
-                     Maximum => Guint (Gint'Last),
-                     Default => 12,
-                     Blurb   => "The font size in points. " &
-                                "The value is only relevant for " &
-                                "pango fonts. For cairo toy size " &
-                                "is ignored"
-                  );
+                  Glib.Properties.Creation.Gnew_Uint
+                   (Name    => "font-size",
+                    Nick    => "font size",
+                    Minimum => 1,
+                    Maximum => Guint (Gint'Last),
+                    Default => 12,
+                    Blurb   => "The font size in points. " &
+                               "The value is only relevant for " &
+                               "pango fonts. For cairo toy size " &
+                               "is ignored");
             when Property_Text =>
                return
-                  Gnew_String
-                  (  Name    => "text",
-                     Nick    => "text",
-                     Default => "",
-                     Blurb   => "The label text"
-                  );
+                 Glib.Properties.Creation.Gnew_String
+                   (Name    => "text",
+                    Nick    => "text",
+                    Default => "",
+                    Blurb   => "The label text");
             when Property_Markup =>
                return
-                  Gnew_Boolean
-                  (  Name    => "markup-flag",
-                     Nick    => "text markups",
-                     Default => False,
-                     Blurb   => "The label text markup flag. " &
-                                "False is for plain text or " &
-                                "True for a text with pango markup"
-                  );
+                 Glib.Properties.Creation.Gnew_Boolean
+                   (Name    => "markup-flag",
+                    Nick    => "text markups",
+                    Default => False,
+                    Blurb   => "The label text markup flag. " &
+                               "False is for plain text or " &
+                               "True for a text with pango markup");
             when Property_Weight =>
                return
-                  Pango.Enums.Weight_Property.Gnew_Enum
-                  (  Name    => "font-weight",
-                     Nick    => "font weight",
-                     Default => Pango.Enums.Pango_Weight_Normal,
-                     Blurb   => "The text font weight"
-                  );
+                 Pango.Enums.Weight_Property.Gnew_Enum
+                   (Name    => "font-weight",
+                    Nick    => "font weight",
+                    Default => Pango.Enums.Pango_Weight_Normal,
+                    Blurb   => "The text font weight");
             when Property_Color =>
                return
-                  Gnew_Boxed
+                 Glib.Properties.Creation.Gnew_Boxed
                    (Name       => "color",
                     Boxed_Type => Gdk.Color.Gdk_Color_Type,
                     Nick       => "color",
                     Blurb      => "The text color");
             when Property_Scaled =>
                return
-                  Gnew_Boolean
-                  (  Name    => "scaled",
-                     Nick    => "scaled",
-                     Default => False,
-                     Blurb   => "The text size is changed when " &
-                                "the widget is resized"
-                  );
+                 Glib.Properties.Creation.Gnew_Boolean
+                   (Name    => "scaled",
+                    Nick    => "scaled",
+                    Default => False,
+                    Blurb   => "The text size is changed when " &
+                               "the widget is resized");
             when Property_Angle =>
                return
-                  Gnew_Double
-                  (  Name    => "angle",
-                     Nick    => "angle",
-                     Minimum => -2.0 * Pi,
-                     Maximum => 2.0 * Pi,
-                     Default => 0.0,
-                     Blurb   => "The angle of the label text base " &
-                                "line when the text transformation " &
-                                "mode is rotated or skewed. " &
-                                "Otherwise it is ignored"
-                  );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "angle",
+                    Nick    => "angle",
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
+                    Default => 0.0,
+                    Blurb   => "The angle of the label text base " &
+                               "line when the text transformation " &
+                               "mode is rotated or skewed. " &
+                               "Otherwise it is ignored");
             when Property_Skew =>
                return
-                  Gnew_Double
-                  (  Name    => "skew",
-                     Nick    => "skew",
-                     Minimum => -2.0 * Pi,
-                     Maximum => 2.0 * Pi,
-                     Default => 0.0,
-                     Blurb   => "When the text transformation mode " &
-                                "is Rotated, skew is the angle " &
-                                "between the base text line and the " &
-                                "vertical axis of the text origin"
-                  );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "skew",
+                    Nick    => "skew",
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
+                    Default => 0.0,
+                    Blurb   => "When the text transformation mode " &
+                               "is Rotated, skew is the angle " &
+                               "between the base text line and the " &
+                               "vertical axis of the text origin");
          end case;
       end if;
    end Get_Property_Specification;
@@ -621,21 +598,23 @@ package body Gtk.Layered.Label is
                when Property_Font_Type =>
                   Pango.Cairo.Fonts.Font_Type_Property.Set_Enum
                     (Value,
-                     Get_Type (Layer.Face));
+                     Pango.Cairo.Fonts.Get_Type (Layer.Face));
                when Property_Family =>
                   Glib.Values.Init (Value, GType_String);
-                  Glib.Values.Set_String (Value, Get_Family (Layer.Face));
+                  Glib.Values.Set_String
+                    (Value, Pango.Cairo.Fonts.Get_Family (Layer.Face));
                when Property_Slant =>
                   Cairo.Font_Slant_Property.Set_Enum
                     (Value,
-                     Get_Slant (Layer.Face));
+                     Pango.Cairo.Fonts.Get_Slant (Layer.Face));
                when Property_Font_Size =>
                   Glib.Values.Init (Value, GType_Uint);
-                  Glib.Values.Set_Uint (Value, Guint (Get_Size (Layer.Face)));
+                  Glib.Values.Set_Uint
+                    (Value, Guint (Pango.Cairo.Fonts.Get_Size (Layer.Face)));
                when Property_Weight =>
                   Pango.Enums.Weight_Property.Set_Enum
                     (Value,
-                     Get_Weight (Layer.Face));
+                     Pango.Cairo.Fonts.Get_Weight (Layer.Face));
                when Property_Stretch =>
                   Glib.Values.Init (Value, GType_Double);
                   Glib.Values.Set_Double (Value, Layer.Stretch);
@@ -697,7 +676,7 @@ package body Gtk.Layered.Label is
       Layer  : in out Label_Layer)
    is
       X, Y    : Gdouble;
-      Face    : Pango_Cairo_Font;
+      Face    : Pango.Cairo.Fonts.Pango_Cairo_Font;
       Height  : Gdouble;
       Stretch : Gdouble;
       Mode    : Text_Transformation;
@@ -705,18 +684,18 @@ package body Gtk.Layered.Label is
       Angle   : Gdouble;
       Skew    : Gdouble;
    begin
-      Restore (Stream, X);
-      Restore (Stream, Y);
-      Restore (Stream, Face);
-      Restore (Stream, Height);
-      Restore (Stream, Stretch);
-      Restore (Stream, Mode);
-      Restore (Stream, Color);
-      Restore (Stream, Angle);
-      Restore (Stream, Skew);
-      Restore (Stream, Layer.Scaled, Layer.Markup);
+      Gtk.Layered.Stream_IO.Restore (Stream, X);
+      Gtk.Layered.Stream_IO.Restore (Stream, Y);
+      Pango.Cairo.Fonts.Restore (Stream, Face);
+      Gtk.Layered.Stream_IO.Restore (Stream, Height);
+      Gtk.Layered.Stream_IO.Restore (Stream, Stretch);
+      Gtk.Layered.Stream_IO.Restore (Stream, Mode);
+      Gtk.Layered.Stream_IO.Restore (Stream, Color);
+      Gtk.Layered.Stream_IO.Restore (Stream, Angle);
+      Gtk.Layered.Stream_IO.Restore (Stream, Skew);
+      Gtk.Layered.Stream_IO.Restore (Stream, Layer.Scaled, Layer.Markup);
       Set
-      (  Layer    => Layer,
+        (Layer    => Layer,
          Location => (X => X, Y => Y),
          Face     => Face,
          Height   => Height,
@@ -724,15 +703,15 @@ package body Gtk.Layered.Label is
          Mode     => Mode,
          Color    => Color,
          Angle    => Angle,
-         Skew     => Skew
-      );
-      Layer.Set_Text (Restore (Stream'Access), Layer.Markup);
+         Skew     => Skew);
+      Layer.Set_Text
+        (Gtk.Layered.Stream_IO.Restore (Stream'Access), Layer.Markup);
    end Restore;
 
    overriding procedure Scale
-             (  Layer  : in out Label_Layer;
-                Factor : Gdouble
-             )  is
+     (Layer  : in out Label_Layer;
+      Factor : Gdouble)
+   is
       Height : constant Gdouble := Layer.Height * Factor;
    begin
       if Height <= 0.0 then
@@ -745,7 +724,7 @@ package body Gtk.Layered.Label is
    procedure Set
      (Layer    : in out Label_Layer;
       Location : Cairo.Ellipses.Cairo_Tuple;
-      Face     : Pango_Cairo_Font;
+      Face     : Pango.Cairo.Fonts.Pango_Cairo_Font;
       Height   : Gdouble;
       Stretch  : Gdouble;
       Mode     : Text_Transformation;
@@ -753,7 +732,7 @@ package body Gtk.Layered.Label is
       Angle    : Gdouble;
       Skew     : Gdouble) is
    begin
-      if abs Skew >= Pi / 2.0 - Eps then
+      if abs Skew >= Ada.Numerics.Pi / 2.0 - Eps then
          raise Constraint_Error with "Skew is greater than half Pi";
       elsif Height <= 0.0 then
          raise Constraint_Error with "Non-positive height";
@@ -787,15 +766,21 @@ package body Gtk.Layered.Label is
                Layer.Y := Glib.Values.Get_Double (Value);
             when Property_Angle =>
                Layer.Angle := Glib.Values.Get_Double (Value);
-               if Layer.Angle not in -2.0 * Pi .. 2.0 * Pi then
+               if
+                 Layer.Angle not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
                   Layer.Angle :=
-                     Gdouble'Remainder (Layer.Angle, 2.0 * Pi);
+                     Gdouble'Remainder (Layer.Angle, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Skew =>
                Layer.Skew := Glib.Values.Get_Double (Value);
-               if Layer.Skew not in -2.0 * Pi .. 2.0 * Pi then
+               if
+                 Layer.Skew not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
                   Layer.Skew :=
-                     Gdouble'Remainder (Layer.Skew, 2.0 * Pi);
+                     Gdouble'Remainder (Layer.Skew, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Stretch =>
                Layer.Stretch := Glib.Values.Get_Double (Value);
@@ -809,23 +794,21 @@ package body Gtk.Layered.Label is
                end if;
             when Property_Mode =>
                Layer.Mode :=
-                  Gtk.Layered.Text_Transformation_Property.Get_Enum
-                  (  Value
-                  );
+                 Gtk.Layered.Text_Transformation_Property.Get_Enum
+                   (Value);
             when Property_Font_Type =>
-               Set_Type
-               (  Layer.Face,
-                  Pango.Cairo.Fonts.Font_Type_Property.Get_Enum (Value)
-               );
+               Pango.Cairo.Fonts.Set_Type
+                 (Layer.Face,
+                  Pango.Cairo.Fonts.Font_Type_Property.Get_Enum (Value));
             when Property_Family =>
-               Set_Family (Layer.Face, Glib.Values.Get_String (Value));
+               Pango.Cairo.Fonts.Set_Family
+                 (Layer.Face, Glib.Values.Get_String (Value));
             when Property_Slant =>
-               Set_Slant
-               (  Layer.Face,
-                  Cairo.Font_Slant_Property.Get_Enum (Value)
-               );
+               Pango.Cairo.Fonts.Set_Slant
+                 (Layer.Face,
+                  Cairo.Font_Slant_Property.Get_Enum (Value));
             when Property_Font_Size =>
-               Set_Size
+               Pango.Cairo.Fonts.Set_Size
                  (Layer.Face,
                   Gint
                     (Guint'Max
@@ -834,7 +817,7 @@ package body Gtk.Layered.Label is
                                Guint (Gint'Last)),
                           1)));
             when Property_Weight =>
-               Set_Weight
+               Pango.Cairo.Fonts.Set_Weight
                  (Layer.Face,
                   Pango.Enums.Weight_Property.Get_Enum (Value));
             when Property_Text =>
@@ -851,19 +834,17 @@ package body Gtk.Layered.Label is
    end Set_Property_Value;
 
    overriding procedure Set_Scaled
-             (  Layer  : in out Label_Layer;
-                Scaled : Boolean
-             )  is
+     (Layer  : in out Label_Layer;
+      Scaled : Boolean) is
    begin
       Layer.Scaled  := Scaled;
       Layer.Updated := True;
    end Set_Scaled;
 
    procedure Set_Text
-             (  Layer  : in out Label_Layer;
-                Text   : UTF8_String;
-                Markup : Boolean := False
-             )  is
+     (Layer  : in out Label_Layer;
+      Text   : UTF8_String;
+      Markup : Boolean := False) is
    begin
       Text_Mutex.Set_Text (Layer, Text, Markup);
    end Set_Text;
@@ -872,17 +853,17 @@ package body Gtk.Layered.Label is
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Layer  : Label_Layer) is
    begin
-      Store (Stream, Layer.X);
-      Store (Stream, Layer.Y);
-      Store (Stream, Layer.Face);
-      Store (Stream, Layer.Height);
-      Store (Stream, Layer.Stretch);
-      Store (Stream, Layer.Mode);
-      Store (Stream, Layer.Color);
-      Store (Stream, Layer.Angle);
-      Store (Stream, Layer.Skew);
-      Store (Stream, Layer.Scaled, Layer.Markup);
-      Store (Stream, Layer.Get_Text);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.X);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Y);
+      Pango.Cairo.Fonts.Store (Stream, Layer.Face);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Height);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Stretch);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Mode);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Color);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Angle);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Skew);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Scaled, Layer.Markup);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Get_Text);
    end Store;
 
 end Gtk.Layered.Label;

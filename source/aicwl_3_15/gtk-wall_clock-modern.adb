@@ -23,36 +23,36 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 with Ada.Numerics;
-with Cairo;                     use Cairo;
-with Glib.Properties.Creation;  use Glib.Properties.Creation;
-with Glib.Types;                use Glib.Types;
-with Gtkada.Types;              use Gtkada.Types;
-with Gtk.Enums;                 use Gtk.Enums;
-with Gtk.Missed;                use Gtk.Missed;
-with Gtk.Widget.Styles;         use Gtk.Widget.Styles;
-with Pango.Cairo.Fonts;         use Pango.Cairo.Fonts;
 
 with Cairo.Line_Cap_Property;
+
+with Gdk.Color;
+
 with Glib.Object.Checked_Destroy;
+with Glib.Properties.Creation;
+with Glib.Types;
+
+with Gtk.Enums;
+with Gtk.Missed;
 with Gtk.Widget.Styles.Line_Cap_Property;
+
+with Pango.Cairo.Fonts;
 
 package body Gtk.Wall_Clock.Modern is
 
-   use Cairo.Line_Cap_Property;
-   use Gtk.Widget.Styles.Line_Cap_Property;
-
-   Hour_Needle_Color   : constant Gdk_Color := RGB (0.3, 0.3, 0.3);
-   Minute_Needle_Color : constant Gdk_Color := RGB (0.0, 0.0, 0.0);
-   Second_Needle_Color : constant Gdk_Color := RGB (1.0, 0.0, 0.0);
-   Background_Color    : constant Gdk_Color := RGB (1.0, 1.0, 1.0);
-   Major_Tick_Color    : constant Gdk_Color := RGB (0.0, 0.0, 0.0);
-   Middle_Tick_Color   : constant Gdk_Color := RGB (0.0, 0.0, 0.0);
-   Minor_Tick_Color    : constant Gdk_Color := RGB (0.0, 0.0, 0.0);
-   Pin_Color           : constant Gdk_Color := RGB (1.0, 0.0, 0.0);
-   Text_Color          : constant Gdk_Color := RGB (0.0, 0.0, 0.0);
+   Hour_Needle_Color   : constant Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.3, 0.3, 0.3);
+   Minute_Needle_Color : constant Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+   Second_Needle_Color : constant Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+   Background_Color    : constant Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 1.0, 1.0);
+   Major_Tick_Color    : constant Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+   Middle_Tick_Color   : constant Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+   pragma Unreferenced (Middle_Tick_Color);
+   Minor_Tick_Color    : constant Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+   Pin_Color           : constant Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 0.0, 0.0);
+   Text_Color          : constant Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
 
    Class_Record : aliased Ada_GObject_Class := Uninitialized_Class;
 
@@ -60,214 +60,195 @@ package body Gtk.Wall_Clock.Modern is
    First : constant Gdouble := Step - Ada.Numerics.Pi / 2.0;
 
    package Handlers is
-      new Gtk.Handlers.User_Callback
-          (  GObject_Record,
-             Gtk_Wall_Clock_Modern
-          );
+     new Gtk.Handlers.User_Callback
+       (GObject_Record,
+        Gtk_Wall_Clock_Modern);
 
    procedure Changed
-             (  Adjustment : access GObject_Record'Class;
-                Widget     : Gtk_Wall_Clock_Modern
-             )  is
+     (Adjustment : access GObject_Record'Class;
+      Widget     : Gtk_Wall_Clock_Modern) is
    begin
-      Set (Widget, Get_Value (Widget.Adjustment));
-      if (  Widget.Hour_Needle.Is_Updated
-         or else
-            Widget.Minute_Needle.Is_Updated
-         or else
-            Widget.Second_Needle.Is_Updated
-         )  -- Signal draw to the widget
+      Set (Widget, Gtk.Adjustment.Get_Value (Widget.all.Adjustment));
+      if
+        Widget.all.Hour_Needle.all.Is_Updated or else
+        Widget.all.Minute_Needle.all.Is_Updated or else
+        Widget.all.Second_Needle.all.Is_Updated -- Signal draw to the widget
       then
          Queue_Draw (Widget);
       end if;
    end Changed;
 
    function Get_Annotation
-            (  Widget : not null access Gtk_Wall_Clock_Modern_Record
-            )  return not null access Elliptic_Annotation_Layer is
+     (Widget : not null access Gtk_Wall_Clock_Modern_Record)
+      return not null access Gtk.Layered.Elliptic_Annotation.Elliptic_Annotation_Layer
+   is
    begin
-      return Widget.Annotation;
+      return Widget.all.Annotation;
    end Get_Annotation;
 
    function Get_Background
-            (  Widget : not null access Gtk_Wall_Clock_Modern_Record
-            )  return not null access Elliptic_Background_Layer is
+     (Widget : not null access Gtk_Wall_Clock_Modern_Record)
+      return not null access Gtk.Layered.Elliptic_Background.Elliptic_Background_Layer
+   is
    begin
-      return Widget.Background;
+      return Widget.all.Background;
    end Get_Background;
 
    function Get_Cache
-            (  Widget : not null access Gtk_Wall_Clock_Modern_Record
-            )  return not null access Cache_Layer is
+     (Widget : not null access Gtk_Wall_Clock_Modern_Record)
+      return not null access Gtk.Layered.Cache.Cache_Layer is
    begin
-      return Widget.Cache;
+      return Widget.all.Cache;
    end Get_Cache;
 
    function Get_Hour_Hand
-            (  Widget : not null access Gtk_Wall_Clock_Modern_Record
-            )  return not null access Needle_Layer is
+     (Widget : not null access Gtk_Wall_Clock_Modern_Record)
+      return not null access Gtk.Layered.Needle.Needle_Layer is
    begin
-      return Widget.Hour_Needle;
+      return Widget.all.Hour_Needle;
    end Get_Hour_Hand;
 
    function Get_Minute_Hand
-            (  Widget : not null access Gtk_Wall_Clock_Modern_Record
-            )  return not null access Needle_Layer is
+     (Widget : not null access Gtk_Wall_Clock_Modern_Record)
+      return not null access Gtk.Layered.Needle.Needle_Layer is
    begin
-      return Widget.Minute_Needle;
+      return Widget.all.Minute_Needle;
    end Get_Minute_Hand;
 
    function Get_Second_Hand
-            (  Widget : not null access Gtk_Wall_Clock_Modern_Record
-            )  return not null access Needle_Layer is
+     (Widget : not null access Gtk_Wall_Clock_Modern_Record)
+      return not null access Gtk.Layered.Needle.Needle_Layer is
    begin
-      return Widget.Second_Needle;
+      return Widget.all.Second_Needle;
    end Get_Second_Hand;
 
    function Get_Type return GType is
    begin
-      if Initialize_Class_Record
-         (  Ancestor     => Gtk.Layered.Get_Type,
-            Class_Record => Class_Record'Access,
-            Type_Name    => Class_Name
-         )
+      if
+        Initialize_Class_Record
+          (Ancestor     => Gtk.Layered.Get_Type,
+           Class_Record => Class_Record'Access,
+           Type_Name    => Class_Name)
       then
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
-            Gnew_Boxed
-            (  Name       => "hour-needle-color",
-               Boxed_Type => Gdk_Color_Type,
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
+            Glib.Properties.Creation.Gnew_Boxed
+              (Name       => "hour-needle-color",
+               Boxed_Type => Gdk.Color.Gdk_Color_Type,
                Nick       => "Hour needle color",
-               Blurb      => "The color of the hour needle"
-         )  );
-         Install_Style
-         (  Class_Ref (Class_Record.The_Type),
+               Blurb      => "The color of the hour needle"));
+         Gtk.Widget.Styles.Line_Cap_Property.Install_Style
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
             Cairo.Line_Cap_Property.Gnew_Enum
-            (  Name    => "hour-needle-tip-cap",
+              (Name    => "hour-needle-tip-cap",
                Nick    => "Tip cap",
                Blurb   => "The style used for the hour needle tip",
-               Default => Cairo_Line_Cap_Round
-         )  );
-         Install_Style
-         (  Class_Ref (Class_Record.The_Type),
+               Default => Cairo.Cairo_Line_Cap_Round));
+         Gtk.Widget.Styles.Line_Cap_Property.Install_Style
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
             Cairo.Line_Cap_Property.Gnew_Enum
-            (  Name    => "hour-needle-rear-cap",
+              (Name    => "hour-needle-rear-cap",
                Nick    => "Rear cap",
                Blurb   => "The style used for the hour needle rear",
-               Default => Cairo_Line_Cap_Butt
-         )  );
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
-            Gnew_Boxed
-            (  Name       => "backgound-color",
-               Boxed_Type => Gdk_Color_Type,
+               Default => Cairo.Cairo_Line_Cap_Butt));
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
+            Glib.Properties.Creation.Gnew_Boxed
+              (Name       => "backgound-color",
+               Boxed_Type => Gdk.Color.Gdk_Color_Type,
                Nick       => "Background color",
-               Blurb      => "The background color"
-         )  );
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
-            Gnew_Boxed
-            (  Name       => "major-tick-color",
-               Boxed_Type => Gdk_Color_Type,
+               Blurb      => "The background color"));
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
+            Glib.Properties.Creation.Gnew_Boxed
+              (Name       => "major-tick-color",
+               Boxed_Type => Gdk.Color.Gdk_Color_Type,
                Nick       => "Major ticks color",
-               Blurb      => "Major ticks color"
-         )  );
-         Install_Style
-         (  Class_Ref (Class_Record.The_Type),
+               Blurb      => "Major ticks color"));
+         Gtk.Widget.Styles.Line_Cap_Property.Install_Style
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
             Cairo.Line_Cap_Property.Gnew_Enum
-            (  Name    => "major-tick-line-cap",
+              (Name    => "major-tick-line-cap",
                Nick    => "Major tick cap",
                Blurb   => "The line cap style used for major ticks",
-               Default => Cairo_Line_Cap_Butt
-         )  );
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
-            Gnew_Boxed
-            (  Name       => "minor-tick-color",
-               Boxed_Type => Gdk_Color_Type,
+               Default => Cairo.Cairo_Line_Cap_Butt));
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
+            Glib.Properties.Creation.Gnew_Boxed
+              (Name       => "minor-tick-color",
+               Boxed_Type => Gdk.Color.Gdk_Color_Type,
                Nick       => "Minor ticks color",
-               Blurb      => "Minor ticks color"
-         )  );
-         Install_Style
-         (  Class_Ref (Class_Record.The_Type),
+               Blurb      => "Minor ticks color"));
+         Gtk.Widget.Styles.Line_Cap_Property.Install_Style
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
             Cairo.Line_Cap_Property.Gnew_Enum
-            (  Name    => "minor-tick-line-cap",
+              (Name    => "minor-tick-line-cap",
                Nick    => "Minor tick cap",
                Blurb   => "The line cap style used for minor ticks",
-               Default => Cairo_Line_Cap_Butt
-         )  );
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
-            Gnew_Boxed
-            (  Name       => "minute-needle-color",
-               Boxed_Type => Gdk_Color_Type,
+               Default => Cairo.Cairo_Line_Cap_Butt));
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
+            Glib.Properties.Creation.Gnew_Boxed
+              (Name       => "minute-needle-color",
+               Boxed_Type => Gdk.Color.Gdk_Color_Type,
                Nick       => "Minute needle color",
-               Blurb      => "The color of the minute needle"
-         )  );
-         Install_Style
-         (  Class_Ref (Class_Record.The_Type),
+               Blurb      => "The color of the minute needle"));
+         Gtk.Widget.Styles.Line_Cap_Property.Install_Style
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
             Cairo.Line_Cap_Property.Gnew_Enum
-            (  Name    => "minute-needle-tip-cap",
+              (Name    => "minute-needle-tip-cap",
                Nick    => "Tip cap",
                Blurb   => "The style used for the minute needle tip",
-               Default => Cairo_Line_Cap_Round
-         )  );
-         Install_Style
-         (  Class_Ref (Class_Record.The_Type),
+               Default => Cairo.Cairo_Line_Cap_Round));
+         Gtk.Widget.Styles.Line_Cap_Property.Install_Style
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
             Cairo.Line_Cap_Property.Gnew_Enum
-            (  Name    => "minute-needle-rear-cap",
+              (Name    => "minute-needle-rear-cap",
                Nick    => "Rear cap",
                Blurb   => "The style used for the minute needle rear",
-               Default => Cairo_Line_Cap_Butt
-         )  );
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
-            Gnew_Boxed
-            (  Name       => "second-needle-color",
-               Boxed_Type => Gdk_Color_Type,
+               Default => Cairo.Cairo_Line_Cap_Butt));
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
+            Glib.Properties.Creation.Gnew_Boxed
+              (Name       => "second-needle-color",
+               Boxed_Type => Gdk.Color.Gdk_Color_Type,
                Nick       => "Second needle color",
-               Blurb      => "The color of the second needle"
-         )  );
-         Install_Style
-         (  Class_Ref (Class_Record.The_Type),
+               Blurb      => "The color of the second needle"));
+         Gtk.Widget.Styles.Line_Cap_Property.Install_Style
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
             Cairo.Line_Cap_Property.Gnew_Enum
-            (  Name    => "second-needle-tip-cap",
+              (Name    => "second-needle-tip-cap",
                Nick    => "Tip cap",
                Blurb   => "The style used for the second needle tip",
-               Default => Cairo_Line_Cap_Round
-         )  );
-         Install_Style
-         (  Class_Ref (Class_Record.The_Type),
+               Default => Cairo.Cairo_Line_Cap_Round));
+         Gtk.Widget.Styles.Line_Cap_Property.Install_Style
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
             Cairo.Line_Cap_Property.Gnew_Enum
-            (  Name    => "second-needle-rear-cap",
+              (Name    => "second-needle-rear-cap",
                Nick    => "Rear cap",
                Blurb   => "The style used for the second needle rear",
-               Default => Cairo_Line_Cap_Butt
-         )  );
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
-            Gnew_Boxed
-            (  Name       => "pin-color",
-               Boxed_Type => Gdk_Color_Type,
+               Default => Cairo.Cairo_Line_Cap_Butt));
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
+            Glib.Properties.Creation.Gnew_Boxed
+              (Name       => "pin-color",
+               Boxed_Type => Gdk.Color.Gdk_Color_Type,
                Nick       => "Pin color",
-               Blurb      => "Arrow pin color"
-         )  );
-         Install_Style_Property
-         (  Class_Ref (Class_Record.The_Type),
-            Gnew_Boxed
-            (  Name       => "text-color",
-               Boxed_Type => Gdk_Color_Type,
+               Blurb      => "Arrow pin color"));
+         Gtk.Widget.Install_Style_Property
+           (Glib.Types.Class_Ref (Class_Record.all.The_Type),
+            Glib.Properties.Creation.Gnew_Boxed
+              (Name       => "text-color",
+               Boxed_Type => Gdk.Color.Gdk_Color_Type,
                Nick       => "Text color",
-               Blurb      => "Text color"
-         )  );
+               Blurb      => "Text color"));
       end if;
-      return Class_Record.The_Type;
+      return Class_Record.all.The_Type;
    end Get_Type;
 
    procedure Gtk_New
-             (  Widget     : out Gtk_Wall_Clock_Modern;
-                Adjustment : Gtk_Adjustment := null
-             )  is
+     (Widget     : out Gtk_Wall_Clock_Modern;
+      Adjustment : Gtk.Adjustment.Gtk_Adjustment := null) is
    begin
       Widget := new Gtk_Wall_Clock_Modern_Record;
       Initialize (Widget, Adjustment);
@@ -279,97 +260,94 @@ package body Gtk.Wall_Clock.Modern is
    end Gtk_New;
 
    procedure Initialize
-             (  Widget : not null access
-                         Gtk_Wall_Clock_Modern_Record'Class;
-                Adjustment : Gtk_Adjustment
-             )  is
+     (Widget     : not null access Gtk_Wall_Clock_Modern_Record'Class;
+      Adjustment : Gtk.Adjustment.Gtk_Adjustment)
+   is
+      use type Gtk.Adjustment.Gtk_Adjustment;
    begin
       G_New (Widget, Get_Type);
       Gtk.Layered.Initialize (Widget);
-      Widget.Background :=
-         Add_Elliptic_Background
-         (  Under  => Widget,
-            Color  => Background_Color,
-            Outer  => ((0.0, 0.0), 1.0 / 0.5, 0.5, 0.0),
-            Scaled => True
-         );
-      Widget.Minor_Ticks :=
-         Add_Elliptic_Scale
-         (  Under   => Widget.Background.Get_Foreground,
-            Inner   => ((0.0, 0.0), 1.0 / 0.46, 0.46, 0.0),
-            Outer   => ((0.0, 0.0), 1.0 / 0.48, 0.48, 0.0),
-            Color   => Minor_Tick_Color,
-            Width   => 1.0 / 300.0,
-            Skipped => 5,
-            Step    => Step / 5.0,
-            From    => First,
-            Scaled  => True,
-            Widened => True
-         );
-      Widget.Major_Ticks :=
-         Add_Elliptic_Scale
-         (  Under    => Widget.Background.Get_Foreground,
-            Inner    => ((0.0, 0.0), 1.0 / 0.474, 0.474, 0.0),
-            Outer    => ((0.0, 0.0), 1.0 / 0.477, 0.477, 0.0),
-            Color    => Major_Tick_Color,
-            Width    => 4.0 / 200.0,
-            Line_Cap => Cairo_Line_Cap_Round,
-            Step     => Step,
-            From     => First,
-            Scaled   => True,
-            Widened  => True
-         );
-      Widget.Cache := Add_Cache (Widget.Background.Get_Foreground);
-      Widget.Annotation :=
-         Add_Elliptic_Annotation
-         (  Under     => Widget.Cache,
-            Ellipse   => ((0.0, 0.0), 1.0 / 0.43, 0.43, 0.0),
-            Texts     => "1 2 3 4 5 6 7 8 9 10 11 12",
-            Delimiter => ' ',
-            Face      => Create_Toy
-                         (  Family => "times",
-                            Slant  => Cairo_Font_Slant_Normal,
-                            Weight => Cairo_Font_Weight_Bold
-                         ),
-            Step      => Step,
-            Height    => 0.08,
-            Color     => Text_Color,
-            From      => First,
-            Mode      => Moved_Inside,
-            Scaled    => True
-         );
-      Widget.Hour_Needle :=
-        Add_Needle
-          (Under       => Widget.Background.Get_Foreground,
+      Widget.all.Background :=
+        Gtk.Layered.Elliptic_Background.Add_Elliptic_Background
+          (Under  => Widget,
+           Color  => Background_Color,
+           Outer  => ((0.0, 0.0), 1.0 / 0.5, 0.5, 0.0),
+           Scaled => True);
+      Widget.all.Minor_Ticks :=
+        Gtk.Layered.Elliptic_Scale.Add_Elliptic_Scale
+          (Under   => Widget.all.Background.all.Get_Foreground,
+           Inner   => ((0.0, 0.0), 1.0 / 0.46, 0.46, 0.0),
+           Outer   => ((0.0, 0.0), 1.0 / 0.48, 0.48, 0.0),
+           Color   => Minor_Tick_Color,
+           Width   => 1.0 / 300.0,
+           Skipped => 5,
+           Step    => Step / 5.0,
+           From    => First,
+           Scaled  => True,
+           Widened => True);
+      Widget.all.Major_Ticks :=
+        Gtk.Layered.Elliptic_Scale.Add_Elliptic_Scale
+          (Under    => Widget.all.Background.all.Get_Foreground,
+           Inner    => ((0.0, 0.0), 1.0 / 0.474, 0.474, 0.0),
+           Outer    => ((0.0, 0.0), 1.0 / 0.477, 0.477, 0.0),
+           Color    => Major_Tick_Color,
+           Width    => 4.0 / 200.0,
+           Line_Cap => Cairo.Cairo_Line_Cap_Round,
+           Step     => Step,
+           From     => First,
+           Scaled   => True,
+           Widened  => True);
+      Widget.all.Cache :=
+        Gtk.Layered.Cache.Add_Cache (Widget.all.Background.all.Get_Foreground);
+      Widget.all.Annotation :=
+        Gtk.Layered.Elliptic_Annotation.Add_Elliptic_Annotation
+          (Under     => Widget.all.Cache,
+           Ellipse   => ((0.0, 0.0), 1.0 / 0.43, 0.43, 0.0),
+           Texts     => "1 2 3 4 5 6 7 8 9 10 11 12",
+           Delimiter => ' ',
+           Face      =>
+             Pango.Cairo.Fonts.Create_Toy
+               (Family => "times",
+                Slant  => Cairo.Cairo_Font_Slant_Normal,
+                Weight => Cairo.Cairo_Font_Weight_Bold),
+           Step      => Step,
+           Height    => 0.08,
+           Color     => Text_Color,
+           From      => First,
+           Mode      => Gtk.Layered.Moved_Inside,
+           Scaled    => True);
+      Widget.all.Hour_Needle :=
+        Gtk.Layered.Needle.Add_Needle
+          (Under       => Widget.all.Background.all.Get_Foreground,
            Center      => (0.0, 0.0),
            Adjustment  => Adjustment,
            Tip_Length  => 0.27,
            Tip_Width   => 0.025,
-           Tip_Cap     => Cairo_Line_Cap_Square,
+           Tip_Cap     => Cairo.Cairo_Line_Cap_Square,
            Rear_Length => 0.06,
            Rear_Width  => 0.06,
-           Rear_Cap    => Cairo_Line_Cap_Round,
+           Rear_Cap    => Cairo.Cairo_Line_Cap_Round,
            From        => 3.0 * Ada.Numerics.Pi / 2.0,
            Length      => 2.0 * Ada.Numerics.Pi,
            Color       => Hour_Needle_Color,
            Scaled      => True);
-      Widget.Minute_Needle :=
-        Add_Needle
-          (Under       => Widget.Background.Get_Foreground,
+      Widget.all.Minute_Needle :=
+        Gtk.Layered.Needle.Add_Needle
+          (Under       => Widget.all.Background.all.Get_Foreground,
            Center      => (0.0, 0.0),
            Tip_Length  => 0.46,
            Tip_Width   => 0.015,
-           Tip_Cap     => Cairo_Line_Cap_Square,
+           Tip_Cap     => Cairo.Cairo_Line_Cap_Square,
            Rear_Length => 0.05,
            Rear_Width  => 0.03,
-           Rear_Cap    => Cairo_Line_Cap_Round,
+           Rear_Cap    => Cairo.Cairo_Line_Cap_Round,
            From        => 3.0 * Ada.Numerics.Pi / 2.0,
            Length      => 2.0 * Ada.Numerics.Pi,
            Color       => Minute_Needle_Color,
            Scaled      => True);
-      Widget.Second_Needle :=
-        Add_Needle
-          (Under       => Widget.Background.Get_Foreground,
+      Widget.all.Second_Needle :=
+        Gtk.Layered.Needle.Add_Needle
+          (Under       => Widget.all.Background.all.Get_Foreground,
            Center      => (0.0, 0.0),
            Tip_Length  => 0.4,
            Tip_Width   => 0.005,
@@ -379,40 +357,37 @@ package body Gtk.Wall_Clock.Modern is
            Length      => 2.0 * Ada.Numerics.Pi,
            Color       => Second_Needle_Color,
            Scaled      => True);
-      Widget.Pin :=
-         Add_Elliptic_Background
-         (  Under         => Widget.Background.Get_Foreground,
-            Color         => Pin_Color,
-            Outer         => ((0.0, 0.0), 1.0 / 0.020, 0.020, 0.0),
-            Border_Shadow => Shadow_None,
-            Scaled        => True
-         );
+      Widget.all.Pin :=
+        Gtk.Layered.Elliptic_Background.Add_Elliptic_Background
+          (Under         => Widget.all.Background.all.Get_Foreground,
+           Color         => Pin_Color,
+           Outer         => ((0.0, 0.0), 1.0 / 0.020, 0.020, 0.0),
+           Border_Shadow => Gtk.Enums.Shadow_None,
+           Scaled        => True);
       if Adjustment /= null then
-         Ref (Adjustment);
-         Widget.Adjustment := Adjustment;
-         Set
-         (  Widget.Changed,
+         Gtk.Adjustment.Ref (Adjustment);
+         Widget.all.Adjustment := Adjustment;
+         Gtk.Handlers.References.Set
+           (Widget.all.Changed,
             Handlers.Connect
-            (  Adjustment,
+              (Adjustment,
                "changed",
                Handlers.To_Marshaller (Changed'Access),
-               Widget.all'Unchecked_Access
-         )  );
-         Set
-         (  Widget.Value_Changed,
+               Widget.all'Unchecked_Access));
+         Gtk.Handlers.References.Set
+           (Widget.all.Value_Changed,
             Handlers.Connect
-            (  Adjustment,
+              (Adjustment,
                "value_changed",
                Handlers.To_Marshaller (Changed'Access),
-               Widget.all'Unchecked_Access
-         )  );
+               Widget.all'Unchecked_Access));
       end if;
    end Initialize;
 
    procedure Set
-             (  Widget  : not null access Gtk_Wall_Clock_Modern_Record;
-                Seconds : Gdouble
-             )  is
+     (Widget  : not null access Gtk_Wall_Clock_Modern_Record;
+      Seconds : Gdouble)
+   is
       Hours  : Gdouble := Gdouble'Remainder (Seconds / 3600.0, 12.0);
       Minute : Gdouble := Gdouble'Remainder (Seconds / 60.0, 60.0);
       Sec    : Gdouble := Gdouble'Remainder (Seconds, 60.0);
@@ -426,135 +401,136 @@ package body Gtk.Wall_Clock.Modern is
       if Sec < 0.0 then
          Sec := Sec + 60.0;
       end if;
-      Widget.Hour_Needle.Set_Value   (Hours / 12.0);
-      Widget.Minute_Needle.Set_Value (Minute / 60.0);
-      Widget.Second_Needle.Set_Value (Sec / 60.0);
+      Widget.all.Hour_Needle.all.Set_Value   (Hours / 12.0);
+      Widget.all.Minute_Needle.all.Set_Value (Minute / 60.0);
+      Widget.all.Second_Needle.all.Set_Value (Sec / 60.0);
    end Set;
 
    procedure Set_Value
-             (  Widget : not null access Gtk_Wall_Clock_Modern_Record;
-                Value  : Time
-             )  is
+     (Widget : not null access Gtk_Wall_Clock_Modern_Record;
+      Value  : Ada.Calendar.Time) is
    begin
-      Set (Widget, Gdouble (Seconds (Value)));
+      Set (Widget, Gdouble (Ada.Calendar.Seconds (Value)));
    end Set_Value;
 
-   procedure Style_Changed
-             (  Widget : not null access
-                         Gtk_Wall_Clock_Modern_Record
-             )  is
+   overriding procedure Style_Changed
+     (Widget : not null access Gtk_Wall_Clock_Modern_Record) is
    begin
-      Widget.Hour_Needle.Set
-      (  Center => Widget.Hour_Needle.Get_Center,
-         From   => Widget.Hour_Needle.Get_From,
-         Length => Widget.Hour_Needle.Get_Length,
-         Tip    => (  Length => Widget.Hour_Needle.Get_Tip.Length,
-                      Width  => Widget.Hour_Needle.Get_Tip.Width,
-                      Cap => Style_Get (Widget, "hour-needle-tip-cap")
-                   ),
-         Rear   => (  Length => Widget.Hour_Needle.Get_Rear.Length,
-                      Width  => Widget.Hour_Needle.Get_Rear.Width,
-                      Cap => Style_Get (Widget, "hour-needle-rear-cap")
-                   ),
-         Color  => Style_Get
-                   (  Widget,
-                      "hour-needle-color",
-                      Hour_Needle_Color
-      )            );
-      Widget.Minute_Needle.Set
-      (  Center => Widget.Minute_Needle.Get_Center,
-         From   => Widget.Minute_Needle.Get_From,
-         Length => Widget.Minute_Needle.Get_Length,
-         Tip    => (  Length => Widget.Minute_Needle.Get_Tip.Length,
-                      Width  => Widget.Minute_Needle.Get_Tip.Width,
-                      Cap => Style_Get (Widget, "minute-needle-tip-cap")
-                   ),
-         Rear   => (  Length => Widget.Minute_Needle.Get_Rear.Length,
-                      Width  => Widget.Minute_Needle.Get_Rear.Width,
-                      Cap => Style_Get
-                             (  Widget,
-                                "minute-needle-rear-cap"
-                   )         ),
-         Color  => Style_Get
-                   (  Widget,
-                      "minute-needle-color",
-                      Minute_Needle_Color
-      )            );
-      Widget.Second_Needle.Set
-      (  Center => Widget.Second_Needle.Get_Center,
-         From   => Widget.Second_Needle.Get_From,
-         Length => Widget.Second_Needle.Get_Length,
-         Tip    => (  Length => Widget.Second_Needle.Get_Tip.Length,
-                      Width  => Widget.Second_Needle.Get_Tip.Width,
-                      Cap => Style_Get (Widget, "second-needle-tip-cap")
-                   ),
-         Rear   => (  Length => Widget.Second_Needle.Get_Rear.Length,
-                      Width  => Widget.Second_Needle.Get_Rear.Width,
-                      Cap => Style_Get
-                             (  Widget,
-                                "second-needle-rear-cap"
-                   )         ),
-         Color  => Style_Get
-                   (  Widget,
-                      "second-needle-color",
-                      Second_Needle_Color
-      )            );
-      Widget.Background.Set
-      (  Outer         => Widget.Background.Get_Outer,
-         Inner         => Widget.Background.Get_Inner,
-         From          => Widget.Background.Get_From,
-         Length        => Widget.Background.Get_Length,
-         Border_Width  => Widget.Background.Get_Border_Width,
-         Border_Depth  => Widget.Background.Get_Border_Depth,
-         Border_Color  => Widget.Background.Get_Border_Color,
-         Border_Shadow => Widget.Background.Get_Border_Shadow,
+      Widget.all.Hour_Needle.all.Set
+        (Center => Widget.all.Hour_Needle.all.Get_Center,
+         From   => Widget.all.Hour_Needle.all.Get_From,
+         Length => Widget.all.Hour_Needle.all.Get_Length,
+         Tip    =>
+           (Length => Widget.all.Hour_Needle.all.Get_Tip.Length,
+            Width  => Widget.all.Hour_Needle.all.Get_Tip.Width,
+            Cap    =>
+              Gtk.Widget.Styles.Line_Cap_Property.Style_Get
+                (Widget, "hour-needle-tip-cap")),
+         Rear   =>
+           (Length => Widget.all.Hour_Needle.all.Get_Rear.Length,
+            Width  => Widget.all.Hour_Needle.all.Get_Rear.Width,
+            Cap    =>
+              Gtk.Widget.Styles.Line_Cap_Property.Style_Get
+                (Widget, "hour-needle-rear-cap")),
          Color  =>
-            Style_Get (Widget, "backgound-color", Background_Color)
-      );
-      Widget.Minor_Ticks.Set
-      (  Inner  => Widget.Minor_Ticks.Get_Inner,
-         Outer  => Widget.Minor_Ticks.Get_Outer,
-         Ticks  => Widget.Minor_Ticks.Get_Ticks,
-         From   => Widget.Minor_Ticks.Get_From,
-         Length => Widget.Minor_Ticks.Get_Length,
+           Gtk.Widget.Styles.Style_Get
+             (Widget, "hour-needle-color", Hour_Needle_Color));
+      Widget.all.Minute_Needle.all.Set
+        (Center => Widget.all.Minute_Needle.all.Get_Center,
+         From   => Widget.all.Minute_Needle.all.Get_From,
+         Length => Widget.all.Minute_Needle.all.Get_Length,
+         Tip    =>
+           (Length => Widget.all.Minute_Needle.all.Get_Tip.Length,
+            Width  => Widget.all.Minute_Needle.all.Get_Tip.Width,
+            Cap    =>
+              Gtk.Widget.Styles.Line_Cap_Property.Style_Get
+                (Widget, "minute-needle-tip-cap")),
+         Rear   =>
+           (Length => Widget.all.Minute_Needle.all.Get_Rear.Length,
+            Width  => Widget.all.Minute_Needle.all.Get_Rear.Width,
+            Cap    =>
+              Gtk.Widget.Styles.Line_Cap_Property.Style_Get
+                (Widget, "minute-needle-rear-cap")),
+         Color  =>
+           Gtk.Widget.Styles.Style_Get
+             (Widget, "minute-needle-color", Minute_Needle_Color));
+      Widget.all.Second_Needle.all.Set
+        (Center => Widget.all.Second_Needle.all.Get_Center,
+         From   => Widget.all.Second_Needle.all.Get_From,
+         Length => Widget.all.Second_Needle.all.Get_Length,
+         Tip    =>
+           (Length => Widget.all.Second_Needle.all.Get_Tip.Length,
+            Width  => Widget.all.Second_Needle.all.Get_Tip.Width,
+            Cap    =>
+              Gtk.Widget.Styles.Line_Cap_Property.Style_Get
+                (Widget, "second-needle-tip-cap")),
+         Rear   =>
+           (Length => Widget.all.Second_Needle.all.Get_Rear.Length,
+            Width  => Widget.all.Second_Needle.all.Get_Rear.Width,
+            Cap    =>
+              Gtk.Widget.Styles.Line_Cap_Property.Style_Get
+                (Widget, "second-needle-rear-cap")),
+         Color  =>
+           Gtk.Widget.Styles.Style_Get
+             (Widget, "second-needle-color", Second_Needle_Color));
+      Widget.all.Background.all.Set
+        (Outer         => Widget.all.Background.all.Get_Outer,
+         Inner         => Widget.all.Background.all.Get_Inner,
+         From          => Widget.all.Background.all.Get_From,
+         Length        => Widget.all.Background.all.Get_Length,
+         Border_Width  => Widget.all.Background.all.Get_Border_Width,
+         Border_Depth  => Widget.all.Background.all.Get_Border_Depth,
+         Border_Color  => Widget.all.Background.all.Get_Border_Color,
+         Border_Shadow => Widget.all.Background.all.Get_Border_Shadow,
+         Color         =>
+           Gtk.Widget.Styles.Style_Get
+             (Widget, "backgound-color", Background_Color));
+      Widget.all.Minor_Ticks.all.Set
+        (Inner  => Widget.all.Minor_Ticks.all.Get_Inner,
+         Outer  => Widget.all.Minor_Ticks.all.Get_Outer,
+         Ticks  => Widget.all.Minor_Ticks.all.Get_Ticks,
+         From   => Widget.all.Minor_Ticks.all.Get_From,
+         Length => Widget.all.Minor_Ticks.all.Get_Length,
          Line =>
-            (  Widget.Minor_Ticks.Get_Line.Width,
-               Style_Get (Widget, "minor-tick-color", Minor_Tick_Color),
-               Style_Get (Widget, "minor-tick-line-cap")
-      )     );
-      Widget.Major_Ticks.Set
-      (  Inner  => Widget.Major_Ticks.Get_Inner,
-         Outer  => Widget.Major_Ticks.Get_Outer,
-         Ticks  => Widget.Major_Ticks.Get_Ticks,
-         From   => Widget.Major_Ticks.Get_From,
-         Length => Widget.Major_Ticks.Get_Length,
-         Line =>
-            (  Widget.Major_Ticks.Get_Line.Width,
-               Style_Get (Widget, "major-tick-color", Major_Tick_Color),
-               Style_Get (Widget, "major-tick-line-cap")
-      )     );
-      Widget.Annotation.Set
-      (  Ellipse => Widget.Annotation.Get_Ellipse,
-         Ticks   => Widget.Annotation.Get_Ticks,
-         From    => Widget.Annotation.Get_From,
-         Length  => Widget.Annotation.Get_Length,
-         Face    => Widget.Annotation.Get_Face,
-         Mode    => Widget.Annotation.Get_Mode,
-         Height  => Widget.Annotation.Get_Height,
-         Stretch => Widget.Annotation.Get_Stretch,
-         Color   => Style_Get (Widget, "text-color", Text_Color)
-      );
-      Widget.Pin.Set
-      (  Outer         => Widget.Pin.Get_Outer,
-         Inner         => Widget.Pin.Get_Inner,
-         From          => Widget.Pin.Get_From,
-         Length        => Widget.Pin.Get_Length,
-         Border_Width  => Widget.Pin.Get_Border_Width,
-         Border_Depth  => Widget.Pin.Get_Border_Depth,
-         Border_Color  => Widget.Pin.Get_Border_Color,
-         Border_Shadow => Widget.Pin.Get_Border_Shadow,
-         Color         => Style_Get (Widget, "pin-color", Pin_Color)
-      );
+           (Widget.all.Minor_Ticks.all.Get_Line.Width,
+            Gtk.Widget.Styles.Style_Get
+              (Widget, "minor-tick-color", Minor_Tick_Color),
+            Gtk.Widget.Styles.Line_Cap_Property.Style_Get
+              (Widget, "minor-tick-line-cap")));
+      Widget.all.Major_Ticks.all.Set
+        (Inner  => Widget.all.Major_Ticks.all.Get_Inner,
+         Outer  => Widget.all.Major_Ticks.all.Get_Outer,
+         Ticks  => Widget.all.Major_Ticks.all.Get_Ticks,
+         From   => Widget.all.Major_Ticks.all.Get_From,
+         Length => Widget.all.Major_Ticks.all.Get_Length,
+         Line   =>
+           (Widget.all.Major_Ticks.all.Get_Line.Width,
+            Gtk.Widget.Styles.Style_Get
+              (Widget, "major-tick-color", Major_Tick_Color),
+            Gtk.Widget.Styles.Line_Cap_Property.Style_Get
+              (Widget, "major-tick-line-cap")));
+      Widget.all.Annotation.all.Set
+        (Ellipse => Widget.all.Annotation.all.Get_Ellipse,
+         Ticks   => Widget.all.Annotation.all.Get_Ticks,
+         From    => Widget.all.Annotation.all.Get_From,
+         Length  => Widget.all.Annotation.all.Get_Length,
+         Face    => Widget.all.Annotation.all.Get_Face,
+         Mode    => Widget.all.Annotation.all.Get_Mode,
+         Height  => Widget.all.Annotation.all.Get_Height,
+         Stretch => Widget.all.Annotation.all.Get_Stretch,
+         Color   =>
+           Gtk.Widget.Styles.Style_Get (Widget, "text-color", Text_Color));
+      Widget.all.Pin.all.Set
+        (Outer         => Widget.all.Pin.all.Get_Outer,
+         Inner         => Widget.all.Pin.all.Get_Inner,
+         From          => Widget.all.Pin.all.Get_From,
+         Length        => Widget.all.Pin.all.Get_Length,
+         Border_Width  => Widget.all.Pin.all.Get_Border_Width,
+         Border_Depth  => Widget.all.Pin.all.Get_Border_Depth,
+         Border_Color  => Widget.all.Pin.all.Get_Border_Color,
+         Border_Shadow => Widget.all.Pin.all.Get_Border_Shadow,
+         Color         =>
+           Gtk.Widget.Styles.Style_Get (Widget, "pin-color", Pin_Color));
    end Style_Changed;
 
 end Gtk.Wall_Clock.Modern;

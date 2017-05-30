@@ -25,12 +25,15 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Ada.Numerics;       use Ada.Numerics;
-with Gtk.Handlers;       use Gtk.Handlers;
-with Pango.Cairo.Fonts;  use Pango.Cairo.Fonts;
-with Strings_Edit;       use Strings_Edit;
+with Gtk.Handlers;
+
+with Pango.Cairo.Fonts;
+
+with Strings_Edit;
 
 package Gtk.Layered.Label.Digital is
+
+   pragma Warnings (Off, "declaration hides ""Adjustment""");
 
    --
    -- Digital_Layer -- A layer rendering value as a text
@@ -80,45 +83,46 @@ package Gtk.Layered.Label.Digital is
    --
    procedure Add_Digital
      (Under      : not null access Layer_Location'Class;
-      Location   : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
-      Face       : Pango_Cairo_Font :=
-        Create_Toy
+      Location   : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 0.0);
+      Face       : Pango.Cairo.Fonts.Pango_Cairo_Font                :=
+        Pango.Cairo.Fonts.Create_Toy
           (Family => "sans",
            Slant  => Cairo.Cairo_Font_Slant_Normal,
            Weight => Cairo.Cairo_Font_Weight_Normal);
-      Height     : Gdouble             := 12.0;
-      Stretch    : Gdouble             := 1.0;
-      Mode       : Text_Transformation := Rotated;
-      Color      : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Angle      : Gdouble             := 0.0;
-      Skew       : Gdouble             := 0.0;
-      Base       : NumberBase          := 10;
-      Precision  : Integer             := 0;
-      Absolute   : Boolean             := True;
-      Put_Plus   : Boolean             := False;
+      Height     : Gdouble                                           := 12.0;
+      Stretch    : Gdouble                                           := 1.0;
+      Mode       : Text_Transformation                               := Rotated;
+      Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Angle      : Gdouble                                           := 0.0;
+      Skew       : Gdouble                                           := 0.0;
+      Base       : Strings_Edit.NumberBase                           := 10;
+      Precision  : Integer                                           := 0;
+      Absolute   : Boolean                                           := True;
+      Put_Plus   : Boolean                                           := False;
       Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
-      Scaled     : Boolean := False);
+      Scaled     : Boolean                                           := False);
 
    function Add_Digital
      (Under      : not null access Layer_Location'Class;
-      Location   : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
-      Face       : Pango_Cairo_Font :=
-        Create_Toy
+      Location   : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 0.0);
+      Face       : Pango.Cairo.Fonts.Pango_Cairo_Font                :=
+        Pango.Cairo.Fonts.Create_Toy
           (Family => "sans",
            Slant  => Cairo.Cairo_Font_Slant_Normal,
            Weight => Cairo.Cairo_Font_Weight_Normal);
-      Height     : Gdouble             := 12.0;
-      Stretch    : Gdouble             := 1.0;
-      Mode       : Text_Transformation := Rotated;
-      Color      : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Angle      : Gdouble             := 0.0;
-      Skew       : Gdouble             := 0.0;
-      Base       : NumberBase          := 10;
-      Precision  : Integer             := 0;
-      Absolute   : Boolean             := True;
-      Put_Plus   : Boolean             := False;
+      Height     : Gdouble                                           := 12.0;
+      Stretch    : Gdouble                                           := 1.0;
+      Mode       : Text_Transformation                               := Rotated;
+      Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Angle      : Gdouble                                           := 0.0;
+      Skew       : Gdouble                                           := 0.0;
+      Base       : Strings_Edit.NumberBase                           := 10;
+      Precision  : Integer                                           := 0;
+      Absolute   : Boolean                                           := True;
+      Put_Plus   : Boolean                                           := False;
       Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
-      Scaled     : Boolean := False) return not null access Digital_Layer;
+      Scaled     : Boolean                                           := False)
+      return not null access Digital_Layer;
    --
    -- Get_Absolute -- Value precision type
    --
@@ -162,7 +166,7 @@ package Gtk.Layered.Label.Digital is
    --
    --    The base
    --
-   function Get_Base (Layer : Digital_Layer) return NumberBase;
+   function Get_Base (Layer : Digital_Layer) return Strings_Edit.NumberBase;
 
    --
    -- Get_Color -- The text color
@@ -184,7 +188,8 @@ package Gtk.Layered.Label.Digital is
    --
    --    The font face
    --
-   overriding function Get_Face (Layer : Digital_Layer) return Pango_Cairo_Font;
+   overriding function Get_Face (Layer : Digital_Layer)
+                                 return Pango.Cairo.Fonts.Pango_Cairo_Font;
 
    --
    -- Get_Height -- The text height
@@ -342,14 +347,14 @@ package Gtk.Layered.Label.Digital is
    procedure Set
      (Layer     : in out Digital_Layer;
       Location  : Cairo.Ellipses.Cairo_Tuple;
-      Face      : Pango_Cairo_Font;
+      Face      : Pango.Cairo.Fonts.Pango_Cairo_Font;
       Height    : Gdouble;
       Stretch   : Gdouble;
       Mode      : Text_Transformation;
       Color     : Gdk.Color.Gdk_Color;
       Angle     : Gdouble;
       Skew      : Gdouble;
-      Base      : NumberBase;
+      Base      : Strings_Edit.NumberBase;
       Precision : Integer;
       Absolute  : Boolean;
       Put_Plus  : Boolean);
@@ -404,9 +409,9 @@ private
       record
          Value         : Gdouble := 0.0;
          Adjustment    : Gtk.Adjustment.Gtk_Adjustment;
-         Changed       : Handler_Id;
-         Value_Changed : Handler_Id;
-         Base          : NumberBase;
+         Changed       : Gtk.Handlers.Handler_Id;
+         Value_Changed : Gtk.Handlers.Handler_Id;
+         Base          : Strings_Edit.NumberBase;
          Precision     : Integer;
          Absolute      : Boolean;
          Put_Plus      : Boolean;
@@ -417,7 +422,7 @@ private
      (Under    : not null access Layer_Location'Class;
       Text     : UTF8_String;
       Location : Cairo.Ellipses.Cairo_Tuple;
-      Face     : Pango_Cairo_Font;
+      Face     : Pango.Cairo.Fonts.Pango_Cairo_Font;
       Height   : Gdouble;
       Stretch  : Gdouble;
       Mode     : Text_Transformation;
@@ -426,5 +431,7 @@ private
       Skew     : Gdouble;
       Markup   : Boolean;
       Scaled   : Boolean) return not null access Digital_Layer;
+
+   pragma Warnings (On, "declaration hides ""Adjustment""");
 
 end Gtk.Layered.Label.Digital;

@@ -23,7 +23,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 --
 --  This generic package is used for dealing with  style  properties  of
 --  enumerations. Such properties can be specified in the form:
@@ -51,49 +51,49 @@ with Glib.Generic_Properties;
 
 generic
    with package Enumeration_Property is
-      new Glib.Generic_Properties.Generic_Enumeration_Property (<>);
+     new Glib.Generic_Properties.Generic_Enumeration_Property (<>);
 package Gtk.Widget.Styles.Generic_Enumeration is
    use Enumeration_Property;
---
--- Style_Get -- Get style enumeration property
---
---    Widget        - To get a style property of
---    Property_Name - The name of the style property
---
--- This function is tailored for enumeration properties installed  using
--- Install_Style from this package.
---
--- Returns :
---
---    The value of the property
---
+
+   --
+   -- Style_Get -- Get style enumeration property
+   --
+   --    Widget        - To get a style property of
+   --    Property_Name - The name of the style property
+   --
+   -- This function is tailored for enumeration properties installed  using
+   -- Install_Style from this package.
+   --
+   -- Returns :
+   --
+   --    The value of the property
+   --
    function Style_Get
-            (  Widget        : access Gtk_Widget_Record'Class;
-               Property_Name : String
-            )  return Enumeration;
---
--- Install_Style -- Install an enumeration property
---
---    Class     - The class
---    Enum_Spec - A  property  obtained  by  Gnew_Enum  of  the  package
---                Enumeration_Property
---
+     (Widget        : access Gtk_Widget_Record'Class;
+      Property_Name : String) return Enumeration;
+
+   --
+   -- Install_Style -- Install an enumeration property
+   --
+   --    Class     - The class
+   --    Enum_Spec - A  property  obtained  by  Gnew_Enum  of  the  package
+   --                Enumeration_Property
+   --
    procedure Install_Style
-             (  Class     : GObject_Class;
-                Enum_Spec : Param_Spec
-             );
+     (Class     : GObject_Class;
+      Enum_Spec : Param_Spec);
+
 private
---
--- Enum_Property_Parser -- Custom parser
---
+   --
+   -- Enum_Property_Parser -- Custom parser
+   --
    function Enum_Property_Parser
-            (  PSpec          : Param_Spec;
-               RC_String      : GString;
-               Property_Value : access GValue
-            )  return Gboolean;
+     (PSpec          : Param_Spec;
+      RC_String      : GString;
+      Property_Value : access GValue) return Gboolean;
    pragma Convention (C, Enum_Property_Parser);
 
    Parser : constant Gtk_RC_Property_Parser :=
-               Enum_Property_Parser'Access;
+              Enum_Property_Parser'Access;
 
 end Gtk.Widget.Styles.Generic_Enumeration;

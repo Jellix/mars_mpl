@@ -23,7 +23,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 --
 --  This package contains GTK+ subroutines to  deal  with  widget  style
 --  properties.
@@ -106,233 +106,235 @@
 --     requested  value. That should circumvent value transformation and
 --     thus deliver it back to the caller of Style_Get_Property.
 --
-with Gdk.Color;             use Gdk.Color;
-with Glib.Values;           use Glib.Values;
-with Gtk.Widget;            use Gtk.Widget;
-with Interfaces.C.Strings;  use Interfaces.C.Strings;
+
+with Interfaces.C.Strings;
 
 package Gtk.Widget.Styles is
---
--- Param_Spec_Array -- Array of parameter specifications
---
+
+   --
+   -- Param_Spec_Array -- Array of parameter specifications
+   --
    type Param_Spec_Array is array (Positive range <>) of Param_Spec;
---
--- GString -- Parser's state
---
---    Str           - Nul-terminated string to parse
---    Len           - The length of
---    Allocated_Len - The size of the memory allocated for (max length)
---
+
+   --
+   -- GString -- Parser's state
+   --
+   --    Str           - Nul-terminated string to parse
+   --    Len           - The length of
+   --    Allocated_Len - The size of the memory allocated for (max length)
+   --
    type GString is record
-      Str           : chars_ptr;
+      Str           : Interfaces.C.Strings.chars_ptr;
       Len           : Gsize;
       Allocated_Len : Gsize;
    end record;
    pragma Convention (C, GString);
---
--- Gtk_RC_Property_Parser -- Property parser
---
---    PSpec          - The property specification
---    RC_String      - The property value (unparsed)
---    Property_Value - The propery value to set
---
--- The  parser  scans RC_String.Str and sets Property_Value according to
--- the value detected. To call Init is the parser's responsibility. When
--- it does so and sets a  value  there,  it  returns  1.  Otherwise,  it
--- returns 0.
---
+
+   --
+   -- Gtk_RC_Property_Parser -- Property parser
+   --
+   --    PSpec          - The property specification
+   --    RC_String      - The property value (unparsed)
+   --    Property_Value - The propery value to set
+   --
+   -- The  parser  scans RC_String.Str and sets Property_Value according to
+   -- the value detected. To call Init is the parser's responsibility. When
+   -- it does so and sets a  value  there,  it  returns  1.  Otherwise,  it
+   -- returns 0.
+   --
    type Gtk_RC_Property_Parser is access function
-        (  PSpec          : Param_Spec;
-           RC_String      : GString;
-           Property_Value : access GValue
-        )  return Gboolean;
+     (PSpec          : Param_Spec;
+      RC_String      : GString;
+      Property_Value : access GValue) return Gboolean;
    pragma Convention (C, Gtk_RC_Property_Parser);
---
--- Class_Install_Style_Property_Parser -- Add a custom style property
---
---    Class  - The class
---    PSpec  - The property specification
---    Parser - To parse the property
---
--- This procedure installs a style property for which  a  custom  parser
--- will be used.
---
+
+   --
+   -- Class_Install_Style_Property_Parser -- Add a custom style property
+   --
+   --    Class  - The class
+   --    PSpec  - The property specification
+   --    Parser - To parse the property
+   --
+   -- This procedure installs a style property for which  a  custom  parser
+   -- will be used.
+   --
    procedure Class_Install_Style_Property_Parser
-             (  Class  : GObject_Class;
-                PSpec  : Param_Spec;
-                Parser : Gtk_RC_Property_Parser
-             );
---
--- Class_List_Style_Properties -- Enumerate style properties
---
---    Class - The class
---
--- This procedure enumerates style properties of a widget's class.
---
--- Returns :
---
---    The array of properties
---
+     (Class  : GObject_Class;
+      PSpec  : Param_Spec;
+      Parser : Gtk_RC_Property_Parser);
+
+   --
+   -- Class_List_Style_Properties -- Enumerate style properties
+   --
+   --    Class - The class
+   --
+   -- This procedure enumerates style properties of a widget's class.
+   --
+   -- Returns :
+   --
+   --    The array of properties
+   --
    function Class_List_Style_Properties
-            (  Class : GObject_Class
-            )  return Param_Spec_Array;
---
--- Get_Path -- Get widget path
---
---    Widget  - To get the path of
---    Reverse - Flag, if the path should be reversed
---
--- The widget path includes the name of the widget set using Set_Name.
---
--- Returns :
---
---    The widget path
---
+     (Class : GObject_Class) return Param_Spec_Array;
+
+   --
+   -- Get_Path -- Get widget path
+   --
+   --    Widget  - To get the path of
+   --    Reverse - Flag, if the path should be reversed
+   --
+   -- The widget path includes the name of the widget set using Set_Name.
+   --
+   -- Returns :
+   --
+   --    The widget path
+   --
    function Get_Path
-            (  Widget   : not null access Gtk_Widget_Record'Class;
-               Reversed : Boolean := False
-            )  return UTF8_String;
---
--- Get_Class_Path -- Get widget class path
---
---    Widget  - To get the path of
---    Reverse - Flag, if the path should be reversed
---
--- This is same as Get_Path, but  ignores  Set_Name  and  returns  class
--- names in the path instead of widget names.
---
--- Returns :
---
---    The widget class path
---
+     (Widget   : not null access Gtk_Widget_Record'Class;
+      Reversed : Boolean := False) return UTF8_String;
+
+   --
+   -- Get_Class_Path -- Get widget class path
+   --
+   --    Widget  - To get the path of
+   --    Reverse - Flag, if the path should be reversed
+   --
+   -- This is same as Get_Path, but  ignores  Set_Name  and  returns  class
+   -- names in the path instead of widget names.
+   --
+   -- Returns :
+   --
+   --    The widget class path
+   --
    function Get_Class_Path
-            (  Widget   : not null access Gtk_Widget_Record'Class;
-               Reversed : Boolean := False
-            )  return UTF8_String;
---
--- Style_Get -- Get a color from the widget style
---
---    Widget        - To request string from
---    Property_Name - The property name
---    Default       - The default value
---
--- Color style properties are kept as boxed types. It means,  that  they
--- don't have  defaults.  Therefore  this  function  has  an  additional
--- parameter Default.
---
--- Returns :
---
---    The value
---
+     (Widget   : not null access Gtk_Widget_Record'Class;
+      Reversed : Boolean := False) return UTF8_String;
+
+   --
+   -- Style_Get -- Get a color from the widget style
+   --
+   --    Widget        - To request string from
+   --    Property_Name - The property name
+   --    Default       - The default value
+   --
+   -- Color style properties are kept as boxed types. It means,  that  they
+   -- don't have  defaults.  Therefore  this  function  has  an  additional
+   -- parameter Default.
+   --
+   -- Returns :
+   --
+   --    The value
+   --
    function Style_Get
-            (  Widget        : not null access Gtk_Widget_Record'Class;
-               Property_Name : UTF8_String;
-               Default       : Gdk_Color
-            )  return Gdk_Color;
---
--- Style_Get -- Get a property from the widget style
---
---    Widget        - To request string from
---    Property_Name - The property name
---
--- Returns :
---
---    The value
---
+     (Widget        : not null access Gtk_Widget_Record'Class;
+      Property_Name : UTF8_String;
+      Default       : Gdk_Color) return Gdk_Color;
+
+   --
+   -- Style_Get -- Get a property from the widget style
+   --
+   --    Widget        - To request string from
+   --    Property_Name - The property name
+   --
+   -- Returns :
+   --
+   --    The value
+   --
    function Style_Get
-            (  Widget        : not null access Gtk_Widget_Record'Class;
-               Property_Name : UTF8_String
-            )  return Boolean;
+     (Widget        : not null access Gtk_Widget_Record'Class;
+      Property_Name : UTF8_String) return Boolean;
+
    function Style_Get
-            (  Widget        : not null access Gtk_Widget_Record'Class;
-               Property_Name : UTF8_String
-            )  return Gchar;
+     (Widget        : not null access Gtk_Widget_Record'Class;
+      Property_Name : UTF8_String) return Gchar;
+
    function Style_Get
-            (  Widget        : not null access Gtk_Widget_Record'Class;
-               Property_Name : UTF8_String
-            )  return Guchar;
+     (Widget        : not null access Gtk_Widget_Record'Class;
+      Property_Name : UTF8_String) return Guchar;
+
    function Style_Get
-            (  Widget        : not null access Gtk_Widget_Record'Class;
-               Property_Name : UTF8_String
-            )  return Gint;
+     (Widget        : not null access Gtk_Widget_Record'Class;
+      Property_Name : UTF8_String) return Gint;
+
    function Style_Get
-            (  Widget        : not null access Gtk_Widget_Record'Class;
-               Property_Name : UTF8_String
-            )  return Guint;
+     (Widget        : not null access Gtk_Widget_Record'Class;
+      Property_Name : UTF8_String) return Guint;
+
    function Style_Get
-            (  Widget        : not null access Gtk_Widget_Record'Class;
-               Property_Name : UTF8_String
-            )  return Glong;
+     (Widget        : not null access Gtk_Widget_Record'Class;
+      Property_Name : UTF8_String) return Glong;
+
    function Style_Get
-            (  Widget        : not null access Gtk_Widget_Record'Class;
-               Property_Name : UTF8_String
-            )  return Gulong;
+     (Widget        : not null access Gtk_Widget_Record'Class;
+      Property_Name : UTF8_String) return Gulong;
+
    function Style_Get
-            (  Widget        : not null access Gtk_Widget_Record'Class;
-               Property_Name : UTF8_String
-            )  return Gfloat;
+     (Widget        : not null access Gtk_Widget_Record'Class;
+      Property_Name : UTF8_String) return Gfloat;
+
    function Style_Get
-            (  Widget        : not null access Gtk_Widget_Record'Class;
-               Property_Name : UTF8_String
-            )  return Gdouble;
+     (Widget        : not null access Gtk_Widget_Record'Class;
+      Property_Name : UTF8_String) return Gdouble;
+
    function Style_Get
-            (  Widget        : not null access Gtk_Widget_Record'Class;
-               Property_Name : UTF8_String
-            )  return UTF8_String;
---
--- Style_Get -- Get widget style by its name
---
---    Widget        - To request string from
---    Property_Name - The property name
---
--- The  result is GValue initialized by the style value. When the widget
--- does not have the style the result has the type GType_None. The value
--- must be freed using Unset when no more used.
---
--- Returns :
---
---    The style value
---
+     (Widget        : not null access Gtk_Widget_Record'Class;
+      Property_Name : UTF8_String) return UTF8_String;
+
+   --
+   -- Style_Get -- Get widget style by its name
+   --
+   --    Widget        - To request string from
+   --    Property_Name - The property name
+   --
+   -- The  result is GValue initialized by the style value. When the widget
+   -- does not have the style the result has the type GType_None. The value
+   -- must be freed using Unset when no more used.
+   --
+   -- Returns :
+   --
+   --    The style value
+   --
    function Style_Get
-            (  Widget        : not null access Gtk_Widget_Record'Class;
-               Property_Name : UTF8_String
-            )  return GValue;
---
--- Generic_Style_Get -- Get style property
---
---    Widget        - To get a style property of
---    Property_Name - The name of the style property
---
--- This  generic  function can be instantiated to get a more comfortable
--- wrapper around Style_Get_Property. The generic parameters are:
---
---    GTK_Type - The GTK type of the property (a function to get it)
---    Ada_Type - The type of the property
---    Get      - The function that gets an Ada_Type value from GValue
---
--- Note  that  the  GTK_Type parameter is a function rather than a plain
--- GType  value.  The reason for this is that the value might be unknown
--- until run-time. This is the case for many  GtkAda  types,  which  are
--- constructed  at run-time. For such types an attempt to get the actual
--- value for GTK_Type will cause creation of a GTK type where it  cannot
--- be  created. That would result in a CRITICAL GTK+ error.
---
--- Returns :
---
---    The value of the property
---
+     (Widget        : not null access Gtk_Widget_Record'Class;
+      Property_Name : UTF8_String) return GValue;
+
+   --
+   -- Generic_Style_Get -- Get style property
+   --
+   --    Widget        - To get a style property of
+   --    Property_Name - The name of the style property
+   --
+   -- This  generic  function can be instantiated to get a more comfortable
+   -- wrapper around Style_Get_Property. The generic parameters are:
+   --
+   --    GTK_Type - The GTK type of the property (a function to get it)
+   --    Ada_Type - The type of the property
+   --    Get      - The function that gets an Ada_Type value from GValue
+   --
+   -- Note  that  the  GTK_Type parameter is a function rather than a plain
+   -- GType  value.  The reason for this is that the value might be unknown
+   -- until run-time. This is the case for many  GtkAda  types,  which  are
+   -- constructed  at run-time. For such types an attempt to get the actual
+   -- value for GTK_Type will cause creation of a GTK type where it  cannot
+   -- be  created. That would result in a CRITICAL GTK+ error.
+   --
+   -- Returns :
+   --
+   --    The value of the property
+   --
    generic
       with function GTK_Type return GType;
       type Ada_Type (<>) is private;
       with function Get (Value : GValue) return Ada_Type;
    function Generic_Style_Get
-            (  Widget        : not null access Gtk_Widget_Record'Class;
-               Property_Name : String
-            )  return Ada_Type;
+     (Widget        : not null access Gtk_Widget_Record'Class;
+      Property_Name : String) return Ada_Type;
+
 private
+
    pragma Import
-          (  C,
-             Class_Install_Style_Property_Parser,
-             "gtk_widget_class_install_style_property_parser"
-          );
+     (C,
+      Class_Install_Style_Property_Parser,
+      "gtk_widget_class_install_style_property_parser");
+
 end Gtk.Widget.Styles;

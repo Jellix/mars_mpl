@@ -42,6 +42,8 @@ with Pango.Enums.Weight_Property;
 
 package body Gtk.Layered.Label.Digital is
 
+   pragma Warnings (Off, "declaration hides ""Adjustment""");
+
    type Layer_Property is
      (Property_Scaled,
       Property_X,
@@ -70,17 +72,14 @@ package body Gtk.Layered.Label.Digital is
        (Gtk.Adjustment.Gtk_Adjustment_Record,
         Digital_Ptr);
 
-   function Where (Name : String) return String is
-   begin
-      return " in Gtk.Layered.Digital." & Name;
-   end Where;
-
    procedure Free is
-      new Ada.Unchecked_Deallocation (Digital_Layer, Digital_Ptr);
+     new Ada.Unchecked_Deallocation (Digital_Layer, Digital_Ptr);
 
    procedure Changed
      (Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class;
       Layer      : Digital_Ptr);
+
+   function Where (Name : String) return String;
 
    overriding function Add
      (Under  : not null access Layer_Location'Class;
@@ -100,19 +99,22 @@ package body Gtk.Layered.Label.Digital is
 
    procedure Add_Adjustment
      (Layer      : in out Digital_Layer;
+      Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class);
+   procedure Add_Adjustment
+     (Layer      : in out Digital_Layer;
       Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class)
    is
    begin
       Gtk.Adjustment.Ref (Adjustment);
       Layer.Adjustment := Adjustment.all'Unchecked_Access;
       Layer.Changed :=
-         Handlers.Connect
+        Handlers.Connect
           (Adjustment,
            "changed",
            Handlers.To_Marshaller (Changed'Access),
            Layer'Unchecked_Access);
       Layer.Value_Changed :=
-         Handlers.Connect
+        Handlers.Connect
           (Adjustment,
            "value_changed",
            Handlers.To_Marshaller (Changed'Access),
@@ -122,24 +124,24 @@ package body Gtk.Layered.Label.Digital is
 
    procedure Add_Digital
      (Under      : not null access Layer_Location'Class;
-      Location   : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
-      Face       : Pango_Cairo_Font :=
-        Create_Toy
+      Location   : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 0.0);
+      Face       : Pango.Cairo.Fonts.Pango_Cairo_Font                :=
+        Pango.Cairo.Fonts.Create_Toy
           (Family => "sans",
            Slant  => Cairo.Cairo_Font_Slant_Normal,
            Weight => Cairo.Cairo_Font_Weight_Normal);
-      Height     : Gdouble             := 12.0;
-      Stretch    : Gdouble             := 1.0;
-      Mode       : Text_Transformation := Rotated;
-      Color      : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Angle      : Gdouble             := 0.0;
-      Skew       : Gdouble             := 0.0;
-      Base       : NumberBase          := 10;
-      Precision  : Integer             := 0;
-      Absolute   : Boolean             := True;
-      Put_Plus   : Boolean             := False;
+      Height     : Gdouble                                           := 12.0;
+      Stretch    : Gdouble                                           := 1.0;
+      Mode       : Text_Transformation                               := Rotated;
+      Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Angle      : Gdouble                                           := 0.0;
+      Skew       : Gdouble                                           := 0.0;
+      Base       : Strings_Edit.NumberBase                           := 10;
+      Precision  : Integer                                           := 0;
+      Absolute   : Boolean                                           := True;
+      Put_Plus   : Boolean                                           := False;
       Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
-      Scaled     : Boolean := False)
+      Scaled     : Boolean                                           := False)
    is
       Ptr   : Digital_Ptr := new Digital_Layer;
       Layer : Digital_Layer renames Ptr.all;
@@ -184,24 +186,25 @@ package body Gtk.Layered.Label.Digital is
 
    function Add_Digital
      (Under      : not null access Layer_Location'Class;
-      Location   : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
-      Face       : Pango_Cairo_Font :=
-        Create_Toy
+      Location   : Cairo.Ellipses.Cairo_Tuple                        := (0.0, 0.0);
+      Face       : Pango.Cairo.Fonts.Pango_Cairo_Font                :=
+        Pango.Cairo.Fonts.Create_Toy
           (Family => "sans",
            Slant  => Cairo.Cairo_Font_Slant_Normal,
            Weight => Cairo.Cairo_Font_Weight_Normal);
-      Height     : Gdouble             := 12.0;
-      Stretch    : Gdouble             := 1.0;
-      Mode       : Text_Transformation := Rotated;
-      Color      : Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Angle      : Gdouble             := 0.0;
-      Skew       : Gdouble             := 0.0;
-      Base       : NumberBase          := 10;
-      Precision  : Integer             := 0;
-      Absolute   : Boolean             := True;
-      Put_Plus   : Boolean             := False;
+      Height     : Gdouble                                           := 12.0;
+      Stretch    : Gdouble                                           := 1.0;
+      Mode       : Text_Transformation                               := Rotated;
+      Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Angle      : Gdouble                                           := 0.0;
+      Skew       : Gdouble                                           := 0.0;
+      Base       : Strings_Edit.NumberBase                           := 10;
+      Precision  : Integer                                           := 0;
+      Absolute   : Boolean                                           := True;
+      Put_Plus   : Boolean                                           := False;
       Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
-      Scaled     : Boolean := False) return not null access Digital_Layer
+      Scaled     : Boolean                                           := False)
+      return not null access Digital_Layer
    is
       Ptr   : Digital_Ptr := new Digital_Layer;
       Layer : Digital_Layer renames Ptr.all;
@@ -249,7 +252,7 @@ package body Gtk.Layered.Label.Digital is
      (Under    : not null access Layer_Location'Class;
       Text     : UTF8_String;
       Location : Cairo.Ellipses.Cairo_Tuple;
-      Face     : Pango_Cairo_Font;
+      Face     : Pango.Cairo.Fonts.Pango_Cairo_Font;
       Height   : Gdouble;
       Stretch  : Gdouble;
       Mode     : Text_Transformation;
@@ -300,7 +303,7 @@ package body Gtk.Layered.Label.Digital is
       return Label_Layer (Layer).Get_Angle;
    end Get_Angle;
 
-   function Get_Base (Layer : Digital_Layer) return NumberBase is
+   function Get_Base (Layer : Digital_Layer) return Strings_Edit.NumberBase is
    begin
       return Layer.Base;
    end Get_Base;
@@ -311,7 +314,7 @@ package body Gtk.Layered.Label.Digital is
    end Get_Color;
 
    overriding function Get_Face (Layer : Digital_Layer)
-      return Pango_Cairo_Font is
+      return Pango.Cairo.Fonts.Pango_Cairo_Font is
    begin
       return Label_Layer (Layer).Get_Face;
    end Get_Face;
@@ -403,7 +406,7 @@ package body Gtk.Layered.Label.Digital is
                   Pango.Cairo.Fonts.Font_Type_Property.Gnew_Enum
                    (Name    => "font-type",
                     Nick    => "font type",
-                    Default => Pango_Font,
+                    Default => Pango.Cairo.Fonts.Pango_Font,
                     Blurb   => "The backend used for the font, " &
                                "e.g. toy font, pango font");
             when Property_Family =>
@@ -476,8 +479,8 @@ package body Gtk.Layered.Label.Digital is
                  Glib.Properties.Creation.Gnew_Double
                    (Name    => "angle",
                     Nick    => "angle",
-                    Minimum => -2.0 * Pi,
-                    Maximum => 2.0 * Pi,
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
                     Default => 0.0,
                     Blurb   => "The angle of the label text base " &
                                "line when the text transformation " &
@@ -488,8 +491,8 @@ package body Gtk.Layered.Label.Digital is
                  Glib.Properties.Creation.Gnew_Double
                    (Name    => "skew",
                     Nick    => "skew",
-                    Minimum => -2.0 * Pi,
-                    Maximum => 2.0 * Pi,
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
                     Default => 0.0,
                     Blurb   => "When the text transformation mode " &
                                "is Rotated, skew is the angle " &
@@ -568,21 +571,23 @@ package body Gtk.Layered.Label.Digital is
                when Property_Font_Type =>
                   Pango.Cairo.Fonts.Font_Type_Property.Set_Enum
                     (Value,
-                     Get_Type (Layer.Face));
+                     Pango.Cairo.Fonts.Get_Type (Layer.Face));
                when Property_Family =>
                   Glib.Values.Init (Value, GType_String);
-                  Glib.Values.Set_String (Value, Get_Family (Layer.Face));
+                  Glib.Values.Set_String
+                    (Value, Pango.Cairo.Fonts.Get_Family (Layer.Face));
                when Property_Slant =>
                   Cairo.Font_Slant_Property.Set_Enum
                     (Value,
-                     Get_Slant (Layer.Face));
+                     Pango.Cairo.Fonts.Get_Slant (Layer.Face));
                when Property_Font_Size =>
                   Glib.Values.Init (Value, GType_Uint);
-                  Glib.Values.Set_Uint (Value, Guint (Get_Size (Layer.Face)));
+                  Glib.Values.Set_Uint
+                    (Value, Guint (Pango.Cairo.Fonts.Get_Size (Layer.Face)));
                when Property_Weight =>
                   Pango.Enums.Weight_Property.Set_Enum
                     (Value,
-                     Get_Weight (Layer.Face));
+                     Pango.Cairo.Fonts.Get_Weight (Layer.Face));
                when Property_Stretch =>
                   Glib.Values.Init (Value, GType_Double);
                   Glib.Values.Set_Double (Value, Layer.Stretch);
@@ -619,15 +624,15 @@ package body Gtk.Layered.Label.Digital is
       return Layer.Put_Plus;
    end Get_Put_Plus;
 
-   overriding function Get_Stretch (Layer : Digital_Layer) return Gdouble is
-   begin
-      return Label_Layer (Layer).Get_Stretch;
-   end Get_Stretch;
-
    overriding function Get_Skew (Layer : Digital_Layer) return Gdouble is
    begin
       return Label_Layer (Layer).Get_Skew;
    end Get_Skew;
+
+   overriding function Get_Stretch (Layer : Digital_Layer) return Gdouble is
+   begin
+      return Label_Layer (Layer).Get_Stretch;
+   end Get_Stretch;
 
    overriding function Get_Text (Layer : Digital_Layer) return UTF8_String is
    begin
@@ -641,20 +646,18 @@ package body Gtk.Layered.Label.Digital is
 
    function Render
      (Layer  : Digital_Layer;
-      Value  : Gdouble) return UTF8_String
-   is
-      use Gtk.Layered.Waveform.Edit;
+      Value  : Gdouble) return UTF8_String is
    begin
       if Layer.Get_Absolute then
          return
-           Image
+           Gtk.Layered.Waveform.Edit.Image
              (Value    => Value,
               Base     => Layer.Get_Base,
               PutPlus  => Layer.Get_Put_Plus,
               AbsSmall => Layer.Get_Precision);
       else
          return
-           Image
+           Gtk.Layered.Waveform.Edit.Image
              (Value    => Value,
               Base     => Layer.Get_Base,
               PutPlus  => Layer.Get_Put_Plus,
@@ -675,7 +678,7 @@ package body Gtk.Layered.Label.Digital is
       Gtk.Layered.Stream_IO.Restore (Stream, Precision);
       Gtk.Layered.Stream_IO.Restore (Stream, Layer.Absolute, Layer.Put_Plus, Adjustment);
       if Base in 2 .. 16 then
-         Layer.Base := NumberBase (Base);
+         Layer.Base := Strings_Edit.NumberBase (Base);
       else
          Layer.Base := 10;
       end if;
@@ -706,14 +709,14 @@ package body Gtk.Layered.Label.Digital is
    procedure Set
      (Layer     : in out Digital_Layer;
       Location  : Cairo.Ellipses.Cairo_Tuple;
-      Face      : Pango_Cairo_Font;
+      Face      : Pango.Cairo.Fonts.Pango_Cairo_Font;
       Height    : Gdouble;
       Stretch   : Gdouble;
       Mode      : Text_Transformation;
       Color     : Gdk.Color.Gdk_Color;
       Angle     : Gdouble;
       Skew      : Gdouble;
-      Base      : NumberBase;
+      Base      : Strings_Edit.NumberBase;
       Precision : Integer;
       Absolute  : Boolean;
       Put_Plus  : Boolean) is
@@ -756,15 +759,21 @@ package body Gtk.Layered.Label.Digital is
                Layer.Y := Glib.Values.Get_Double (Value);
             when Property_Angle =>
                Layer.Angle := Glib.Values.Get_Double (Value);
-               if Layer.Angle not in -2.0 * Pi .. 2.0 * Pi then
+               if
+                 Layer.Angle not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
                   Layer.Angle :=
-                     Gdouble'Remainder (Layer.Angle, 2.0 * Pi);
+                     Gdouble'Remainder (Layer.Angle, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Skew =>
                Layer.Skew := Glib.Values.Get_Double (Value);
-               if Layer.Skew not in -2.0 * Pi .. 2.0 * Pi then
+               if
+                 Layer.Skew not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
                   Layer.Skew :=
-                     Gdouble'Remainder (Layer.Skew, 2.0 * Pi);
+                     Gdouble'Remainder (Layer.Skew, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Stretch =>
                Layer.Stretch := Glib.Values.Get_Double (Value);
@@ -781,17 +790,18 @@ package body Gtk.Layered.Label.Digital is
                   Gtk.Layered.Text_Transformation_Property.Get_Enum
                    (Value);
             when Property_Font_Type =>
-               Set_Type
+               Pango.Cairo.Fonts.Set_Type
                  (Layer.Face,
                   Pango.Cairo.Fonts.Font_Type_Property.Get_Enum (Value));
             when Property_Family =>
-               Set_Family (Layer.Face, Glib.Values.Get_String (Value));
+               Pango.Cairo.Fonts.Set_Family
+                 (Layer.Face, Glib.Values.Get_String (Value));
             when Property_Slant =>
-               Set_Slant
+               Pango.Cairo.Fonts.Set_Slant
                  (Layer.Face,
                   Cairo.Font_Slant_Property.Get_Enum (Value));
             when Property_Font_Size =>
-               Set_Size
+               Pango.Cairo.Fonts.Set_Size
                  (Layer.Face,
                   Gint
                     (Guint'Max
@@ -800,7 +810,7 @@ package body Gtk.Layered.Label.Digital is
                                Guint (Gint'Last)),
                           1)));
             when Property_Weight =>
-               Set_Weight
+               Pango.Cairo.Fonts.Set_Weight
                  (Layer.Face,
                   Pango.Enums.Weight_Property.Get_Enum (Value));
             when Property_Text =>
@@ -814,7 +824,7 @@ package body Gtk.Layered.Label.Digital is
                   Base : constant Guint := Glib.Values.Get_Uint (Value);
                begin
                   if Base in 2 .. 16 then
-                     Layer.Base := NumberBase (Base);
+                     Layer.Base := Strings_Edit.NumberBase (Base);
                   end if;
                end;
             when Property_Precision =>
@@ -875,5 +885,12 @@ package body Gtk.Layered.Label.Digital is
          Gtk.Layered.Stream_IO.Store (Stream, Layer.Adjustment);
       end if;
    end Store;
+
+   function Where (Name : String) return String is
+   begin
+      return " in Gtk.Layered.Digital." & Name;
+   end Where;
+
+   pragma Warnings (On, "declaration hides ""Adjustment""");
 
 end Gtk.Layered.Label.Digital;

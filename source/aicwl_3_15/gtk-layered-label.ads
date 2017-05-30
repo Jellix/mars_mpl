@@ -25,9 +25,11 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Ada.Numerics;       use Ada.Numerics;
+with Ada.Numerics;
+
 with Gtk.Missed;
-with Pango.Cairo.Fonts;  use Pango.Cairo.Fonts;
+
+with Pango.Cairo.Fonts;
 
 package Gtk.Layered.Label is
 
@@ -78,39 +80,39 @@ package Gtk.Layered.Label is
    --
    procedure Add_Label
      (Under    : not null access Layer_Location'Class;
-      Text     : UTF8_String                := "";
-      Location : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
-      Face     : Pango_Cairo_Font           :=
-        Create_Toy
+      Text     : UTF8_String                        := "";
+      Location : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
+      Face     : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+        Pango.Cairo.Fonts.Create_Toy
           (Family => "sans",
            Slant  => Cairo.Cairo_Font_Slant_Normal,
            Weight => Cairo.Cairo_Font_Weight_Normal);
-      Height   : Gdouble                    := 12.0;
-      Stretch  : Gdouble                    := 1.0;
-      Mode     : Text_Transformation        := Moved_Centered;
-      Color    : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Angle    : Gdouble                    := 3.0 * Pi / 2.0;
-      Skew     : Gdouble                    := 0.0;
-      Markup   : Boolean                    := False;
-      Scaled   : Boolean                    := False);
+      Height   : Gdouble                            := 12.0;
+      Stretch  : Gdouble                            := 1.0;
+      Mode     : Text_Transformation                := Moved_Centered;
+      Color    : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Angle    : Gdouble                            := 3.0 * Ada.Numerics.Pi / 2.0;
+      Skew     : Gdouble                            := 0.0;
+      Markup   : Boolean                            := False;
+      Scaled   : Boolean                            := False);
 
    function Add_Label
      (Under    : not null access Layer_Location'Class;
-      Text     : UTF8_String                := "";
-      Location : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
-      Face     : Pango_Cairo_Font           :=
-        Create_Toy
+      Text     : UTF8_String                        := "";
+      Location : Cairo.Ellipses.Cairo_Tuple         := (0.0, 0.0);
+      Face     : Pango.Cairo.Fonts.Pango_Cairo_Font :=
+        Pango.Cairo.Fonts.Create_Toy
           (Family => "sans",
            Slant  => Cairo.Cairo_Font_Slant_Normal,
            Weight => Cairo.Cairo_Font_Weight_Normal);
-      Height   : Gdouble                    := 12.0;
-      Stretch  : Gdouble                    := 1.0;
-      Mode     : Text_Transformation        := Moved_Centered;
-      Color    : Gdk.Color.Gdk_Color        := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Angle    : Gdouble                    := 3.0 * Pi / 2.0;
-      Skew     : Gdouble                    := 0.0;
-      Markup   : Boolean                    := False;
-      Scaled   : Boolean                    := False)
+      Height   : Gdouble                            := 12.0;
+      Stretch  : Gdouble                            := 1.0;
+      Mode     : Text_Transformation                := Moved_Centered;
+      Color    : Gdk.Color.Gdk_Color                := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Angle    : Gdouble                            := 3.0 * Ada.Numerics.Pi / 2.0;
+      Skew     : Gdouble                            := 0.0;
+      Markup   : Boolean                            := False;
+      Scaled   : Boolean                            := False)
       return not null access Label_Layer;
 
    --
@@ -144,7 +146,8 @@ package Gtk.Layered.Label is
    --
    --    The font face
    --
-   function Get_Face (Layer : Label_Layer) return Pango_Cairo_Font;
+   function Get_Face (Layer : Label_Layer)
+                      return Pango.Cairo.Fonts.Pango_Cairo_Font;
 
    --
    -- Get_Height -- The text height
@@ -256,7 +259,7 @@ package Gtk.Layered.Label is
    procedure Set
      (Layer    : in out Label_Layer;
       Location : Cairo.Ellipses.Cairo_Tuple;
-      Face     : Pango_Cairo_Font;
+      Face     : Pango.Cairo.Fonts.Pango_Cairo_Font;
       Height   : Gdouble;
       Stretch  : Gdouble;
       Mode     : Text_Transformation;
@@ -337,10 +340,11 @@ package Gtk.Layered.Label is
 
 private
 
-   type Label_Layer is new Abstract_Layer and Scalable_Layer with
+   type Label_Layer is
+     new Abstract_Layer and Scalable_Layer with
       record
          X, Y    : Gdouble;
-         Face    : Pango_Cairo_Font;
+         Face    : Pango.Cairo.Fonts.Pango_Cairo_Font;
          Height  : Gdouble;
          Stretch : Gdouble;
          Mode    : Text_Transformation;

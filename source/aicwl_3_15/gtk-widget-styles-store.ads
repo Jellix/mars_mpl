@@ -23,32 +23,33 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 with Ada.Text_IO;  use Ada.Text_IO;
 
 package Gtk.Widget.Styles.Store is
---
--- Put_Styles -- Write widget properties into a resource file
---
---    File    - The file to write
---    Widget  - The widget
---    Recurse - The children of containers
---
--- This procedure enumerates the style properties of Widget  and  stores
--- them  into a File in the format used for GTK+ resources. When File is
--- omitted, the standard output is used instead. The  parameter  Recurse
--- specifies if the children of the container widgets have to  be  taped
--- as  well.  In this case the resources of the children are placed into
--- the file before the resources of the containers of.
---
+
+   --
+   -- Put_Styles -- Write widget properties into a resource file
+   --
+   --    File    - The file to write
+   --    Widget  - The widget
+   --    Recurse - The children of containers
+   --
+   -- This procedure enumerates the style properties of Widget  and  stores
+   -- them  into a File in the format used for GTK+ resources. When File is
+   -- omitted, the standard output is used instead. The  parameter  Recurse
+   -- specifies if the children of the container widgets have to  be  taped
+   -- as  well.  In this case the resources of the children are placed into
+   -- the file before the resources of the containers of.
+   --
    procedure Put_Styles
-             (  File    : File_Type;
-                Widget  : not null access Gtk_Widget_Record'Class;
-                Recurse : Boolean := True
-             );
+     (File    : File_Type;
+      Widget  : not null access Gtk_Widget_Record'Class;
+      Recurse : Boolean := True);
+
    procedure Put_Styles
-             (  Widget  : not null access Gtk_Widget_Record'Class;
-                Recurse : Boolean := True
-             );
+     (Widget  : not null access Gtk_Widget_Record'Class;
+      Recurse : Boolean := True);
+
 end Gtk.Widget.Styles.Store;

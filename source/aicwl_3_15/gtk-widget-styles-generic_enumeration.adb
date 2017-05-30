@@ -23,14 +23,40 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 package body Gtk.Widget.Styles.Generic_Enumeration is
 
+   function Enum_Property_Parser
+     (PSpec          : Param_Spec;
+      RC_String      : GString;
+      Property_Value : access GValue) return Gboolean
+   is
+      pragma Unreferenced (PSpec);
+   begin
+      Set_Enum
+        (Property_Value.all,
+         Enumeration'Value (Interfaces.C.Strings.Value (RC_String.Str)));
+      return 1;
+   exception
+      when Constraint_Error =>
+         return 0;
+   end Enum_Property_Parser;
+
+   procedure Install_Style
+     (Class     : GObject_Class;
+      Enum_Spec : Param_Spec) is
+   begin
+      Class_Install_Style_Property_Parser
+        (Class  => Class,
+         PSpec  => Enum_Spec,
+         Parser => Parser);
+   end Install_Style;
+
    function Style_Get
-            (  Widget        : access Gtk_Widget_Record'Class;
-               Property_Name : String
-            )  return Enumeration is
+     (Widget        : access Gtk_Widget_Record'Class;
+      Property_Name : String) return Enumeration
+   is
       --
       -- Enumeration   can   be  queried  as  a  number  because  it  is
       -- convertible to. The number is used as the position to  get  the
@@ -40,33 +66,5 @@ package body Gtk.Widget.Styles.Generic_Enumeration is
    begin
       return Enumeration'Val (Integer (Position));
    end Style_Get;
-
-   function Enum_Property_Parser
-            (  PSpec          : Param_Spec;
-               RC_String      : GString;
-               Property_Value : access GValue
-            )  return Gboolean is
-   begin
-      Set_Enum
-      (  Property_Value.all,
-         Enumeration'Value (Value (RC_String.Str))
-      );
-      return 1;
-   exception
-      when Constraint_Error =>
-         return 0;
-   end Enum_Property_Parser;
-
-   procedure Install_Style
-             (  Class     : GObject_Class;
-                Enum_Spec : Param_Spec
-             )  is
-   begin
-       Class_Install_Style_Property_Parser
-       (  Class  => Class,
-          PSpec  => Enum_Spec,
-          Parser => Parser
-       );
-   end Install_Style;
 
 end Gtk.Widget.Styles.Generic_Enumeration;
