@@ -29,6 +29,8 @@ with Ada.IO_Exceptions;
 
 package body Strings_Edit is
 
+   pragma Warnings (Off, "declaration hides ""Blanks""");
+
    function GetDigit (Symbol : Character) return Natural is
    begin
       case Symbol is
@@ -210,5 +212,7 @@ package body Strings_Edit is
       Justify     : Alignment := Left;
       Fill        : Character := ' ')
       renames Text_Edit.PutCharacter;
+
+   pragma Warnings (On, "declaration hides ""Blanks""");
 
 end Strings_Edit;

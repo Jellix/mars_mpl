@@ -1,20 +1,8 @@
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-meter-round_90.adb
-22  C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-meter-round_90.ads
-
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-meter-elliptic_90.adb
-19  C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-meter-elliptic_90.ads
-
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-recent_manager_alt.adb
-11  C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-recent_manager_alt.ads
-
     C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_buffer.adb
 10  C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-source_buffer.ads
 
     C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-tree_model-abstract_store.adb
 10  C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-tree_model-abstract_store.ads
-
-    C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-tree_model-columned_store.adb
-9   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-tree_model-columned_store.ads
 
     C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-widget-styles-store.adb
 9   C:\Users\VHofler\Desktop\projects\mars_mpl\source\aicwl_3_15\gtk-widget-styles-store.ads

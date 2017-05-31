@@ -131,6 +131,8 @@ with Ada.Strings.Maps;
 package Strings_Edit is
    pragma Elaborate_Body (Strings_Edit);
 
+   pragma Warnings (Off, "declaration hides ""Blanks""");
+
    MaxSmall    : constant := 250;  -- Bigger than any possible
    Figures     : constant String := "0123456789ABCDEF";
    Blanks      : constant String := ' ' & Ada.Characters.Latin_1.HT;
@@ -324,5 +326,7 @@ private
    --    [16]   The Symbol is not a digit
    --
    function GetDigit (Symbol : Character) return Natural with Inline;
+
+   pragma Warnings (On, "declaration hides ""Blanks""");
 
 end Strings_Edit;

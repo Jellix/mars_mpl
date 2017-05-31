@@ -24,6 +24,9 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
+pragma Warnings (Off, "declaration hides ""Refresh_Period""");
+pragma Warnings (Off, "declaration hides ""Widget""");
+
 separate (Gtk.Oscilloscope)
 procedure Do_Init
   (Widget                       : not null access Gtk_Oscilloscope_Record'Class;
@@ -156,4 +159,7 @@ begin
    end if;
    Widget.all.Set_App_Paintable (True);
    On_Style_Updated (Widget, Widget.all'Unchecked_Access);
-end Do_Init; --                                                                    --
+end Do_Init;
+
+pragma Warnings (On, "declaration hides ""Refresh_Period""");
+pragma Warnings (On, "declaration hides ""Widget""");

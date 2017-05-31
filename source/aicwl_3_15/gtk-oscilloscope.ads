@@ -61,7 +61,12 @@ with Pango.Cairo.Fonts;
 
 package Gtk.Oscilloscope is
 
+   pragma Warnings (Off, "declaration hides ""Group""");
+   pragma Warnings (Off, "declaration hides ""Left""");
    pragma Warnings (Off, "declaration hides ""Oscilloscope""");
+   pragma Warnings (Off, "declaration hides ""Refresh_Period""");
+   pragma Warnings (Off, "declaration hides ""Right""");
+   pragma Warnings (Off, "declaration hides ""Scale""");
    pragma Warnings (Off, "declaration hides ""Widget""");
 
    --
@@ -2777,7 +2782,12 @@ private
        (Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record,
         Gtk_Oscilloscope);
 
-   pragma Warnings (On, "declaration hides ""Widget""");
+   pragma Warnings (On, "declaration hides ""Group""");
+   pragma Warnings (On, "declaration hides ""Left""");
    pragma Warnings (On, "declaration hides ""Oscilloscope""");
+   pragma Warnings (On, "declaration hides ""Refresh_Period""");
+   pragma Warnings (On, "declaration hides ""Right""");
+   pragma Warnings (On, "declaration hides ""Scale""");
+   pragma Warnings (On, "declaration hides ""Widget""");
 
 end Gtk.Oscilloscope;

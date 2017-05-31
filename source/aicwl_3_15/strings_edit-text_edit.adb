@@ -29,43 +29,7 @@ separate (Strings_Edit)
 
 package body Text_Edit is
 
-   function TrimCharacter
-     (Source : in String;
-      Blank  : in Character := ' ') return String
-   is
-      First : Integer := Source'First;
-      Last  : Integer := Source'Last;
-   begin
-      while First <= Last and then Source (First) = Blank loop
-         First := First + 1;
-      end loop;
-      while First <= Last and then Source (Last) = Blank loop
-         Last := Last - 1;
-      end loop;
-      return Source (First .. Last);
-   end TrimCharacter;
-
-   function TrimSet
-     (Source : in String;
-      Blanks : in Ada.Strings.Maps.Character_Set) return String
-   is
-      First : Integer := Source'First;
-      Last  : Integer := Source'Last;
-   begin
-      while
-        First <= Last and then
-        Ada.Strings.Maps.Is_In (Source (First), Blanks)
-      loop
-         First := First + 1;
-      end loop;
-      while
-        First <= Last and then
-        Ada.Strings.Maps.Is_In (Source (Last), Blanks)
-      loop
-         Last := Last - 1;
-      end loop;
-      return Source (First .. Last);
-   end TrimSet;
+   pragma Warnings (Off, "declaration hides ""Blanks""");
 
    procedure GetCharacter
      (Source  : in String;
@@ -102,6 +66,19 @@ package body Text_Edit is
          Pointer := Pointer + 1;
       end loop;
    end GetSet;
+
+   procedure PutCharacter
+     (Destination : in out String;
+      Pointer     : in out Integer;
+      Value       : in Character;
+      Field       : in Natural := 0;
+      Justify     : in Alignment := Left;
+      Fill        : in Character := ' ')
+   is
+      Text : constant String (1 .. 1) := (1 => Value);
+   begin
+      Put (Destination, Pointer, Text, Field, Justify, Fill);
+   end PutCharacter;
 
    procedure PutString
      (Destination : in out String;
@@ -161,16 +138,44 @@ package body Text_Edit is
       end if;
    end PutString;
 
-   procedure PutCharacter
-     (Destination : in out String;
-      Pointer     : in out Integer;
-      Value       : in Character;
-      Field       : in Natural := 0;
-      Justify     : in Alignment := Left;
-      Fill        : in Character := ' ')
+   function TrimCharacter
+     (Source : in String;
+      Blank  : in Character := ' ') return String
    is
-      Text : constant String (1 .. 1) := (1 => Value);
+      First : Integer := Source'First;
+      Last  : Integer := Source'Last;
    begin
-      Put (Destination, Pointer, Text, Field, Justify, Fill);
-   end PutCharacter;
+      while First <= Last and then Source (First) = Blank loop
+         First := First + 1;
+      end loop;
+      while First <= Last and then Source (Last) = Blank loop
+         Last := Last - 1;
+      end loop;
+      return Source (First .. Last);
+   end TrimCharacter;
+
+   function TrimSet
+     (Source : in String;
+      Blanks : in Ada.Strings.Maps.Character_Set) return String
+   is
+      First : Integer := Source'First;
+      Last  : Integer := Source'Last;
+   begin
+      while
+        First <= Last and then
+        Ada.Strings.Maps.Is_In (Source (First), Blanks)
+      loop
+         First := First + 1;
+      end loop;
+      while
+        First <= Last and then
+        Ada.Strings.Maps.Is_In (Source (Last), Blanks)
+      loop
+         Last := Last - 1;
+      end loop;
+      return Source (First .. Last);
+   end TrimSet;
+
+   pragma Warnings (On, "declaration hides ""Blanks""");
+
 end Text_Edit;

@@ -56,7 +56,20 @@ with Strings_Edit.UTF8.Wildcards.Case_Insensitive;
 
 package body Gtk.Oscilloscope is
 
+   pragma Warnings (Off, "declaration hides ""Adjustment""");
+   pragma Warnings (Off, "declaration hides ""Amplifier""");
+   pragma Warnings (Off, "declaration hides ""Box""");
+   pragma Warnings (Off, "declaration hides ""Group""");
+   pragma Warnings (Off, "declaration hides ""Left""");
+   pragma Warnings (Off, "declaration hides ""Lower""");
+   pragma Warnings (Off, "declaration hides ""Menu""");
    pragma Warnings (Off, "declaration hides ""Oscilloscope""");
+   pragma Warnings (Off, "declaration hides ""Params""");
+   pragma Warnings (Off, "declaration hides ""Refresh_Period""");
+   pragma Warnings (Off, "declaration hides ""Right""");
+   pragma Warnings (Off, "declaration hides ""Scale""");
+   pragma Warnings (Off, "declaration hides ""Sweeper""");
+   pragma Warnings (Off, "declaration hides ""Value""");
    pragma Warnings (Off, "declaration hides ""Widget""");
 
    function "+" (Value : String_Ptr) return UTF8_String;
@@ -2855,8 +2868,8 @@ package body Gtk.Oscilloscope is
       for Index in Sweeper_Type'Range loop
          Oscilloscope.all.Zoom_In
            (Index,
-            Oscilloscope.Get_Time (Index, Gint (Box.X1)),
-            Oscilloscope.Get_Time (Index, Gint (Box.X2)));
+            Get_Time (Oscilloscope, Index, Gint (Box.X1)),
+            Get_Time (Oscilloscope, Index, Gint (Box.X2)));
       end loop;
       Oscilloscope.all.Selection.all.Saved := False;
    exception
@@ -2882,8 +2895,8 @@ package body Gtk.Oscilloscope is
       for Index in Sweeper_Type'Range loop
          Oscilloscope.all.Zoom_In
            (Index,
-            Oscilloscope.Get_Time (Index, Gint (Box.X1)),
-            Oscilloscope.Get_Time (Index, Gint (Box.X2)));
+            Get_Time (Oscilloscope, Index, Gint (Box.X1)),
+            Get_Time (Oscilloscope, Index, Gint (Box.X2)));
       end loop;
       Oscilloscope.all.Selection.all.Saved := False;
    exception
@@ -2942,8 +2955,8 @@ package body Gtk.Oscilloscope is
       for Index in Sweeper_Type'Range loop
          Oscilloscope.all.Zoom_Out
            (Index,
-            Oscilloscope.Get_Time (Index, Gint (Box.X1)),
-            Oscilloscope.Get_Time (Index, Gint (Box.X2)));
+            Get_Time (Oscilloscope, Index, Gint (Box.X1)),
+            Get_Time (Oscilloscope, Index, Gint (Box.X2)));
       end loop;
       Oscilloscope.all.Selection.all.Saved := False;
    exception
@@ -2969,8 +2982,8 @@ package body Gtk.Oscilloscope is
       for Index in Sweeper_Type'Range loop
          Oscilloscope.all.Zoom_Out
            (Index,
-            Oscilloscope.Get_Time (Index, Gint (Box.X1)),
-            Oscilloscope.Get_Time (Index, Gint (Box.X2)));
+            Get_Time (Oscilloscope, Index, Gint (Box.X1)),
+            Get_Time (Oscilloscope, Index, Gint (Box.X2)));
       end loop;
       Oscilloscope.all.Selection.all.Saved := False;
    exception
@@ -4864,11 +4877,15 @@ package body Gtk.Oscilloscope is
       end loop;
       for Sweeper in Widget.all.Time_Axis'Range loop
          T1 :=
-           Widget.Get_Time
-             (Sweeper, Gint (Widget.all.Selection.all.Area.all.Get_Box.X1));
+           Get_Time
+             (Widget,
+              Sweeper,
+              Gint (Widget.all.Selection.all.Area.all.Get_Box.X1));
          T2 :=
-           Widget.Get_Time
-             (Sweeper, Gint (Widget.all.Selection.all.Area.all.Get_Box.X2));
+           Get_Time
+             (Widget,
+              Sweeper,
+              Gint (Widget.all.Selection.all.Area.all.Get_Box.X2));
          Emit
            (Widget,
             Signal_IDs (11),
@@ -4934,7 +4951,7 @@ package body Gtk.Oscilloscope is
                Gdouble (Widget.all.Get_Page_Span (Sweeper));
       T    : constant Gdouble :=
                Gtk.Layered.Waveform.To_Double
-                 (Ada.Calendar.Time'(Widget.Get_Time (Sweeper)));
+                 (Ada.Calendar.Time'(Get_Time (Widget, Sweeper)));
       A    : constant Gdouble := Page / Gdouble (T2 - T1);
       B    : constant Gdouble := T - A * Gtk.Layered.Waveform.To_Double (T2);
    begin
@@ -4959,7 +4976,20 @@ package body Gtk.Oscilloscope is
       Amplifier.all.Set_Value (A * Value + B);
    end Zoom_Out;
 
-   pragma Warnings (On, "declaration hides ""Widget""");
+   pragma Warnings (On, "declaration hides ""Adjustment""");
+   pragma Warnings (On, "declaration hides ""Amplifier""");
+   pragma Warnings (On, "declaration hides ""Box""");
+   pragma Warnings (On, "declaration hides ""Group""");
+   pragma Warnings (On, "declaration hides ""Left""");
+   pragma Warnings (On, "declaration hides ""Lower""");
+   pragma Warnings (On, "declaration hides ""Menu""");
    pragma Warnings (On, "declaration hides ""Oscilloscope""");
+   pragma Warnings (On, "declaration hides ""Params""");
+   pragma Warnings (On, "declaration hides ""Refresh_Period""");
+   pragma Warnings (On, "declaration hides ""Right""");
+   pragma Warnings (On, "declaration hides ""Scale""");
+   pragma Warnings (On, "declaration hides ""Sweeper""");
+   pragma Warnings (On, "declaration hides ""Value""");
+   pragma Warnings (On, "declaration hides ""Widget""");
 
 end Gtk.Oscilloscope;
