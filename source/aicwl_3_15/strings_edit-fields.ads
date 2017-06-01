@@ -23,7 +23,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 --
 --  This package is used for developing  Put  subroutines  which  output
 --  length  cannot  be  easily  estimated.  They   use   the   available
@@ -58,49 +58,48 @@
 --  end Put;
 --
 package Strings_Edit.Fields is
---
--- Get_Output_Field -- The space available for output
---
---      Destination - The destination string
---      Pointer     - The string pointer
---      Field       - The output field
---
--- Returns :
---
---      The number of characters
---
--- Exceptions :
---
---      Layout_Error - Illegal Pointer or no space available
---
+
+   --
+   -- Get_Output_Field -- The space available for output
+   --
+   --      Destination - The destination string
+   --      Pointer     - The string pointer
+   --      Field       - The output field
+   --
+   -- Returns :
+   --
+   --      The number of characters
+   --
+   -- Exceptions :
+   --
+   --      Layout_Error - Illegal Pointer or no space available
+   --
    function Get_Output_Field
-            (  Destination : String;
-               Pointer     : Integer;
-               Field       : Natural
-            )  return Natural;
-   pragma Inline (Get_Output_Field);
---
--- Get_Output_Field -- The space available for output
---
---      Destination - The destination string
---      Pointer     - The string pointer
---      Index       - The first character following the output
---      Out_Field   - The result of Get_Output_Field
---      Field       - The output field (the original parameter)
---      Justify     - Alignment within the field
---      Fill        - The fill character
---
--- The  output  Pointer..Index-1  is adjusted within the output field as
--- necessary. Pointer is set to either Pointer + Field or Index.
---
+     (Destination : String;
+      Pointer     : Integer;
+      Field       : Natural) return Natural with Inline;
+
+   --
+   -- Get_Output_Field -- The space available for output
+   --
+   --      Destination - The destination string
+   --      Pointer     - The string pointer
+   --      Index       - The first character following the output
+   --      Out_Field   - The result of Get_Output_Field
+   --      Field       - The output field (the original parameter)
+   --      Justify     - Alignment within the field
+   --      Fill        - The fill character
+   --
+   -- The  output  Pointer..Index-1  is adjusted within the output field as
+   -- necessary. Pointer is set to either Pointer + Field or Index.
+   --
    procedure Adjust_Output_Field
-             (  Destination : in out String;
-                Pointer     : in out Integer;
-                Index       : Integer;
-                Out_Field   : Natural;
-                Field       : Natural;
-                Justify     : Alignment;
-                Fill        : Character
-             );
-   pragma Inline (Adjust_Output_Field);
+     (Destination : in out String;
+      Pointer     : in out Integer;
+      Index       : Integer;
+      Out_Field   : Natural;
+      Field       : Natural;
+      Justify     : Alignment;
+      Fill        : Character) with Inline;
+
 end Strings_Edit.Fields;

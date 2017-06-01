@@ -1120,23 +1120,23 @@ package body Strings_Edit.UTF8.Maps is
       end if;
    end Is_Subset;
 
-   function Is_Subset
-     (Elements : Wide_String;
-      Set      : Unicode_Set) return Boolean is
-   begin
-      if Elements'Length = 0 then
-         return True;
-      elsif Set.Ptr = null then
-         return False;
-      else
-         for Index in Elements'Range loop
-            if not Is_In (Elements (Index), Set) then
-               return False;
-            end if;
-         end loop;
-         return True;
-      end if;
-   end Is_Subset;
+--     function Is_Subset
+--       (Elements : Wide_String;
+--        Set      : Unicode_Set) return Boolean is
+--     begin
+--        if Elements'Length = 0 then
+--           return True;
+--        elsif Set.Ptr = null then
+--           return False;
+--        else
+--           for Index in Elements'Range loop
+--              if not Is_In (Elements (Index), Set) then
+--                 return False;
+--              end if;
+--           end loop;
+--           return True;
+--        end if;
+--     end Is_Subset;
 
    function Is_Universal (Set : Unicode_Set) return Boolean is
    begin
@@ -1885,10 +1885,10 @@ package body Strings_Edit.UTF8.Maps is
       end if;
    end "not";
 
-   function "not" (Right : String) return Unicode_Set is
-   begin
-      return not To_Set (Right);
-   end "not";
+--     function "not" (Right : String) return Unicode_Set is
+--     begin
+--        return not To_Set (Right);
+--     end "not";
 
    function "or" (Left, Right : Unicode_Set)
                   return Unicode_Set is

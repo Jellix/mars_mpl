@@ -77,6 +77,10 @@ package body Gtk.Meter.Thermo is
    procedure Create_Background
      (Widget  : not null access Gtk_Meter_Thermo_Record'Class;
       Sectors : Positive;
+      Color   : Gdk.Color.Gdk_Color);
+   procedure Create_Background
+     (Widget  : not null access Gtk_Meter_Thermo_Record'Class;
+      Sectors : Positive;
       Color   : Gdk.Color.Gdk_Color) is
    begin
       G_New (Widget, Get_Type);
@@ -175,6 +179,10 @@ package body Gtk.Meter.Thermo is
         Gtk.Layered.Cache.Add_Cache (Widget.all.Background.all.Get_Foreground);
    end Create_Background;
 
+   procedure Create_Foreground
+     (Widget     : not null access Gtk_Meter_Thermo_Record'Class;
+      Adjustment : Gtk.Adjustment.Gtk_Adjustment;
+      Color      : Gdk.Color.Gdk_Color);
    procedure Create_Foreground
      (Widget     : not null access Gtk_Meter_Thermo_Record'Class;
       Adjustment : Gtk.Adjustment.Gtk_Adjustment;

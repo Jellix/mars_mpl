@@ -23,150 +23,150 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Gtk.Source_Language;   use Gtk.Source_Language;
-with Interfaces.C.Strings;  use Interfaces.C.Strings;
+with Gtk.Source_Language;
+with Interfaces.C.Strings;
 
 package Gtk.Source_Language_Manager is
---
--- Gtk_Source_Language_Manager_Record -- Language manager
---
-   type Gtk_Source_Language_Manager_Record is
-      new GObject_Record with private;
-   type Gtk_Source_Language_Manager is
-      access all Gtk_Source_Language_Manager_Record'Class;
---
--- Get_Default -- Get default language manage
---
--- The returned object is owned and shall not be used with Unref
---
--- Returns :
---
---    The default manager
---
-   function Get_Default return Gtk_Source_Language_Manager;
---
--- Get_Language -- Get language by ID
---
---    Manager  - The language manager
---    Language - The language ID
---
--- The returned object is owned and shall not be used in Unref
---
--- Returns :
---
---    The language or null
---
-   function Get_Language
-            (  Manager  : not null access
-                          Gtk_Source_Language_Manager_Record;
-               Language : UTF8_String
-            )  return Gtk_Source_Language;
---
--- Get_Language_IDs -- Get the ids of the available languages
---
---    Manager - The language manager
---
--- This  function  returns  an  array  containing  a  list  of  language
--- identifiers. The array elements are owned by the language manager and
--- must not be modified.
---
--- Returns :
---
---    Array of ponters to C-strings
---
-   function Get_Language_IDs
-            (  Manager : not null access
-                         Gtk_Source_Language_Manager_Record
-            )  return chars_ptr_array;
 
---
--- Get_Search_Path -- Get current search path
---
---    Manager - The language manager
---
--- This function returns an array containing a list  of  language  files
--- directories. The array elements are owned  by  language  manager  and
--- must not be modified.
---
--- Returns :
---
---    Array of ponters to path items (C-strings)
---
-   function Get_Search_Path
-            (  Manager : not null access
-                         Gtk_Source_Language_Manager_Record
-            )  return chars_ptr_array;
---
--- Gtk_New -- New object creation
---
---    Manager - The result
---
-   procedure Gtk_New (Manager : out Gtk_Source_Language_Manager);
---
--- Guess_Language -- Guess language by file name and or content
---
---    Manager      - The language manager
---    File_Name    - The file name
---    Content_Type - The content type
---
--- The  returned  object is owned and shall not be used in Unref. Either
--- File_Name or Content_Type can be omitted  in  the  function  versions
--- named Guess_Language_By_File_Name and Guess_Language_By_Content.
---
--- Returns :
---
---    The language or null
---
-   function Guess_Language
-            (  Manager      : not null access
-                              Gtk_Source_Language_Manager_Record;
-               File_Name    : UTF8_String;
-               Content_Type : UTF8_String
-            )  return Gtk_Source_Language;
-   function Guess_Language_By_File_Name
-            (  Manager      : not null access
-                              Gtk_Source_Language_Manager_Record;
-               File_Name    : UTF8_String
-            )  return Gtk_Source_Language;
-   function Guess_Language_By_Content
-            (  Manager      : not null access
-                              Gtk_Source_Language_Manager_Record;
-               Content_Type : UTF8_String
-            )  return Gtk_Source_Language;
---
--- Initialize -- To be called by any derived object
---
---    Manager - The language manager
---
-   procedure Initialize
-             (  Manager : not null access
-                          Gtk_Source_Language_Manager_Record'Class
-             );
---
--- Set_Search_Path
---
---    Manager - The language manager
---  [ Dirs ]  - Array of pointers to C-strings of path items
---
--- When Dirs is absent the search path is set to default. At the  moment
--- this function can be called only before the language files are loaded
--- for the first time. In practice to set a custom  search  path  for  a
--- Gtk_Source_Language_Manager, you have to  call  this  function  right
--- after creating it.
---
-   procedure Set_Search_Path
-             (  Manager : not null access
-                          Gtk_Source_Language_Manager_Record;
-                Dirs    : chars_ptr_array
-             );
-   procedure Set_Search_Path
-             (  Manager : not null access
-                          Gtk_Source_Language_Manager_Record
-             );
-private
+   --
+   -- Gtk_Source_Language_Manager_Record -- Language manager
+   --
    type Gtk_Source_Language_Manager_Record is
-      new GObject_Record with null record;
+     new GObject_Record with private;
+   type Gtk_Source_Language_Manager is
+     access all Gtk_Source_Language_Manager_Record'Class;
+
+   --
+   -- Get_Default -- Get default language manage
+   --
+   -- The returned object is owned and shall not be used with Unref
+   --
+   -- Returns :
+   --
+   --    The default manager
+   --
+   function Get_Default return Gtk_Source_Language_Manager;
+
+   --
+   -- Get_Language -- Get language by ID
+   --
+   --    Manager  - The language manager
+   --    Language - The language ID
+   --
+   -- The returned object is owned and shall not be used in Unref
+   --
+   -- Returns :
+   --
+   --    The language or null
+   --
+   function Get_Language
+     (Manager  : not null access Gtk_Source_Language_Manager_Record;
+      Language : UTF8_String) return Gtk.Source_Language.Gtk_Source_Language;
+
+   --
+   -- Get_Language_IDs -- Get the ids of the available languages
+   --
+   --    Manager - The language manager
+   --
+   -- This  function  returns  an  array  containing  a  list  of  language
+   -- identifiers. The array elements are owned by the language manager and
+   -- must not be modified.
+   --
+   -- Returns :
+   --
+   --    Array of ponters to C-strings
+   --
+   function Get_Language_IDs
+     (Manager : not null access Gtk_Source_Language_Manager_Record)
+      return Interfaces.C.Strings.chars_ptr_array;
+
+   --
+   -- Get_Search_Path -- Get current search path
+   --
+   --    Manager - The language manager
+   --
+   -- This function returns an array containing a list  of  language  files
+   -- directories. The array elements are owned  by  language  manager  and
+   -- must not be modified.
+   --
+   -- Returns :
+   --
+   --    Array of ponters to path items (C-strings)
+   --
+   function Get_Search_Path
+     (Manager : not null access Gtk_Source_Language_Manager_Record)
+      return Interfaces.C.Strings.chars_ptr_array;
+
+   --
+   -- Gtk_New -- New object creation
+   --
+   --    Manager - The result
+   --
+   procedure Gtk_New (Manager : out Gtk_Source_Language_Manager);
+
+   --
+   -- Guess_Language -- Guess language by file name and or content
+   --
+   --    Manager      - The language manager
+   --    File_Name    - The file name
+   --    Content_Type - The content type
+   --
+   -- The  returned  object is owned and shall not be used in Unref. Either
+   -- File_Name or Content_Type can be omitted  in  the  function  versions
+   -- named Guess_Language_By_File_Name and Guess_Language_By_Content.
+   --
+   -- Returns :
+   --
+   --    The language or null
+   --
+   function Guess_Language
+     (Manager      : not null access Gtk_Source_Language_Manager_Record;
+      File_Name    : UTF8_String;
+      Content_Type : UTF8_String)
+      return Gtk.Source_Language.Gtk_Source_Language;
+
+   function Guess_Language_By_File_Name
+     (Manager      : not null access Gtk_Source_Language_Manager_Record;
+      File_Name    : UTF8_String)
+      return Gtk.Source_Language.Gtk_Source_Language;
+
+   function Guess_Language_By_Content
+     (Manager      : not null access Gtk_Source_Language_Manager_Record;
+      Content_Type : UTF8_String)
+      return Gtk.Source_Language.Gtk_Source_Language;
+
+   --
+   -- Initialize -- To be called by any derived object
+   --
+   --    Manager - The language manager
+   --
+   procedure Initialize
+     (Manager : not null access Gtk_Source_Language_Manager_Record'Class);
+
+   --
+   -- Set_Search_Path
+   --
+   --    Manager - The language manager
+   --  [ Dirs ]  - Array of pointers to C-strings of path items
+   --
+   -- When Dirs is absent the search path is set to default. At the  moment
+   -- this function can be called only before the language files are loaded
+   -- for the first time. In practice to set a custom  search  path  for  a
+   -- Gtk_Source_Language_Manager, you have to  call  this  function  right
+   -- after creating it.
+   --
+   procedure Set_Search_Path
+     (Manager : not null access Gtk_Source_Language_Manager_Record;
+      Dirs    : Interfaces.C.Strings.chars_ptr_array);
+
+   procedure Set_Search_Path
+     (Manager : not null access Gtk_Source_Language_Manager_Record);
+
+private
+
+   type Gtk_Source_Language_Manager_Record is
+     new GObject_Record with null record;
 
 end Gtk.Source_Language_Manager;

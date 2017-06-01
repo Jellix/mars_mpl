@@ -25,6 +25,7 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
+with Ada.Numerics;
 with Gtk.Handlers;
 with Gtk.Missed;
 

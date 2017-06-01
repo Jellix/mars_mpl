@@ -40,53 +40,26 @@ with Gtk.Layered.Waveform_Drawing_Method_Property;
 
 package body Gtk.Layered.Waveform is
 
-   ---------------------------------------------------------------------
+   pragma Warnings (Off, "declaration hides ""Adjustment""");
+   pragma Warnings (Off, "declaration hides ""Handlers""");
+
    Dump_New_Line : constant Boolean := False;
    Dump_X_Value  : constant Boolean := True;
    Dump_Y_Value  : constant Boolean := True;
+   -----------------------------------------------------------------------------
+   function Where (Name : String) return String;
 
    procedure Dump
      (Layer : Waveform_Layer;
       X     : Horizontal_Offset;
-      V     : Y_Axis) is
-   begin
-      if Dump_X_Value then
-         Trace (Layer'Address, Horizontal_Offset'Image (X) & " :");
-      end if;
-      Trace (Layer'Address, Edit.Image (Gdouble (V)));
-      if Dump_Y_Value then
-         Trace
-           (Layer'Address,
-            " =" & Gint'Image (Gint (Layer.To_Y (V))));
-      end if;
-   exception
-      when others =>
-         null;
-   end Dump;
+      V     : Y_Axis);
 
    procedure Dump
      (Layer : Waveform_Layer;
       Data  : Points_Array;
-      Index : Integer) is
-   begin
-      if Dump_New_Line then
-         Trace_Line (Layer'Address, Integer'Image (Index) & '=');
-      else
-         Trace (Layer'Address, Integer'Image (Index) & '=');
-      end if;
-      Dump (Layer, Data (Index).X, Data (Index).Y);
-   end Dump;
+      Index : Integer);
+   -----------------------------------------------------------------------------
 
-   procedure Dump
-     (Layer  : Waveform_Layer;
-      Prefix : String;
-      Data   : Points_Array) is
-   begin
-      Trace_Line (Layer'Address, Prefix);
-      for Index in Data'Range loop
-         Dump (Layer, Data, Index);
-      end loop;
-   end Dump;
    ---------------------------------------------------------------------
    use type Ada.Calendar.Time;
 
@@ -134,11 +107,6 @@ package body Gtk.Layered.Waveform is
         Waveform_Data_Scanner_Ptr);
    function Interpolate (T : X_Axis; L, R : Point) return Y_Axis;
    pragma Inline (Interpolate);
-
-   function Where (Name : String) return String is
-   begin
-      return " in Gtk.Layered.Waveform." & Name;
-   end Where;
 
    overriding function Add
      (Under  : not null access Layer_Location'Class;
@@ -356,6 +324,38 @@ package body Gtk.Layered.Waveform is
      (Layer   : in out Waveform_Layer;
       Context : Cairo.Cairo_Context;
       Data    : in out Line_Method_Data) is separate;
+
+   procedure Dump
+     (Layer : Waveform_Layer;
+      X     : Horizontal_Offset;
+      V     : Y_Axis) is
+   begin
+      if Dump_X_Value then
+         Trace (Layer'Address, Horizontal_Offset'Image (X) & " :");
+      end if;
+      Trace (Layer'Address, Edit.Image (Gdouble (V)));
+      if Dump_Y_Value then
+         Trace
+           (Layer'Address,
+            " =" & Gint'Image (Gint (Layer.To_Y (V))));
+      end if;
+   exception
+      when others =>
+         null;
+   end Dump;
+
+   procedure Dump
+     (Layer : Waveform_Layer;
+      Data  : Points_Array;
+      Index : Integer) is
+   begin
+      if Dump_New_Line then
+         Trace_Line (Layer'Address, Integer'Image (Index) & '=');
+      else
+         Trace (Layer'Address, Integer'Image (Index) & '=');
+      end if;
+      Dump (Layer, Data (Index).X, Data (Index).Y);
+   end Dump;
 
    overriding procedure Finalize (Layer : in out Waveform_Layer)
    is
@@ -742,29 +742,28 @@ package body Gtk.Layered.Waveform is
             when Property_Interpolation_Mode =>
                return
                  Gtk.Layered.Interpolation_Mode_Property.Gnew_Enum
-                   (  Name    => "interpolation-mode",
-                      Nick    => "interpolation",
-                      Default => Linear,
-                      Blurb   => "The interpolation mode used between " &
-                        "points of the waveform"
-                     );
+                   (Name    => "interpolation-mode",
+                    Nick    => "interpolation",
+                    Default => Linear,
+                    Blurb   =>
+                       "The interpolation mode used between " &
+                       "points of the waveform");
             when Property_Line_Cap =>
                return
                  Cairo.Line_Cap_Property.Gnew_Enum
-                   (  Name    => "line-cap",
-                      Nick    => "line cap",
-                      Default => Cairo.Cairo_Line_Cap_Butt,
-                      Blurb   => "The cap style of the waveform line"
-                     );
+                   (Name    => "line-cap",
+                    Nick    => "line cap",
+                    Default => Cairo.Cairo_Line_Cap_Butt,
+                    Blurb   => "The cap style of the waveform line");
             when Property_Preferred_Method =>
                return
                  Gtk.Layered.Waveform_Drawing_Method_Property.Gnew_Enum
-                   (  Name    => "preferred-mode",
-                      Nick    => "preferred mode",
-                      Default => Resample_New_And_Stroke,
-                      Blurb   => "The preferred method of drawing and " &
-                        "sampling the waveform"
-                     );
+                   (Name    => "preferred-mode",
+                    Nick    => "preferred mode",
+                    Default => Resample_New_And_Stroke,
+                    Blurb   =>
+                       "The preferred method of drawing and " &
+                       "sampling the waveform");
             when Property_Width =>
                return
                  Glib.Properties.Creation.Gnew_Double
@@ -850,9 +849,8 @@ package body Gtk.Layered.Waveform is
                   Gdk.Color.Set_Value (Value, Layer.Line.Color);
                when Property_Line_Cap =>
                   Cairo.Line_Cap_Property.Set_Enum
-                    (  Value,
-                       Layer.Line.Line_Cap
-                      );
+                    (Value,
+                     Layer.Line.Line_Cap);
                when Property_Extrapolate_Left =>
                   Glib.Values.Init (Value, GType_Boolean);
                   Glib.Values.Set_Boolean (Value, Layer.Extrapolate_Left);
@@ -861,14 +859,12 @@ package body Gtk.Layered.Waveform is
                   Glib.Values.Set_Boolean (Value, Layer.Extrapolate_Right);
                when Property_Interpolation_Mode =>
                   Gtk.Layered.Interpolation_Mode_Property.Set_Enum
-                    (  Value,
-                       Layer.Mode
-                      );
+                    (Value,
+                     Layer.Mode);
                when Property_Preferred_Method =>
                   Gtk.Layered.Waveform_Drawing_Method_Property.Set_Enum
-                    (  Value,
-                       Layer.Preferred
-                      );
+                    (Value,
+                     Layer.Preferred);
                when Property_Scaled =>
                   Glib.Values.Init (Value, GType_Boolean);
                   Glib.Values.Set_Boolean (Value, Layer.Scaled);
@@ -896,8 +892,7 @@ package body Gtk.Layered.Waveform is
    end Get_Scaled;
 
    function Get_Source
-     (  Layer : Waveform_Layer
-       )  return access Waveform_Data_Source'Class is
+     (Layer : Waveform_Layer) return access Waveform_Data_Source'Class is
    begin
       if Layer.Data = null then
          return null;
@@ -938,16 +933,6 @@ package body Gtk.Layered.Waveform is
       return Layer.T2;
    end Get_T2;
 
-   function Get_V1 (Layer : Waveform_Layer) return Y_Axis is
-   begin
-      return Layer.V1;
-   end Get_V1;
-
-   function Get_V2 (Layer : Waveform_Layer) return Y_Axis is
-   begin
-      return Layer.V2;
-   end Get_V2;
-
    function Get_V (Layer : Waveform_Layer; Y : Gdouble) return Y_Axis is
       Y2 : Y_Axis := Y_Axis (Layer.Box.Y2);
       dY : Y_Axis := Y_Axis (Layer.Box.Y2 - Layer.Box.Y1);
@@ -963,6 +948,16 @@ package body Gtk.Layered.Waveform is
       end if;
       return Layer.V2 - (Y2 - Y_Axis (Y)) * (Layer.V2 - Layer.V1) / dY;
    end Get_V;
+
+   function Get_V1 (Layer : Waveform_Layer) return Y_Axis is
+   begin
+      return Layer.V1;
+   end Get_V1;
+
+   function Get_V2 (Layer : Waveform_Layer) return Y_Axis is
+   begin
+      return Layer.V2;
+   end Get_V2;
 
    overriding function Get_Widened (Layer : Waveform_Layer) return Boolean is
    begin
@@ -983,10 +978,7 @@ package body Gtk.Layered.Waveform is
          end;
       end if;
       return
-        Gdouble
-          (  (T - Layer.T1) * dX / (Layer.T2 - Layer.T1)
-             +  X1
-            );
+        Gdouble ((T - Layer.T1) * dX / (Layer.T2 - Layer.T1) + X1);
    end Get_X;
 
    function Get_Y (Layer : Waveform_Layer; V : Y_Axis) return Gdouble is
@@ -1004,9 +996,7 @@ package body Gtk.Layered.Waveform is
       end if;
       return
         Gdouble
-          (  Y2
-             -  (Layer.V2 - V) * dY / (Layer.V2 - Layer.V1)
-            );
+          (Y2 - (Layer.V2 - V) * dY / (Layer.V2 - Layer.V1));
    end Get_Y;
 
    function Interpolate (T : X_Axis; L, R : Point) return Y_Axis is
@@ -1015,10 +1005,8 @@ package body Gtk.Layered.Waveform is
          return L.V;
       else
          return
-           (  (  R.V * Y_Axis (T - L.T) + L.V * Y_Axis (R.T - T)
-             )
-              /  Y_Axis (R.T - L.T)
-             );
+           ((R.V * Y_Axis (T - L.T) + L.V * Y_Axis (R.T - T))
+            /  Y_Axis (R.T - L.T));
       end if;
    end Interpolate;
 
@@ -1048,14 +1036,15 @@ package body Gtk.Layered.Waveform is
       Context : Cairo.Cairo_Context;
       Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
+      pragma Unreferenced (Area);
+      pragma Unreferenced (Context);
       X1, X2 : Gdouble;
       Y1, Y2 : Gdouble;
    begin
       if Layer.Sweeper_Object /= null then
          Layer.Sweeper_Object.all.Set_Current_Time
-           (  Layer.Widget.all.Get_Drawing_Time,
-              True
-             );
+           (Layer.Widget.all.Get_Drawing_Time,
+            True);
          Layer.Query_Sweeper;
       end if;
       if Layer.Scaled then
@@ -1088,10 +1077,9 @@ package body Gtk.Layered.Waveform is
          case Layer.Method is
             when Resample_New_And_Stroke | Resample_All_And_Stroke =>
                Layer.Sample_Lines
-                 (  Layer.Line_Data,
-                    Horizontal_Offset (X1),
-                    Horizontal_Offset (X2)
-                   );
+                 (Layer.Line_Data,
+                  Horizontal_Offset (X1),
+                  Horizontal_Offset (X2));
          end case;
       end if;
    exception
@@ -1162,7 +1150,9 @@ package body Gtk.Layered.Waveform is
 
    overriding procedure Resized
      (Layer : in out Waveform_Layer;
-      Area  : Gdk.Rectangle.Gdk_Rectangle) is
+      Area  : Gdk.Rectangle.Gdk_Rectangle)
+   is
+      pragma Unreferenced (Area);
    begin
       Layer.Sampled := False;
       Layer.Valid   := False;
@@ -1203,14 +1193,13 @@ package body Gtk.Layered.Waveform is
          Right);
       Opacity := Gdouble'Min (1.0, Gdouble'Max (0.0, Opacity));
       Set
-        (  Layer   => Layer,
-           Box     => Box,
-           Line    => Line,
-           Mode    => Mode,
-           Left    => Left,
-           Right   => Right,
-           Opacity => Opacity
-          );
+        (Layer   => Layer,
+         Box     => Box,
+         Line    => Line,
+         Mode    => Mode,
+         Left    => Left,
+         Right   => Right,
+         Opacity => Opacity);
       Set_Preferred_Method (Layer, Preferred);
       if Amplifier then
          declare
@@ -1249,19 +1238,16 @@ package body Gtk.Layered.Waveform is
    end Restore;
 
    procedure Sample_Lines
-     (  Layer  : in out Waveform_Layer;
-        Data   : in out Line_Method_Data;
-        X1, X2 : Horizontal_Offset
-       )  is separate;
-   -- procedure Sample_Surface
-   --           (  Layer : in out Waveform_Layer;
-   --              Data  : in out Surface_Method_Data
-   --           )  is separate;
+     (Layer  : in out Waveform_Layer;
+      Data   : in out Line_Method_Data;
+      X1, X2 : Horizontal_Offset) is separate;
 
    overriding procedure Scale
-     (  Layer  : in out Waveform_Layer;
-        Factor : Gdouble
-       )  is
+     (Layer  : in out Waveform_Layer;
+      Factor : Gdouble)
+   is
+      pragma Unreferenced (Factor);
+
       Center_X    : constant Gdouble :=
                       (Layer.Box.X1 + Layer.Box.X2) * 0.5;
       Center_Y    : constant Gdouble :=
@@ -1272,17 +1258,16 @@ package body Gtk.Layered.Waveform is
                       (Layer.Box.Y2 - Layer.Box.Y1 + 1.0) * 0.5;
    begin
       Set
-        (  Layer   => Layer,
-           Line    => Layer.Line,
-           Mode    => Layer.Mode,
-           Left    => Layer.Extrapolate_Left,
-           Right   => Layer.Extrapolate_Right,
-           Opacity => Layer.Opacity,
-           Box     => (  X1 => Center_X - Half_Width,
-                         X2 => Center_X + Half_Width,
-                         Y1 => Center_Y - Half_Height,
-                         Y2 => Center_Y + Half_Height
-                        )             );
+        (Layer   => Layer,
+         Line    => Layer.Line,
+         Mode    => Layer.Mode,
+         Left    => Layer.Extrapolate_Left,
+         Right   => Layer.Extrapolate_Right,
+         Opacity => Layer.Opacity,
+         Box     => (X1 => Center_X - Half_Width,
+                     X2 => Center_X + Half_Width,
+                     Y1 => Center_Y - Half_Height,
+                     Y2 => Center_Y + Half_Height));
    end Scale;
 
    procedure Set
@@ -1326,8 +1311,8 @@ package body Gtk.Layered.Waveform is
    begin
       if Amplifier /= Layer.Amplifier_Adjustment then
          if Layer.Amplifier_Adjustment /= null then
-            Set (Layer.Handlers (1));
-            Set (Layer.Handlers (2));
+            Gtk.Handlers.References.Set (Layer.Handlers (1));
+            Gtk.Handlers.References.Set (Layer.Handlers (2));
             Gtk.Adjustment.Unref (Layer.Amplifier_Adjustment);
             Layer.Amplifier_Adjustment := null;
          end if;
@@ -1338,25 +1323,22 @@ package body Gtk.Layered.Waveform is
             if Amplifier.all in Waveform_Amplifier'Class then
                Layer.Amplifier_Object :=
                  Waveform_Amplifier'Class
-                   (  Amplifier.all
-                     ) 'Unchecked_Access;
+                   (Amplifier.all)'Unchecked_Access;
             end if;
-            Set
-              (  Layer.Handlers (1),
-                 Handlers.Connect
-                   (  Amplifier,
-                    "changed",
-                    Handlers.To_Marshaller (Changed_Amplifier'Access),
-                    Layer'Unchecked_Access
-                   )  );
-            Set
-              (  Layer.Handlers (2),
-                 Handlers.Connect
-                   (  Amplifier,
-                    "value_changed",
-                    Handlers.To_Marshaller (Changed_Amplifier'Access),
-                    Layer'Unchecked_Access
-                   )  );
+            Gtk.Handlers.References.Set
+              (Layer.Handlers (1),
+               Handlers.Connect
+                 (Amplifier,
+                  "changed",
+                  Handlers.To_Marshaller (Changed_Amplifier'Access),
+                  Layer'Unchecked_Access));
+            Gtk.Handlers.References.Set
+              (Layer.Handlers (2),
+               Handlers.Connect
+                 (Amplifier,
+                  "value_changed",
+                  Handlers.To_Marshaller (Changed_Amplifier'Access),
+                  Layer'Unchecked_Access));
          end if;
       end if;
    end Set_Amplifier;
@@ -1370,10 +1352,9 @@ package body Gtk.Layered.Waveform is
    end Set_Color;
 
    procedure Set_Extrapolation_Mode
-     (  Layer : in out Waveform_Layer;
-        Left  : Boolean;
-        Right : Boolean
-       )  is
+     (Layer : in out Waveform_Layer;
+      Left  : Boolean;
+      Right : Boolean) is
    begin
       if
         Layer.Extrapolate_Left /= Left or else Layer.Extrapolate_Right /= Right
@@ -1390,9 +1371,8 @@ package body Gtk.Layered.Waveform is
    end Set_Extrapolation_Mode;
 
    procedure Set_Interpolation_Mode
-     (  Layer : in out Waveform_Layer;
-        Mode  : Interpolation_Mode
-       )  is
+     (Layer : in out Waveform_Layer;
+      Mode  : Interpolation_Mode) is
    begin
       if Layer.Mode /= Mode then
          Layer.Mode    := Mode;
@@ -1405,10 +1385,24 @@ package body Gtk.Layered.Waveform is
       end if;
    end Set_Interpolation_Mode;
 
+   procedure Set_Opacity
+     (Layer   : in out Waveform_Layer;
+      Opacity : Fill_Opacity) is
+   begin
+      if Opacity /= Layer.Opacity then
+         Layer.Opacity := Opacity;
+         Layer.Updated := True;
+         Layer.Sampled := False;
+         Layer.Valid   := False;
+         if 0 /= (Tracing_Mode and Trace_Waveform) then ----------------
+            Trace_Line (Layer'Address, "Set_Opacity");
+         end if; -------------------------------------------------------
+      end if;
+   end Set_Opacity;
+
    procedure Set_Preferred_Method
-     (  Layer  : in out Waveform_Layer;
-        Method : Waveform_Drawing_Method
-       )  is
+     (Layer  : in out Waveform_Layer;
+      Method : Waveform_Drawing_Method) is
    begin
       if Layer.Preferred /= Method then
          Layer.Preferred := Method;
@@ -1426,22 +1420,6 @@ package body Gtk.Layered.Waveform is
       end if;
    end Set_Preferred_Method;
 
-   procedure Set_Opacity
-     (  Layer   : in out Waveform_Layer;
-        Opacity : Fill_Opacity
-       )  is
-   begin
-      if Opacity /= Layer.Opacity then
-         Layer.Opacity := Opacity;
-         Layer.Updated := True;
-         Layer.Sampled := False;
-         Layer.Valid   := False;
-         if 0 /= (Tracing_Mode and Trace_Waveform) then ----------------
-            Trace_Line (Layer'Address, "Set_Opacity");
-         end if; -------------------------------------------------------
-      end if;
-   end Set_Opacity;
-
    overriding procedure Set_Property_Value
      (Layer    : in out Waveform_Layer;
       Property : Positive;
@@ -1453,11 +1431,10 @@ package body Gtk.Layered.Waveform is
          case Layer_Property'Val (Property - 1) is
             when Property_Opacity =>
                Layer.Set_Opacity
-                 (  Gdouble
-                      (  Gdouble'Min
-                           (  1.0,
-                            Gdouble'Max (0.0, Glib.Values.Get_Double (Value))
-                           )  )  );
+                 (Gdouble
+                    (Gdouble'Min
+                         (1.0,
+                          Gdouble'Max (0.0, Glib.Values.Get_Double (Value)))));
             when Property_T1 =>
                declare
                   New_Value : constant X_Axis :=
@@ -1607,16 +1584,13 @@ package body Gtk.Layered.Waveform is
                   Right => Glib.Values.Get_Boolean (Value));
             when Property_Interpolation_Mode =>
                Set_Interpolation_Mode
-                 (  Layer,
-                    Gtk.Layered.Interpolation_Mode_Property.
-                      Get_Enum (Value)
-                   );
+                 (Layer,
+                  Gtk.Layered.Interpolation_Mode_Property.Get_Enum (Value));
             when Property_Preferred_Method =>
                Set_Preferred_Method
-                 (  Layer,
-                    Gtk.Layered.Waveform_Drawing_Method_Property.
-                      Get_Enum (Value)
-                   );
+                 (Layer,
+                  Gtk.Layered.Waveform_Drawing_Method_Property.
+                    Get_Enum (Value));
             when Property_Line_Cap =>
                Layer.Line.Line_Cap :=
                  Cairo.Line_Cap_Property.Get_Enum (Value);
@@ -1635,9 +1609,8 @@ package body Gtk.Layered.Waveform is
    end Set_Property_Value;
 
    overriding procedure Set_Scaled
-     (  Layer  : in out Waveform_Layer;
-        Scaled : Boolean
-       )  is
+     (Layer  : in out Waveform_Layer;
+      Scaled : Boolean) is
    begin
       Layer.Scaled  := Scaled;
       Layer.Updated := True;
@@ -1666,15 +1639,13 @@ package body Gtk.Layered.Waveform is
    end Set_Source;
 
    procedure Set_Source
-     (  Layer  : in out Waveform_Layer;
-        Source : in out Waveform_Data_Source'Class
-       )  is
+     (Layer  : in out Waveform_Layer;
+      Source : in out Waveform_Data_Source'Class) is
    begin
       Set_Source (Layer);
       Layer.Data :=
         new Waveform_Data_Scanner'Class'
-          (  Create (Source'Unchecked_Access)
-            );
+          (Create (Source'Unchecked_Access));
       Layer.Data.all.Get_Source.all.Connected (Layer);
       Layer.Sampled := False;
       Layer.Updated := True;
@@ -1700,8 +1671,8 @@ package body Gtk.Layered.Waveform is
    begin
       if Sweeper /= Layer.Sweeper_Adjustment then
          if Layer.Sweeper_Adjustment /= null then
-            Set (Layer.Handlers (3));
-            Set (Layer.Handlers (4));
+            Gtk.Handlers.References.Set (Layer.Handlers (3));
+            Gtk.Handlers.References.Set (Layer.Handlers (4));
             Gtk.Adjustment.Unref (Layer.Sweeper_Adjustment);
             Layer.Sweeper_Adjustment := null;
          end if;
@@ -1712,30 +1683,27 @@ package body Gtk.Layered.Waveform is
                Layer.Sweeper_Object :=
                  Waveform_Sweeper'Class (Sweeper.all)'Unchecked_Access;
             end if;
-            Set
-              (  Layer.Handlers (3),
-                 Handlers.Connect
-                   (  Sweeper,
-                    "changed",
-                    Handlers.To_Marshaller (Changed_Sweeper'Access),
-                    Layer'Unchecked_Access
-                   )  );
-            Set
-              (  Layer.Handlers (4),
-                 Handlers.Connect
-                   (  Sweeper,
-                    "value_changed",
-                    Handlers.To_Marshaller (Changed_Sweeper'Access),
-                    Layer'Unchecked_Access
-                   )  );
+            Gtk.Handlers.References.Set
+              (Layer.Handlers (3),
+               Handlers.Connect
+                 (Sweeper,
+                  "changed",
+                  Handlers.To_Marshaller (Changed_Sweeper'Access),
+                  Layer'Unchecked_Access));
+            Gtk.Handlers.References.Set
+              (Layer.Handlers (4),
+               Handlers.Connect
+                 (Sweeper,
+                  "value_changed",
+                  Handlers.To_Marshaller (Changed_Sweeper'Access),
+                  Layer'Unchecked_Access));
          end if;
       end if;
    end Set_Sweeper;
 
    procedure Set_Visible
-     (  Layer   : in out Waveform_Layer;
-        Visible : Boolean
-       )  is
+     (Layer   : in out Waveform_Layer;
+      Visible : Boolean) is
    begin
       if Layer.Visible /= Visible then
          Layer.Visible := Visible;
@@ -1744,23 +1712,20 @@ package body Gtk.Layered.Waveform is
    end Set_Visible;
 
    overriding procedure Set_Widened
-     (  Layer   : in out Waveform_Layer;
-        Widened : Boolean
-       )  is
+     (Layer   : in out Waveform_Layer;
+      Widened : Boolean) is
    begin
       Layer.Widened := Widened;
       Layer.Updated := True;
    end Set_Widened;
 
    procedure Set_Y_Conversion
-     (  Layer  : in out Waveform_Layer;
-        Y1, Y2 : Gdouble
-       )  is
+     (Layer  : in out Waveform_Layer;
+      Y1, Y2 : Gdouble) is
    begin
       Layer.YY :=
-        (  (Y2 - Y1 + Gdouble'Model_Epsilon)
-           /  (Gdouble (Layer.V1 - Layer.V2) + Gdouble'Model_Epsilon * 2.0)
-          );
+        ((Y2 - Y1 + Gdouble'Model_Epsilon)
+         / (Gdouble (Layer.V1 - Layer.V2) + Gdouble'Model_Epsilon * 2.0));
       Layer.Y0 := Y2 + Layer.YY * Gdouble (Layer.V2);
    end Set_Y_Conversion;
 
@@ -1771,15 +1736,11 @@ package body Gtk.Layered.Waveform is
       use type Gtk.Adjustment.Gtk_Adjustment;
 
       Store_Amplifier : constant Boolean :=
-                          (  Layer.Amplifier_Adjustment /= null
-                             and then
-                             Layer.Amplifier_Object = null
-                            );
+                          Layer.Amplifier_Adjustment /= null and then
+                              Layer.Amplifier_Object = null;
       Store_Sweeper   : constant Boolean :=
-                          (  Layer.Sweeper_Adjustment /= null
-                             and then
-                             Layer.Sweeper_Object = null
-                            );
+                          Layer.Sweeper_Adjustment /= null and then
+                              Layer.Sweeper_Object = null;
    begin
       Gtk.Layered.Stream_IO.Store (Stream, Layer.Box.X1);
       Gtk.Layered.Stream_IO.Store (Stream, Layer.Box.X2);
@@ -1814,8 +1775,8 @@ package body Gtk.Layered.Waveform is
    procedure Sweep (Layer : in out Waveform_Layer; To : X_Axis) is
       dT : constant X_Axis := Layer.T2 - Layer.T1;
       dX : X_Axis := X_Axis'Truncation
-        (  X_Axis (Layer.Box.X2 - Layer.Box.X1 + 1.0)
-          );
+        (X_Axis (Layer.Box.X2 - Layer.Box.X1 + 1.0));
+      pragma Unreferenced (dX);
    begin
       Layer.T2 := To;
       Layer.T1 := Layer.T2 - dT;
@@ -1824,10 +1785,9 @@ package body Gtk.Layered.Waveform is
    end Sweep;
 
    procedure Sweep
-     (  Layer : in out Waveform_Layer;
-        From  : X_Axis;
-        To    : X_Axis
-       )  is
+     (Layer : in out Waveform_Layer;
+      From  : X_Axis;
+      To    : X_Axis) is
    begin
       if From >= To then
          raise Constraint_Error with
@@ -1852,9 +1812,8 @@ package body Gtk.Layered.Waveform is
                   if abs (Layer.T2 - Layer.T1 - Span) > Layer.dT / 10.0
                   then
                      Trace_Line
-                       (  Layer'Address,
-                          "Sweep changed page span"
-                         );
+                       (Layer'Address,
+                        "Sweep changed page span");
                   elsif Layer.T2 - To >= Layer.dT then
                      Trace_Line (Layer'Address, "Sweep backward");
                   else
@@ -1899,6 +1858,11 @@ package body Gtk.Layered.Waveform is
       return Layer.Y0 - Layer.YY * Gdouble (V) + 0.5;
    end To_Y;
 
+   function Where (Name : String) return String is
+   begin
+      return " in Gtk.Layered.Waveform." & Name;
+   end Where;
+
 begin
    declare
       type Seconds_Count is range 0 .. 86_400;
@@ -1935,5 +1899,8 @@ begin
            Duration (Seconds));
       Epoch := Epoch - Ada.Real_Time.To_Time_Span (T1.Seconds - Duration (Seconds));
    end;
+
+   pragma Warnings (On, "declaration hides ""Adjustment""");
+   pragma Warnings (On, "declaration hides ""Handlers""");
 
 end Gtk.Layered.Waveform;

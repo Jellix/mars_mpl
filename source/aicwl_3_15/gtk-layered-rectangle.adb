@@ -25,10 +25,11 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Glib.Properties.Creation;    use Glib.Properties.Creation;
-with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
-
 with Ada.Unchecked_Deallocation;
+
+with Glib.Properties.Creation;
+
+with Gtk.Layered.Stream_IO;
 
 package body Gtk.Layered.Rectangle is
    type Rectangle_Ptr is access all Rectangle_Layer;
@@ -235,7 +236,7 @@ package body Gtk.Layered.Rectangle is
          case Layer_Property'Val (Property - 1) is
             when Property_X =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "x",
                     Nick    => "x",
                     Minimum => Gdouble'First,
@@ -245,7 +246,7 @@ package body Gtk.Layered.Rectangle is
                       "margin of the rectangle");
             when Property_Y =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "y",
                     Nick    => "y",
                     Minimum => Gdouble'First,
@@ -255,7 +256,7 @@ package body Gtk.Layered.Rectangle is
                       "margin of the rectangle");
             when Property_Width =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "width",
                     Nick    => "width",
                     Minimum => 0.0,
@@ -264,7 +265,7 @@ package body Gtk.Layered.Rectangle is
                     Blurb   => "The width of the rectangle");
             when Property_Height =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "height",
                     Nick    => "height",
                     Minimum => 0.0,
@@ -273,14 +274,14 @@ package body Gtk.Layered.Rectangle is
                     Blurb   => "The height of the rectangle");
             when Property_Color =>
                return
-                 Gnew_Boxed
+                 Glib.Properties.Creation.Gnew_Boxed
                    (Name       => "color",
                     Boxed_Type => Gdk.Color.Gdk_Color_Type,
                     Nick       => "color",
                     Blurb      => "The rectangle color");
             when Property_Opacity =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "fill-opacity",
                     Nick    => "opacity",
                     Minimum => 0.0,
@@ -290,7 +291,7 @@ package body Gtk.Layered.Rectangle is
                       "is transparent, 1.0 is opaque");
             when Property_Line_Width =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "width",
                     Nick    => "width",
                     Minimum => 0.0,
@@ -299,7 +300,7 @@ package body Gtk.Layered.Rectangle is
                     Blurb   => "The rectangle's line width");
             when Property_Scaled =>
                return
-                 Gnew_Boolean
+                 Glib.Properties.Creation.Gnew_Boolean
                    (Name    => "scaled",
                     Nick    => "scaled",
                     Default => False,
@@ -307,7 +308,7 @@ package body Gtk.Layered.Rectangle is
                       "the widget is resized");
             when Property_Widened =>
                return
-                 Gnew_Boolean
+                 Glib.Properties.Creation.Gnew_Boolean
                    (Name    => "widened",
                     Nick    => "widened",
                     Default => False,
@@ -400,12 +401,12 @@ package body Gtk.Layered.Rectangle is
       Width   : Gdouble;
       Opacity : Gdouble;
    begin
-      Restore (Stream, From);
-      Restore (Stream, To);
-      Restore (Stream, Color);
-      Restore (Stream, Width);
-      Restore (Stream, Opacity);
-      Restore (Stream, Layer.Scaled);
+      Gtk.Layered.Stream_IO.Restore (Stream, From);
+      Gtk.Layered.Stream_IO.Restore (Stream, To);
+      Gtk.Layered.Stream_IO.Restore (Stream, Color);
+      Gtk.Layered.Stream_IO.Restore (Stream, Width);
+      Gtk.Layered.Stream_IO.Restore (Stream, Opacity);
+      Gtk.Layered.Stream_IO.Restore (Stream, Layer.Scaled);
       Set
         (Layer    => Layer,
          Color      => Color,
@@ -519,16 +520,16 @@ package body Gtk.Layered.Rectangle is
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Layer  : Rectangle_Layer) is
    begin
-      Store
+      Gtk.Layered.Stream_IO.Store
         (Stream,
          Cairo.Ellipses.Cairo_Tuple'(X => Layer.Box.X1, Y => Layer.Box.Y1));
-      Store
+      Gtk.Layered.Stream_IO.Store
         (Stream,
          Cairo.Ellipses.Cairo_Tuple'(X => Layer.Box.X2, Y => Layer.Box.Y2));
-      Store (Stream, Layer.Color);
-      Store (Stream, Layer.Width);
-      Store (Stream, Layer.Opacity);
-      Store (Stream, Layer.Scaled, Layer.Widened);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Color);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Width);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Opacity);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Scaled, Layer.Widened);
    end Store;
 
 end Gtk.Layered.Rectangle;

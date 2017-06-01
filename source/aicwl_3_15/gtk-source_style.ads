@@ -23,28 +23,31 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 package Gtk.Source_Style is
---
--- Gtk_Source_Style_Record -- Describtion of text attributes  which  are
---                            set when given style is used
---
+
+   --
+   -- Gtk_Source_Style_Record -- Describtion of text attributes  which  are
+   --                            set when given style is used
+   --
    type Gtk_Source_Style_Record is new GObject_Record with private;
    type Gtk_Source_Style is access all Gtk_Source_Style_Record'Class;
---
--- Style_Copy -- Copy a style object
---
---    Style - To copy
---
--- Returns :
---
---    A copy object (shall be unref'ed when no more used)
---
+
+   --
+   -- Style_Copy -- Copy a style object
+   --
+   --    Style - To copy
+   --
+   -- Returns :
+   --
+   --    A copy object (shall be unref'ed when no more used)
+   --
    function Style_Copy (Style : not null access Gtk_Source_Style_Record)
-      return Gtk_Source_Style;
+                        return Gtk_Source_Style;
 
 private
+
    type Gtk_Source_Style_Record is new GObject_Record with null record;
 
 end Gtk.Source_Style;

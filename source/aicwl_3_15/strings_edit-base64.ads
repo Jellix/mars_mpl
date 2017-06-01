@@ -23,35 +23,37 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 --
 --  This package  provides  Base64  encoding and decoding  as defined in
 --  RFC 4648.
 --
 package Strings_Edit.Base64 is
---
--- From_Base64 -- Decode Base64 to plain string
---
---    Text - To convert
---
--- Returns :
---
---    Equivalent string
---
--- Exceptions :
---
---    Data_Error - Syntax error
---
+
+   --
+   -- From_Base64 -- Decode Base64 to plain string
+   --
+   --    Text - To convert
+   --
+   -- Returns :
+   --
+   --    Equivalent string
+   --
+   -- Exceptions :
+   --
+   --    Data_Error - Syntax error
+   --
    function From_Base64 (Text : String) return String;
---
--- To_Base64 -- Encode plain string as Base64
---
---    Text - To convert
---
--- Returns :
---
---    Base64 string
---
+
+   --
+   -- To_Base64 -- Encode plain string as Base64
+   --
+   --    Text - To convert
+   --
+   -- Returns :
+   --
+   --    Base64 string
+   --
    function To_Base64 (Text : String) return String;
 
 end Strings_Edit.Base64;

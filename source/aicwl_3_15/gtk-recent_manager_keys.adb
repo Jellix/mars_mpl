@@ -25,32 +25,33 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Ada.Exceptions;     use Ada.Exceptions;
-with Ada.IO_Exceptions;  use Ada.IO_Exceptions;
-with Glib.Messages;      use Glib.Messages;
-with Glib.Values;        use Glib.Values;
-with Gtk.Missed;         use Gtk.Missed;
-with Gtk.Tree_Model;     use Gtk.Tree_Model;
+with Ada.Exceptions;
+with Ada.IO_Exceptions;
+
+with Glib.Messages;
+with Glib.Values;
+
+with Gtk.Missed;
+with Gtk.Tree_Model;
 
 package body Gtk.Recent_Manager_Keys is
-
-   pragma Warnings (Off, "declaration hides ""Error""");
 
    function Where (Text : String) return String;
 
    procedure Enumerate
      (Enumerator : in out Key_Enumerator'Class;
       Prefix     : UTF8_String;
-      Manager    : Gtk_Recent_Manager := Get_Default)
+      Manager    : Gtk.Recent_Manager_Alt.Gtk_Recent_Manager := Gtk.Recent_Manager_Alt.Get_Default)
    is
-      List : Gtk_Recent_Info_Array renames Get_Items (Manager);
-      Name : constant String := Get_Application_Name;
+      List : Gtk.Recent_Manager_Alt.Gtk_Recent_Info_Array renames
+               Gtk.Recent_Manager_Alt.Get_Items (Manager);
+      Name : constant String := Gtk.Missed.Get_Application_Name;
    begin
       for Index in List'Range loop
-         if Has_Application (List (Index), Name) then
+         if Gtk.Recent_Manager_Alt.Has_Application (List (Index), Name) then
             declare
                Key : constant UTF8_String :=
-                     Get_Description (List (Index));
+                     Gtk.Recent_Manager_Alt.Get_Description (List (Index));
             begin
                if
                  Key'Length >= Prefix'Length and then
@@ -59,29 +60,29 @@ package body Gtk.Recent_Manager_Keys is
                   Process
                     (Enumerator,
                      Key,
-                     Get_URI (List (Index)),
+                     Gtk.Recent_Manager_Alt.Get_URI (List (Index)),
                      List (Index));
                end if;
             end;
          end if;
       end loop;
       for Index in List'Range loop
-         Unref (List (Index));
+         Gtk.Recent_Manager_Alt.Unref (List (Index));
       end loop;
    exception
-      when End_Error =>
+      when Ada.IO_Exceptions.End_Error =>
          for Index in List'Range loop
-            Unref (List (Index));
+            Gtk.Recent_Manager_Alt.Unref (List (Index));
          end loop;
       when Error : others =>
          for Index in List'Range loop
-            Unref (List (Index));
+            Gtk.Recent_Manager_Alt.Unref (List (Index));
          end loop;
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
             "Fault: "
-            & Exception_Information (Error)
+            & Ada.Exceptions.Exception_Information (Error)
             & Where ("Enumerate"));
    end Enumerate;
 
@@ -89,13 +90,13 @@ package body Gtk.Recent_Manager_Keys is
      (Enumerator : in out Model_Enumerator;
       Key        : UTF8_String;
       Value      : UTF8_String;
-      Info       : Gtk_Recent_Info)
+      Info       : Gtk.Recent_Manager_Alt.Gtk_Recent_Info)
    is
       pragma Unreferenced (Info);
 
       Pointer : constant Integer := Key'First + Enumerator.Length;
       Row     : Gint;
-      This    : Gtk_Tree_Iter;
+      This    : Gtk.Tree_Model.Gtk_Tree_Iter;
    begin
       if Pointer >= Key'Last or else Key (Pointer) /= '_' then
          return;
@@ -109,12 +110,16 @@ package body Gtk.Recent_Manager_Keys is
       if Row not in 1 .. Enumerator.Max_Row then
          return;
       end if;
-      if N_Children (Enumerator.Model) < Row then
-         for Position in N_Children (Enumerator.Model) .. Row - 1 loop
-            Insert (Enumerator.Model, This, Position);
+      if Gtk.List_Store.N_Children (Enumerator.Model) < Row then
+         for
+           Position in Gtk.List_Store.N_Children (Enumerator.Model) .. Row - 1
+         loop
+            Gtk.List_Store.Insert (Enumerator.Model, This, Position);
          end loop;
       else
-         This := Nth_Child (Enumerator.Model, Null_Iter, Row - 1);
+         This :=
+           Gtk.List_Store.Nth_Child
+             (Enumerator.Model, Gtk.Tree_Model.Null_Iter, Row - 1);
       end if;
       Gtk.Missed.Set (Enumerator.Model, This, Enumerator.Column, Value);
    end Process;
@@ -122,43 +127,45 @@ package body Gtk.Recent_Manager_Keys is
    function Restore
      (Key     : UTF8_String;
       Default : UTF8_String;
-      Manager : Gtk_Recent_Manager := Get_Default) return UTF8_String
+      Manager : Gtk.Recent_Manager_Alt.Gtk_Recent_Manager := Gtk.Recent_Manager_Alt.Get_Default)
+      return UTF8_String
    is
-      List : Gtk_Recent_Info_Array renames Get_Items (Manager);
-      Name : constant String := Get_Application_Name;
+      List : Gtk.Recent_Manager_Alt.Gtk_Recent_Info_Array renames
+               Gtk.Recent_Manager_Alt.Get_Items (Manager);
+      Name : constant String := Gtk.Missed.Get_Application_Name;
    begin
       for Index in List'Range loop
          if
-           Has_Application (List (Index), Name) and then
-           Get_URI (List (Index)) = Key
+           Gtk.Recent_Manager_Alt.Has_Application (List (Index), Name) and then
+           Gtk.Recent_Manager_Alt.Get_URI (List (Index)) = Key
          then
             return Result : constant UTF8_String :=
-                            Get_Display_Name (List (Index)) do
+              Gtk.Recent_Manager_Alt.Get_Display_Name (List (Index)) do
                for Rest in Index .. List'Last loop
-                  Unref (List (Rest));
+                  Gtk.Recent_Manager_Alt.Unref (List (Rest));
                end loop;
             end return;
          end if;
-         Unref (List (Index));
+         Gtk.Recent_Manager_Alt.Unref (List (Index));
       end loop;
       return Default;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
             "Fault: "
-            & Exception_Information (Error)
+            & Ada.Exceptions.Exception_Information (Error)
             & Where ("Restore"));
          return "";
    end Restore;
 
    procedure Restore
      (Key     : UTF8_String;
-      Model   : Gtk_List_Store;
+      Model   : Gtk.List_Store.Gtk_List_Store;
       Column  : Gint;
-      Max_Row : Positive := 10;
-      Manager : Gtk_Recent_Manager := Get_Default)
+      Max_Row : Positive                                  := 10;
+      Manager : Gtk.Recent_Manager_Alt.Gtk_Recent_Manager := Gtk.Recent_Manager_Alt.Get_Default)
    is
       Enumerator : Model_Enumerator;
    begin
@@ -170,23 +177,23 @@ package body Gtk.Recent_Manager_Keys is
       pragma Unreferenced (Enumerator);
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
             "Fault: "
-            & Exception_Information (Error)
+            & Ada.Exceptions.Exception_Information (Error)
             & Where ("Restore (list store)"));
    end Restore;
 
    procedure Store
      (Key     : UTF8_String;
       Value   : UTF8_String;
-      Manager : Gtk_Recent_Manager := Get_Default)
+      Manager : Gtk.Recent_Manager_Alt.Gtk_Recent_Manager := Gtk.Recent_Manager_Alt.Get_Default)
    is
       Result : Boolean;
    begin
       Result :=
-        Add_Full
+        Gtk.Recent_Manager_Alt.Add_Full
           (Manager      => Manager,
            URI          => Key,
            Display_Name => Value,
@@ -194,43 +201,46 @@ package body Gtk.Recent_Manager_Keys is
       pragma Unreferenced (Result);
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
             "Fault: "
-            & Exception_Information (Error)
+            & Ada.Exceptions.Exception_Information (Error)
             & Where ("Store"));
    end Store;
 
    procedure Store
      (Key     : UTF8_String;
-      Model   : Gtk_List_Store;
+      Model   : Gtk.List_Store.Gtk_List_Store;
       Column  : Gint;
-      Max_Row : Positive := 10;
-      Manager : Gtk_Recent_Manager := Get_Default)
+      Max_Row : Positive                                  := 10;
+      Manager : Gtk.Recent_Manager_Alt.Gtk_Recent_Manager := Gtk.Recent_Manager_Alt.Get_Default)
    is
-      This : Gtk_Tree_Iter := Get_Iter_First (Model);
+      This : Gtk.Tree_Model.Gtk_Tree_Iter :=
+               Gtk.List_Store.Get_Iter_First (Model);
+
+      use type Gtk.Tree_Model.Gtk_Tree_Iter;
    begin
       for Row in 1 .. Max_Row loop
-         exit when This = Null_Iter;
+         exit when This = Gtk.Tree_Model.Null_Iter;
          declare
             Text : String := Key & Positive'Image (Row);
-            Data : GValue;
+            Data : Glib.Values.GValue;
          begin
             Text (Text'First + Key'Length) := '_';
-            Get_Value (Model, This, Column, Data);
-            Store (Text, Get_String (Data), Manager);
-            Unset (Data);
-            Next (Model, This);
+            Gtk.List_Store.Get_Value (Model, This, Column, Data);
+            Store (Text, Glib.Values.Get_String (Data), Manager);
+            Glib.Values.Unset (Data);
+            Gtk.List_Store.Next (Model, This);
          end;
       end loop;
    exception
       when Error : others =>
-         Log
-           (GtkAda_Contributions_Domain,
-            Log_Level_Critical,
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
             "Fault: "
-            & Exception_Information (Error)
+            & Ada.Exceptions.Exception_Information (Error)
             & Where ("Store (list store)"));
    end Store;
 
@@ -238,7 +248,5 @@ package body Gtk.Recent_Manager_Keys is
    begin
       return " in Gtk.Recent_Manager_Keys." & Text;
    end Where;
-
-   pragma Warnings (On, "declaration hides ""Error""");
 
 end Gtk.Recent_Manager_Keys;

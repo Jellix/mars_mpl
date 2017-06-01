@@ -51,12 +51,16 @@ with Gtk.Widget.Styles;
 
 package body Gtk.Oscilloscope.Channels_Panel is
 
+   pragma Warnings (Off, "declaration hides ""Dialog""");
+   pragma Warnings (Off, "declaration hides ""Group""");
+   pragma Warnings (Off, "declaration hides ""Menu""");
+   pragma Warnings (Off, "declaration hides ""Oscilloscope""");
+   pragma Warnings (Off, "declaration hides ""Values""");
+   pragma Warnings (Off, "declaration hides ""Widget""");
+
    Class_Record : aliased Ada_GObject_Class := Uninitialized_Class;
 
-   function Where (Name : String) return String is
-   begin
-      return " in Gtk.Oscilloscope.Channels_Panel." & Name;
-   end Where;
+   function Where (Name : String) return String;
 
    function Get_Type return GType is
    begin
@@ -336,7 +340,9 @@ package body Gtk.Oscilloscope.Channels_Panel is
 
    procedure On_Menu_Delete
      (Widget : access GObject_Record'Class;
-      Panel  : Gtk_Oscilloscope_Channels_Panel) is
+      Panel  : Gtk_Oscilloscope_Channels_Panel)
+   is
+      pragma Unreferenced (Widget);
    begin
       if Panel.all.Channel > 0 then
          Panel.all.Oscilloscope.all.Delete_Channel (Panel.all.Channel);
@@ -353,7 +359,9 @@ package body Gtk.Oscilloscope.Channels_Panel is
 
    procedure On_Menu_Down
      (Widget : access GObject_Record'Class;
-      Panel  : Gtk_Oscilloscope_Channels_Panel) is
+      Panel  : Gtk_Oscilloscope_Channels_Panel)
+   is
+      pragma Unreferenced (Widget);
    begin
       if
         Panel.all.Channel > 0 and then
@@ -381,6 +389,8 @@ package body Gtk.Oscilloscope.Channels_Panel is
      (Widget : access GObject_Record'Class;
       Panel  : Gtk_Oscilloscope_Channels_Panel)
    is
+      pragma Unreferenced (Widget);
+
       Dialog : Gtk.Color_Selection_Dialog.Gtk_Color_Selection_Dialog;
       Color  : Gdk.Color.Gdk_Color;
    begin
@@ -521,6 +531,28 @@ package body Gtk.Oscilloscope.Channels_Panel is
             & Where ("On_Render_Group"));
    end On_Render_Group;
 
+   procedure On_Style_Updated
+     (Widget : access GObject_Record'Class;
+      Panel  : Gtk_Oscilloscope_Channels_Panel)
+   is
+      pragma Unreferenced (Widget);
+   begin
+      Panel.all.Get_Column (Panel.all.Name_Column).all.Set_Title
+        (Gtk.Widget.Styles.Style_Get (Panel, "channel-name-title"));
+      Panel.all.Get_Column (Panel.all.Group_Column).all.Set_Title
+        (Gtk.Widget.Styles.Style_Get (Panel, "group-name-title"));
+      Panel.all.Get_Column (Panel.all.Values_Column).all.Set_Title
+        (Gtk.Widget.Styles.Style_Get (Panel, "values-title"));
+   exception
+      when Error : others =>
+         Glib.Messages.Log
+           (Gtk.Missed.GtkAda_Contributions_Domain,
+            Glib.Messages.Log_Level_Critical,
+            "Fault: "
+            & Ada.Exceptions.Exception_Information (Error)
+            & Where ("On_Style_Updated"));
+   end On_Style_Updated;
+
    procedure On_Visible_Toggled
      (Widget : access GObject_Record'Class;
       Values : Glib.Values.GValues;
@@ -546,26 +578,16 @@ package body Gtk.Oscilloscope.Channels_Panel is
       end if;
    end On_Visible_Toggled;
 
-   procedure On_Style_Updated
-     (Widget : access GObject_Record'Class;
-      Panel  : Gtk_Oscilloscope_Channels_Panel)
-   is
-      pragma Unreferenced (Widget);
+   function Where (Name : String) return String is
    begin
-      Panel.all.Get_Column (Panel.all.Name_Column).all.Set_Title
-        (Gtk.Widget.Styles.Style_Get (Panel, "channel-name-title"));
-      Panel.all.Get_Column (Panel.all.Group_Column).all.Set_Title
-        (Gtk.Widget.Styles.Style_Get (Panel, "group-name-title"));
-      Panel.all.Get_Column (Panel.all.Values_Column).all.Set_Title
-        (Gtk.Widget.Styles.Style_Get (Panel, "values-title"));
-   exception
-      when Error : others =>
-         Glib.Messages.Log
-           (Gtk.Missed.GtkAda_Contributions_Domain,
-            Glib.Messages.Log_Level_Critical,
-            "Fault: "
-            & Ada.Exceptions.Exception_Information (Error)
-            & Where ("On_Style_Updated"));
-   end On_Style_Updated;
+      return " in Gtk.Oscilloscope.Channels_Panel." & Name;
+   end Where;
+
+   pragma Warnings (On, "declaration hides ""Dialog""");
+   pragma Warnings (On, "declaration hides ""Group""");
+   pragma Warnings (On, "declaration hides ""Menu""");
+   pragma Warnings (On, "declaration hides ""Oscilloscope""");
+   pragma Warnings (On, "declaration hides ""Values""");
+   pragma Warnings (On, "declaration hides ""Widget""");
 
 end Gtk.Oscilloscope.Channels_Panel;

@@ -23,12 +23,11 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 with Glib.Generic_Properties;
 
 package Gtk.Layered.Waveform_Drawing_Method_Property is
-   new GLib.Generic_Properties.Generic_Enumeration_Property
-       (  "waveform-drawing-method",
-          Waveform_Drawing_Method
-       );
+  new GLib.Generic_Properties.Generic_Enumeration_Property
+    ("waveform-drawing-method",
+     Waveform_Drawing_Method);

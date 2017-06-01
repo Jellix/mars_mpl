@@ -51,6 +51,43 @@ with Gtk.Window;
 
 package body Gtk.Missed is
 
+   pragma Warnings (Off, "declaration hides ""Ancestor""");
+   pragma Warnings (Off, "declaration hides ""Box""");
+   pragma Warnings (Off, "declaration hides ""Buffer""");
+   pragma Warnings (Off, "declaration hides ""Button""");
+   pragma Warnings (Off, "declaration hides ""Cell_Renderer""");
+   pragma Warnings (Off, "declaration hides ""Class""");
+   pragma Warnings (Off, "declaration hides ""Column""");
+   pragma Warnings (Off, "declaration hides ""Container""");
+   pragma Warnings (Off, "declaration hides ""Context""");
+   pragma Warnings (Off, "declaration hides ""Current""");
+   pragma Warnings (Off, "declaration hides ""Derived""");
+   pragma Warnings (Off, "declaration hides ""Dialog""");
+   pragma Warnings (Off, "declaration hides ""Dir""");
+   pragma Warnings (Off, "declaration hides ""Directory""");
+   pragma Warnings (Off, "declaration hides ""Equal""");
+   pragma Warnings (Off, "declaration hides ""Error""");
+   pragma Warnings (Off, "declaration hides ""File_Name""");
+   pragma Warnings (Off, "declaration hides ""Func""");
+   pragma Warnings (Off, "declaration hides ""Image""");
+   pragma Warnings (Off, "declaration hides ""Iter""");
+   pragma Warnings (Off, "declaration hides ""Label""");
+   pragma Warnings (Off, "declaration hides ""Name""");
+   pragma Warnings (Off, "declaration hides ""New_File_Name""");
+   pragma Warnings (Off, "declaration hides ""Object""");
+   pragma Warnings (Off, "declaration hides ""Old_File_Name""");
+   pragma Warnings (Off, "declaration hides ""Path""");
+   pragma Warnings (Off, "declaration hides ""Rectangle""");
+   pragma Warnings (Off, "declaration hides ""Set""");
+   pragma Warnings (Off, "declaration hides ""State""");
+   pragma Warnings (Off, "declaration hides ""Status""");
+   pragma Warnings (Off, "declaration hides ""Test""");
+   pragma Warnings (Off, "declaration hides ""Text""");
+   pragma Warnings (Off, "declaration hides ""Tree_View""");
+   pragma Warnings (Off, "declaration hides ""User_Data""");
+   pragma Warnings (Off, "declaration hides ""Value""");
+   pragma Warnings (Off, "declaration hides ""Widget""");
+
    ------------------------------------------------------------------------
    type GHashTable is new System.Address;
    No_Table : constant GHashTable := GHashTable (System.Null_Address);
@@ -211,7 +248,7 @@ package body Gtk.Missed is
 
    end Set_Column_Cell_Data;
 
-   package Set_Pixbuf_Data is new Set_Column_Cell_Data (GInt);
+   package Set_Pixbuf_Data is new Set_Column_Cell_Data (Gint);
 
    function "+" (Width : Gint) return Gtk.Enums.Gtk_Icon_Size;
    function "+" (Width : Gint) return Gtk.Enums.Gtk_Icon_Size is
@@ -335,11 +372,10 @@ package body Gtk.Missed is
       pragma Unreferenced (Result);
       declare
          Source : Gtk.Icon_Source.Gtk_Icon_Source;
-         use Gdk.Pixbuf;
       begin
          Gtk.Icon_Source.Gtk_New (Source);
          Gtk.Icon_Source.Set_Pixbuf (Source, Icon);
-         Source.Set_Size (+Get_Width (Icon));
+         Source.Set_Size (+Gdk.Pixbuf.Get_Width (Icon));
          Source.Set_Size_Wildcarded (False);
          Set.Add_Source (Source);
          Gtk.Icon_Source.Free (Source);
@@ -1624,6 +1660,8 @@ package body Gtk.Missed is
             return "";
          end if;
       end Get_Title;
+      pragma Unreferenced (Get_Title);
+
       Dialog : Gtk.Dialog.Gtk_Dialog;
       Label  : Gtk.Label.Gtk_Label;
       Box    : Gtk.Box.Gtk_Box;
@@ -1781,12 +1819,11 @@ package body Gtk.Missed is
       CSS      : constant String := "* { background-color: " &
                    Gdk.RGBA.To_String (Color) &
                  "; }";
-      use Gtk.Css_Provider;
    begin
       Gtk.Css_Provider.Gtk_New (Provider);
       if Provider.all.Load_From_Data (CSS, null) then
          Gtk.Style_Context.Get_Style_Context (Widget).all.Add_Provider
-           (+Provider,
+           (Gtk.Css_Provider."+" (Provider),
             Gtk.Style_Provider.Priority_Application);
       end if;
       Provider.all.Unref;
@@ -1824,6 +1861,7 @@ package body Gtk.Missed is
          Val);
       pragma Unreferenced (Val);
    end Set_Property;
+   pragma Unreferenced (Set_Property);
 
    procedure Set_Tip
      (Widget : not null access Gtk.Widget.Gtk_Widget_Record'Class)
@@ -1928,11 +1966,13 @@ begin
       function SetErrorMode (Mode : Interfaces.Unsigned_32)
                              return Interfaces.Unsigned_32;
       pragma Import (Stdcall, SetErrorMode, "SetErrorMode");
+
       --
       -- The  system does not display the critical-error-handler message
       -- box. Instead,  the  system  sends  the  error  to  the  calling
       -- process.
       SEM_FAILCRITICALERRORS : constant := 16#0001#;
+
       --
       -- The  system  automatically  fixes  memory  alignment faults and
       -- makes  them  invisible to the application. It does this for the
@@ -1943,6 +1983,8 @@ begin
       -- ignored.
       --
       SEM_NOALIGNMENTFAULTEXCEPT : constant := 16#0004#;
+      pragma Unreferenced (SEM_NOALIGNMENTFAULTEXCEPT);
+
       --
       -- The system does not display the Windows Error Reporting dialog.
       --
@@ -1958,7 +2000,45 @@ begin
    begin
       Result := SetErrorMode (SEM_NOOPENFILEERRORBOX or
                               SEM_NOGPFAULTERRORBOX  or
-                                  SEM_FAILCRITICALERRORS);
+                              SEM_FAILCRITICALERRORS);
       pragma Unreferenced (Result);
    end;
+
+   pragma Warnings (On, "declaration hides ""Ancestor""");
+   pragma Warnings (On, "declaration hides ""Box""");
+   pragma Warnings (On, "declaration hides ""Buffer""");
+   pragma Warnings (On, "declaration hides ""Button""");
+   pragma Warnings (On, "declaration hides ""Cell_Renderer""");
+   pragma Warnings (On, "declaration hides ""Class""");
+   pragma Warnings (On, "declaration hides ""Column""");
+   pragma Warnings (On, "declaration hides ""Container""");
+   pragma Warnings (On, "declaration hides ""Context""");
+   pragma Warnings (On, "declaration hides ""Current""");
+   pragma Warnings (On, "declaration hides ""Derived""");
+   pragma Warnings (On, "declaration hides ""Dialog""");
+   pragma Warnings (On, "declaration hides ""Dir""");
+   pragma Warnings (On, "declaration hides ""Directory""");
+   pragma Warnings (On, "declaration hides ""Equal""");
+   pragma Warnings (On, "declaration hides ""Error""");
+   pragma Warnings (On, "declaration hides ""File_Name""");
+   pragma Warnings (On, "declaration hides ""Func""");
+   pragma Warnings (On, "declaration hides ""Image""");
+   pragma Warnings (On, "declaration hides ""Iter""");
+   pragma Warnings (On, "declaration hides ""Label""");
+   pragma Warnings (On, "declaration hides ""Name""");
+   pragma Warnings (On, "declaration hides ""New_File_Name""");
+   pragma Warnings (On, "declaration hides ""Object""");
+   pragma Warnings (On, "declaration hides ""Old_File_Name""");
+   pragma Warnings (On, "declaration hides ""Path""");
+   pragma Warnings (On, "declaration hides ""Rectangle""");
+   pragma Warnings (On, "declaration hides ""Set""");
+   pragma Warnings (On, "declaration hides ""State""");
+   pragma Warnings (On, "declaration hides ""Status""");
+   pragma Warnings (On, "declaration hides ""Test""");
+   pragma Warnings (On, "declaration hides ""Text""");
+   pragma Warnings (On, "declaration hides ""Tree_View""");
+   pragma Warnings (On, "declaration hides ""User_Data""");
+   pragma Warnings (On, "declaration hides ""Value""");
+   pragma Warnings (On, "declaration hides ""Widget""");
+
 end Gtk.Missed;

@@ -32,7 +32,6 @@ function On_Button_Release
    Oscilloscope : Gtk_Oscilloscope) return Boolean
 is
    pragma Unreferenced (Object);
-   use Menu_Handlers;
    Menu      : Gtk.Menu.Gtk_Menu;
    Item      : Gtk.Image_Menu_Item.Gtk_Image_Menu_Item;
    Separator : Gtk.Separator_Menu_Item.Gtk_Separator_Menu_Item;
@@ -63,7 +62,7 @@ begin
                         Gtk.Enums.Icon_Size_Menu);
                      Gtk.Image_Menu_Item.Set_Image (Item, Icon);
                      Gtk.Menu.Append (Menu, Item);
-                     Connect
+                     Menu_Handlers.Connect
                        (Item,
                         "activate",
                         On_Zoom_In'Access,
@@ -73,7 +72,7 @@ begin
                         Gtk.Widget.Styles.Style_Get
                           (Oscilloscope, "menu-zoom-in-t"));
                      Gtk.Menu.Append (Menu, Item);
-                     Connect
+                     Menu_Handlers.Connect
                        (Item,
                         "activate",
                         On_Zoom_In_T'Access,
@@ -83,7 +82,7 @@ begin
                         Gtk.Widget.Styles.Style_Get
                           (Oscilloscope, "menu-zoom-in-v"));
                      Gtk.Menu.Append (Menu, Item);
-                     Connect
+                     Menu_Handlers.Connect
                        (Item,
                         "activate",
                         On_Zoom_In_V'Access,
@@ -99,7 +98,7 @@ begin
                         Gtk.Enums.Icon_Size_Menu);
                      Gtk.Image_Menu_Item.Set_Image (Item, Icon);
                      Gtk.Menu.Append (Menu, Item);
-                     Connect
+                     Menu_Handlers.Connect
                        (Item,
                         "activate",
                         On_Zoom_Out'Access,
@@ -109,7 +108,7 @@ begin
                         Gtk.Widget.Styles.Style_Get
                           (Oscilloscope, "menu-zoom-out-t"));
                      Gtk.Menu.Append (Menu, Item);
-                     Connect
+                     Menu_Handlers.Connect
                        (Item,
                         "activate",
                         On_Zoom_Out_T'Access,
@@ -119,7 +118,7 @@ begin
                         Gtk.Widget.Styles.Style_Get
                           (Oscilloscope, "menu-zoom-out-v"));
                      Gtk.Menu.Append (Menu, Item);
-                     Connect
+                     Menu_Handlers.Connect
                        (Item,
                         "activate",
                         On_Zoom_Out_V'Access,
@@ -133,7 +132,7 @@ begin
                        (Icon, Gtk.Stock.Stock_Copy, Gtk.Enums.Icon_Size_Menu);
                      Gtk.Image_Menu_Item.Set_Image (Item, Icon);
                      Gtk.Menu.Append (Menu, Item);
-                     Connect
+                     Menu_Handlers.Connect
                        (Item,
                         "activate",
                         On_Copy_Selection'Access,
@@ -147,7 +146,7 @@ begin
                        (Icon, Gtk.Stock.Stock_Remove, Gtk.Enums.Icon_Size_Menu);
                      Gtk.Image_Menu_Item.Set_Image (Item, Icon);
                      Gtk.Menu.Append (Menu, Item);
-                     Connect
+                     Menu_Handlers.Connect
                        (Item,
                         "activate",
                         On_Difference_Selection'Access,
@@ -161,7 +160,7 @@ begin
                        (Icon, Gtk.Stock.Stock_Paste, Gtk.Enums.Icon_Size_Menu);
                      Gtk.Image_Menu_Item.Set_Image (Item, Icon);
                      Gtk.Menu.Append (Menu, Item);
-                     Connect
+                     Menu_Handlers.Connect
                        (Item,
                         "activate",
                         On_Range_Selection'Access,
@@ -178,12 +177,12 @@ begin
                        (Icon, Gtk.Stock.Stock_Cancel, Gtk.Enums.Icon_Size_Menu);
                      Gtk.Image_Menu_Item.Set_Image (Item, Icon);
                      Gtk.Menu.Append (Menu, Item);
-                     Connect
+                     Menu_Handlers.Connect
                        (Item,
                         "activate",
                         On_Cancel_Selection'Access,
                         Oscilloscope);
-                     Connect
+                     Menu_Handlers.Connect
                        (Menu,
                         "destroy",
                         On_Cancel_Selection'Access,

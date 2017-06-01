@@ -23,24 +23,21 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with System;  use System;
+with System;
 
 package body Gtk.Source_Style is
 
    function Style_Copy (Style : not null access Gtk_Source_Style_Record)
       return Gtk_Source_Style is
-      function Internal (Style : Address) return Address;
+      function Internal (Style : System.Address) return System.Address;
       pragma Import (C, Internal, "gtk_source_style_copy");
       Stub : Gtk_Source_Style_Record;
    begin
       return
-         Gtk_Source_Style
-         (  Get_User_Data_Fast
-            (  Internal (Get_Object (Style)),
-               Stub
-         )  );
+        Gtk_Source_Style
+          (Get_User_Data_Fast (Internal (Get_Object (Style)), Stub));
    end Style_Copy;
 
 end Gtk.Source_Style;

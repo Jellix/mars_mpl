@@ -46,6 +46,9 @@ with Ada.Finalization;
 
 package Glib.Spawn.Asynchronous is
 
+   pragma Warnings (Off, "declaration hides ""Error""");
+   pragma Warnings (Off, "declaration of ""Error"" hides");
+
    --
    -- Process_State
    --
@@ -304,5 +307,8 @@ private
      new Gtk.Main.Router.Generic_Message (Asynchronous_Process_Ptr);
 
    procedure Service_Exit (Process : in out Asynchronous_Process_Ptr);
+
+   pragma Warnings (On, "declaration hides ""Error""");
+   pragma Warnings (On, "declaration of ""Error"" hides");
 
 end Glib.Spawn.Asynchronous;

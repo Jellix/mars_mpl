@@ -25,9 +25,11 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Ada.Text_IO;  use Ada.Text_IO;
+with Ada.Text_IO;
 
 package Gtk.Widget.Styles.Store is
+
+   pragma Warnings (Off, "declaration hides ""Widget""");
 
    --
    -- Put_Styles -- Write widget properties into a resource file
@@ -44,12 +46,14 @@ package Gtk.Widget.Styles.Store is
    -- the file before the resources of the containers of.
    --
    procedure Put_Styles
-     (File    : File_Type;
+     (File    : Ada.Text_IO.File_Type;
       Widget  : not null access Gtk_Widget_Record'Class;
       Recurse : Boolean := True);
 
    procedure Put_Styles
      (Widget  : not null access Gtk_Widget_Record'Class;
       Recurse : Boolean := True);
+
+   pragma Warnings (On, "declaration hides ""Widget""");
 
 end Gtk.Widget.Styles.Store;

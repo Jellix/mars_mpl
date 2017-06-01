@@ -23,87 +23,77 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
-
-with Glib.Chars_Ptr_Vectors;  use Glib.Chars_Ptr_Vectors;
-with Interfaces.C;            use Interfaces.C;
-with System;                  use System;
+-- __________________________________________________________________ --
 
 with Ada.Unchecked_Deallocation;
+
+with Glib.Chars_Ptr_Vectors;
+
+with Interfaces.C;
+
+with System;
 
 package body Gtk.Source_Language_Manager is
 
    function Get_Default return Gtk_Source_Language_Manager is
-      function Internal return Address;
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_source_language_manager_get_default"
-             );
+      function Internal return System.Address;
+      pragma Import (C, Internal, "gtk_source_language_manager_get_default");
       Stub : Gtk_Source_Language_Manager_Record;
    begin
       return
          Gtk_Source_Language_Manager
-         (  Get_User_Data_Fast (Internal, Stub)
-         );
+          (Get_User_Data_Fast (Internal, Stub));
    end Get_Default;
 
    function Get_Language
-            (  Manager  : not null access
-                          Gtk_Source_Language_Manager_Record;
-               Language : UTF8_String
-            )  return Gtk_Source_Language is
-      function Internal (Manager : Address; ID : char_array)
-         return Address;
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_source_language_manager_get_language"
-             );
-      Stub : Gtk_Source_Language_Record;
+     (Manager  : not null access Gtk_Source_Language_Manager_Record;
+      Language : UTF8_String) return Gtk.Source_Language.Gtk_Source_Language
+   is
+      function Internal
+        (Manager : System.Address;
+         ID      : Interfaces.C.char_array) return System.Address;
+      pragma Import (C, Internal, "gtk_source_language_manager_get_language");
+      Stub : Gtk.Source_Language.Gtk_Source_Language_Record;
    begin
       return
-         Gtk_Source_Language
-         (  Get_User_Data_Fast
-            (  Internal (Get_Object (Manager), To_C (Language)),
-               Stub
-         )  );
+        Gtk.Source_Language.Gtk_Source_Language
+          (Get_User_Data_Fast
+             (Internal (Get_Object (Manager), Interfaces.C.To_C (Language)),
+              Stub));
    end Get_Language;
 
    function Get_Language_IDs
-            (  Manager : not null access
-                         Gtk_Source_Language_Manager_Record
-            )  return chars_ptr_array is
-      function Internal (Manager : Address) return Chars_Ptr_Ptr;
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_source_language_manager_get_language_ids"
-             );
+     (Manager : not null access Gtk_Source_Language_Manager_Record)
+      return Interfaces.C.Strings.chars_ptr_array
+   is
+      function Internal
+        (Manager : System.Address) return Glib.Chars_Ptr_Vectors.Chars_Ptr_Ptr;
+      pragma Import (C,
+                     Internal,
+                     "gtk_source_language_manager_get_language_ids");
    begin
-      return Convert (Internal (Get_Object (Manager)));
+      return Glib.Chars_Ptr_Vectors.Convert (Internal (Get_Object (Manager)));
    end Get_Language_IDs;
 
    function Get_Search_Path
-            (  Manager : not null access
-                         Gtk_Source_Language_Manager_Record
-            )  return chars_ptr_array is
-      function Internal (Manager : Address) return Chars_Ptr_Ptr;
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_source_language_manager_get_search_path"
-             );
+     (Manager : not null access Gtk_Source_Language_Manager_Record)
+      return Interfaces.C.Strings.chars_ptr_array
+   is
+      function Internal
+        (Manager : System.Address) return Glib.Chars_Ptr_Vectors.Chars_Ptr_Ptr;
+      pragma Import (C,
+                     Internal,
+                     "gtk_source_language_manager_get_search_path");
    begin
-      return Convert (Internal (Get_Object (Manager)));
+      return Glib.Chars_Ptr_Vectors.Convert (Internal (Get_Object (Manager)));
    end Get_Search_Path;
 
-   procedure Gtk_New (Manager : out Gtk_Source_Language_Manager) is
+   procedure Gtk_New (Manager : out Gtk_Source_Language_Manager)
+   is
       procedure Free is
-         new Ada.Unchecked_Deallocation
-             (  Gtk_Source_Language_Manager_Record'Class,
-                Gtk_Source_Language_Manager
-             );
+        new Ada.Unchecked_Deallocation
+          (Gtk_Source_Language_Manager_Record'Class,
+           Gtk_Source_Language_Manager);
    begin
       Manager := new Gtk_Source_Language_Manager_Record;
       Gtk.Source_Language_Manager.Initialize (Manager);
@@ -114,130 +104,105 @@ package body Gtk.Source_Language_Manager is
    end Gtk_New;
 
    function Guess_Language
-            (  Manager      : not null access
-                              Gtk_Source_Language_Manager_Record;
-               File_Name    : UTF8_String;
-               Content_Type : UTF8_String
-            )  return Gtk_Source_Language is
+     (Manager      : not null access Gtk_Source_Language_Manager_Record;
+      File_Name    : UTF8_String;
+      Content_Type : UTF8_String) return Gtk.Source_Language.Gtk_Source_Language
+   is
       function Internal
-               (  Manager      : Address;
-                  File_Name    : char_array;
-                  Content_Type : char_array
-               )  return Address;
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_source_language_manager_guess_language"
-             );
-      Stub : Gtk_Source_Language_Record;
+        (Manager      : System.Address;
+         File_Name    : Interfaces.C.char_array;
+         Content_Type : Interfaces.C.char_array) return System.Address;
+      pragma Import (C, Internal, "gtk_source_language_manager_guess_language");
+      Stub : Gtk.Source_Language.Gtk_Source_Language_Record;
    begin
       return
-         Gtk_Source_Language
-         (  Get_User_Data_Fast
-            (  Internal
-               (  Get_Object (Manager),
-                  To_C (File_Name),
-                  To_C (Content_Type)
-               ),
-               Stub
-         )  );
+        Gtk.Source_Language.Gtk_Source_Language
+          (Get_User_Data_Fast
+             (Internal
+                (Get_Object (Manager),
+                 Interfaces.C.To_C (File_Name),
+                 Interfaces.C.To_C (Content_Type)),
+              Stub));
    end Guess_Language;
 
-   function Guess_Language_By_File_Name
-            (  Manager   : not null access
-                           Gtk_Source_Language_Manager_Record;
-               File_Name : UTF8_String
-            )  return Gtk_Source_Language is
-      function Internal
-               (  Manager      : Address;
-                  File_Name    : char_array;
-                  Content_Type : Address := Null_Address
-               )  return Address;
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_source_language_manager_guess_language"
-             );
-      Stub : Gtk_Source_Language_Record;
-   begin
-      return
-         Gtk_Source_Language
-         (  Get_User_Data_Fast
-            (  Internal (Get_Object (Manager), To_C (File_Name)),
-               Stub
-         )  );
-   end Guess_Language_By_File_Name;
-
    function Guess_Language_By_Content
-            (  Manager      : not null access
-                              Gtk_Source_Language_Manager_Record;
-               Content_Type : UTF8_String
-            )  return Gtk_Source_Language is
+     (Manager      : not null access Gtk_Source_Language_Manager_Record;
+      Content_Type : UTF8_String) return Gtk.Source_Language.Gtk_Source_Language
+   is
       function Internal
-               (  Manager      : Address;
-                  File_Name    : Address;
-                  Content_Type : char_array
-               )  return Address;
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_source_language_manager_guess_language"
-             );
-      Stub : Gtk_Source_Language_Record;
+        (Manager      : System.Address;
+         File_Name    : System.Address;
+         Content_Type : Interfaces.C.char_array) return System.Address;
+      pragma Import (C, Internal, "gtk_source_language_manager_guess_language");
+      Stub : Gtk.Source_Language.Gtk_Source_Language_Record;
    begin
       return
-         Gtk_Source_Language
-         (  Get_User_Data_Fast
-            (  Internal
-               (  Get_Object (Manager),
-                  Null_Address,
-                  To_C (Content_Type)
-               ),
-               Stub
-         )  );
+        Gtk.Source_Language.Gtk_Source_Language
+          (Get_User_Data_Fast
+             (Internal
+                (Get_Object (Manager),
+                 System.Null_Address,
+                 Interfaces.C.To_C (Content_Type)),
+              Stub));
    end Guess_Language_By_Content;
 
+   function Guess_Language_By_File_Name
+     (Manager   : not null access Gtk_Source_Language_Manager_Record;
+      File_Name : UTF8_String) return Gtk.Source_Language.Gtk_Source_Language
+   is
+      function Internal
+        (Manager      : System.Address;
+         File_Name    : Interfaces.C.char_array;
+         Content_Type : System.Address := System.Null_Address)
+         return System.Address;
+      pragma Import (C, Internal, "gtk_source_language_manager_guess_language");
+      Stub : Gtk.Source_Language.Gtk_Source_Language_Record;
+   begin
+      return
+        Gtk.Source_Language.Gtk_Source_Language
+          (Get_User_Data_Fast
+             (Internal (Get_Object (Manager), Interfaces.C.To_C (File_Name)),
+              Stub));
+   end Guess_Language_By_File_Name;
+
    procedure Initialize
-             (  Manager : not null access
-                          Gtk_Source_Language_Manager_Record'Class
-             )  is
-      function Internal return Address;
+     (Manager : not null access Gtk_Source_Language_Manager_Record'Class)
+   is
+      function Internal return System.Address;
       pragma Import (C, Internal, "gtk_source_language_manager_new");
    begin
-     Set_Object (Manager, Internal);
+      Set_Object (Manager, Internal);
    end Initialize;
 
    procedure Set_Search_Path
-             (  Manager : not null access
-                          Gtk_Source_Language_Manager_Record;
-                Dirs    : chars_ptr_array
-             )  is
-      procedure Internal (Manager : Address; Dirs : chars_ptr_array);
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_source_language_manager_set_search_path"
-             );
-      List : chars_ptr_array (Dirs'First..Dirs'Last + 1);
+     (Manager : not null access Gtk_Source_Language_Manager_Record;
+      Dirs    : Interfaces.C.Strings.chars_ptr_array)
+   is
+      procedure Internal
+        (Manager : System.Address;
+         Dirs    : Interfaces.C.Strings.chars_ptr_array);
+      pragma Import (C,
+                     Internal,
+                     "gtk_source_language_manager_set_search_path");
+
+      use type Interfaces.C.size_t;
+
+      List : Interfaces.C.Strings.chars_ptr_array (Dirs'First .. Dirs'Last + 1);
    begin
-      List (Dirs'First..Dirs'Last) := Dirs;
-      List (List'Last) := Null_Ptr;  -- NUL at the end of Dirs
+      List (Dirs'First .. Dirs'Last) := Dirs;
+      List (List'Last) := Interfaces.C.Strings.Null_Ptr;  -- NUL at the end of Dirs
       Internal (Get_Object (Manager), List);
    end Set_Search_Path;
 
    procedure Set_Search_Path
-             (  Manager : not null access
-                          Gtk_Source_Language_Manager_Record
-             )  is
+     (Manager : not null access Gtk_Source_Language_Manager_Record)
+   is
       procedure Internal
-                (  Manager : Address;
-                   Dirs    : Address := Null_Address
-                );
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_source_language_manager_set_search_path"
-             );
+        (Manager : System.Address;
+         Dirs    : System.Address := System.Null_Address);
+      pragma Import (C,
+                     Internal,
+                     "gtk_source_language_manager_set_search_path");
    begin
       Internal (Get_Object (Manager));
    end Set_Search_Path;

@@ -35,6 +35,12 @@ with Gtk.Tree_View_Column;
 
 package Gtk.Oscilloscope.Channels_Panel is
 
+   pragma Warnings (Off, "declaration hides ""Class_Name""");
+   pragma Warnings (Off, "declaration of ""Get_Type"" hides");
+   pragma Warnings (Off, "declaration hides ""Oscilloscope""");
+   pragma Warnings (Off, "declaration hides ""Values""");
+   pragma Warnings (Off, "declaration hides ""Widget""");
+
    --
    -- Class_Name - Of the widget
    --
@@ -155,5 +161,11 @@ private
 
    package Tree_Functions is
      new Gtk.Missed.Set_Column_Cell_Data (Gtk_Oscilloscope_Channels_Panel);
+
+   pragma Warnings (On, "declaration hides ""Class_Name""");
+   pragma Warnings (On, "declaration of ""Get_Type"" hides");
+   pragma Warnings (On, "declaration hides ""Oscilloscope""");
+   pragma Warnings (On, "declaration hides ""Values""");
+   pragma Warnings (On, "declaration hides ""Widget""");
 
 end Gtk.Oscilloscope.Channels_Panel;

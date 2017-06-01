@@ -26,7 +26,6 @@
 -- __________________________________________________________________ --
 
 with Ada.Finalization;
-with Ada.Numerics;
 with Ada.Real_Time;
 with Ada.Streams;
 with Ada.Unchecked_Deallocation;

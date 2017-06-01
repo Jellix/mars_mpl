@@ -27,8 +27,8 @@
 
 with Ada.Finalization;
 
-with Gtk.List_Store;          use Gtk.List_Store;
-with Gtk.Recent_Manager_Alt;  use Gtk.Recent_Manager_Alt;
+with Gtk.List_Store;
+with Gtk.Recent_Manager_Alt;
 
 package Gtk.Recent_Manager_Keys is
 
@@ -46,7 +46,8 @@ package Gtk.Recent_Manager_Keys is
    function Restore
      (Key     : UTF8_String;
       Default : UTF8_String;
-      Manager : Gtk_Recent_Manager := Get_Default) return UTF8_String;
+      Manager : Gtk.Recent_Manager_Alt.Gtk_Recent_Manager := Gtk.Recent_Manager_Alt.Get_Default)
+      return UTF8_String;
 
    --
    -- Restore -- A column of the list store
@@ -65,10 +66,10 @@ package Gtk.Recent_Manager_Keys is
    --
    procedure Restore
      (Key     : UTF8_String;
-      Model   : Gtk_List_Store;
+      Model   : Gtk.List_Store.Gtk_List_Store;
       Column  : Gint;
-      Max_Row : Positive := 10;
-      Manager : Gtk_Recent_Manager := Get_Default);
+      Max_Row : Positive                                  := 10;
+      Manager : Gtk.Recent_Manager_Alt.Gtk_Recent_Manager := Gtk.Recent_Manager_Alt.Get_Default);
 
    --
    -- Store -- A recently used value
@@ -80,7 +81,7 @@ package Gtk.Recent_Manager_Keys is
    procedure Store
      (Key     : UTF8_String;
       Value   : UTF8_String;
-      Manager : Gtk_Recent_Manager := Get_Default);
+      Manager : Gtk.Recent_Manager_Alt.Gtk_Recent_Manager := Gtk.Recent_Manager_Alt.Get_Default);
 
    --
    -- Store -- A column of the list store
@@ -97,10 +98,10 @@ package Gtk.Recent_Manager_Keys is
    --
    procedure Store
      (Key     : UTF8_String;
-      Model   : Gtk_List_Store;
+      Model   : Gtk.List_Store.Gtk_List_Store;
       Column  : Gint;
-      Max_Row : Positive           := 10;
-      Manager : Gtk_Recent_Manager := Get_Default);
+      Max_Row : Positive                                  := 10;
+      Manager : Gtk.Recent_Manager_Alt.Gtk_Recent_Manager := Gtk.Recent_Manager_Alt.Get_Default);
 
    --
    -- Key_Enumerator -- Key enumeration object
@@ -118,7 +119,7 @@ package Gtk.Recent_Manager_Keys is
    procedure Enumerate
      (Enumerator : in out Key_Enumerator'Class;
       Prefix     : UTF8_String;
-      Manager    : Gtk_Recent_Manager := Get_Default);
+      Manager    : Gtk.Recent_Manager_Alt.Gtk_Recent_Manager := Gtk.Recent_Manager_Alt.Get_Default);
 
    --
    -- Process -- Called when a key is found
@@ -134,14 +135,14 @@ package Gtk.Recent_Manager_Keys is
      (Enumerator : in out Key_Enumerator;
       Key        : UTF8_String;
       Value      : UTF8_String;
-      Info       : Gtk_Recent_Info) is abstract;
+      Info       : Gtk.Recent_Manager_Alt.Gtk_Recent_Info) is abstract;
 
 private
 
    type Model_Enumerator is
      new Key_Enumerator with
       record
-         Model   : Gtk_List_Store;
+         Model   : Gtk.List_Store.Gtk_List_Store;
          Length  : Natural;
          Column  : Gint;
          Max_Row : Gint;
@@ -151,6 +152,6 @@ private
      (Enumerator : in out Model_Enumerator;
       Key        : UTF8_String;
       Value      : UTF8_String;
-      Info       : Gtk_Recent_Info);
+      Info       : Gtk.Recent_Manager_Alt.Gtk_Recent_Info);
 
 end Gtk.Recent_Manager_Keys;

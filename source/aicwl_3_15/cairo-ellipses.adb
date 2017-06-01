@@ -209,6 +209,7 @@ package body Cairo.Ellipses is
       else
          declare
             State : Context_State := Save (Context);
+            pragma Unreferenced (State);
          begin
             Translate (Context, Ellipse.Center.X, Ellipse.Center.Y);
             Rotate (Context, Ellipse.Angle);

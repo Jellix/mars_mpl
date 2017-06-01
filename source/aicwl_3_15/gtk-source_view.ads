@@ -23,13 +23,13 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Gdk.Color;                   use Gdk.Color;
-with Gdk.Pixbuf;                  use Gdk.Pixbuf;
-with Gtk.Source_Buffer;           use Gtk.Source_Buffer;
-with Gtk.Source_Mark_Attributes;  use Gtk.Source_Mark_Attributes;
-with Gtk.Text_View;               use Gtk.Text_View;
+with Gdk.Color;
+
+with Gtk.Source_Buffer;
+with Gtk.Source_Mark_Attributes;
+with Gtk.Text_View;
 
 package Gtk.Source_View is
 
@@ -57,7 +57,7 @@ package Gtk.Source_View is
    --
    type Category_Background_Color (Has_Color : Boolean) is record
       case Has_Color is
-         when True  => Color : Gdk_Color;
+         when True  => Color : Gdk.Color.Gdk_Color;
          when False => null;
       end case;
    end record;
@@ -65,8 +65,9 @@ package Gtk.Source_View is
    -- Gtk_Source_View_Record -- Text view widget with syntax highlighting
    --
    type Gtk_Source_View_Record is
-     new Gtk_Text_View_Record with private;
+     new Gtk.Text_View.Gtk_Text_View_Record with private;
    type Gtk_Source_View is access all Gtk_Source_View_Record'Class;
+
    --
    -- Get_Auto_Indent -- Get auto identation flag
    --
@@ -77,8 +78,8 @@ package Gtk.Source_View is
    --    True if auto indentation is enabled
    --
    function Get_Auto_Indent
-     (  Widget : not null access Gtk_Source_View_Record
-       )  return Boolean;
+     (Widget : not null access Gtk_Source_View_Record) return Boolean;
+
    --
    -- Get_Draw_Spaces -- Get space drawing flags
    --
@@ -89,8 +90,9 @@ package Gtk.Source_View is
    --    The current flags
    --
    function Get_Draw_Spaces
-     (  Widget : not null access Gtk_Source_View_Record
-       )  return Gtk_Source_Draw_Spaces_Flags;
+     (Widget : not null access Gtk_Source_View_Record)
+      return Gtk_Source_Draw_Spaces_Flags;
+
    --
    -- Get_Highlight_Current_Line -- Get highlighting mode flag
    --
@@ -101,8 +103,8 @@ package Gtk.Source_View is
    --    True if the current line is highlighted.
    --
    function Get_Highlight_Current_Line
-     (  Widget : not null access Gtk_Source_View_Record
-       )  return Boolean;
+     (Widget : not null access Gtk_Source_View_Record) return Boolean;
+
    --
    -- Get_Indent_On_Tab -- Get indentation mode flag
    --
@@ -113,8 +115,8 @@ package Gtk.Source_View is
    --    True if the selection is indented when tab is pressed
    --
    function Get_Indent_On_Tab
-     (  Widget : not null access Gtk_Source_View_Record
-       )  return Boolean;
+     (Widget : not null access Gtk_Source_View_Record) return Boolean;
+
    --
    -- Get_Indent_Width -- Get identation width
    --
@@ -125,8 +127,8 @@ package Gtk.Source_View is
    --    The number of spaces to use for each step of indent
    --
    function Get_Indent_Width
-     (  Widget : not null access Gtk_Source_View_Record
-       )  return Gint;
+     (Widget : not null access Gtk_Source_View_Record) return Gint;
+
    --
    -- Get_Insert_Spaces_Instead_Of_Tabs -- Get mode flag
    --
@@ -137,8 +139,8 @@ package Gtk.Source_View is
    --    True if spaces are inserted instead of tabs.
    --
    function Get_Insert_Spaces_Instead_Of_Tabs
-     (  Widget : not null access Gtk_Source_View_Record
-       )  return Boolean;
+     (Widget : not null access Gtk_Source_View_Record) return Boolean;
+
    --
    -- Get_Mark_Attributes -- Set mark attributes
    --
@@ -153,10 +155,10 @@ package Gtk.Source_View is
    --    Gets attributes and priority for the category
    --
    function Get_Mark_Attributes
-     (  Widget   : not null access Gtk_Source_View_Record;
-        Category : UTF8_String;
-        Priority : Gint
-       )  return Gtk_Source_Mark_Atributes;
+     (Widget   : not null access Gtk_Source_View_Record;
+      Category : UTF8_String;
+      Priority : Gint) return Gtk.Source_Mark_Attributes.Gtk_Source_Mark_Atributes;
+
    --
    -- Get_Right_Margin_Position -- Get right margin position
    --
@@ -167,8 +169,8 @@ package Gtk.Source_View is
    --    The position of the right margin (width in characters)
    --
    function Get_Right_Margin_Position
-     (  Widget   : not null access Gtk_Source_View_Record
-       )  return Guint;
+     (Widget : not null access Gtk_Source_View_Record) return Guint;
+
    --
    -- Get_Show_Line_Marks -- Get line marks display mode
    --
@@ -179,8 +181,8 @@ package Gtk.Source_View is
    --    True if the line marks are displayed
    --
    function Get_Show_Line_Marks
-     (  Widget : not null access Gtk_Source_View_Record
-       )  return Boolean;
+     (Widget : not null access Gtk_Source_View_Record) return Boolean;
+
    --
    -- Get_Show_Line_Numbers -- Get line numbers display mode
    --
@@ -191,8 +193,8 @@ package Gtk.Source_View is
    --    True if the line numbers are displayed
    --
    function Get_Show_Line_Numbers
-     (  Widget : not null access Gtk_Source_View_Record
-       )  return Boolean;
+     (Widget : not null access Gtk_Source_View_Record) return Boolean;
+
    --
    -- Get_Show_Right_Margin -- Get right margin display mode
    --
@@ -203,8 +205,8 @@ package Gtk.Source_View is
    --    True if the right margin is displayed
    --
    function Get_Show_Right_Margin
-     (  Widget : not null access Gtk_Source_View_Record
-       )  return Boolean;
+     (Widget : not null access Gtk_Source_View_Record) return Boolean;
+
    --
    -- Get_Smart_Home_End -- Get treatment of HOME and END keys
    --
@@ -215,8 +217,9 @@ package Gtk.Source_View is
    --    The behavior of HOME and END keys
    --
    function Get_Smart_Home_End
-     (  Widget : not null access Gtk_Source_View_Record
-       )  return Gtk_Source_Smart_Home_End_Type;
+     (Widget : not null access Gtk_Source_View_Record)
+      return Gtk_Source_Smart_Home_End_Type;
+
    --
    -- Get_Tab_Width -- Get tab width in characters
    --
@@ -227,8 +230,8 @@ package Gtk.Source_View is
    --    Width of a tab in characters
    --
    function Get_Tab_Width
-     (  Widget : not null access Gtk_Source_View_Record
-       )  return Guint;
+     (Widget : not null access Gtk_Source_View_Record) return Guint;
+
    --
    -- Gtk_New -- Widget creation
    --
@@ -239,9 +242,9 @@ package Gtk.Source_View is
    -- can be shared between several widgets.
    --
    procedure Gtk_New
-     (  Widget : out Gtk_Source_View;
-        Buffer : Gtk_Source_Buffer := null
-       );
+     (Widget : out Gtk_Source_View;
+      Buffer : Gtk.Source_Buffer.Gtk_Source_Buffer := null);
+
    --
    -- Initialize -- To be called by any derived object
    --
@@ -249,9 +252,9 @@ package Gtk.Source_View is
    --   Buffer - To use with or null
    --
    procedure Initialize
-     (  Widget : not null access Gtk_Source_View_Record'Class;
-        Buffer : Gtk_Source_Buffer
-       );
+     (Widget : not null access Gtk_Source_View_Record'Class;
+      Buffer : Gtk.Source_Buffer.Gtk_Source_Buffer);
+
    --
    -- Set_Auto_Indent -- Set flag
    --
@@ -259,9 +262,9 @@ package Gtk.Source_View is
    --   Enable - If True auto indentation of text is enabled
    --
    procedure Set_Auto_Indent
-     (  Widget : not null access Gtk_Source_View_Record;
-        Enable : Boolean
-       );
+     (Widget : not null access Gtk_Source_View_Record;
+      Enable : Boolean);
+
    --
    -- Set_Draw_Spaces -- Set indentation width
    --
@@ -272,9 +275,9 @@ package Gtk.Source_View is
    -- Specifying flags as 0 will disable display of spaces.
    --
    procedure Set_Draw_Spaces
-     (  Widget : not null access Gtk_Source_View_Record;
-        Flags  : Gtk_Source_Draw_Spaces_Flags
-       );
+     (Widget : not null access Gtk_Source_View_Record;
+      Flags  : Gtk_Source_Draw_Spaces_Flags);
+
    --
    -- Set_Highlight_Current_Line -- Set highlighting flag
    --
@@ -282,9 +285,9 @@ package Gtk.Source_View is
    --   Show   - Whether to highlight the current line
    --
    procedure Set_Highlight_Current_Line
-     (  Widget : not null access Gtk_Source_View_Record;
-        Show   : Boolean
-       );
+     (Widget : not null access Gtk_Source_View_Record;
+      Show   : Boolean);
+
    --
    -- Set_Indent_On_Tab -- Set flag
    --
@@ -296,9 +299,9 @@ package Gtk.Source_View is
    -- the tab characters. Shift+Tab unindents the selection.
    --
    procedure Set_Indent_On_Tab
-     (  Widget : not null access Gtk_Source_View_Record;
-        Enable : Boolean
-       );
+     (Widget : not null access Gtk_Source_View_Record;
+      Enable : Boolean);
+
    --
    -- Set_Indent_Width -- Set indentation width
    --
@@ -310,9 +313,9 @@ package Gtk.Source_View is
    -- used.
    --
    procedure Set_Indent_Width
-     (  Widget : not null access Gtk_Source_View_Record;
-        Width  : Gint := -1
-       );
+     (Widget : not null access Gtk_Source_View_Record;
+      Width  : Gint := -1);
+
    --
    -- Set_Insert_Spaces_Instead_Of_Tabs -- Set flag
    --
@@ -320,9 +323,9 @@ package Gtk.Source_View is
    --   Enable - Whether to insert spaces instead of tabs
    --
    procedure Set_Insert_Spaces_Instead_Of_Tabs
-     (  Widget : not null access Gtk_Source_View_Record;
-        Enable : Boolean
-       );
+     (Widget : not null access Gtk_Source_View_Record;
+      Enable : Boolean);
+
    --
    -- Set_Mark_Attributes -- Set mark attributes
    --
@@ -334,12 +337,11 @@ package Gtk.Source_View is
    -- Sets attributes and priority for the category.
    --
    procedure Set_Mark_Attributes
-     (  Widget     : not null access Gtk_Source_View_Record;
-        Category   : UTF8_String;
-        Attributes : not null access
-          Gtk_Source_Mark_Atributes_Record'Class;
-        Priority   : Gint
-       );
+     (Widget     : not null access Gtk_Source_View_Record;
+      Category   : UTF8_String;
+      Attributes : not null access Gtk.Source_Mark_Attributes.Gtk_Source_Mark_Atributes_Record'Class;
+      Priority   : Gint);
+
    --
    -- Set_Right_Margin_Position -- Set right margin position
    --
@@ -347,9 +349,9 @@ package Gtk.Source_View is
    --   Position - The position of the right margin (width in characters)
    --
    procedure Set_Right_Margin_Position
-     (  Widget   : not null access Gtk_Source_View_Record;
-        Position : Guint
-       );
+     (Widget   : not null access Gtk_Source_View_Record;
+      Position : Guint);
+
    --
    -- Set_Show_Line_Marks -- Set line marks displaying flag
    --
@@ -357,9 +359,9 @@ package Gtk.Source_View is
    --   Show   - Whether line marks should be displayed
    --
    procedure Set_Show_Line_Marks
-     (  Widget : not null access Gtk_Source_View_Record;
-        Show   : Boolean
-       );
+     (Widget : not null access Gtk_Source_View_Record;
+      Show   : Boolean);
+
    --
    -- Set_Show_Line_Numbers -- Set line marks displaying flag
    --
@@ -367,9 +369,9 @@ package Gtk.Source_View is
    --   Show   - Whether line numbers should be displayed
    --
    procedure Set_Show_Line_Numbers
-     (  Widget : not null access Gtk_Source_View_Record;
-        Show   : Boolean
-       );
+     (Widget : not null access Gtk_Source_View_Record;
+      Show   : Boolean);
+
    --
    -- Set_Show_Right_Margin -- Set right margin displaying flag
    --
@@ -377,9 +379,9 @@ package Gtk.Source_View is
    --   Show   - Whether to show a right margin
    --
    procedure Set_Show_Right_Margin
-     (  Widget : not null access Gtk_Source_View_Record;
-        Show   : Boolean
-       );
+     (Widget : not null access Gtk_Source_View_Record;
+      Show   : Boolean);
+
    --
    -- Set_Smart_Home_End -- Set the desired movement on
    --
@@ -390,10 +392,9 @@ package Gtk.Source_View is
    -- END keys are pressed.
    --
    procedure Set_Smart_Home_End
-     (  Widget          : not null access
-          Gtk_Source_View_Record;
-        Smart_Home_End  : Gtk_Source_Smart_Home_End_Type
-       );
+     (Widget          : not null access Gtk_Source_View_Record;
+      Smart_Home_End  : Gtk_Source_Smart_Home_End_Type);
+
    --
    -- Set_Tab_Width -- Set the width of tabulation in characters
    --
@@ -401,12 +402,14 @@ package Gtk.Source_View is
    --   Width  - Of tab in characters
    --
    procedure Set_Tab_Width
-     (  Widget : not null access Gtk_Source_View_Record;
-        Width  : Guint
-       );
+     (Widget : not null access Gtk_Source_View_Record;
+      Width  : Guint);
+
 private
+
    pragma Import (C, Get_Type, "gtk_text_view_get_type");
 
    type Gtk_Source_View_Record is
-     new Gtk_Text_View_Record with null record;
+     new Gtk.Text_View.Gtk_Text_View_Record with null record;
+
 end Gtk.Source_View;

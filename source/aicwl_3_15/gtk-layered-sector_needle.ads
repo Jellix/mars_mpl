@@ -25,11 +25,14 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Ada.Numerics;  use Ada.Numerics;
-with Gtk.Handlers;  use Gtk.Handlers;
+with Ada.Numerics;
+
+with Gtk.Handlers;
 with Gtk.Missed;
 
 package Gtk.Layered.Sector_Needle is
+
+   pragma Warnings (Off, "declaration hides ""Adjustment""");
 
    --
    -- Sector_Needle_Layer -- A needle represented by an elliptic sector
@@ -38,6 +41,7 @@ package Gtk.Layered.Sector_Needle is
      new Abstract_Layer
      and Gauge_Needle
      and Scalable_Layer with private;
+
    --
    -- Add_Sector_Needle -- Add needle
    --
@@ -79,8 +83,8 @@ package Gtk.Layered.Sector_Needle is
      (Under      : not null access Layer_Location'Class;
       Outer      : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
       Inner      : Cairo.Ellipses.Ellipse_Parameters;
-      From       : Gdouble                                           := 3.0 * Pi / 4.0;
-      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      From       : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 2.0;
       Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
       Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
       Scaled     : Boolean                                           := False);
@@ -89,8 +93,8 @@ package Gtk.Layered.Sector_Needle is
      (Under      : not null access Layer_Location'Class;
       Outer      : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
       Center     : Cairo.Ellipses.Cairo_Tuple;
-      From       : Gdouble                                           := 3.0 * Pi / 4.0;
-      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      From       : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 2.0;
       Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
       Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
       Scaled     : Boolean                                           := False);
@@ -98,8 +102,8 @@ package Gtk.Layered.Sector_Needle is
    procedure Add_Sector_Needle
      (Under      : not null access Layer_Location'Class;
       Outer      : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
-      From       : Gdouble                                           := 3.0 * Pi / 4.0;
-      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      From       : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 2.0;
       Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
       Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
       Scaled     : Boolean                                           := False);
@@ -108,8 +112,8 @@ package Gtk.Layered.Sector_Needle is
      (Under      : not null access Layer_Location'Class;
       Outer      : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
       Inner      : Cairo.Ellipses.Ellipse_Parameters;
-      From       : Gdouble                                           := 3.0 * Pi / 4.0;
-      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      From       : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 2.0;
       Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
       Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
       Scaled     : Boolean                                           := False)
@@ -119,8 +123,8 @@ package Gtk.Layered.Sector_Needle is
      (Under      : not null access Layer_Location'Class;
       Outer      : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
       Center     : Cairo.Ellipses.Cairo_Tuple;
-      From       : Gdouble                                           := 3.0 * Pi / 4.0;
-      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      From       : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 2.0;
       Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
       Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
       Scaled     : Boolean                                           := False)
@@ -129,8 +133,8 @@ package Gtk.Layered.Sector_Needle is
    function Add_Sector_Needle
      (Under      : not null access Layer_Location'Class;
       Outer      : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
-      From       : Gdouble                                           := 3.0 * Pi / 4.0;
-      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      From       : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 2.0;
       Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
       Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
       Scaled     : Boolean                                           := False)
@@ -288,12 +292,14 @@ private
          Value         : Gdouble := 0.0;
          Color         : Gdk.Color.Gdk_Color;
          Adjustment    : Gtk.Adjustment.Gtk_Adjustment;
-         Changed       : Handler_Id;
-         Value_Changed : Handler_Id;
+         Changed       : Gtk.Handlers.Handler_Id;
+         Value_Changed : Gtk.Handlers.Handler_Id;
          Scaled        : Boolean := False;
          Updated       : Boolean := True;
          pragma Atomic (Value);
          pragma Atomic (Updated);
       end record;
+
+   pragma Warnings (On, "declaration hides ""Adjustment""");
 
 end Gtk.Layered.Sector_Needle;

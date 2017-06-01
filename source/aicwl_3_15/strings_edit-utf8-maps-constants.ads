@@ -25,10 +25,9 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 --
-with Strings_Edit.UTF8.Mapping;  use Strings_Edit.UTF8.Mapping;
+with Strings_Edit.UTF8.Mapping;
 
 with Strings_Edit.UTF8.Categorization;
-use  Strings_Edit.UTF8.Categorization;
 
 package Strings_Edit.UTF8.Maps.Constants is
 
@@ -51,31 +50,41 @@ package Strings_Edit.UTF8.Maps.Constants is
    Upper_Case_Map : constant Unicode_Mapping;
 
 private
-   Control_Set : constant Unicode_Set := To_Set (Is_Control'Access);
-   Digit_Set   : constant Unicode_Set := To_Set (Is_Digit'Access);
-   Letter_Set  : constant Unicode_Set := To_Set (Is_Letter'Access);
-   Lower_Set   : constant Unicode_Set := To_Set (Is_Lower'Access);
-   Upper_Set   : constant Unicode_Set := To_Set (Is_Upper'Access);
-   Space_Set   : constant Unicode_Set := To_Set (Is_Space'Access);
-   Title_Set   : constant Unicode_Set := To_Set (Is_Title'Access);
-   ISO_646_Set : constant Unicode_Set := To_Set (Is_ISO_646'Access);
+   Control_Set    : constant Unicode_Set :=
+                      To_Set (Strings_Edit.UTF8.Categorization.Is_Control'Access);
+   Digit_Set      : constant Unicode_Set :=
+                      To_Set (Strings_Edit.UTF8.Categorization.Is_Digit'Access);
+   Letter_Set     : constant Unicode_Set :=
+                      To_Set (Strings_Edit.UTF8.Categorization.Is_Letter'Access);
+   Lower_Set      : constant Unicode_Set :=
+                      To_Set (Strings_Edit.UTF8.Categorization.Is_Lower'Access);
+   Upper_Set      : constant Unicode_Set :=
+                      To_Set (Strings_Edit.UTF8.Categorization.Is_Upper'Access);
+   Space_Set      : constant Unicode_Set :=
+                      To_Set (Strings_Edit.UTF8.Categorization.Is_Space'Access);
+   Title_Set      : constant Unicode_Set :=
+                      To_Set (Strings_Edit.UTF8.Categorization.Is_Title'Access);
+   ISO_646_Set    : constant Unicode_Set :=
+                      To_Set (Strings_Edit.UTF8.Categorization.Is_ISO_646'Access);
 
    Alphanumeric_Set      : constant Unicode_Set :=
-                              To_Set (Is_Alphanumeric'Access);
+                             To_Set (Strings_Edit.UTF8.Categorization.Is_Alphanumeric'Access);
    Identifier_Extend_Set : constant Unicode_Set :=
-                              To_Set (Is_Identifier_Extend'Access);
+                             To_Set (Strings_Edit.UTF8.Categorization.Is_Identifier_Extend'Access);
    Identifier_Start_Set  : constant Unicode_Set :=
-                              To_Set (Is_Identifier_Start'Access);
+                             To_Set (Strings_Edit.UTF8.Categorization.Is_Identifier_Start'Access);
    Other_Format_Set      : constant Unicode_Set :=
-                              To_Set (Is_Other_Format'Access);
+                             To_Set (Strings_Edit.UTF8.Categorization.Is_Other_Format'Access);
    Subscript_Digit_Set   : constant Unicode_Set :=
-                              To_Set (Is_Subscript_Digit'Access);
+                             To_Set (Strings_Edit.UTF8.Categorization.Is_Subscript_Digit'Access);
    Superscript_Digit_Set : constant Unicode_Set :=
-                              To_Set (Is_Superscript_Digit'Access);
+                             To_Set (Strings_Edit.UTF8.Categorization.Is_Superscript_Digit'Access);
 
    Lower_Case_Map : constant Unicode_Mapping :=
-                       To_Mapping (To_Lowercase'Access);
+                      To_Mapping
+                        (Strings_Edit.UTF8.Mapping.To_Lowercase'Access);
    Upper_Case_Map : constant Unicode_Mapping :=
-                       To_Mapping (To_Uppercase'Access);
+                      To_Mapping
+                        (Strings_Edit.UTF8.Mapping.To_Uppercase'Access);
 
 end Strings_Edit.UTF8.Maps.Constants;

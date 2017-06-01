@@ -28,13 +28,15 @@
 with Ada.Calendar;
 with Ada.Real_Time;
 
-with Gtk.Handlers.References;  use Gtk.Handlers.References;
+with Gtk.Handlers.References;
 with Gtk.Missed;
 
 with Strings_Edit.Float_Edit;
 with Strings_Edit.Generic_Scale;
 
 package Gtk.Layered.Waveform is
+
+   pragma Warnings (Off, "declaration hides ""Adjustment""");
 
    type X_Axis is new Gdouble;
    type Y_Axis is new Gdouble;
@@ -998,8 +1000,8 @@ package Gtk.Layered.Waveform is
    function To_Time (Value : Gdouble) return Ada.Real_Time.Time;
    function To_Time (Value : Gdouble) return Ada.Calendar.Time;
 
-   package Rasters is new Strings_Edit.Generic_Scale (GDouble);
-   package Edit is new Strings_Edit.Float_Edit (GDouble);
+   package Rasters is new Strings_Edit.Generic_Scale (Gdouble);
+   package Edit is new Strings_Edit.Float_Edit (Gdouble);
 
 private
 
@@ -1021,7 +1023,8 @@ private
    end record;
    type Points_Array is array (Natural range <>) of Point_Data;
    type Points_Array_Ptr is access Points_Array;
-   type References_List is array (1 .. 4) of Handler_Reference;
+   type References_List is array (1 .. 4) of
+     Gtk.Handlers.References.Handler_Reference;
    type Waveform_Data_Scanner_Ptr is access Waveform_Data_Scanner'Class;
    --
    -- Line_Method_Data -- Specific to line stroking
@@ -1144,5 +1147,7 @@ private
    --
    function To_Y (Layer : Waveform_Layer; V : Y_Axis) return Gdouble
      with Inline;
+
+   pragma Warnings (On, "declaration hides ""Adjustment""");
 
 end Gtk.Layered.Waveform;

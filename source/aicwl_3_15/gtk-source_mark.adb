@@ -23,59 +23,56 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
-
-with Interfaces.C.Strings;  use Interfaces.C.Strings;
-with Interfaces.C;          use Interfaces.C;
+-- __________________________________________________________________ --
 
 with Ada.Unchecked_Deallocation;
 
+with Interfaces.C.Strings;
+
 package body Gtk.Source_Mark is
 
-   function Convert (Mark : Address) return Gtk_Source_Mark is
+   function Convert (Mark : System.Address) return Gtk_Source_Mark is
       Stub : Gtk_Source_Mark_Record;
    begin
       return Gtk_Source_Mark (Get_User_Data (Mark, Stub));
    end Convert;
 
-   function Convert (Mark : Gtk_Source_Mark) return Address is
+   function Convert (Mark : Gtk_Source_Mark) return System.Address is
    begin
       if Mark = null then
-         return Null_Address;
+         return System.Null_Address;
       else
          return Get_Object (Mark);
       end if;
    end Convert;
 
    procedure Free is
-      new Ada.Unchecked_Deallocation
-          (  Gtk_Source_Mark_Record'Class,
-             Gtk_Source_Mark
-          );
+     new Ada.Unchecked_Deallocation
+       (Gtk_Source_Mark_Record'Class,
+        Gtk_Source_Mark);
 
    function Get_Category
-            (  Mark : not null access Gtk_Source_Mark_Record
-            )  return UTF8_String is
-      function Internal (Object : Address) return chars_ptr;
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_source_mark_get_category"
-             );
-      Result : constant chars_ptr := Internal (Get_Object (Mark));
+     (Mark : not null access Gtk_Source_Mark_Record) return UTF8_String
+   is
+      function Internal
+        (Object : System.Address) return Interfaces.C.Strings.chars_ptr;
+      pragma Import (C, Internal, "gtk_source_mark_get_category");
+      Result : constant Interfaces.C.Strings.chars_ptr :=
+                 Internal (Get_Object (Mark));
+
+      use type Interfaces.C.Strings.chars_ptr;
    begin
-      if Result = Null_Ptr then
+      if Result = Interfaces.C.Strings.Null_Ptr then
          return "";
       else
-         return Value (Result);
+         return Interfaces.C.Strings.Value (Result);
       end if;
    end Get_Category;
 
    procedure Gtk_New
-             (  Mark     : out Gtk_Source_Mark;
-                Name     : UTF8_String;
-                Category : UTF8_String
-             )  is
+     (Mark     : out Gtk_Source_Mark;
+      Name     : UTF8_String;
+      Category : UTF8_String) is
    begin
       Mark := new Gtk_Source_Mark_Record;
       Initialize (Mark, Name, Category);
@@ -86,9 +83,8 @@ package body Gtk.Source_Mark is
    end Gtk_New;
 
    procedure Gtk_New
-             (  Mark     : out Gtk_Source_Mark;
-                Category : UTF8_String
-             )  is
+     (Mark     : out Gtk_Source_Mark;
+      Category : UTF8_String) is
    begin
       Mark := new Gtk_Source_Mark_Record;
       Initialize (Mark, Category);
@@ -99,97 +95,98 @@ package body Gtk.Source_Mark is
    end Gtk_New;
 
    procedure Initialize
-             (  Mark     : not null access Gtk_Source_Mark_Record'Class;
-                Name     : UTF8_String;
-                Category : UTF8_String
-             )  is
-      function Internal (Name, Category : char_array) return Address;
+     (Mark     : not null access Gtk_Source_Mark_Record'Class;
+      Name     : UTF8_String;
+      Category : UTF8_String)
+   is
+      function Internal
+        (Name, Category : Interfaces.C.char_array) return System.Address;
       pragma Import (C, Internal, "gtk_source_mark_new");
    begin
-     Set_Object (Mark, Internal (To_C (Name), To_C (Category)));
+      Set_Object
+        (Mark,
+         Internal (Interfaces.C.To_C (Name), Interfaces.C.To_C (Category)));
    end Initialize;
 
    procedure Initialize
-             (  Mark     : not null access Gtk_Source_Mark_Record'Class;
-                Category : UTF8_String
-             )  is
-      function Internal (Name : Address; Category : char_array)
-         return Address;
+     (Mark     : not null access Gtk_Source_Mark_Record'Class;
+      Category : UTF8_String)
+   is
+      function Internal
+        (Name     : System.Address;
+         Category : Interfaces.C.char_array) return System.Address;
       pragma Import (C, Internal, "gtk_source_mark_new");
    begin
-     Set_Object (Mark, Internal (Null_Address, To_C (Category)));
+      Set_Object
+        (Mark, Internal (System.Null_Address, Interfaces.C.To_C (Category)));
    end Initialize;
 
    function Next
-            (  Mark     : not null access Gtk_Source_Mark_Record;
-               Category : UTF8_String
-            )  return Gtk_Source_Mark is
-      function Internal (Mark : Address; Category : char_array)
-         return Address;
+     (Mark     : not null access Gtk_Source_Mark_Record;
+      Category : UTF8_String) return Gtk_Source_Mark
+   is
+      function Internal
+        (Mark     : System.Address;
+         Category : Interfaces.C.char_array) return System.Address;
       pragma Import (C, Internal, "gtk_source_mark_next");
       Stub : Gtk_Source_Mark_Record;
    begin
       return
-         Gtk_Source_Mark
-         (  Get_User_Data_Fast
-            (  Internal
-               (  Get_Object (Mark),
-                  To_C (Category)
-               ),
-               Stub
-         )  );
+        Gtk_Source_Mark
+          (Get_User_Data_Fast
+             (Internal
+                (Get_Object (Mark),
+                 Interfaces.C.To_C (Category)),
+              Stub));
    end Next;
 
    function Next
-            (  Mark : not null access Gtk_Source_Mark_Record
-            )  return Gtk_Source_Mark is
+     (Mark : not null access Gtk_Source_Mark_Record) return Gtk_Source_Mark
+   is
       function Internal
-               (  Mark     : Address;
-                  Category : Address := Null_Address
-               )  return Address;
+        (Mark     : System.Address;
+         Category : System.Address := System.Null_Address)
+         return System.Address;
       pragma Import (C, Internal, "gtk_source_mark_next");
       Stub : Gtk_Source_Mark_Record;
    begin
       return
-         Gtk_Source_Mark
-         (  Get_User_Data_Fast (Internal (Get_Object (Mark)), Stub)
-         );
+        Gtk_Source_Mark
+          (Get_User_Data_Fast (Internal (Get_Object (Mark)), Stub));
    end Next;
 
    function Prev
-            (  Mark     : not null access Gtk_Source_Mark_Record;
-               Category : UTF8_String
-            )  return Gtk_Source_Mark is
-      function Internal (Mark : Address; Category : char_array)
-         return Address;
+     (Mark     : not null access Gtk_Source_Mark_Record;
+      Category : UTF8_String) return Gtk_Source_Mark
+   is
+      function Internal
+        (Mark     : System.Address;
+         Category : Interfaces.C.char_array) return System.Address;
       pragma Import (C, Internal, "gtk_source_mark_prev");
       Stub : Gtk_Source_Mark_Record;
    begin
       return
          Gtk_Source_Mark
-         (  Get_User_Data_Fast
-            (  Internal
-               (  Get_Object (Mark),
-                  To_C (Category)
-               ),
-               Stub
-         )  );
+          (Get_User_Data_Fast
+             (Internal
+                (Get_Object (Mark),
+                 Interfaces.C.To_C (Category)),
+              Stub));
    end Prev;
 
    function Prev
-            (  Mark : not null access Gtk_Source_Mark_Record
-            )  return Gtk_Source_Mark is
+     (Mark : not null access Gtk_Source_Mark_Record) return Gtk_Source_Mark
+   is
       function Internal
-               (  Mark     : Address;
-                  Category : Address := Null_Address
-               )  return Address;
+        (Mark     : System.Address;
+         Category : System.Address := System.Null_Address)
+         return System.Address;
       pragma Import (C, Internal, "gtk_source_mark_prev");
       Stub : Gtk_Source_Mark_Record;
    begin
       return
-         Gtk_Source_Mark
-         (  Get_User_Data_Fast (Internal (Get_Object (Mark)), Stub)
-         );
+        Gtk_Source_Mark
+          (Get_User_Data_Fast (Internal (Get_Object (Mark)), Stub));
    end Prev;
 
 end Gtk.Source_Mark;

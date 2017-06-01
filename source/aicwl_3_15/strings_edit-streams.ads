@@ -23,108 +23,114 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 --
 --  The  package  provides  stream  interface to string. A string can be
 --  read and written using stream I/O attributes.
 --
-with Ada.Streams;  use Ada.Streams;
+
+with Ada.Streams;
 
 with System.Storage_Elements;
 
 package Strings_Edit.Streams is
---
--- String_Stream -- A string stream, when read,  Data (Position..Length)
---                  is amount of data available to read/write. Note that
--- before reading from the stream is  must  be  initialized  using  Set.
--- Otherwise  the  result of reading will be the unitialized contents of
--- the Data field.
---
+
+   --
+   -- String_Stream -- A string stream, when read,  Data (Position..Length)
+   --                  is amount of data available to read/write. Note that
+   -- before reading from the stream is  must  be  initialized  using  Set.
+   -- Otherwise  the  result of reading will be the unitialized contents of
+   -- the Data field.
+   --
    type String_Stream (Length : Natural) is
-      new Root_Stream_Type with
-   record
-      Position : Positive := 1;
-      Data     : String (1..Length);
-   end record;
---
--- Get -- Written contents of the stream
---
---    Stream - The stream object
---
--- Get is an operation inverse to T'Write.
---
--- Returns :
---
---    String written
---
+     new Ada.Streams.Root_Stream_Type with
+      record
+         Position : Positive := 1;
+         Data     : String (1 .. Length);
+      end record;
+
+   --
+   -- Get -- Written contents of the stream
+   --
+   --    Stream - The stream object
+   --
+   -- Get is an operation inverse to T'Write.
+   --
+   -- Returns :
+   --
+   --    String written
+   --
    function Get (Stream : String_Stream) return String;
---
--- Get_Size -- Number of stream elements available to write or to read
---
---    Stream - The stream object
---
+
+   --
+   -- Get_Size -- Number of stream elements available to write or to read
+   --
+   --    Stream - The stream object
+   --
    function Get_Size (Stream : String_Stream)
-      return Stream_Element_Count;
---
--- Read -- Overrides Ada.Streams...
---
-   procedure Read
-             (  Stream : in out String_Stream;
-                Item   : out Stream_Element_Array;
-                Last   : out Stream_Element_Offset
-             );
---
--- Rewind -- The stream
---
---    Stream - The stream object
---
--- This procedure moves Stream.Position to the  beginning.  This  undoes
--- all reading/writing actions.
---
+                      return Ada.Streams.Stream_Element_Count;
+
+   --
+   -- Read -- Overrides Ada.Streams...
+   --
+   overriding procedure Read
+     (Stream : in out String_Stream;
+      Item   : out Ada.Streams.Stream_Element_Array;
+      Last   : out Ada.Streams.Stream_Element_Offset);
+
+   --
+   -- Rewind -- The stream
+   --
+   --    Stream - The stream object
+   --
+   -- This procedure moves Stream.Position to the  beginning.  This  undoes
+   -- all reading/writing actions.
+   --
    procedure Rewind (Stream : in out String_Stream);
---
--- Set -- Contents
---
---    Stream  - The stream object
---    Content - String to read
---
--- The  stream  is  changed  to contain Content. The next read operation
--- will yield the first  character  of  Content.  Set  is  an  operation
--- inverse to T'Read.
---
--- Exceptions :
---
---    Contraint_Error - no room in Stream
---
+
+   --
+   -- Set -- Contents
+   --
+   --    Stream  - The stream object
+   --    Content - String to read
+   --
+   -- The  stream  is  changed  to contain Content. The next read operation
+   -- will yield the first  character  of  Content.  Set  is  an  operation
+   -- inverse to T'Read.
+   --
+   -- Exceptions :
+   --
+   --    Contraint_Error - no room in Stream
+   --
    procedure Set (Stream : in out String_Stream; Content : String);
---
--- Write -- Overrides Ada.Streams...
---
--- Exceptions :
---
---    End_Error - No room in the string
---
-   procedure Write
-             (  Stream : in out String_Stream;
-                Item   : Stream_Element_Array
-             );
+
+   --
+   -- Write -- Overrides Ada.Streams...
+   --
+   -- Exceptions :
+   --
+   --    End_Error - No room in the string
+   --
+   overriding procedure Write
+     (Stream : in out String_Stream;
+      Item   : Ada.Streams.Stream_Element_Array);
 
 private
-   use System.Storage_Elements;
 
    pragma Inline (Get_Size);
---
--- Char_Count -- Number of characters per string elements
---
-   Char_Count : constant := Stream_Element'Size / Character'Size;
---
--- Stream_Element'Size must be a  multiple  of  Character'Size  and  the
--- later be a multiple of Storage_Element'Size.
---
-   subtype Confirmed is Boolean range True..True;
+
+   --
+   -- Char_Count -- Number of characters per string elements
+   --
+   Char_Count : constant := Ada.Streams.Stream_Element'Size / Character'Size;
+
+   --
+   -- Stream_Element'Size must be a  multiple  of  Character'Size  and  the
+   -- later be a multiple of Storage_Element'Size.
+   --
+   subtype Confirmed is Boolean range True .. True;
    Assert : constant Confirmed :=
-            (  Char_Count * Character'Size = Stream_Element'Size
-            and then
-               Character'Size mod Storage_Element'Size = 0
-            );
+              Char_Count * Character'Size = Ada.Streams.Stream_Element'Size and then
+                  Character'Size mod System.Storage_Elements.Storage_Element'Size = 0;
+
 end Strings_Edit.Streams;

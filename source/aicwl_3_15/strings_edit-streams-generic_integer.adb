@@ -23,34 +23,34 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Ada.Exceptions;     use Ada.Exceptions;
-with Ada.IO_Exceptions;  use Ada.IO_Exceptions;
+with Ada.Exceptions;
+with Ada.IO_Exceptions;
 
 package body Strings_Edit.Streams.Generic_Integer is
 
+   use type Ada.Streams.Stream_Element;
+   use type Ada.Streams.Stream_Element_Offset;
+
    procedure Get
-             (  Data    : Stream_Element_Array;
-                Pointer : in out Stream_Element_Offset;
-                Value   : out Number
-             )  is
+     (Data    : Ada.Streams.Stream_Element_Array;
+      Pointer : in out Ada.Streams.Stream_Element_Offset;
+      Value   : out Number)
+   is
       Result   : Number;
       Power    : Natural := 6;
       Negative : Boolean;
-      This     : Stream_Element;
+      This     : Ada.Streams.Stream_Element;
    begin
-      if (  Pointer < Data'First
-         or else
-            (  Pointer > Data'Last
-            and then
-               Pointer - 1 > Data'Last
-         )  )
+      if
+        Pointer < Data'First or else
+        (Pointer > Data'Last and then
+         Pointer - 1 > Data'Last)
       then
-         Raise_Exception
-         (  Layout_Error'Identity,
-            "Pointer is out of bounds"
-         );
+         Ada.Exceptions.Raise_Exception
+           (Ada.IO_Exceptions.Layout_Error'Identity,
+            "Pointer is out of bounds");
       end if;
       if Pointer <= Data'Last then
          This    := Data (Pointer);
@@ -68,10 +68,9 @@ package body Strings_Edit.Streams.Generic_Integer is
             end if;
          exception
             when Constraint_Error =>
-               Raise_Exception
-               (  Data_Error'Identity,
-                  "Number is too large"
-               );
+               Ada.Exceptions.Raise_Exception
+                 (Ada.IO_Exceptions.Data_Error'Identity,
+                  "Number is too large");
          end;
          while Pointer <= Data'Last loop
             This    := Data (Pointer);
@@ -88,32 +87,29 @@ package body Strings_Edit.Streams.Generic_Integer is
                end if;
             exception
                when Constraint_Error =>
-                  Raise_Exception
-                  (  Data_Error'Identity,
-                     "Number is too large"
-                  );
+                  Ada.Exceptions.Raise_Exception
+                    (Ada.IO_Exceptions.Data_Error'Identity,
+                     "Number is too large");
             end;
             Power := Power + 7;
          end loop;
       end if;
-      Raise_Exception
-      (  End_Error'Identity,
-         "Non-terminated chain sequence"
-      );
+      Ada.Exceptions.Raise_Exception
+        (Ada.IO_Exceptions.End_Error'Identity,
+         "Non-terminated chain sequence");
    end Get;
 
    function Input
-            (  Stream : access Root_Stream_Type'Class
-            )  return Number is
+     (Stream : access Ada.Streams.Root_Stream_Type'Class) return Number
+   is
       Result   : Number  := 0;
-      Old      : Number  := 0;
       Power    : Natural := 6;
       Negative : Boolean;
-      Buffer   : Stream_Element_Array (1..1);
-      This     : Stream_Element renames Buffer (1);
-      Last     : Stream_Element_Offset;
+      Buffer   : Ada.Streams.Stream_Element_Array (1 .. 1);
+      This     : Ada.Streams.Stream_Element renames Buffer (1);
+      Last     : Ada.Streams.Stream_Element_Offset;
    begin
-      Read (Stream.all, Buffer, Last);
+      Ada.Streams.Read (Stream.all, Buffer, Last);
       if Last = 1 then
          begin
             Result := Number ((This and 2#0111_1110#) / 2);
@@ -127,13 +123,12 @@ package body Strings_Edit.Streams.Generic_Integer is
             end if;
          exception
             when Constraint_Error =>
-               Raise_Exception
-               (  Data_Error'Identity,
-                  "Number is too large"
-               );
+               Ada.Exceptions.Raise_Exception
+                 (Ada.IO_Exceptions.Data_Error'Identity,
+                  "Number is too large");
          end;
          loop
-            Read (Stream.all, Buffer, Last);
+            Ada.Streams.Read (Stream.all, Buffer, Last);
             exit when Last /= 1;
             begin
                Result := Result + 2**Power * Number (This and 16#7F#);
@@ -146,50 +141,48 @@ package body Strings_Edit.Streams.Generic_Integer is
                end if;
             exception
                when Constraint_Error =>
-                  Raise_Exception
-                  (  Data_Error'Identity,
-                     "Number is too large"
-                  );
+                  Ada.Exceptions.Raise_Exception
+                    (Ada.IO_Exceptions.Data_Error'Identity,
+                     "Number is too large");
             end;
             Power := Power + 7;
          end loop;
       end if;
-      Raise_Exception
-      (  End_Error'Identity,
-         "Non-terminated chain sequence"
-      );
+      Ada.Exceptions.Raise_Exception
+        (Ada.IO_Exceptions.End_Error'Identity,
+         "Non-terminated chain sequence");
    end Input;
 
    procedure Output
-             (  Stream : access Root_Stream_Type'Class;
-                Value  : Number
-             )  is
-      Buffer  : Stream_Element_Array (1..Number'Size + 6 / 7);
-      Pointer : Stream_Element_Offset := 1;
+     (Stream : access Ada.Streams.Root_Stream_Type'Class;
+      Value  : Number)
+   is
+      Buffer  : Ada.Streams.Stream_Element_Array (1 .. Number'Size + 6 / 7);
+      Pointer : Ada.Streams.Stream_Element_Offset := 1;
    begin
       Put (Buffer, Pointer, Value);
-      Write (Stream.all, Buffer (1..Pointer - 1));
+      Ada.Streams.Write (Stream.all, Buffer (1 .. Pointer - 1));
    end Output;
 
    procedure Put
-             (  Data    : in out Stream_Element_Array;
-                Pointer : in out Stream_Element_Offset;
-                Value   : Number
-             )  is
+     (Data    : in out Ada.Streams.Stream_Element_Array;
+      Pointer : in out Ada.Streams.Stream_Element_Offset;
+      Value   : Number)
+   is
       Item : Number := Value;
    begin
       if Pointer not in Data'Range then
-         Raise_Exception
-         (  Layout_Error'Identity,
-            "Pointer is out of bounds"
-         );
+         Ada.Exceptions.Raise_Exception
+           (Ada.IO_Exceptions.Layout_Error'Identity,
+            "Pointer is out of bounds");
       end if;
       if Item >= 0 then
          Item := Value;
-         Data (Pointer) := Stream_Element (Item mod (16#40#)) * 2;
+         Data (Pointer) := Ada.Streams.Stream_Element (Item mod (16#40#)) * 2;
       else
          Item := -(Value + 1);
-         Data (Pointer) := Stream_Element (Item mod (16#40#)) * 2 + 1;
+         Data (Pointer) :=
+           Ada.Streams.Stream_Element (Item mod (16#40#)) * 2 + 1;
       end if;
       Item := Item / 16#40#;
       if Item = 0 then
@@ -199,7 +192,8 @@ package body Strings_Edit.Streams.Generic_Integer is
       Data (Pointer) := Data (Pointer) or 16#80#;
       Pointer := Pointer + 1;
       while Pointer <= Data'Last loop
-         Data (Pointer) := Stream_Element (Item mod 16#80#) or 16#80#;
+         Data (Pointer) :=
+           Ada.Streams.Stream_Element (Item mod 16#80#) or 16#80#;
          Item := Item / 16#80#;
          if Item = 0 then
             Data (Pointer) := Data (Pointer) and 16#7F#;
@@ -208,7 +202,9 @@ package body Strings_Edit.Streams.Generic_Integer is
          end if;
          Pointer := Pointer + 1;
       end loop;
-      Raise_Exception (Layout_Error'Identity, "No room for output");
+      Ada.Exceptions.Raise_Exception
+        (Ada.IO_Exceptions.Layout_Error'Identity,
+         "No room for output");
    end Put;
 
 end Strings_Edit.Streams.Generic_Integer;

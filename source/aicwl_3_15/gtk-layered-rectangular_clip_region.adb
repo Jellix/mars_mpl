@@ -25,6 +25,7 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
+with Ada.Numerics;
 with Ada.Unchecked_Deallocation;
 
 with Cairo.Transformations;
@@ -161,6 +162,7 @@ package body Gtk.Layered.Rectangular_Clip_Region is
       Context : Cairo.Cairo_Context;
       Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
+      pragma Unreferenced (Area);
       Half_Width  : Gdouble := Layer.Width  / 2.0;
       Half_Height : Gdouble := Layer.Height / 2.0;
       Radius      : Gdouble := Layer.Radius;

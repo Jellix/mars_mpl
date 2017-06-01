@@ -218,6 +218,7 @@ package body Gtk.Layered.Clock_Hand is
      (Adjustment : access GObject_Record'Class;
       Needle     : Clock_Hand_Ptr)
    is
+      pragma Unreferenced (Adjustment);
       Lower : constant Gdouble := Gtk.Adjustment.Get_Lower (Needle.all.Adjustment);
       Upper : constant Gdouble := Gtk.Adjustment.Get_Upper (Needle.all.Adjustment);
       Value : constant Gdouble := Gtk.Adjustment.Get_Value (Needle.all.Adjustment);
@@ -239,6 +240,7 @@ package body Gtk.Layered.Clock_Hand is
       Context : Cairo.Cairo_Context;
       Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
+      pragma Unreferenced (Area);
       Tip_Length     : Gdouble;
       Tip_Radius     : Gdouble;
       Rear_Length    : Gdouble;
@@ -251,6 +253,7 @@ package body Gtk.Layered.Clock_Hand is
       Cairo.New_Path (Context);
       declare
          State : Cairo.Ellipses.Context_State := Cairo.Ellipses.Save (Context);
+         pragma Unreferenced (State);
       begin
          Cairo.Set_Source_Rgb
            (Context,
@@ -308,6 +311,7 @@ package body Gtk.Layered.Clock_Hand is
          Cairo.Close_Path (Context);
          declare
             State : Cairo.Ellipses.Context_State := Cairo.Ellipses.Save (Context);
+            pragma Unreferenced (State);
          begin
             Cairo.Clip (Context);
             case Layer.Tip.Cap is
@@ -463,6 +467,7 @@ package body Gtk.Layered.Clock_Hand is
 
    overriding function Get_Properties_Number
      (Layer : Clock_Hand_Layer) return Natural is
+      pragma Unreferenced (Layer);
    begin
       return
         (Layer_Property'Pos (Layer_Property'Last)

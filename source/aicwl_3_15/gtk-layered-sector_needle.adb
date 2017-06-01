@@ -25,13 +25,17 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Glib.Properties.Creation;    use Glib.Properties.Creation;
-with Gtk.Layered.Stream_IO;       use Gtk.Layered.Stream_IO;
-
 with Ada.Unchecked_Deallocation;
+
+with Glib.Properties.Creation;
+
 with Gtk.Layered.Elliptic_Shape_Property;
+with Gtk.Layered.Stream_IO;
 
 package body Gtk.Layered.Sector_Needle is
+
+   pragma Warnings (Off, "declaration hides ""Adjustment""");
+   pragma Warnings (Off, "declaration hides ""Handlers""");
 
    type Needle_Ptr is access all Sector_Needle_Layer;
 
@@ -81,6 +85,9 @@ package body Gtk.Layered.Sector_Needle is
 
    procedure Add_Adjustment
      (Layer      : in out Sector_Needle_Layer;
+      Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class);
+   procedure Add_Adjustment
+     (Layer      : in out Sector_Needle_Layer;
       Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class)
    is
    begin
@@ -117,8 +124,8 @@ package body Gtk.Layered.Sector_Needle is
      (Under      : not null access Layer_Location'Class;
       Outer      : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
       Inner      : Cairo.Ellipses.Ellipse_Parameters;
-      From       : Gdouble                                           := 3.0 * Pi / 4.0;
-      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      From       : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 2.0;
       Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
       Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
       Scaled     : Boolean                                           := False)
@@ -148,8 +155,8 @@ package body Gtk.Layered.Sector_Needle is
      (Under      : not null access Layer_Location'Class;
       Outer      : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
       Center     : Cairo.Ellipses.Cairo_Tuple;
-      From       : Gdouble                                           := 3.0 * Pi / 4.0;
-      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      From       : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 2.0;
       Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
       Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
       Scaled     : Boolean                                           := False)
@@ -178,8 +185,8 @@ package body Gtk.Layered.Sector_Needle is
    procedure Add_Sector_Needle
      (Under      : not null access Layer_Location'Class;
       Outer      : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
-      From       : Gdouble                                           := 3.0 * Pi / 4.0;
-      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      From       : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 2.0;
       Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
       Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
       Scaled     : Boolean                                           := False)
@@ -209,8 +216,8 @@ package body Gtk.Layered.Sector_Needle is
      (Under      : not null access Layer_Location'Class;
       Outer      : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
       Inner      : Cairo.Ellipses.Ellipse_Parameters;
-      From       : Gdouble                                           := 3.0 * Pi / 4.0;
-      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      From       : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 2.0;
       Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
       Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
       Scaled     : Boolean                                           := False)
@@ -242,8 +249,8 @@ package body Gtk.Layered.Sector_Needle is
      (Under      : not null access Layer_Location'Class;
       Outer      : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
       Center     : Cairo.Ellipses.Cairo_Tuple;
-      From       : Gdouble                                           := 3.0 * Pi / 4.0;
-      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      From       : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 2.0;
       Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
       Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
       Scaled     : Boolean                                           := False)
@@ -274,8 +281,8 @@ package body Gtk.Layered.Sector_Needle is
    function Add_Sector_Needle
      (Under      : not null access Layer_Location'Class;
       Outer      : Cairo.Ellipses.Ellipse_Parameters                 := Cairo.Ellipses.Unit_Circle;
-      From       : Gdouble                                           := 3.0 * Pi / 4.0;
-      Length     : Gdouble                                           := 3.0 * Pi / 2.0;
+      From       : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 4.0;
+      Length     : Gdouble                                           := 3.0 * Ada.Numerics.Pi / 2.0;
       Color      : Gdk.Color.Gdk_Color                               := Gtk.Missed.RGB (1.0, 0.0, 0.0);
       Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
       Scaled     : Boolean                                           := False)
@@ -345,7 +352,7 @@ package body Gtk.Layered.Sector_Needle is
                Layer.Outer * Size + Center,
                Layer.From,
                Length);
-            if abs Length < 2.0 * Pi then
+            if abs Length < 2.0 * Ada.Numerics.Pi then
                case Layer.Inner.Shape is
                   when Segment =>
                      null;
@@ -369,7 +376,7 @@ package body Gtk.Layered.Sector_Needle is
             Layer.Outer,
             Layer.From,
             Length);
-         if abs Layer.Length < 2.0 * Pi then
+         if abs Layer.Length < 2.0 * Ada.Numerics.Pi then
             case Layer.Inner.Shape is
                when Segment =>
                   null;
@@ -403,8 +410,8 @@ package body Gtk.Layered.Sector_Needle is
    begin
       Finalize (Abstract_Layer (Layer));
       if Layer.Adjustment /= null then
-         Disconnect (Layer.Adjustment, Layer.Changed);
-         Disconnect (Layer.Adjustment, Layer.Value_Changed);
+         Gtk.Handlers.Disconnect (Layer.Adjustment, Layer.Changed);
+         Gtk.Handlers.Disconnect (Layer.Adjustment, Layer.Value_Changed);
          Gtk.Adjustment.Unref (Layer.Adjustment);
          Layer.Adjustment := null;
       end if;
@@ -465,7 +472,7 @@ package body Gtk.Layered.Sector_Needle is
          case Layer_Property'Val (Property - 1) is
             when Property_Outer_Center_X =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "outer-x",
                     Nick    => "outer x",
                     Minimum => Gdouble'First,
@@ -475,7 +482,7 @@ package body Gtk.Layered.Sector_Needle is
                        "The x-coordinate of the outer ellipse's center");
             when Property_Outer_Center_Y =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "outer-y",
                     Nick    => "outer y",
                     Minimum => Gdouble'First,
@@ -485,7 +492,7 @@ package body Gtk.Layered.Sector_Needle is
                        "The y-coordinate of the outer ellipse's center");
             when Property_Outer_Curvature =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "outer-k",
                     Nick    => "outer k",
                     Minimum => 0.0,
@@ -496,7 +503,7 @@ package body Gtk.Layered.Sector_Needle is
                        "the outer ellipse");
             when Property_Outer_Radius =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "outer-r",
                     Nick    => "outer r",
                     Minimum => 1.0E-6,
@@ -507,11 +514,11 @@ package body Gtk.Layered.Sector_Needle is
                        "outer ellipse");
             when Property_Outer_Angle =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "outer-angle",
                     Nick    => "outer angle",
-                    Minimum => -2.0 * Pi,
-                    Maximum => 2.0 * Pi,
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
                     Default => 0.0,
                     Blurb   =>
                        "The angle of the major axis of the " &
@@ -525,7 +532,7 @@ package body Gtk.Layered.Sector_Needle is
                     Blurb   => "The shape of the needle");
             when Property_Inner_Center_X =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "inner-x",
                     Nick    => "inner x",
                     Minimum => Gdouble'First,
@@ -540,7 +547,7 @@ package body Gtk.Layered.Sector_Needle is
                        "ignored");
             when Property_Inner_Center_Y =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "inner-y",
                     Nick    => "inner y",
                     Minimum => Gdouble'First,
@@ -555,7 +562,7 @@ package body Gtk.Layered.Sector_Needle is
                        "ignored");
             when Property_Inner_Curvature =>
                return
-                  Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "inner-k",
                     Nick    => "inner k",
                     Minimum => 0.0,
@@ -568,81 +575,76 @@ package body Gtk.Layered.Sector_Needle is
                        "value is ignored");
             when Property_Inner_Radius =>
                return
-                  Gnew_Double
-                  (  Name    => "inner-r",
-                     Nick    => "inner r",
-                     Minimum => 1.0E-6,
-                     Maximum => Gdouble'Last,
-                     Default => 0.5,
-                     Blurb =>
-                        "When shape is bagel, then this " &
-                        "is the radius of the minor axis of the " &
-                        "inner elliptic arc. Otherwise the property " &
-                        "value is ignored"
-                  );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "inner-r",
+                    Nick    => "inner r",
+                    Minimum => 1.0E-6,
+                    Maximum => Gdouble'Last,
+                    Default => 0.5,
+                    Blurb   =>
+                       "When shape is bagel, then this " &
+                       "is the radius of the minor axis of the " &
+                       "inner elliptic arc. Otherwise the property " &
+                       "value is ignored");
             when Property_Inner_Angle =>
                return
-                  Gnew_Double
-                  (  Name    => "inner-angle",
-                     Nick    => "inner angle",
-                     Minimum => -2.0 * Pi,
-                     Maximum => 2.0 * Pi,
-                     Default => 0.0,
-                     Blurb =>
-                        "When shape is bagel, then this " &
-                        "is the angle of the major axis of the inner " &
-                        "elliptic arc. Otherwise the property " &
-                        "value is ignored"
-                  );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "inner-angle",
+                    Nick    => "inner angle",
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
+                    Default => 0.0,
+                    Blurb   =>
+                       "When shape is bagel, then this " &
+                       "is the angle of the major axis of the inner " &
+                       "elliptic arc. Otherwise the property " &
+                       "value is ignored");
             when Property_From =>
                return
-                  Gnew_Double
-                  (  Name    => "from",
-                     Nick    => "from",
-                     Minimum => -2.0 * Pi,
-                     Maximum => 2.0 * Pi,
-                     Default => 0.0,
-                     Blurb   => "The angle of corresponding to the " &
-                                "value 0"
-                  );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "from",
+                    Nick    => "from",
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
+                    Default => 0.0,
+                    Blurb   => "The angle of corresponding to the value 0");
             when Property_Length =>
                return
-                  Gnew_Double
-                  (  Name    => "length",
-                     Nick    => "length",
-                     Minimum => -2.0 * Pi,
-                     Maximum => 2.0 * Pi,
-                     Default => 0.0,
-                     Blurb   => "The length added to the value of " &
-                                "the property from is the angle " &
-                                "coresponding to the value 1"
-                  );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "length",
+                    Nick    => "length",
+                    Minimum => -2.0 * Ada.Numerics.Pi,
+                    Maximum => 2.0 * Ada.Numerics.Pi,
+                    Default => 0.0,
+                    Blurb   =>
+                       "The length added to the value of " &
+                       "the property from is the angle " &
+                       "corresponding to the value 1");
             when Property_Value =>
                return
-                  Gnew_Double
-                  (  Name    => "value",
-                     Nick    => "value",
-                     Minimum => 0.0,
-                     Maximum => 1.0,
-                     Default => 0.0,
-                     Blurb   => "The indicated value"
-                  );
+                 Glib.Properties.Creation.Gnew_Double
+                   (Name    => "value",
+                    Nick    => "value",
+                    Minimum => 0.0,
+                    Maximum => 1.0,
+                    Default => 0.0,
+                    Blurb   => "The indicated value");
             when Property_Color =>
                return
-                 Gnew_Boxed
+                 Glib.Properties.Creation.Gnew_Boxed
                    (Name       => "color",
                     Boxed_Type => Gdk.Color.Gdk_Color_Type,
                     Nick       => "color",
                     Blurb      => "The needle color");
             when Property_Scaled =>
                return
-                  Gnew_Boolean
-                  (  Name    => "scaled",
-                     Nick    => "scaled",
-                     Default => False,
-                     Blurb   => "The needle size is changed when " &
-                                "the widget is resized"
-                  );
+                 Glib.Properties.Creation.Gnew_Boolean
+                   (Name    => "scaled",
+                    Nick    => "scaled",
+                    Default => False,
+                    Blurb   =>
+                       "The needle size is changed when " &
+                       "the widget is resized");
          end case;
       end if;
    end Get_Property_Specification;
@@ -790,32 +792,31 @@ package body Gtk.Layered.Sector_Needle is
       Color      : Gdk.Color.Gdk_Color;
       Adjustment : Boolean;
    begin
-      Restore (Stream, Outer);
-      Restore (Stream, Inner);
-      Restore (Stream, From);
-      Restore (Stream, Length);
-      Restore (Stream, Color);
-      Restore (Stream, Layer.Scaled, Adjustment);
+      Gtk.Layered.Stream_IO.Restore (Stream, Outer);
+      Gtk.Layered.Stream_IO.Restore (Stream, Inner);
+      Gtk.Layered.Stream_IO.Restore (Stream, From);
+      Gtk.Layered.Stream_IO.Restore (Stream, Length);
+      Gtk.Layered.Stream_IO.Restore (Stream, Color);
+      Gtk.Layered.Stream_IO.Restore (Stream, Layer.Scaled, Adjustment);
       Set
-      (  Layer  => Layer,
+        (Layer  => Layer,
          Outer  => Outer,
          Inner  => Inner,
          From   => From,
          Length => Length,
-         Color  => Color
-      );
+         Color  => Color);
       if Adjustment then
          declare
             Adjustment : Gtk.Adjustment.Gtk_Adjustment;
          begin
-            Restore (Stream, Adjustment);
+            Gtk.Layered.Stream_IO.Restore (Stream, Adjustment);
             Add_Adjustment (Layer, Adjustment);
          end;
       else
          declare
             Value : Gdouble;
          begin
-            Restore (Stream, Value);
+            Gtk.Layered.Stream_IO.Restore (Stream, Value);
             Set_Value (Layer, Value);
          end;
       end if;
@@ -912,9 +913,13 @@ package body Gtk.Layered.Sector_Needle is
                end if;
             when Property_Outer_Angle =>
                Layer.Outer.Angle := Glib.Values.Get_Double (Value);
-               if Layer.Outer.Angle not in -2.0 * Pi .. 2.0 * Pi then
+               if
+                 Layer.Outer.Angle not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
                   Layer.Outer.Angle :=
-                     Gdouble'Remainder (Layer.Outer.Angle, 2.0 * Pi);
+                    Gdouble'Remainder
+                      (Layer.Outer.Angle, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Shape =>
                case Gtk.Layered.
@@ -974,25 +979,34 @@ package body Gtk.Layered.Sector_Needle is
                case Layer.Inner.Shape is
                   when Bagel =>
                      Layer.Inner.Arc.Angle := Glib.Values.Get_Double (Value);
-                     if Layer.Inner.Arc.Angle not in -2.0 * Pi .. 2.0 * Pi
+                     if
+                       Layer.Inner.Arc.Angle not in
+                         -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
                      then
                         Layer.Inner.Arc.Angle :=
                            Gdouble'Remainder
-                            (Layer.Inner.Arc.Angle, 2.0 * Pi);
+                            (Layer.Inner.Arc.Angle, 2.0 * Ada.Numerics.Pi);
                      end if;
                   when Segment | Sector =>
                      null;
                end case;
             when Property_From =>
                Layer.From := Glib.Values.Get_Double (Value);
-               if Layer.From not in -2.0 * Pi .. 2.0 * Pi then
-                  Layer.From := Gdouble'Remainder (Layer.From, 2.0 * Pi);
+               if
+                 Layer.From not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
+                  Layer.From :=
+                    Gdouble'Remainder (Layer.From, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Length =>
                Layer.Length := Glib.Values.Get_Double (Value);
-               if Layer.Length not in -2.0 * Pi .. 2.0 * Pi then
+               if
+                 Layer.Length not in
+                   -2.0 * Ada.Numerics.Pi .. 2.0 * Ada.Numerics.Pi
+               then
                   Layer.Length :=
-                     Gdouble'Remainder (Layer.Length, 2.0 * Pi);
+                    Gdouble'Remainder (Layer.Length, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Color =>
                Layer.Color := Gdk.Color.Get_Value (Value);
@@ -1041,17 +1055,20 @@ package body Gtk.Layered.Sector_Needle is
    is
       use type Gtk.Adjustment.Gtk_Adjustment;
    begin
-      Store (Stream, Layer.Outer);
-      Store (Stream, Layer.Inner);
-      Store (Stream, Layer.From);
-      Store (Stream, Layer.Length);
-      Store (Stream, Layer.Color);
-      Store (Stream, Layer.Scaled, Layer.Adjustment /= null);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Outer);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Inner);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.From);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Length);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Color);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Scaled, Layer.Adjustment /= null);
       if Layer.Adjustment = null then
-         Store (Stream, Layer.Value);
+         Gtk.Layered.Stream_IO.Store (Stream, Layer.Value);
       else
-         Store (Stream, Layer.Adjustment);
+         Gtk.Layered.Stream_IO.Store (Stream, Layer.Adjustment);
       end if;
    end Store;
+
+   pragma Warnings (On, "declaration hides ""Adjustment""");
+   pragma Warnings (On, "declaration hides ""Handlers""");
 
 end Gtk.Layered.Sector_Needle;

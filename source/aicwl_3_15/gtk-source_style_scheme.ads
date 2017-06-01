@@ -23,104 +23,110 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Interfaces.C.Strings;  use Interfaces.C.Strings;
-with Gtk.Source_Style;      use Gtk.Source_Style;
+with Gtk.Source_Style;
 
-with Interfaces.C.Pointers;
+with Interfaces.C.Strings;
 
 package Gtk.Source_Style_Scheme is
---
--- Gtk_Source_Style_Scheme_Record -- Object  controlling   apperance  of
---                                   Gtk_Source_View
---
+
+   --
+   -- Gtk_Source_Style_Scheme_Record -- Object  controlling   apperance  of
+   --                                   Gtk_Source_View
+   --
    type Gtk_Source_Style_Scheme_Record is
-      new GObject_Record with private;
+     new GObject_Record with private;
    type Gtk_Source_Style_Scheme is
-      access all Gtk_Source_Style_Scheme_Record'Class;
---
--- Get_Authors -- Get authors of the style scheme
---
---    Scheme - The style scheme
---
--- Elements of the result are owned by the style scheme. They shall  not
--- modified or freed.
---
--- Returns :
---
---    Array of C-strings
---
+     access all Gtk_Source_Style_Scheme_Record'Class;
+
+   --
+   -- Get_Authors -- Get authors of the style scheme
+   --
+   --    Scheme - The style scheme
+   --
+   -- Elements of the result are owned by the style scheme. They shall  not
+   -- modified or freed.
+   --
+   -- Returns :
+   --
+   --    Array of C-strings
+   --
    function Get_Authors
-            (  Scheme : not null access Gtk_Source_Style_Scheme_Record
-            )  return chars_ptr_array;
---
--- Get_Description -- Get description of the style scheme
---
---    Scheme - The style scheme
---
--- Returns :
---
---    Style scheme description or empty string if none
---
+     (Scheme : not null access Gtk_Source_Style_Scheme_Record)
+      return Interfaces.C.Strings.chars_ptr_array;
+
+   --
+   -- Get_Description -- Get description of the style scheme
+   --
+   --    Scheme - The style scheme
+   --
+   -- Returns :
+   --
+   --    Style scheme description or empty string if none
+   --
    function Get_Description
-            (  Scheme : not null access Gtk_Source_Style_Scheme_Record
-            )  return UTF8_String;
---
--- Get_Filename -- Get the file name parsed to create the scheme
---
---    Scheme - The style scheme
---
--- Returns :
---
---    The file name or empty string if none
---
+     (Scheme : not null access Gtk_Source_Style_Scheme_Record)
+      return UTF8_String;
+
+   --
+   -- Get_Filename -- Get the file name parsed to create the scheme
+   --
+   --    Scheme - The style scheme
+   --
+   -- Returns :
+   --
+   --    The file name or empty string if none
+   --
    function Get_Filename
-            (  Scheme : not null access Gtk_Source_Style_Scheme_Record
-            )  return UTF8_String;
---
--- Get_ID -- Get identifier of the style scheme
---
---    Scheme - The style scheme
---
--- Returns :
---
---    Style scheme identifier
---
+     (Scheme : not null access Gtk_Source_Style_Scheme_Record)
+      return UTF8_String;
+
+   --
+   -- Get_ID -- Get identifier of the style scheme
+   --
+   --    Scheme - The style scheme
+   --
+   -- Returns :
+   --
+   --    Style scheme identifier
+   --
    function Get_ID
-            (  Scheme : not null access Gtk_Source_Style_Scheme_Record
-            )  return UTF8_String;
---
--- Get_Name -- Get name of the style scheme
---
---    Scheme - The style scheme
---
--- Returns :
---
---    The name
---
+     (Scheme : not null access Gtk_Source_Style_Scheme_Record)
+      return UTF8_String;
+
+   --
+   -- Get_Name -- Get name of the style scheme
+   --
+   --    Scheme - The style scheme
+   --
+   -- Returns :
+   --
+   --    The name
+   --
    function Get_Name
-            (  Scheme : not null access Gtk_Source_Style_Scheme_Record
-            )  return UTF8_String;
---
--- Get_Style -- Get source style by identifier
---
---    Scheme - The style scheme
---    Style  - ID of the style to retrieve
---
--- The result is owned by scheme and may not be unref'ed.
---
--- Returns :
---
---    The style corresponding to Style or null
---
+     (Scheme : not null access Gtk_Source_Style_Scheme_Record)
+      return UTF8_String;
+
+   --
+   -- Get_Style -- Get source style by identifier
+   --
+   --    Scheme - The style scheme
+   --    Style  - ID of the style to retrieve
+   --
+   -- The result is owned by scheme and may not be unref'ed.
+   --
+   -- Returns :
+   --
+   --    The style corresponding to Style or null
+   --
    function Get_Style
-            (  Scheme : not null access Gtk_Source_Style_Scheme_Record;
-               Style  : UTF8_String
-            )  return Gtk_Source_Style;
+     (Scheme : not null access Gtk_Source_Style_Scheme_Record;
+      Style  : UTF8_String) return Gtk.Source_Style.Gtk_Source_Style;
 
 private
+
    type Gtk_Source_Style_Scheme_Record is
-      new GObject_Record with null record;
+     new GObject_Record with null record;
 
 end Gtk.Source_Style_Scheme;

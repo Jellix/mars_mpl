@@ -23,41 +23,20 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Ada.IO_Exceptions; use Ada.IO_Exceptions;
+with Ada.IO_Exceptions;
 
 package body Strings_Edit.Fields is
 
-   function Get_Output_Field
-            (  Destination : String;
-               Pointer     : Integer;
-               Field       : Natural
-            )  return Natural is
-      Result : Natural := Field;
-   begin
-      if Result = 0 then
-         Result := Destination'Last - Pointer + 1;
-      end if;
-      if (  Pointer < Destination'First
-         or else
-            Pointer + Result - 1 > Destination'Last
-         )
-      then
-         raise Layout_Error;
-      end if;
-      return Result;
-   end Get_Output_Field;
-
    procedure Adjust_Output_Field
-             (  Destination : in out String;
-                Pointer     : in out Integer;
-                Index       : Integer;
-                Out_Field   : Natural;
-                Field       : Natural;
-                Justify     : Alignment;
-                Fill        : Character
-             )  is
+     (Destination : in out String;
+      Pointer     : in out Integer;
+      Index       : Integer;
+      Out_Field   : Natural;
+      Field       : Natural;
+      Justify     : Alignment;
+      Fill        : Character) is
    begin
       if Field = 0 then
          Pointer := Index;
@@ -68,33 +47,33 @@ package body Strings_Edit.Fields is
             if Out_Field /= Index - Pointer then
                case Justify is
                   when Left =>
-                     for Position in Index..Last loop
+                     for Position in Index .. Last loop
                         Destination (Position) := Fill;
                      end loop;
                   when Center =>
                      declare
                         Length : constant Natural := Index - Pointer;
                         First  : constant Integer :=
-                                    Pointer + (Out_Field - Length) / 2;
+                                   Pointer + (Out_Field - Length) / 2;
                         Next   : constant Integer := First + Length;
                      begin
-                        Destination (First..Next - 1) :=
-                        Destination (Pointer..Index - 1);
-                        for Position in Pointer..First - 1 loop
+                        Destination (First .. Next - 1) :=
+                          Destination (Pointer .. Index - 1);
+                        for Position in Pointer .. First - 1 loop
                            Destination (Position) := Fill;
                         end loop;
-                        for Position in Next..Last loop
+                        for Position in Next .. Last loop
                            Destination (Position) := Fill;
                         end loop;
                      end;
                   when Right =>
                      declare
                         First : constant Integer :=
-                                   Last + 1 - Index + Pointer;
+                                  Last + 1 - Index + Pointer;
                      begin
-                        Destination (First..Last) :=
-                           Destination (Pointer..Index - 1);
-                        for Position in Pointer..First - 1 loop
+                        Destination (First .. Last) :=
+                          Destination (Pointer .. Index - 1);
+                        for Position in Pointer .. First - 1 loop
                            Destination (Position) := Fill;
                         end loop;
                      end;
@@ -104,5 +83,24 @@ package body Strings_Edit.Fields is
          end;
       end if;
    end Adjust_Output_Field;
+
+   function Get_Output_Field
+     (Destination : String;
+      Pointer     : Integer;
+      Field       : Natural) return Natural
+   is
+      Result : Natural := Field;
+   begin
+      if Result = 0 then
+         Result := Destination'Last - Pointer + 1;
+      end if;
+      if
+        Pointer < Destination'First or else
+        Pointer + Result - 1 > Destination'Last
+      then
+         raise Ada.IO_Exceptions.Layout_Error;
+      end if;
+      return Result;
+   end Get_Output_Field;
 
 end Strings_Edit.Fields;

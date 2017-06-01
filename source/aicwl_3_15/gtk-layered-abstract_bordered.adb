@@ -178,7 +178,7 @@ package body Gtk.Layered.Abstract_Bordered is
       Shadow_Depth : Gdouble; -- The width of the visible shadow
       Border_Width : Gdouble;
       Extent       : Gdouble;
-      Scaling      : Gdouble;
+      -- Scaling      : Gdouble;
       Box_Center   : Cairo.Ellipses.Cairo_Tuple;
       Path         : Cairo.Cairo_Path_Access;
 
@@ -328,7 +328,7 @@ package body Gtk.Layered.Abstract_Bordered is
          end if;
          if Inner_Size > 0.0 then
             Path := Cairo.Copy_Path (Context);
-            Scaling := Inner_Size / Extent;
+            -- Scaling := Inner_Size / Extent;
             case Layer.Border_Shadow is
                when Gtk.Enums.Shadow_None =>
                   if Border_Width > 0.0 then

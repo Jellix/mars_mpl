@@ -23,29 +23,33 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Ada.Exceptions;     use Ada.Exceptions;
-with Ada.IO_Exceptions;  use Ada.IO_Exceptions;
-with Interfaces;         use Interfaces;
+with Ada.Exceptions;
+with Ada.IO_Exceptions;
+
+with Interfaces;
 
 package body Strings_Edit.Base64 is
 
-   function From_Base64 (Text : String) return String is
-      Result  : String (1..(Text'Length * 3 + 3) / 4);
-      This    : Unsigned_16;
-      Accum   : Unsigned_16 := 0;
-      Bits    : Natural     := 0;
-      Pointer : Integer     := 1;
+   function From_Base64 (Text : String) return String
+   is
+      Result  : String (1 .. (Text'Length * 3 + 3) / 4);
+      This    : Interfaces.Unsigned_16;
+      Accum   : Interfaces.Unsigned_16 := 0;
+      Bits    : Natural                := 0;
+      Pointer : Integer                := 1;
+
+      use type Interfaces.Unsigned_16;
    begin
       for Index in Text'Range loop
          This := Character'Pos (Text (Index));
          case This is
-            when Character'Pos ('A')..Character'Pos ('Z') =>
+            when Character'Pos ('A') .. Character'Pos ('Z') =>
                Accum := Accum * 64 + This - Character'Pos ('A');
-            when Character'Pos ('a')..Character'Pos ('z') =>
+            when Character'Pos ('a') .. Character'Pos ('z') =>
                Accum := Accum * 64 + This - Character'Pos ('a') + 26;
-            when Character'Pos ('0')..Character'Pos ('9') =>
+            when Character'Pos ('0') .. Character'Pos ('9') =>
                Accum := Accum * 64 + This - Character'Pos ('0') + 52;
             when Character'Pos ('+') =>
                Accum := Accum * 64 + 62;
@@ -57,15 +61,13 @@ package body Strings_Edit.Base64 is
                elsif Index + 1 = Text'Last then -- 1 byte accumulate
                   exit when Text (Index + 1) = '=' and then Bits = 4;
                end if;
-               Raise_Exception
-               (  Data_Error'Identity,
-                  "Unexpected character '='"
-               );
+               Ada.Exceptions.Raise_Exception
+                 (Ada.IO_Exceptions.Data_Error'Identity,
+                  "Unexpected character '='");
             when others =>
-               Raise_Exception
-               (  Data_Error'Identity,
-                  "Non-Base64 character '" & Text (Index) & '''
-               );
+               Ada.Exceptions.Raise_Exception
+                 (Ada.IO_Exceptions.Data_Error'Identity,
+                  "Non-Base64 character '" & Text (Index) & ''');
          end case;
          Bits := Bits + 6;
          if Bits >= 8 then
@@ -77,20 +79,23 @@ package body Strings_Edit.Base64 is
             Accum   := Accum mod 2**Bits;
          end if;
       end loop;
-      return Result (1..Pointer - 1);
+      return Result (1 .. Pointer - 1);
    end From_Base64;
 
    type Base64_Encoding is
-      array (Unsigned_16 range 0..63) of Character;
+     array (Interfaces.Unsigned_16 range 0 .. 63) of Character;
    Base64 : constant Base64_Encoding := "ABCDEFGHIJKLMNOPQRSTUVWXYZ" &
                                         "abcdefghijklmnopqrstuvwxyz" &
                                         "0123456789+/";
 
-   function To_Base64 (Text : String) return String is
-      Result  : String (1..(Text'Length + 3 / 3) * 4);
-      Pointer : Integer     := 1;
-      Bits    : Natural     := 0;
-      Accum   : Unsigned_16 := 0;
+   function To_Base64 (Text : String) return String
+   is
+      Result  : String (1 .. (Text'Length + 3 / 3) * 4);
+      Pointer : Integer                := 1;
+      Bits    : Natural                := 0;
+      Accum   : Interfaces.Unsigned_16 := 0;
+
+      use type Interfaces.Unsigned_16;
    begin
       for Index in Text'Range loop
          Accum := Accum * 256 + Character'Pos (Text (Index));
@@ -126,7 +131,7 @@ package body Strings_Edit.Base64 is
          when others =>
             null;
       end case;
-      return Result (1..Pointer - 1);
+      return Result (1 .. Pointer - 1);
    end To_Base64;
 
 end Strings_Edit.Base64;

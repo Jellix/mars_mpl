@@ -37,24 +37,20 @@ package body Gtk.Layered.Waveform.Sweeper is
 
    Class_Record        : Ada_GObject_Class := Uninitialized_Class;
    Signal_Names        : constant Gtkada.Types.Chars_Ptr_Array :=
-                           (  0 => Interfaces.C.Strings.New_String ("freezing-changed"),
-                              1 => Interfaces.C.Strings.New_String ("offset-changed")
-                             );
+                           (0 => Interfaces.C.Strings.New_String ("freezing-changed"),
+                            1 => Interfaces.C.Strings.New_String ("offset-changed"));
    Freezing_Changed_ID : Signal_Id := Invalid_Signal_Id;
 
    procedure EmitV
-     (  Params : System.Address;
-        Signal : Signal_Id;
-        Quark  : GQuark;
-        Result : System.Address
-       );
+     (Params : System.Address;
+      Signal : Signal_Id;
+      Quark  : GQuark;
+      Result : System.Address);
    pragma Import (C, EmitV, "g_signal_emitv");
 
    procedure Emit
-     (  Sweeper : not null access
-          Gtk_Waveform_Sweeper_Record'Class;
-        Signal  : Signal_Id
-       )
+     (Sweeper : not null access Gtk_Waveform_Sweeper_Record'Class;
+      Signal  : Signal_Id)
    is
       procedure Set_Object
         (Value  : in out Glib.Values.GValue;
@@ -76,9 +72,8 @@ package body Gtk.Layered.Waveform.Sweeper is
    end Emit;
 
    function Get_Frozen
-     (  Sweeper : not null access constant
-          Gtk_Waveform_Sweeper_Record
-       )  return Boolean is
+     (Sweeper : not null access constant Gtk_Waveform_Sweeper_Record)
+      return Boolean is
    begin
       return Sweeper.all.Frozen;
    end Get_Frozen;
@@ -91,44 +86,42 @@ package body Gtk.Layered.Waveform.Sweeper is
    end Get_From;
 
    function Get_From
-     (  Sweeper : not null access Gtk_Waveform_Sweeper_Record
-       )  return Ada.Calendar.Time is
+     (Sweeper : not null access Gtk_Waveform_Sweeper_Record)
+      return Ada.Calendar.Time is
    begin
       return To_Time (Get_Lower (Sweeper));
    end Get_From;
 
    function Get_Offset
-     (  Sweeper : not null access Gtk_Waveform_Sweeper_Record
-       )  return Duration is
+     (Sweeper : not null access Gtk_Waveform_Sweeper_Record) return Duration is
    begin
       return
         Duration
-          (  Sweeper.all.Get_Upper
-             -  Sweeper.all.Get_Value
-             -  Sweeper.all.Get_Page_Size
-            );
+          (Sweeper.all.Get_Upper
+           -  Sweeper.all.Get_Value
+           -  Sweeper.all.Get_Page_Size);
    end Get_Offset;
 
    function Get_Time
      (Sweeper : not null access Gtk_Waveform_Sweeper_Record)
       return Ada.Real_Time.Time is
    begin
-      return To_Time
-        (  Gdouble
-             (  Get_Value (Sweeper)
-              +  Sweeper.all.Get_Page_Size
-             )  );
+      return
+        To_Time
+          (Gdouble
+             (Get_Value (Sweeper)
+              + Sweeper.all.Get_Page_Size));
    end Get_Time;
 
    function Get_Time
-     (  Sweeper : not null access Gtk_Waveform_Sweeper_Record
-       )  return Ada.Calendar.Time is
+     (Sweeper : not null access Gtk_Waveform_Sweeper_Record)
+      return Ada.Calendar.Time is
    begin
-      return To_Time
-        (  Gdouble
-             (  Get_Value (Sweeper)
-              +  Sweeper.all.Get_Page_Size
-             )  );
+      return
+        To_Time
+          (Gdouble
+             (Get_Value (Sweeper)
+              + Sweeper.all.Get_Page_Size));
    end Get_Time;
 
    function Get_To
@@ -148,13 +141,12 @@ package body Gtk.Layered.Waveform.Sweeper is
    function Get_Type return GType is
    begin
       Initialize_Class_Record
-        (  Ancestor     => Gtk.Adjustment.Get_Type,
-           Signals      => Signal_Names,
-           Class_Record => Class_Record,
-           Type_Name    => Class_Name,
-           Parameters   => (  0 => (0 => GType_None),
-                              1 => (0 => GType_None)
-                             )                  );
+        (Ancestor     => Gtk.Adjustment.Get_Type,
+         Signals      => Signal_Names,
+         Class_Record => Class_Record,
+         Type_Name    => Class_Name,
+         Parameters   => (0 => (0 => GType_None),
+                          1 => (0 => GType_None)));
       return Class_Record.all.The_Type;
    end Get_Type;
 
@@ -165,21 +157,19 @@ package body Gtk.Layered.Waveform.Sweeper is
    end Gtk_New;
 
    procedure Initialize
-     (  Sweeper : not null access
-          Gtk_Waveform_Sweeper_Record'Class
-       )  is
+     (Sweeper : not null access Gtk_Waveform_Sweeper_Record'Class)
+   is
       To : constant Gdouble := To_Double (Ada.Real_Time.Clock);
    begin
       G_New (Sweeper, Get_Type);
       Gtk.Adjustment.Initialize
-        (  Adjustment     => Sweeper,
-           Value          => To - Gdouble (Def_Page),
-           Lower          => To - Gdouble (Def_Page),
-           Upper          => To,
-           Step_Increment => Gdouble (Def_Page) / 10.0,
-           Page_Increment => Gdouble (Def_Page) / 3.0,
-           Page_Size      => Gdouble (Def_Page)
-          );
+        (Adjustment     => Sweeper,
+         Value          => To - Gdouble (Def_Page),
+         Lower          => To - Gdouble (Def_Page),
+         Upper          => To,
+         Step_Increment => Gdouble (Def_Page) / 10.0,
+         Page_Increment => Gdouble (Def_Page) / 3.0,
+         Page_Size      => Gdouble (Def_Page));
       --***
       -- This is a bug in GTK, which manifests itself as not setting all
       -- adjustment parameters upon Inilialize (gtk_adjustment_new). The
@@ -187,13 +177,12 @@ package body Gtk.Layered.Waveform.Sweeper is
       -- parameters. Normally Configure would be not necessary
       --
       Sweeper.all.Configure
-        (  Value          => To - Gdouble (Def_Page),
-           Lower          => To - Gdouble (Def_Page),
-           Upper          => To,
-           Step_Increment => Gdouble (Def_Page) / 10.0,
-           Page_Increment => Gdouble (Def_Page) / 3.0,
-           Page_Size      => Gdouble (Def_Page)
-          );
+        (Value          => To - Gdouble (Def_Page),
+         Lower          => To - Gdouble (Def_Page),
+         Upper          => To,
+         Step_Increment => Gdouble (Def_Page) / 10.0,
+         Page_Increment => Gdouble (Def_Page) / 3.0,
+         Page_Size      => Gdouble (Def_Page));
       if Freezing_Changed_ID = Invalid_Signal_Id then
          declare
             Widget_Type : constant GType := Get_Type (Sweeper);

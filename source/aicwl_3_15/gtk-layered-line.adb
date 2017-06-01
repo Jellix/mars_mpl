@@ -25,14 +25,20 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Cairo.Elementary_Functions;  use Cairo.Elementary_Functions;
-with Glib.Properties.Creation;       use Glib.Properties.Creation;
-with Gtk.Layered.Stream_IO;          use Gtk.Layered.Stream_IO;
-
 with Ada.Unchecked_Deallocation;
+
+with Cairo.Elementary_Functions;
 with Cairo.Line_Cap_Property;
 
+with Glib.Properties.Creation;
+
+with Gtk.Layered.Stream_IO;
+
 package body Gtk.Layered.Line is
+
+   pragma Warnings (Off, "declaration hides ""Center""");
+   pragma Warnings (Off, "declaration hides ""Line""");
+
    type Line_Ptr is access all Line_Layer;
 
    type Layer_Property is
@@ -234,7 +240,7 @@ package body Gtk.Layered.Line is
    function Get_Angle (Layer : Line_Layer) return Gdouble is
    begin
       return
-        Arctan
+        Cairo.Elementary_Functions.Arctan
           (X => Layer.To.X - Layer.From.X,
            Y => Layer.To.Y - Layer.From.Y);
    end Get_Angle;
@@ -247,7 +253,7 @@ package body Gtk.Layered.Line is
    function Get_Length  (Layer : Line_Layer) return Gdouble is
    begin
       return
-        Sqrt
+        Cairo.Elementary_Functions.Sqrt
           ((Layer.To.X - Layer.From.X) ** 2 +
            (Layer.To.Y - Layer.From.Y) ** 2);
    end Get_Length;
@@ -276,7 +282,7 @@ package body Gtk.Layered.Line is
          case Layer_Property'Val (Property - 1) is
             when Property_From_X =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "x0",
                     Nick    => "x0",
                     Minimum => Gdouble'First,
@@ -287,7 +293,7 @@ package body Gtk.Layered.Line is
                        "value 0");
             when Property_From_Y =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "y0",
                     Nick    => "y0",
                     Minimum => Gdouble'First,
@@ -298,7 +304,7 @@ package body Gtk.Layered.Line is
                        "value 0");
             when Property_To_X =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "x1",
                     Nick    => "x1",
                     Minimum => Gdouble'First,
@@ -309,7 +315,7 @@ package body Gtk.Layered.Line is
                        "value 1");
             when Property_To_Y =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "y1",
                     Nick    => "y1",
                     Minimum => Gdouble'First,
@@ -320,7 +326,7 @@ package body Gtk.Layered.Line is
                        "value 1");
             when Property_Line_Width =>
                return
-                 Gnew_Double
+                 Glib.Properties.Creation.Gnew_Double
                    (Name    => "width",
                     Nick    => "width",
                     Minimum => 0.0,
@@ -329,7 +335,7 @@ package body Gtk.Layered.Line is
                     Blurb   => "The line width");
             when Property_Line_Color =>
                return
-                 Gnew_Boxed
+                 Glib.Properties.Creation.Gnew_Boxed
                    (Name       => "color",
                     Boxed_Type => Gdk.Color.Gdk_Color_Type,
                     Nick       => "color",
@@ -343,7 +349,7 @@ package body Gtk.Layered.Line is
                     Blurb   => "The cap style of the line");
             when Property_Scaled =>
                return
-                 Gnew_Boolean
+                 Glib.Properties.Creation.Gnew_Boolean
                    (Name    => "scaled",
                     Nick    => "scaled",
                     Default => False,
@@ -351,7 +357,7 @@ package body Gtk.Layered.Line is
                        "The line size is changed when the widget is resized");
             when Property_Widened =>
                return
-                 Gnew_Boolean
+                 Glib.Properties.Creation.Gnew_Boolean
                    (Name    => "widened",
                     Nick    => "widened",
                     Default => False,
@@ -444,10 +450,10 @@ package body Gtk.Layered.Line is
       To   : Cairo.Ellipses.Cairo_Tuple;
       Line : Line_Parameters;
    begin
-      Restore (Stream, From);
-      Restore (Stream, To);
-      Restore (Stream, Line);
-      Restore (Stream, Layer.Scaled, Layer.Widened);
+      Gtk.Layered.Stream_IO.Restore (Stream, From);
+      Gtk.Layered.Stream_IO.Restore (Stream, To);
+      Gtk.Layered.Stream_IO.Restore (Stream, Line);
+      Gtk.Layered.Stream_IO.Restore (Stream, Layer.Scaled, Layer.Widened);
       Set
         (Layer => Layer,
          From  => From,
@@ -477,8 +483,9 @@ package body Gtk.Layered.Line is
         (Layer => Layer,
          Line  => Line,
          From  => From,
-         To    => (X => From.X + Length * Cos (Angle),
-                   Y => From.Y + Length * Sin (Angle)));
+         To    =>
+           (X => From.X + Length * Cairo.Elementary_Functions.Cos (Angle),
+            Y => From.Y + Length * Cairo.Elementary_Functions.Sin (Angle)));
    end Set;
 
    procedure Set
@@ -552,10 +559,13 @@ package body Gtk.Layered.Line is
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Layer  : Line_Layer) is
    begin
-      Store (Stream, Layer.From);
-      Store (Stream, Layer.To);
-      Store (Stream, Layer.Line);
-      Store (Stream, Layer.Scaled, Layer.Widened);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.From);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.To);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Line);
+      Gtk.Layered.Stream_IO.Store (Stream, Layer.Scaled, Layer.Widened);
    end Store;
+
+   pragma Warnings (On, "declaration hides ""Center""");
+   pragma Warnings (On, "declaration hides ""Line""");
 
 end Gtk.Layered.Line;

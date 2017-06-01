@@ -36,7 +36,6 @@ is
      Ada.Unchecked_Deallocation (Gtk.Menu.Gtk_Menu_Record'Class,
                                  Gtk.Menu.Gtk_Menu);
 
-   use Menu_Handlers;
    Menu : Gtk.Menu.Gtk_Menu;
    Item : Gtk.Image_Menu_Item.Gtk_Image_Menu_Item;
    Icon : Gtk.Image.Gtk_Image;
@@ -116,7 +115,7 @@ begin
                         Gtk.Enums.Icon_Size_Menu);
                      Gtk.Image_Menu_Item.Set_Image (Item, Icon);
                      Gtk.Menu.Append (Menu, Item);
-                     Connect
+                     Menu_Handlers.Connect
                        (Item,
                         "activate",
                         On_Release'Access,
@@ -138,7 +137,7 @@ begin
                         Gtk.Enums.Icon_Size_Menu);
                      Gtk.Image_Menu_Item.Set_Image (Item, Icon);
                      Gtk.Menu.Append (Menu, Item);
-                     Connect
+                     Menu_Handlers.Connect
                        (Item,
                         "activate",
                         On_Pause'Access,
@@ -176,7 +175,7 @@ begin
                         Gtk.Enums.Icon_Size_Menu);
                      Gtk.Image_Menu_Item.Set_Image (Item, Icon);
                      Gtk.Menu.Append (Menu, Item);
-                     Connect
+                     Menu_Handlers.Connect
                        (Item,
                         "activate",
                         On_Latest'Access,
@@ -198,7 +197,7 @@ begin
                                   Gtk.Enums.Icon_Size_Menu);
                Gtk.Image_Menu_Item.Set_Image (Item, Icon);
                Gtk.Menu.Append (Menu, Item);
-               Connect
+               Menu_Handlers.Connect
                  (Item,
                   "activate",
                   On_Undo'Access,
@@ -218,7 +217,7 @@ begin
                                   Gtk.Enums.Icon_Size_Menu);
                Gtk.Image_Menu_Item.Set_Image (Item, Icon);
                Gtk.Menu.Append (Menu, Item);
-               Connect
+               Menu_Handlers.Connect
                  (Item,
                   "activate",
                   On_Redo'Access,
@@ -236,7 +235,7 @@ begin
                                   Gtk.Enums.Icon_Size_Menu);
                Gtk.Image_Menu_Item.Set_Image (Item, Icon);
                Gtk.Menu.Append (Menu, Item);
-               Connect
+               Menu_Handlers.Connect
                  (Item,
                   "activate",
                   On_Toggle_Grid'Access,
@@ -255,7 +254,7 @@ begin
                                   Gtk.Enums.Icon_Size_Menu);
                Gtk.Image_Menu_Item.Set_Image (Item, Icon);
                Gtk.Menu.Append (Menu, Item);
-               Connect
+               Menu_Handlers.Connect
                  (Item,
                   "activate",
                   On_Toggle_Interpolation'Access,
@@ -278,7 +277,7 @@ begin
                                   Gtk.Enums.Icon_Size_Menu);
                Gtk.Image_Menu_Item.Set_Image (Item, Icon);
                Gtk.Menu.Append (Menu, Item);
-               Connect
+               Menu_Handlers.Connect
                  (Item,
                   "activate",
                   On_Snapshot'Access,

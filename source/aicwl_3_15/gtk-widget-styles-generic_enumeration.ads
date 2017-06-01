@@ -53,7 +53,6 @@ generic
    with package Enumeration_Property is
      new Glib.Generic_Properties.Generic_Enumeration_Property (<>);
 package Gtk.Widget.Styles.Generic_Enumeration is
-   use Enumeration_Property;
 
    --
    -- Style_Get -- Get style enumeration property
@@ -70,7 +69,7 @@ package Gtk.Widget.Styles.Generic_Enumeration is
    --
    function Style_Get
      (Widget        : access Gtk_Widget_Record'Class;
-      Property_Name : String) return Enumeration;
+      Property_Name : String) return Enumeration_Property.Enumeration;
 
    --
    -- Install_Style -- Install an enumeration property

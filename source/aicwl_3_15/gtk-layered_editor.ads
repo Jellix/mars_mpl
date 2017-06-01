@@ -58,6 +58,10 @@ with Strings_Edit.Float_Edit;
 
 package Gtk.Layered_Editor is
 
+   pragma Warnings (Off, "declaration hides ""Layered""");
+   pragma Warnings (Off, "declaration hides ""Params""");
+   pragma Warnings (Off, "declaration hides ""Widget""");
+
    --
    -- Gtk_Layered_Editor_Record -- An editor of layered widgets
    --
@@ -643,5 +647,9 @@ private
    procedure Zoom_Out
      (Object : access GObject_Record'Class;
       Widget : Gtk_Layered_Editor);
+
+   pragma Warnings (On, "declaration hides ""Layered""");
+   pragma Warnings (On, "declaration hides ""Params""");
+   pragma Warnings (On, "declaration hides ""Widget""");
 
 end Gtk.Layered_Editor;

@@ -23,7 +23,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 with Ada.Unchecked_Conversion;
 
@@ -31,20 +31,43 @@ package body Gtk.Tree_Model.Generic_Sort is
 
    procedure Ref (Object : System.Address);
    pragma Import (C, Ref, "gtk_object_ref");
+   pragma Unreferenced (Ref);
+
    procedure Unref (Object : System.Address);
    pragma Import (C, Unref, "gtk_object_unref");
+   pragma Unreferenced (Unref);
 
    function C_Sort
-            (  Model     : System.Address;
-               A         : access Gtk_Tree_Iter;
-               B         : access Gtk_Tree_Iter;
-               User_Data : System.Address
-            )  return Gint;
+     (Model     : System.Address;
+      A         : access Gtk_Tree_Iter;
+      B         : access Gtk_Tree_Iter;
+      User_Data : System.Address) return Gint;
    pragma Convention (C, C_Sort);
 
+   function C_Sort
+     (Model     : System.Address;
+      A         : access Gtk_Tree_Iter;
+      B         : access Gtk_Tree_Iter;
+      User_Data : System.Address) return Gint
+   is
+      pragma Unreferenced (Model);
+
+      function To_Store is
+        new Ada.Unchecked_Conversion
+          (System.Address,
+           Gtk_Tree_Model_Sort);
+      Store : constant Gtk_Tree_Model_Sort := To_Store (User_Data);
+   begin
+      case Compare (Store, A.all, B.all) is
+         when Gtk.Missed.Before => return -1;
+         when Gtk.Missed.Equal  => return  0;
+         when Gtk.Missed.After  => return  1;
+      end case;
+   end C_Sort;
+
    procedure Clear_Cache
-             (  Store : not null access Gtk_Tree_Model_Sort_Record
-             )  is
+     (Store : not null access Gtk_Tree_Model_Sort_Record)
+   is
       procedure Internal (Model : System.Address);
       pragma Import (C, Internal, "gtk_tree_model_sort_clear_cache");
    begin
@@ -52,28 +75,26 @@ package body Gtk.Tree_Model.Generic_Sort is
    end Clear_Cache;
 
    function Compare
-            (  Store  : not null access Gtk_Tree_Model_Sort_Record;
-               Left   : Gtk_Tree_Iter;
-               Right  : Gtk_Tree_Iter
-            )  return Gtk.Missed.Row_Order is
+     (Store  : not null access Gtk_Tree_Model_Sort_Record;
+      Left   : Gtk_Tree_Iter;
+      Right  : Gtk_Tree_Iter) return Gtk.Missed.Row_Order
+   is
+      pragma Unreferenced (Left, Right, Store);
    begin
       return Gtk.Missed.Equal;
    end Compare;
 
    function Convert_Child_Iter_To_Iter
-            (  Store : not null access Gtk_Tree_Model_Sort_Record;
-               Iter  : Gtk_Tree_Iter
-            )  return Gtk_Tree_Iter is
+     (Store : not null access Gtk_Tree_Model_Sort_Record;
+      Iter  : Gtk_Tree_Iter) return Gtk_Tree_Iter
+   is
       procedure Internal
-                (  Model       : System.Address;
-                   Sorted_Iter : access Gtk_Tree_Iter;
-                   Child_Iter  : access Gtk_Tree_Iter
-                );
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_tree_model_sort_convert_child_iter_to_iter"
-             );
+        (Model       : System.Address;
+         Sorted_Iter : access Gtk_Tree_Iter;
+         Child_Iter  : access Gtk_Tree_Iter);
+      pragma Import (C,
+                     Internal,
+                     "gtk_tree_model_sort_convert_child_iter_to_iter");
    begin
       if Iter = Null_Iter then
          return Null_Iter;
@@ -83,45 +104,38 @@ package body Gtk.Tree_Model.Generic_Sort is
          Sorted_Iter : aliased Gtk_Tree_Iter;
       begin
          Internal
-         (  Get_Object (Store),
+           (Get_Object (Store),
             Sorted_Iter'Access,
-            Child_Iter'Access
-         );
+            Child_Iter'Access);
          return Sorted_Iter;
       end;
    end Convert_Child_Iter_To_Iter;
 
    procedure Convert_Child_Path_To_Path
-             (  Store : not null access Gtk_Tree_Model_Sort_Record;
-                Path  : Gtk_Tree_Path
-             )  is
+     (Store : not null access Gtk_Tree_Model_Sort_Record;
+      Path  : Gtk_Tree_Path)
+   is
       procedure Internal
-                (  Model : System.Address;
-                   Path  : System.Address
-                );
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_tree_model_sort_convert_child_path_to_path"
-             );
+        (Model : System.Address;
+         Path  : System.Address);
+      pragma Import (C,
+                     Internal,
+                     "gtk_tree_model_sort_convert_child_path_to_path");
    begin
       Internal (Get_Object (Store), Get_Object (Path));
    end Convert_Child_Path_To_Path;
 
    function Convert_Iter_To_Child_Iter
-            (  Store : not null access Gtk_Tree_Model_Sort_Record;
-               Iter  : Gtk_Tree_Iter
-            )  return Gtk_Tree_Iter is
+     (Store : not null access Gtk_Tree_Model_Sort_Record;
+      Iter  : Gtk_Tree_Iter) return Gtk_Tree_Iter
+   is
       procedure Internal
-                (  Model       : System.Address;
-                   Child_Iter  : access Gtk_Tree_Iter;
-                   Sorted_Iter : access Gtk_Tree_Iter
-                );
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_tree_model_sort_convert_iter_to_child_iter"
-             );
+        (Model       : System.Address;
+         Child_Iter  : access Gtk_Tree_Iter;
+         Sorted_Iter : access Gtk_Tree_Iter);
+      pragma Import (C,
+                     Internal,
+                     "gtk_tree_model_sort_convert_iter_to_child_iter");
    begin
       if Iter = Null_Iter then
          return Null_Iter;
@@ -131,71 +145,99 @@ package body Gtk.Tree_Model.Generic_Sort is
          Sorted_Iter : aliased Gtk_Tree_Iter := Iter;
       begin
          Internal
-         (  Get_Object (Store),
+           (Get_Object (Store),
             Child_Iter'Access,
-            Sorted_Iter'Access
-         );
+            Sorted_Iter'Access);
          return Child_Iter;
       end;
    end Convert_Iter_To_Child_Iter;
 
    procedure Convert_Path_To_Child_Path
-             (  Store : not null access Gtk_Tree_Model_Sort_Record;
-                Path  : Gtk_Tree_Path
-             )  is
+     (Store : not null access Gtk_Tree_Model_Sort_Record;
+      Path  : Gtk_Tree_Path)
+   is
       procedure Internal
-                (  Model : System.Address;
-                   Path  : System.Address
-                );
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_tree_model_sort_convert_path_to_child_path"
-             );
+        (Model : System.Address;
+         Path  : System.Address);
+      pragma Import (C,
+                     Internal,
+                     "gtk_tree_model_sort_convert_path_to_child_path");
    begin
       Internal (Get_Object (Store), Get_Object (Path));
    end Convert_Path_To_Child_Path;
 
    function Get_Model
-            (  Store : not null access Gtk_Tree_Model_Sort_Record
-            )  return Tree_Model is
+     (Store : not null access Gtk_Tree_Model_Sort_Record) return Tree_Model is
    begin
-      return Store.Model;
+      return Store.all.Model;
    end Get_Model;
 
+   procedure Get_Sort_Column_ID
+     (Store  : not null access Gtk_Tree_Model_Sort_Record;
+      Column : out Gint;
+      Order  : out Gtk.Enums.Gtk_Sort_Type)
+   is
+      function Internal
+        (Model  : System.Address;
+         Column : access Gint;
+         Order  : access Gtk.Enums.Gtk_Sort_Type) return Gboolean;
+      pragma Import (C,
+                     Internal,
+                     "gtk_tree_sortable_get_sort_column_id");
+      Result       : Gboolean;
+      Local_Column : aliased Gint;
+      Local_Order  : aliased Gtk.Enums.Gtk_Sort_Type;
+   begin
+      Result :=
+        Internal
+          (Get_Object (Store),
+           Local_Column'Access,
+           Local_Order'Access);
+      pragma Unreferenced (Result);
+
+      Column := Local_Column;
+      Order  := Local_Order;
+   end Get_Sort_Column_ID;
+
    procedure Gtk_New
-             (  Store : out Gtk_Tree_Model_Sort;
-                Model : not null access Tree_Model_Record'Class
-             )  is
+     (Store : out Gtk_Tree_Model_Sort;
+      Model : not null access Tree_Model_Record'Class) is
    begin
       Store := new Gtk_Tree_Model_Sort_Record;
       Initialize (Store, Model);
    exception
       when others =>
-         Store.Unref;
+         Store.all.Unref;
          raise;
    end Gtk_New;
 
+   function Has_Default_Sort_Func
+     (Store : not null access Gtk_Tree_Model_Sort_Record) return Boolean
+   is
+      function Internal (Model : System.Address) return Gboolean;
+      pragma Import (C, Internal, "gtk_tree_sortable_has_default_sort_func");
+   begin
+      return 0 /= Internal (Get_Object (Store));
+   end Has_Default_Sort_Func;
+
    procedure Initialize
-             (  Store : not null access
-                        Gtk_Tree_Model_Sort_Record'Class;
-                Model : not null access Tree_Model_Record'Class
-             )  is
+     (Store : not null access Gtk_Tree_Model_Sort_Record'Class;
+      Model : not null access Tree_Model_Record'Class)
+   is
       function Internal (Model : System.Address) return System.Address;
       pragma Import (C, Internal, "gtk_tree_model_sort_new_with_model");
    begin
       Set_Object (Store, Internal (Get_Object (Model)));
-      Store.Model := Model.all'Access;
+      Store.all.Model := Model.all'Access;
    end Initialize;
 
    function Iter_Is_Valid
-            (  Store : not null access Gtk_Tree_Model_Sort_Record;
-               Iter  : Gtk_Tree_Iter
-            )  return Boolean is
+     (Store : not null access Gtk_Tree_Model_Sort_Record;
+      Iter  : Gtk_Tree_Iter) return Boolean
+   is
       function Internal
-               (  Model : System.Address;
-                  Iter  : access Gtk_Tree_Iter
-               )  return Gboolean;
+        (Model : System.Address;
+         Iter  : access Gtk_Tree_Iter) return Gboolean;
       pragma Import (C, Internal, "gtk_tree_model_sort_iter_is_valid");
    begin
       if Iter = Null_Iter then
@@ -212,142 +254,62 @@ package body Gtk.Tree_Model.Generic_Sort is
       end;
    end Iter_Is_Valid;
 
-   function C_Sort
-            (  Model     : System.Address;
-               A         : access Gtk_Tree_Iter;
-               B         : access Gtk_Tree_Iter;
-               User_Data : System.Address
-            )  return Gint is
-      function To_Store is
-         new Ada.Unchecked_Conversion
-             (  System.Address,
-                Gtk_Tree_Model_Sort
-             );
-      Store : constant Gtk_Tree_Model_Sort := To_Store (User_Data);
-   begin
-      case Compare (Store, A.all, B.all) is
-         when Gtk.Missed.Before => return -1;
-         when Gtk.Missed.Equal  => return  0;
-         when Gtk.Missed.After  => return  1;
-      end case;
-   end C_Sort;
-
-   procedure Get_Sort_Column_ID
-             (  Store  : not null access Gtk_Tree_Model_Sort_Record;
-                Column : out Gint;
-                Order  : out Gtk_Sort_Type
-             )  is
-      function Internal
-               (  Model  : System.Address;
-                  Column : access Gint;
-                  Order  : access Gtk_Sort_Type
-               )  return Gboolean;
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_tree_sortable_get_sort_column_id"
-             );
-      Result       : Gboolean;
-      Local_Column : aliased Gint;
-      Local_Order  : aliased Gtk_Sort_Type;
-   begin
-      Result :=
-         Internal
-         (  Get_Object (Store),
-            Local_Column'Access,
-            Local_Order'Access
-         );
-      Column := Local_Column;
-      Order  := Local_Order;
-   end Get_Sort_Column_ID;
-
-   function Has_Default_Sort_Func
-            (  Store : not null access Gtk_Tree_Model_Sort_Record
-            )  return Boolean is
-      function Internal (Model : System.Address) return Gboolean;
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_tree_sortable_has_default_sort_func"
-             );
-   begin
-      return 0 /= Internal (Get_Object (Store));
-   end Has_Default_Sort_Func;
-
    procedure Set_Sort_Column_ID
-             (  Store  : not null access Gtk_Tree_Model_Sort_Record;
-                Column : Gint;
-                Order  : Gtk_Sort_Type
-             )  is
+     (Store  : not null access Gtk_Tree_Model_Sort_Record;
+      Column : Gint;
+      Order  : Gtk.Enums.Gtk_Sort_Type)
+   is
       procedure Internal
-                (  Model  : System.Address;
-                   Column : Gint;
-                   Order  : Gtk_Sort_Type
-                );
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_tree_sortable_set_sort_column_id"
-             );
+        (Model  : System.Address;
+         Column : Gint;
+         Order  : Gtk.Enums.Gtk_Sort_Type);
+      pragma Import (C, Internal, "gtk_tree_sortable_set_sort_column_id");
    begin
       Internal (Get_Object (Store), Column, Order);
    end Set_Sort_Column_ID;
 
    procedure Set_Sort_Func
-             (  Store  : not null access
-                         Gtk_Tree_Model_Sort_Record'Class;
-                Column : Gint
-             )  is
+     (Store  : not null access Gtk_Tree_Model_Sort_Record'Class;
+      Column : Gint)
+   is
       procedure Internal
-                (  Model     : System.Address;
-                   Column    : Gint;
-                   Sort_Func : System.Address;
-                   User_Data : System.Address;
-                   Destroy   : System.Address
-                );
+        (Model     : System.Address;
+         Column    : Gint;
+         Sort_Func : System.Address;
+         User_Data : System.Address;
+         Destroy   : System.Address);
       pragma Import (C, Internal, "gtk_tree_sortable_set_sort_func");
    begin
       Internal
-      (  Get_Object (Store),
+        (Get_Object (Store),
          Column,
          C_Sort'Address,
          Store.all'Address,
-         System.Null_Address
-      );
+         System.Null_Address);
    end Set_Sort_Func;
 
    procedure Set_Sort_Func
-             (  Store : not null access Gtk_Tree_Model_Sort_Record'Class
-             )  is
+     (Store : not null access Gtk_Tree_Model_Sort_Record'Class)
+   is
       procedure Internal
-                (  Model     : System.Address;
-                   Sort_Func : System.Address;
-                   User_Data : System.Address;
-                   Destroy   : System.Address
-                );
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_tree_sortable_set_default_sort_func"
-             );
+        (Model     : System.Address;
+         Sort_Func : System.Address;
+         User_Data : System.Address;
+         Destroy   : System.Address);
+      pragma Import (C, Internal, "gtk_tree_sortable_set_default_sort_func");
    begin
       Internal
-      (  Get_Object (Store),
+        (Get_Object (Store),
          C_Sort'Address,
          Store.all'Address,
-         System.Null_Address
-      );
+         System.Null_Address);
    end Set_Sort_Func;
 
    procedure Sort_Column_Changed
-             (  Store : not null access Gtk_Tree_Model_Sort_Record'Class
-             )  is
+     (Store : not null access Gtk_Tree_Model_Sort_Record'Class)
+   is
       procedure Internal (Model : System.Address);
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_tree_sortable_sort_column_changed"
-             );
+      pragma Import (C, Internal, "gtk_tree_sortable_sort_column_changed");
    begin
       Internal (Get_Object (Store));
    end Sort_Column_Changed;

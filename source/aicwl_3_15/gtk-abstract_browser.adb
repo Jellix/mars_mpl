@@ -45,6 +45,7 @@ with Glib.Unicode;
 with Gtk.Main.Router;
 with Gtk.Stock;
 with Gtk.Style_Context;
+with Gtk.Widget;
 
 with Gtkada.Types;
 
@@ -336,7 +337,7 @@ package body Gtk.Abstract_Browser is
                   Focus_Column  =>
                     Widget.all.Get_Column (Gint (Column) - 1),
                   Focus_Cell    =>
-                    Widget.all.Name_Renderers (Column).all'Access);
+                    Widget.all.Name_Renderers.all (Column).all'Access);
                Gtk.Tree_Model.Path_Free (Path);
             end if;
          end;
@@ -685,7 +686,7 @@ package body Gtk.Abstract_Browser is
             if Item.Directory then
                declare
                   Path : constant Gtk.Tree_Model.Gtk_Tree_Path :=
-                           Store.Get_Path (Result);
+                           Get_Path (Store, Result);
                begin
                   Gtk.Tree_Model.Row_Changed
                     (Gtk.Tree_Model.To_Interface (Store), Path, Result);
@@ -724,7 +725,6 @@ package body Gtk.Abstract_Browser is
       Length  : Positive;
       High    : Gdouble;
       Step    : Gdouble;
-      Recurse : Natural := 0;
 
       use type Gtk.Tree_Model.Gtk_Tree_Iter;
    begin
@@ -798,6 +798,7 @@ package body Gtk.Abstract_Browser is
    begin
       Refresh (Store, Row);
    end Changed;
+   pragma Unreferenced (Changed);
 
    procedure Change_Selection
      (Widget : access Gtk_Directory_Items_View_Record;
@@ -1032,7 +1033,9 @@ package body Gtk.Abstract_Browser is
    overriding procedure Deleting
      (Model : not null access Gtk_Selection_Store_Record;
       Path  : Gtk.Tree_Model.Gtk_Tree_Path;
-      Iter  : Gtk.Tree_Model.Gtk_Tree_Iter) is
+      Iter  : Gtk.Tree_Model.Gtk_Tree_Iter)
+   is
+      pragma Unreferenced (Path);
    begin
       if Get_Boolean (Model, Iter, 3) then
          Model.all.Selected := Model.all.Selected - 1;
@@ -1042,7 +1045,9 @@ package body Gtk.Abstract_Browser is
 
    procedure Destroy
      (Object  : access GObject_Record'Class;
-      Browser : Gtk_Directory_Items_View) is
+      Browser : Gtk_Directory_Items_View)
+   is
+      pragma Unreferenced (Object);
    begin
       Finalize (Browser);
    end Destroy;
@@ -1052,6 +1057,7 @@ package body Gtk.Abstract_Browser is
       Params  : Glib.Values.GValues;
       Browser : Gtk_Directory_Tree_View)
    is
+      pragma Unreferenced (Object);
       Row : constant Gtk.Tree_Model.Gtk_Tree_Iter :=
               Get_Iter
                 (Browser.all.Cache,
@@ -1075,7 +1081,9 @@ package body Gtk.Abstract_Browser is
 
    procedure Directory_Changed
      (Object  : access GObject_Record'Class;
-      Browser : Gtk_Directory_Tree_View) is
+      Browser : Gtk_Directory_Tree_View)
+   is
+      pragma Unreferenced (Object);
    begin
       Browser.all.Last := Browser.all.This;
       Set (Browser.all.This, Browser);
@@ -1094,6 +1102,7 @@ package body Gtk.Abstract_Browser is
       Params  : Glib.Values.GValues;
       Browser : Gtk_Directory_Items_View)
    is
+      pragma Unreferenced (Object);
       Row  : Gtk.Tree_Model.Gtk_Tree_Iter;
       Item : Gtk.Tree_Model.Gtk_Tree_Iter;
 
@@ -1140,7 +1149,9 @@ package body Gtk.Abstract_Browser is
       Params  : Glib.Values.GValues;
       Browser : Gtk_Directory_Tree_View)
    is
+      pragma Unreferenced (Object);
       Wait    : Gtk.Missed.Wait_Cursor (+Browser);
+      pragma Unreferenced (Wait);
       Updated : Boolean;
       Row     : Gtk.Tree_Model.Gtk_Tree_Iter;
 
@@ -1187,7 +1198,9 @@ package body Gtk.Abstract_Browser is
       Params  : Glib.Values.GValues;
       Browser : Gtk_Directory_Tree_View)
    is
+      pragma Unreferenced (Object);
       Wait : Gtk.Missed.Wait_Cursor (+Browser);
+      pragma Unreferenced (Wait);
       Path : constant String :=
                Glib.Values.Get_String (Glib.Values.Nth (Params, 1));
    begin
@@ -1207,6 +1220,7 @@ package body Gtk.Abstract_Browser is
       Params  : Glib.Values.GValues;
       Browser : Gtk_Directory_Tree_View)
    is
+      pragma Unreferenced (Object);
       Row : Gtk.Tree_Model.Gtk_Tree_Iter :=
               Gtk.Tree_Model.Get_Iter_From_String
                 (Gtk.Tree_Model.To_Interface (Browser.all.Cache),
@@ -1232,6 +1246,7 @@ package body Gtk.Abstract_Browser is
       Params  : Glib.Values.GValues;
       Column  : Column_Data)
    is
+      pragma Unreferenced (Object);
       Row : Gtk.Tree_Model.Gtk_Tree_Iter :=
               Gtk.Tree_Model.Get_Iter_From_String
                 (Gtk.Tree_Model.To_Interface (Column.Browser.all.Columns),
@@ -1436,7 +1451,7 @@ package body Gtk.Abstract_Browser is
       end loop;
       Leave (Store, Directory, High);
    exception
-      when Error : others =>
+      when others =>
          Leave (Store, Directory, High);
          raise;
    end Expand_Folder;
@@ -1445,7 +1460,12 @@ package body Gtk.Abstract_Browser is
      (Widget    : not null access Gtk_Directory_Items_View_Record;
       Directory : Boolean;
       Name      : Item_Name;
-      Kind      : Item_Type) return Boolean is
+      Kind      : Item_Type) return Boolean
+   is
+      pragma Unreferenced (Kind);
+      pragma Unreferenced (Name);
+      pragma Unreferenced (Directory);
+      pragma Unreferenced (Widget);
    begin
       return True;
    end Filter;
@@ -1686,7 +1706,9 @@ package body Gtk.Abstract_Browser is
    procedure From_Filtered
      (Model      : not null access Gtk_Directory_Items_Store_Record;
       Unfiltered : out Gtk.Tree_Model.Gtk_Tree_Iter;
-      Filtered   : Gtk.Tree_Model.Gtk_Tree_Iter) is
+      Filtered   : Gtk.Tree_Model.Gtk_Tree_Iter)
+   is
+      pragma Unreferenced (Model);
    begin
       Unfiltered := Filtered;
    end From_Filtered;
@@ -1695,6 +1717,7 @@ package body Gtk.Abstract_Browser is
      (Store : not null access Gtk_Abstract_Directory_Record'Class;
       Item  : Gtk.Tree_Model.Gtk_Tree_Iter) return Gtk.Tree_Model.Gtk_Tree_Iter
    is
+      pragma Unreferenced (Store);
    begin
       return Item;
    end From_Item;
@@ -1873,7 +1896,7 @@ package body Gtk.Abstract_Browser is
       if Row = Gtk.Tree_Model.Null_Iter then
          raise Ada.IO_Exceptions.Name_Error;
       end if;
-      return Widget.all.Cache.Get_Path (To_Item (Widget.all.Cache, Row));
+      return Get_Path (Widget.all.Cache, To_Item (Widget.all.Cache, Row));
    end Get_Current_Directory;
 
    function Get_Depth
@@ -1955,7 +1978,9 @@ package body Gtk.Abstract_Browser is
 
    overriding function Get_Flags
      (Model : not null access Gtk_Directory_Items_Store_Record)
-      return Gtk.Tree_Model.Tree_Model_Flags is
+      return Gtk.Tree_Model.Tree_Model_Flags
+   is
+      pragma Unreferenced (Model);
    begin
       return Gtk.Tree_Model.Tree_Model_List_Only;
    end Get_Flags;
@@ -1967,6 +1992,8 @@ package body Gtk.Abstract_Browser is
       Has_Children : Boolean;
       Topmost      : Boolean) return Icon_Data
    is
+      pragma Unreferenced (Topmost);
+      pragma Unreferenced (Widget);
       This : constant String := String (Kind);
    begin
       if not Has_Children then
@@ -1995,7 +2022,10 @@ package body Gtk.Abstract_Browser is
       Name         : Item_Name;
       Kind         : Item_Type;
       Directory    : Boolean;
-      Has_Children : Boolean) return Icon_Data is
+      Has_Children : Boolean) return Icon_Data
+   is
+      pragma Unreferenced (Name);
+      pragma Unreferenced (Widget);
    begin
       if not Directory or else Has_Children then
          return (Stock_ID, Kind'Length, String (Kind));
@@ -2244,7 +2274,13 @@ package body Gtk.Abstract_Browser is
       Kind         : Item_Type;
       Expanded     : Boolean;
       Has_Children : Boolean;
-      Topmost      : Boolean) return Item_Name is
+      Topmost      : Boolean) return Item_Name
+   is
+      pragma Unreferenced (Expanded);
+      pragma Unreferenced (Has_Children);
+      pragma Unreferenced (Kind);
+      pragma Unreferenced (Topmost);
+      pragma Unreferenced (Widget);
    begin
       return Name;
    end Get_Name;
@@ -2371,7 +2407,7 @@ package body Gtk.Abstract_Browser is
          Unfiltered : constant Gtk.Tree_Model.Gtk_Tree_Path :=
                         Model.all.Cache.all.Tree.all.Get_Path (Iter);
          Filtered   : constant Gtk.Tree_Model.Gtk_Tree_Path :=
-                        Model.To_Filtered (Unfiltered);
+                        To_Filtered (Model, Unfiltered);
       begin
          Gtk.Tree_Model.Path_Free (Unfiltered);
          return Filtered;
@@ -2411,7 +2447,7 @@ package body Gtk.Abstract_Browser is
          if Folder = Gtk.Tree_Model.Null_Iter then
             return Store.all.Get_Path ("", Name);
          else
-            return Store.all.Get_Path (Store.Get_Path (Folder), Name);
+            return Get_Path (Store, Get_Path (Store, Folder), Name);
          end if;
       end;
    end Get_Path;
@@ -2421,8 +2457,9 @@ package body Gtk.Abstract_Browser is
       Index  : Positive) return Item_Path is
    begin
       return
-        Widget.all.Content.all.Cache.Get_Path
-          (Widget.all.From_Marked (Widget.all.Get_Iter (Index)));
+        Get_Path
+          (Widget.all.Content.all.Cache,
+           Widget.all.From_Marked (Widget.all.Get_Iter (Index)));
    end Get_Path;
 
    function Get_Path_Before
@@ -2693,6 +2730,7 @@ package body Gtk.Abstract_Browser is
          return Right - Left + 1;
       end;
    end Get_Visible_Width;
+   pragma Unreferenced (Get_Visible_Width);
 
    procedure Gtk_New
      (Model : out Gtk_Directory_Items_Store;
@@ -2911,7 +2949,7 @@ package body Gtk.Abstract_Browser is
          Gtk.Cell_Renderer_Pixbuf.Gtk_New (Data.Icon_Renderer);
          for No in 0 .. Gint (Columns) - 1 loop
             Gtk.Cell_Renderer_Text.Gtk_New (Data.Text_Renderer);
-            Widget.all.Name_Renderers (Integer (No + 1)) :=
+            Widget.all.Name_Renderers.all (Integer (No + 1)) :=
               Data.Text_Renderer;
             Gtk.Tree_View_Column.Gtk_New (Column);
 
@@ -3034,7 +3072,11 @@ package body Gtk.Abstract_Browser is
    function Input_Event
      (Widget : not null access Gtk_Directory_Items_View_Record;
       Index  : Positive;
-      Event  : Gdk.Event.Gdk_Event) return Boolean is
+      Event  : Gdk.Event.Gdk_Event) return Boolean
+   is
+      pragma Unreferenced (Event);
+      pragma Unreferenced (Index);
+      pragma Unreferenced (Widget);
    begin
       return False;
    end Input_Event;
@@ -3086,7 +3128,7 @@ package body Gtk.Abstract_Browser is
    begin
       return
         Glib.Properties.Get_Property
-          (Widget.all.Name_Renderers (1),
+          (Widget.all.Name_Renderers.all (1),
            Gtk.Cell_Renderer_Text.Editable_Property);
    end Is_Editable;
 
@@ -3112,6 +3154,7 @@ package body Gtk.Abstract_Browser is
       Params  : Glib.Values.GValues;
       Browser : Gtk_Directory_Items_View)
    is
+      pragma Unreferenced (Object);
       Path   : constant Gtk.Tree_Model.Gtk_Tree_Path :=
                  Gtk.Tree_Model.Convert
                    (Glib.Values.Get_Address (Glib.Values.Nth (Params, 1)));
@@ -3139,6 +3182,8 @@ package body Gtk.Abstract_Browser is
       Params : Glib.Values.GValues;
       Store  : Gtk_Directory_Items_Store)
    is
+      pragma Unreferenced (Object);
+      pragma Unreferenced (Params);
       use type Gtk.Tree_Model.Gtk_Tree_Path;
    begin
       if Store.all.Root = Gtk.Tree_Model.Null_Gtk_Tree_Path then
@@ -3172,6 +3217,7 @@ package body Gtk.Abstract_Browser is
       Params : Glib.Values.GValues;
       Store  : Gtk_Directory_Items_Store)
    is
+      pragma Unreferenced (Object);
       Row : constant Gtk.Tree_Model.Gtk_Tree_Iter :=
               Gtk.Tree_Model.Get_Tree_Iter (Glib.Values.Nth (Params, 1));
 
@@ -3180,7 +3226,7 @@ package body Gtk.Abstract_Browser is
       if Store.all.Root = Gtk.Tree_Model.Null_Gtk_Tree_Path then
          Store.all.Deleted := -1;
       else
-         Store.all.Deleted := Store.To_Filtered (Row);
+         Store.all.Deleted := To_Filtered (Store, Row);
       end if;
    exception
       when Error : others =>
@@ -3197,6 +3243,7 @@ package body Gtk.Abstract_Browser is
       Params : Glib.Values.GValues;
       Store  : Gtk_Directory_Items_Store)
    is
+      pragma Unreferenced (Object);
       Row  : constant Gtk.Tree_Model.Gtk_Tree_Iter :=
                Gtk.Tree_Model.Get_Tree_Iter (Glib.Values.Nth (Params, 1));
       Path : constant Gtk.Tree_Model.Gtk_Tree_Path :=
@@ -3210,7 +3257,7 @@ package body Gtk.Abstract_Browser is
       if Store.all.Cache.all.Get_Int (Row, 2) in Cached_Node then
          declare
             Filtered : constant Gtk.Tree_Model.Gtk_Tree_Path :=
-                         Store.To_Filtered (Path);
+                         To_Filtered (Store, Path);
          begin
             if Filtered /= Gtk.Tree_Model.Null_Gtk_Tree_Path then
                Gtk.Tree_Model.Row_Inserted
@@ -3234,6 +3281,7 @@ package body Gtk.Abstract_Browser is
       Params : Glib.Values.GValues;
       Store  : Gtk_Directory_Items_Store)
    is
+      pragma Unreferenced (Object);
       Row     : constant Gtk.Tree_Model.Gtk_Tree_Iter :=
                   Gtk.Tree_Model.Get_Tree_Iter (Glib.Values.Nth (Params, 1));
       Exists  : Boolean := False;
@@ -3312,6 +3360,7 @@ package body Gtk.Abstract_Browser is
       Event   : Gdk.Event.Gdk_Event;
       Browser : Gtk_Directory_Items_View) return Boolean
    is
+      pragma Unreferenced (Object);
       Changed : Boolean;
    begin
       case Gdk.Event.Get_Event_Type (Event) is
@@ -3495,6 +3544,7 @@ package body Gtk.Abstract_Browser is
                   end if;
                   declare
                      Wait : Gtk.Missed.Wait_Cursor (+Browser);
+                     pragma Unreferenced (Wait);
                   begin
                      Gtk.Abstract_Browser.Changed
                        (Browser.all.Content.all.Cache,
@@ -3854,7 +3904,7 @@ package body Gtk.Abstract_Browser is
                Focus_Column  => Column,
                Start_Editing => False,
                Focus_Cell    =>
-                 Widget.all.Name_Renderers (Column_No).all'Access);
+                 Widget.all.Name_Renderers.all (Column_No).all'Access);
             Widget.all.Scroll_To_Cell (Path, Column, False, 0.5, 0.0);
             Widget.all.Grab_Focus;
             Gtk.Tree_Model.Path_Free (Path);
@@ -4126,6 +4176,8 @@ package body Gtk.Abstract_Browser is
      (Model : not null access Gtk_Directory_Items_Store_Record;
       Child : Gtk.Tree_Model.Gtk_Tree_Iter) return Gtk.Tree_Model.Gtk_Tree_Iter
    is
+      pragma Unreferenced (Child);
+      pragma Unreferenced (Model);
    begin
       return Gtk.Tree_Model.Null_Iter;
    end Parent;
@@ -4239,7 +4291,7 @@ package body Gtk.Abstract_Browser is
      (Store : not null access Gtk_Abstract_Directory_Record'Class;
       Item  : in out Gtk.Tree_Model.Gtk_Tree_Iter)
    is
-      Directory : constant Item_Path := Store.Get_Path (Item);
+      Directory : constant Item_Path := Get_Path (Store, Item);
       Updated   : Boolean;
       Child     : Gtk.Tree_Model.Gtk_Tree_Iter;
 
@@ -4254,7 +4306,7 @@ package body Gtk.Abstract_Browser is
          exit when Child = Gtk.Tree_Model.Null_Iter;
          declare
             Path : constant Gtk.Tree_Model.Gtk_Tree_Path :=
-                     Store.Get_Path (Child);
+                     Get_Path (Store, Child);
             Name : constant Item_Name := Get_Name (Store.all.Tree, Child);
          begin
             --           if Get_Int (Store.Tree, Child, 2) in Cached_Directory then
@@ -4283,7 +4335,7 @@ package body Gtk.Abstract_Browser is
          Store.all.Refreshing := Store.all.Refreshing - 1;
       else
          declare
-            Path : constant Item_Path := Store.Get_Path (Item);
+            Path : constant Item_Path := Get_Path (Store, Item);
          begin
             Add_Folder (Store, Item, Path, True, Updated);
             Store.all.Refreshing := Store.all.Refreshing + 1;
@@ -4347,7 +4399,7 @@ package body Gtk.Abstract_Browser is
          then
             declare
                Path : constant Gtk.Tree_Model.Gtk_Tree_Path :=
-                        Store.Get_Path (Row);
+                        Get_Path (Store, Row);
             begin
                if Path /= Gtk.Tree_Model.Null_Gtk_Tree_Path then
                   Gtk.Tree_Model.Row_Changed
@@ -4396,7 +4448,7 @@ package body Gtk.Abstract_Browser is
          then
             declare
                Path : constant Gtk.Tree_Model.Gtk_Tree_Path :=
-                        Store.Get_Path (Row);
+                        Get_Path (Store, Row);
             begin
                if Path /= Gtk.Tree_Model.Null_Gtk_Tree_Path then
                   Gtk.Tree_Model.Row_Changed
@@ -4530,6 +4582,7 @@ package body Gtk.Abstract_Browser is
       Browser   : Gtk_Directory_Items_View)
    is
       Wait : Gtk.Missed.Wait_Cursor (+Browser);
+      pragma Unreferenced (Wait);
    begin
       declare
          Model     : Gtk.Tree_Model.Gtk_Tree_Model;
@@ -4630,7 +4683,7 @@ package body Gtk.Abstract_Browser is
       else
          Set
            (Object,
-            Widget.all.Cache.Get_Path (To_Item (Widget.all.Cache, Row)));
+            Get_Path (Widget.all.Cache, To_Item (Widget.all.Cache, Row)));
       end if;
    end Set;
 
@@ -4641,6 +4694,8 @@ package body Gtk.Abstract_Browser is
       Iter   : Gtk.Tree_Model.Gtk_Tree_Iter;
       Data   : Column_Data)
    is
+      pragma Unreferenced (Cell);
+      pragma Unreferenced (Column);
       FG, BG : Gdk.RGBA.Gdk_RGBA;
       Style  : Gtk.Style_Context.Gtk_Style_Context;
       Offset : constant Gint := Gint (Data.Column - 1) * 4;
@@ -4689,6 +4744,7 @@ package body Gtk.Abstract_Browser is
                    Get_Name (Model, Iter, Offset + 1);
          Path  : Gtk.Tree_Model.Gtk_Tree_Path :=
                    Gtk.Tree_Model.Get_Path (Model, Iter);
+         pragma Unreferenced (Path);
          Icon  : Icon_Data :=
                    Get_Icon
                      (Data.Browser,
@@ -4832,6 +4888,7 @@ package body Gtk.Abstract_Browser is
       Directory : Item_Path)
    is
       Wait        : Gtk.Missed.Wait_Cursor (+Widget);
+      pragma Unreferenced (Wait);
       Best_Match  : Gtk.Tree_Model.Gtk_Tree_Iter := Gtk.Tree_Model.Null_Iter;
       Exact_Match : Gtk.Tree_Model.Gtk_Tree_Iter := Gtk.Tree_Model.Null_Iter;
 
@@ -4865,8 +4922,8 @@ package body Gtk.Abstract_Browser is
          end if;
          while Exact_Match /= Gtk.Tree_Model.Null_Iter loop
             exit when
-              (Gtk.Tree_Store.Get_Int (Widget.all.Cache.all.Tree, Exact_Match, 2)
-               in Cached_Children);
+              Gtk.Tree_Store.Get_Int
+                (Widget.all.Cache.all.Tree, Exact_Match, 2) in Cached_Children;
             Exact_Match :=
               Gtk.Tree_Store.Parent (Widget.all.Cache.all.Tree, Exact_Match);
          end loop;
@@ -4876,7 +4933,7 @@ package body Gtk.Abstract_Browser is
                declare
                   Path : Gtk.Tree_Model.Gtk_Tree_Path;
                begin
-                  Path := Widget.all.Cache.Get_Path (Best_Match);
+                  Path := Get_Path (Widget.all.Cache, Best_Match);
                   if
                     0 /= (Get_Tracing (Widget.all.Cache) and
                               Trace_Set_Directory)
@@ -4942,7 +4999,7 @@ package body Gtk.Abstract_Browser is
    begin
       for Index in Widget.all.Name_Renderers'Range loop
          Glib.Properties.Set_Property
-           (Widget.all.Name_Renderers (Index),
+           (Widget.all.Name_Renderers.all (Index),
             Gtk.Cell_Renderer_Text.Editable_Property,
             Editable);
       end loop;
@@ -5187,6 +5244,8 @@ package body Gtk.Abstract_Browser is
       Iter   : Gtk.Tree_Model.Gtk_Tree_Iter;
       Data   : Gtk_Directory_Tree_View)
    is
+      pragma Unreferenced (Column);
+      pragma Unreferenced (Model);
       use type Gtk.Tree_Model.Gtk_Tree_Iter;
 
       Item  : constant Gtk.Tree_Model.Gtk_Tree_Iter :=
@@ -5256,6 +5315,8 @@ package body Gtk.Abstract_Browser is
       Iter   : Gtk.Tree_Model.Gtk_Tree_Iter;
       Data   : Gtk_Directory_Tree_View)
    is
+      pragma Unreferenced (Column);
+      pragma Unreferenced (Model);
       Item  : constant Gtk.Tree_Model.Gtk_Tree_Iter :=
                 To_Item (Data.all.Cache, Iter);
       Flags : constant Gint :=
@@ -5412,7 +5473,7 @@ package body Gtk.Abstract_Browser is
                return -1;
             else
                declare
-                  Index : constant Gint := Model.To_Filtered (Path);
+                  Index : constant Gint := To_Filtered (Model, Path);
                begin
                   Gtk.Tree_Model.Path_Free (Path);
                   return Index;
@@ -5427,7 +5488,7 @@ package body Gtk.Abstract_Browser is
       Unfiltered : Gtk.Tree_Model.Gtk_Tree_Iter)
       return Gtk.Tree_Model.Gtk_Tree_Iter is
    begin
-      if Model.To_Filtered (Unfiltered) >= 0 then
+      if To_Filtered (Model, Unfiltered) >= 0 then
          return Unfiltered;
       else
          return Gtk.Tree_Model.Null_Iter;
@@ -5439,7 +5500,7 @@ package body Gtk.Abstract_Browser is
       Unfiltered : Gtk.Tree_Model.Gtk_Tree_Iter)
       return Gtk.Tree_Model.Gtk_Tree_Path
    is
-      Index : constant Gint := Model.To_Filtered (Unfiltered);
+      Index : constant Gint := To_Filtered (Model, Unfiltered);
    begin
       if Index >= 0 then
          declare
@@ -5459,7 +5520,7 @@ package body Gtk.Abstract_Browser is
       Unfiltered : Gtk.Tree_Model.Gtk_Tree_Path)
       return Gtk.Tree_Model.Gtk_Tree_Path
    is
-      Index : constant Gint := Model.To_Filtered (Unfiltered);
+      Index : constant Gint := To_Filtered (Model, Unfiltered);
    begin
       if Index < 0 then
          return Gtk.Tree_Model.Null_Gtk_Tree_Path;
@@ -5477,7 +5538,9 @@ package body Gtk.Abstract_Browser is
    function To_Item
      (Store     : not null access Gtk_Abstract_Directory_Record'Class;
       Directory : Gtk.Tree_Model.Gtk_Tree_Iter)
-      return Gtk.Tree_Model.Gtk_Tree_Iter is
+      return Gtk.Tree_Model.Gtk_Tree_Iter
+   is
+      pragma Unreferenced (Store);
    begin
       return Directory;
    end To_Item;

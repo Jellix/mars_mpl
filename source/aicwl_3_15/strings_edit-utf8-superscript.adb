@@ -23,35 +23,31 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 package body Strings_Edit.UTF8.Superscript is
 
-   Page_00 : constant String := (1..1 => Character'Val (194));
+   Page_00 : constant String := (1 .. 1 => Character'Val (194));
    Page_32 : constant String :=
                 Character'Val (226) & Character'Val (129);
 
    procedure Get_Sign
-             (  Source  : String;
-                Pointer : in out Integer;
-                Sign_Of : out Sign
-             )  is
+     (Source  : String;
+      Pointer : in out Integer;
+      Sign_Of : out Sign) is
    begin
       Sign_Of := None;
-      if (  Pointer < Source'Last
-         and then
-            Source (Pointer) = Character'Val (226)
-         and then
-            Source (Pointer + 1) = Character'Val (129)
-         and then
-            Pointer + 1 < Source'Last
-         )
+      if
+        Pointer < Source'Last and then
+        Source (Pointer) = Character'Val (226) and then
+        Source (Pointer + 1) = Character'Val (129) and then
+        Pointer + 1 < Source'Last
       then
          case Source (Pointer + 2) is
             when Character'Val (186) =>
                Sign_Of := Plus;
                Pointer := Pointer + 3;
-               Get (Source, Pointer );
+               Get (Source, Pointer);
             when Character'Val (187) =>
                Sign_Of := Minus;
                Pointer := Pointer + 3;
@@ -63,10 +59,10 @@ package body Strings_Edit.UTF8.Superscript is
    end Get_Sign;
 
    procedure Get_Digit
-             (  Source  : String;
-                Pointer : in out Integer;
-                Digit   : out Natural
-             )  is
+     (Source  : String;
+      Pointer : in out Integer;
+      Digit   : out Natural)
+   is
       Index : Integer := Pointer;
    begin
       if Index >= Source'Last then
@@ -88,10 +84,9 @@ package body Strings_Edit.UTF8.Superscript is
             end case;
          when Character'Val (226) =>
             Index := Index + 1;
-            if (  Index >= Source'Last
-               or else
-                  Source (Index) /= Character'Val (129)
-               )
+            if
+              Index >= Source'Last or else
+              Source (Index) /= Character'Val (129)
             then
                Digit := 10;
                return;
@@ -116,10 +111,9 @@ package body Strings_Edit.UTF8.Superscript is
    end Get_Digit;
 
    procedure Put_Digit
-             (  Destination : in out String;
-                Pointer     : in out Integer;
-                Digit       : Script_Digit
-             )  is
+     (Destination : in out String;
+      Pointer     : in out Integer;
+      Digit       : Script_Digit) is
    begin
       case Digit is
          when 0 => Reverse_Put (Destination, Pointer, Page_32, 176);
@@ -136,10 +130,9 @@ package body Strings_Edit.UTF8.Superscript is
    end Put_Digit;
 
    procedure Put_Sign
-             (  Destination : in out String;
-                Pointer     : in out Integer;
-                Sign_Of     : Sign
-             )  is
+     (Destination : in out String;
+      Pointer     : in out Integer;
+      Sign_Of     : Sign) is
    begin
       case Sign_Of is
          when Minus =>

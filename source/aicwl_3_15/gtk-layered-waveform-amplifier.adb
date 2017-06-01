@@ -69,26 +69,24 @@ package body Gtk.Layered.Waveform.Amplifier is
    end Emit;
 
    overriding procedure Add_Range
-     (  Amplifier    : not null access
-          Gtk_Waveform_Amplifier_Record;
-        Layer        : Waveform_Layer'Class;
-        From,  To    : X_Axis;
-        Lower, Upper : Y_Axis
-       )  is
+     (Amplifier    : not null access Gtk_Waveform_Amplifier_Record;
+      Layer        : Waveform_Layer'Class;
+      From,  To    : X_Axis;
+      Lower, Upper : Y_Axis) is
+      pragma Unreferenced (From, To);
    begin
       if Amplifier.all.Setting then
          if 0 /= (Tracing_Mode and Trace_Amplifier) then ---------------
             Trace_Line
-              (  Amplifier'Address,
-                 (  "Set to "
-                  &  Edit.Image (Gdouble (Amplifier.all.Y1))
-                  &  ".."
-                  &  Edit.Image (Gdouble (Amplifier.all.Y2))
-                  &  " to "
-                  &  Edit.Image (Gdouble (Lower))
-                  &  ".."
-                  &  Edit.Image (Gdouble (Upper))
-                 )  );
+              (Amplifier'Address,
+               "Set to "
+               & Edit.Image (Gdouble (Amplifier.all.Y1))
+               & ".."
+               & Edit.Image (Gdouble (Amplifier.all.Y2))
+               & " to "
+               & Edit.Image (Gdouble (Lower))
+               & ".."
+               & Edit.Image (Gdouble (Upper)));
          end if; -------------------------------------------------------
          Amplifier.all.Y1 := Y_Axis'Min (Amplifier.all.Y1, Lower);
          Amplifier.all.Y2 := Y_Axis'Max (Amplifier.all.Y2, Upper);
@@ -98,28 +96,25 @@ package body Gtk.Layered.Waveform.Amplifier is
          Amplifier.all.Setting := True;
          if 0 /= (Tracing_Mode and Trace_Amplifier) then ---------------
             Trace_Line
-              (  Amplifier'Address,
-                 (  "Reset to "
-                  &  Edit.Image (Gdouble (Lower))
-                  &  ".."
-                  &  Edit.Image (Gdouble (Upper))
-                 )  );
+              (Amplifier'Address,
+               "Reset to "
+               &  Edit.Image (Gdouble (Lower))
+               &  ".."
+               &  Edit.Image (Gdouble (Upper)));
          end if; -------------------------------------------------------
       end if;
       if Layer.Scaled then
          Amplifier.all.Width :=
-           (  Gdouble (Layer.Widget.all.Get_Allocated_Height)
-              *  (Layer.Box.Y2 - Layer.Box.Y1)
-             );
+           Gdouble (Layer.Widget.all.Get_Allocated_Height) *
+           (Layer.Box.Y2 - Layer.Box.Y1);
       else
          Amplifier.all.Width := Layer.Box.Y2 - Layer.Box.Y1;
       end if;
    end Add_Range;
 
    function Get_Auto_Scaling
-     (  Amplifier : not null access constant
-          Gtk_Waveform_Amplifier_Record
-       )  return Boolean is
+     (Amplifier : not null access constant Gtk_Waveform_Amplifier_Record)
+      return Boolean is
    begin
       return Amplifier.all.Auto;
    end Get_Auto_Scaling;
@@ -139,25 +134,22 @@ package body Gtk.Layered.Waveform.Amplifier is
    end Get_Page_Size;
 
    function Get_Raster_Scaling
-     (  Amplifier : not null access constant
-          Gtk_Waveform_Amplifier_Record
-       )  return Boolean is
+     (Amplifier : not null access constant Gtk_Waveform_Amplifier_Record)
+      return Boolean is
    begin
       return Amplifier.all.Raster;
    end Get_Raster_Scaling;
 
    function Get_Scaling
-     (  Amplifier : not null access constant
-          Gtk_Waveform_Amplifier_Record
-       )  return Waveform_Scaling is
+     (Amplifier : not null access constant Gtk_Waveform_Amplifier_Record)
+      return Waveform_Scaling is
    begin
       return Amplifier.all.Scaling;
    end Get_Scaling;
 
    function Get_Tick_Length
-     (  Amplifier : not null access constant
-          Gtk_Waveform_Amplifier_Record
-       )  return Positive is
+     (Amplifier : not null access constant Gtk_Waveform_Amplifier_Record)
+      return Positive is
    begin
       return Amplifier.all.Tick;
    end Get_Tick_Length;
@@ -165,13 +157,12 @@ package body Gtk.Layered.Waveform.Amplifier is
    function Get_Type return GType is
    begin
       Initialize_Class_Record
-        (  Ancestor     => Gtk.Adjustment.Get_Type,
-           Signals      => Signal_Names,
-           Class_Record => Class_Record,
-           Type_Name    => Class_Name,
-           Parameters   => (  0 => (0 => GType_None),
-                              1 => (0 => GType_None)
-                             )                  );
+        (Ancestor     => Gtk.Adjustment.Get_Type,
+         Signals      => Signal_Names,
+         Class_Record => Class_Record,
+         Type_Name    => Class_Name,
+         Parameters   => (0 => (0 => GType_None),
+                          1 => (0 => GType_None)));
       return Class_Record.all.The_Type;
    end Get_Type;
 
@@ -183,8 +174,7 @@ package body Gtk.Layered.Waveform.Amplifier is
    end Get_Upper;
 
    overriding function Get_Value
-     (  Amplifier : access Gtk_Waveform_Amplifier_Record
-       )  return Gdouble is
+     (Amplifier : access Gtk_Waveform_Amplifier_Record) return Gdouble is
    begin
       Set_Range (Amplifier.all);
       return Gtk.Adjustment.Gtk_Adjustment_Record (Amplifier.all).Get_Value;
@@ -197,20 +187,17 @@ package body Gtk.Layered.Waveform.Amplifier is
    end Gtk_New;
 
    procedure Initialize
-     (  Amplifier : not null access
-          Gtk_Waveform_Amplifier_Record'Class
-       )  is
+     (Amplifier : not null access Gtk_Waveform_Amplifier_Record'Class) is
    begin
       G_New (Amplifier, Get_Type);
       Gtk.Adjustment.Initialize
-        (  Adjustment     => Amplifier,
-           Value          => 0.0,
-           Lower          => 0.0,
-           Upper          => 1.0,
-           Step_Increment => 0.1,
-           Page_Increment => 1.0,
-           Page_Size      => 1.0
-          );
+        (Adjustment     => Amplifier,
+         Value          => 0.0,
+         Lower          => 0.0,
+         Upper          => 1.0,
+         Step_Increment => 0.1,
+         Page_Increment => 1.0,
+         Page_Size      => 1.0);
       --***
       -- This is a bug in GTK, which manifests itself as not setting all
       -- adjustment parameters upon Inilialize (gtk_adjustment_new). The
@@ -218,13 +205,12 @@ package body Gtk.Layered.Waveform.Amplifier is
       -- parameters. Normally Configure would be not necessary
       --
       Amplifier.all.Configure
-        (  Value          => 0.0,
-           Lower          => 0.0,
-           Upper          => 1.0,
-           Step_Increment => 0.1,
-           Page_Increment => 1.0,
-           Page_Size      => 1.0
-          );
+        (Value          => 0.0,
+         Lower          => 0.0,
+         Upper          => 1.0,
+         Step_Increment => 0.1,
+         Page_Increment => 1.0,
+         Page_Size      => 1.0);
       if Autoscaling_Changed_ID = Invalid_Signal_Id then
          declare
             Widget_Type : constant GType := Get_Type (Amplifier);
@@ -244,10 +230,8 @@ package body Gtk.Layered.Waveform.Amplifier is
    end Initialize;
 
    procedure Set_Auto_Scaling
-     (  Amplifier : not null access
-          Gtk_Waveform_Amplifier_Record;
-        Auto      : Boolean
-       )  is
+     (Amplifier : not null access Gtk_Waveform_Amplifier_Record;
+      Auto      : Boolean) is
    begin
       if Amplifier.all.Auto /= Auto then
          Amplifier.all.Auto := Auto;
@@ -256,8 +240,8 @@ package body Gtk.Layered.Waveform.Amplifier is
    end Set_Auto_Scaling;
 
    procedure Set_Range
-     (  Amplifier : in out Gtk_Waveform_Amplifier_Record
-       )  is
+     (Amplifier : in out Gtk_Waveform_Amplifier_Record)
+   is
       function Get_Count return Positive is
          Length : Gdouble := Amplifier.Width;
       begin
@@ -355,20 +339,19 @@ package body Gtk.Layered.Waveform.Amplifier is
                if 0 /= (Tracing_Mode and Trace_Amplifier) then ---------
                   if 0 /= (Changed and Undeflow_V1) then
                      Trace_Line
-                       (  Amplifier'Address,
-                          (  Edit.Image (Gdouble (Amplifier.Y1))
-                           &  " = V1 < ["
-                           &  Edit.Image (Gtk.Adjustment.Get_Value (Parent))
-                           &  " set to "
-                           &  Edit.Image (V1)
-                           &  ".."
-                           &  Edit.Image (V2)
-                           &  " ["
-                           &  Edit.Image (Gdouble (Amplifier.Y1))
-                           &  ".."
-                           &  Edit.Image (Gdouble (Amplifier.Y2))
-                           &  "]"
-                          )  );
+                       (Amplifier'Address,
+                        Edit.Image (Gdouble (Amplifier.Y1))
+                        & " = V1 < ["
+                        & Edit.Image (Gtk.Adjustment.Get_Value (Parent))
+                        & " set to "
+                        & Edit.Image (V1)
+                        & ".."
+                        & Edit.Image (V2)
+                        & " ["
+                        & Edit.Image (Gdouble (Amplifier.Y1))
+                        & ".."
+                        & Edit.Image (Gdouble (Amplifier.Y2))
+                        & "]");
                   end if;
                   if 0 /= (Changed and Overflow_V1) then
                      Trace_Line
@@ -428,57 +411,53 @@ package body Gtk.Layered.Waveform.Amplifier is
                   end if;
                   if 0 /= (Changed and Raster_V1) then
                      Trace_Line
-                       (  Amplifier'Address,
-                          (  "Set lower at raster "
-                           &  Edit.Image (V1)
-                           &  ".."
-                           &  Edit.Image (V2)
-                           &  " ["
-                           &  Edit.Image (Gdouble (Amplifier.Y1))
-                           &  ".."
-                           &  Edit.Image (Gdouble (Amplifier.Y2))
-                           &  " ]"
-                          )  );
+                       (Amplifier'Address,
+                        "Set lower at raster "
+                        & Edit.Image (V1)
+                        & ".."
+                        & Edit.Image (V2)
+                        & " ["
+                        & Edit.Image (Gdouble (Amplifier.Y1))
+                        & ".."
+                        & Edit.Image (Gdouble (Amplifier.Y2))
+                        & " ]");
                   end if;
                   if 0 /= (Changed and Raster_V2) then
                      Trace_Line
-                       (  Amplifier'Address,
-                          (  "Set upper at raster "
-                           &  Edit.Image (V1)
-                           &  ".."
-                           &  Edit.Image (V2)
-                           &  " ["
-                           &  Edit.Image (Gdouble (Amplifier.Y1))
-                           &  ".."
-                           &  Edit.Image (Gdouble (Amplifier.Y2))
-                           &  " ]"
-                          )  );
+                       (Amplifier'Address,
+                        "Set upper at raster "
+                        & Edit.Image (V1)
+                        & ".."
+                        & Edit.Image (V2)
+                        & " ["
+                        & Edit.Image (Gdouble (Amplifier.Y1))
+                        & ".."
+                        & Edit.Image (Gdouble (Amplifier.Y2))
+                        & " ]");
                   end if;
                   if 0 /= (Changed and Empty) then
                      Trace_Line
-                       (  Amplifier'Address,
-                          (  "Empty range "
-                           &  Edit.Image (V1)
-                           &  ".."
-                           &  Edit.Image (V2)
-                           &  " ["
-                           &  Edit.Image (Gdouble (Amplifier.Y1))
-                           &  ".."
-                           &  Edit.Image (Gdouble (Amplifier.Y2))
-                           &  " ]"
-                          )  );
+                       (Amplifier'Address,
+                        "Empty range "
+                        & Edit.Image (V1)
+                        & ".."
+                        & Edit.Image (V2)
+                        & " ["
+                        & Edit.Image (Gdouble (Amplifier.Y1))
+                        & ".."
+                        & Edit.Image (Gdouble (Amplifier.Y2))
+                        & " ]");
                   end if;
                   Trace_Line
-                    (  Amplifier'Address,
-                       (  "Configured value "
-                        &  Edit.Image (V1)
-                        &  " page "
-                        &  Edit.Image (Size)
-                        &  " range "
-                        &  Edit.Image (Lower)
-                        &  ".."
-                        &  Edit.Image (Upper)
-                       )  );
+                    (Amplifier'Address,
+                     "Configured value "
+                     & Edit.Image (V1)
+                     & " page "
+                     & Edit.Image (Size)
+                     & " range "
+                     & Edit.Image (Lower)
+                     & ".."
+                     & Edit.Image (Upper));
                end if; -------------------------------------------------
                Amplifier.Setting := False;
                Gtk.Adjustment.Configure
@@ -495,10 +474,8 @@ package body Gtk.Layered.Waveform.Amplifier is
    end Set_Range;
 
    procedure Set_Raster_Scaling
-     (  Amplifier : not null access
-          Gtk_Waveform_Amplifier_Record;
-        Raster    : Boolean
-       )  is
+     (Amplifier : not null access Gtk_Waveform_Amplifier_Record;
+      Raster    : Boolean) is
    begin
       if Amplifier.all.Raster /= Raster then
          Amplifier.all.Raster := Raster;
@@ -507,19 +484,15 @@ package body Gtk.Layered.Waveform.Amplifier is
    end Set_Raster_Scaling;
 
    procedure Set_Scaling
-     (  Amplifier : not null access
-          Gtk_Waveform_Amplifier_Record;
-        Scaling   : Waveform_Scaling
-       )  is
+     (Amplifier : not null access Gtk_Waveform_Amplifier_Record;
+      Scaling   : Waveform_Scaling) is
    begin
       Amplifier.all.Scaling := Scaling;
    end Set_Scaling;
 
    procedure Set_Tick_Length
-     (  Amplifier : not null access
-          Gtk_Waveform_Amplifier_Record;
-        Length    : Positive
-       )  is
+     (Amplifier : not null access Gtk_Waveform_Amplifier_Record;
+      Length    : Positive) is
    begin
       Amplifier.all.Tick := Length;
    end Set_Tick_Length;

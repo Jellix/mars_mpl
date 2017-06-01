@@ -33,8 +33,6 @@ with Gtk.Missed;
 
 package Gtk.Layered.Elliptic_Background is
 
-   pragma Warnings (Off, "declaration hides ""Center""");
-
    --
    -- Elliptic_Background_Layer -- A filled elliptic background
    --
@@ -319,7 +317,5 @@ private
          Length : Gdouble;
          Color  : Gdk.Color.Gdk_Color;
       end record;
-
-   pragma Warnings (On, "declaration hides ""Center""");
 
 end Gtk.Layered.Elliptic_Background;

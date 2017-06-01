@@ -23,12 +23,11 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 with Pango.Cairo.Fonts.Font_Type_Property;
 with Gtk.Widget.Styles.Generic_Enumeration;
 
 package Gtk.Widget.Styles.Font_Type_Property is
-   new Gtk.Widget.Styles.Generic_Enumeration
-       (  Pango.Cairo.Fonts.Font_Type_Property
-       );
+  new Gtk.Widget.Styles.Generic_Enumeration
+    (Pango.Cairo.Fonts.Font_Type_Property);

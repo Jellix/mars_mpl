@@ -316,19 +316,19 @@ package body Glib.Spawn.Text_Bufferred is
       if Gtk.Text_Iter.Is_End (From) then
          return;
       end if;
-      loop
+      Read_Loop : loop
          Gtk.Text_Iter.Copy (From, To);
          Gtk.Text_Iter.Forward_Char (To, Got_It);
-         exit when not Got_It;
+         exit Read_Loop when not Got_It;
          declare
             Slice : constant String := Gtk.Text_Iter.Get_Text (From, To);
          begin
-            exit when Slice'Length > Data.Length - Data.Count;
+            exit Read_Loop when Slice'Length > Data.Length - Data.Count;
             Buffer (Data.Count .. Data.Count + Slice'Length) := Slice;
             Data.Count := Data.Count + Slice'Length;
             Gtk.Text_Iter.Copy (To, From);
          end;
-      end loop;
+      end loop Read_Loop;
       Data.Process.all.Position := Gtk.Text_Iter.Get_Offset (From);
    end Service;
 

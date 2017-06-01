@@ -23,163 +23,158 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
-
-with Interfaces.C.Strings;  use Interfaces.C.Strings;
-with Interfaces.C;          use Interfaces.C;
-with System;                use System;
+-- __________________________________________________________________ --
 
 with Ada.Unchecked_Deallocation;
 
+with Interfaces.C.Strings;
+
+with System;
+
 package body Gtk.Source_Mark_Attributes is
 
-   procedure g_free (String : chars_ptr);
+   pragma Warnings (Off, "declaration hides ""Attributes""");
+   pragma Warnings (Off, "declaration hides ""Background""");
+   pragma Warnings (Off, "declaration hides ""Icon""");
+   pragma Warnings (Off, "declaration hides ""Icon_Name""");
+   pragma Warnings (Off, "declaration hides ""Mark""");
+   pragma Warnings (Off, "declaration hides ""Pixbuf""");
+   pragma Warnings (Off, "declaration hides ""Size""");
+   pragma Warnings (Off, "declaration hides ""Stock_ID""");
+   pragma Warnings (Off, "declaration hides ""Widget""");
+
+   procedure g_free (S : Interfaces.C.Strings.chars_ptr);
    pragma Import (C, g_free, "g_free");
 
    function Get_Background
-            (  Attributes : not null access
-                            Gtk_Source_Mark_Atributes_Record
-            )  return Gdk_RGBA is
-      function Internal (Attributes : Address) return Gdk_RGBA;
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_source_mark_attributes_get_background"
-             );
+     (Attributes : not null access Gtk_Source_Mark_Atributes_Record)
+      return Gdk.RGBA.Gdk_RGBA
+   is
+      function Internal (Attributes : System.Address) return Gdk.RGBA.Gdk_RGBA;
+      pragma Import (C, Internal, "gtk_source_mark_attributes_get_background");
    begin
       return Internal (Get_Object (Attributes));
    end Get_Background;
 
    function Get_GIcon
-            (  Attributes : not null access
-                            Gtk_Source_Mark_Atributes_Record
-            )  return Glib.G_Icon.G_Icon is
-      function Internal (Attributes : Address) return Address;
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_source_mark_attributes_get_gicon"
-             );
+     (Attributes : not null access Gtk_Source_Mark_Atributes_Record)
+      return Glib.G_Icon.G_Icon
+   is
+      function Internal (Attributes : System.Address) return System.Address;
+      pragma Import (C, Internal, "gtk_source_mark_attributes_get_gicon");
    begin
       return Glib.G_Icon.G_Icon (Internal (Get_Object (Attributes)));
    end Get_GIcon;
 
    function Get_Icon_Name
-            (  Attributes : not null access
-                            Gtk_Source_Mark_Atributes_Record
-            )  return UTF8_String is
-      function Internal (Attributes : Address) return chars_ptr;
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_source_mark_attributes_get_icon_name"
-             );
-      Result : constant chars_ptr := Internal (Get_Object (Attributes));
+     (Attributes : not null access Gtk_Source_Mark_Atributes_Record)
+      return UTF8_String
+   is
+      function Internal
+        (Attributes : System.Address) return Interfaces.C.Strings.chars_ptr;
+      pragma Import (C, Internal, "gtk_source_mark_attributes_get_icon_name");
+      Result : constant Interfaces.C.Strings.chars_ptr :=
+                 Internal (Get_Object (Attributes));
+
+      use type Interfaces.C.Strings.chars_ptr;
    begin
-      if Result = Null_Ptr then
+      if Result = Interfaces.C.Strings.Null_Ptr then
          return "";
       else
-         return Value (Result);
+         return Interfaces.C.Strings.Value (Result);
       end if;
    end Get_Icon_Name;
 
    function Get_Pxibuf
-            (  Attributes : not null access
-                            Gtk_Source_Mark_Atributes_Record
-            )  return Gdk_Pixbuf is
-      function Internal (Attributes : Address) return Address;
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_source_mark_attributes_get_pixbuf"
-             );
-      Stub : Gdk_Pixbuf_Record;
+     (Attributes : not null access Gtk_Source_Mark_Atributes_Record)
+      return Gdk.Pixbuf.Gdk_Pixbuf
+   is
+      function Internal (Attributes : System.Address) return System.Address;
+      pragma Import (C, Internal, "gtk_source_mark_attributes_get_pixbuf");
+      Stub : Gdk.Pixbuf.Gdk_Pixbuf_Record;
    begin
       return
-         Gdk_Pixbuf
-         (  Get_User_Data_Fast
-            (  Internal (Get_Object (Attributes)),
-               Stub
-         )  );
+        Gdk.Pixbuf.Gdk_Pixbuf
+          (Get_User_Data_Fast
+             (Internal (Get_Object (Attributes)),
+              Stub));
    end Get_Pxibuf;
 
    function Get_Stock_ID
-            (  Attributes : not null access
-                            Gtk_Source_Mark_Atributes_Record
-            )  return UTF8_String is
-      function Internal (Attributes : Address) return chars_ptr;
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_source_mark_attributes_get_stock_id"
-             );
-      Result : constant chars_ptr := Internal (Get_Object (Attributes));
+     (Attributes : not null access Gtk_Source_Mark_Atributes_Record)
+      return UTF8_String
+   is
+      function Internal
+        (Attributes : System.Address) return Interfaces.C.Strings.chars_ptr;
+      pragma Import (C, Internal, "gtk_source_mark_attributes_get_stock_id");
+      Result : constant Interfaces.C.Strings.chars_ptr :=
+                 Internal (Get_Object (Attributes));
+
+      use type Interfaces.C.Strings.chars_ptr;
    begin
-      if Result = Null_Ptr then
+      if Result = Interfaces.C.Strings.Null_Ptr then
          return "";
       else
-         return Value (Result);
+         return Interfaces.C.Strings.Value (Result);
       end if;
    end Get_Stock_ID;
 
    function Get_Tooltip_Markup
-            (  Attributes : not null access
-                            Gtk_Source_Mark_Atributes_Record;
-               Mark       : not null access Gtk_Source_Mark_Record
-            )  return UTF8_String is
+     (Attributes : not null access Gtk_Source_Mark_Atributes_Record;
+      Mark       : not null access Gtk.Source_Mark.Gtk_Source_Mark_Record)
+      return UTF8_String
+   is
       function Internal
-               (  Attributes : Address;
-                  Mark       : Address
-               )  return chars_ptr;
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_source_mark_attributes_get_tooltip_markup"
-             );
-      Ptr : constant chars_ptr :=
-            Internal (Get_Object (Attributes), Get_Object (Mark));
+        (Attributes : System.Address;
+         Mark       : System.Address) return Interfaces.C.Strings.chars_ptr;
+      pragma Import (C,
+                     Internal,
+                     "gtk_source_mark_attributes_get_tooltip_markup");
+      Ptr : constant Interfaces.C.Strings.chars_ptr :=
+              Internal (Get_Object (Attributes), Get_Object (Mark));
+
+      use type Interfaces.C.Strings.chars_ptr;
    begin
-      if Ptr = Null_Ptr then
+      if Ptr = Interfaces.C.Strings.Null_Ptr then
          return "";
       else
-         return Result : constant String := Value (Ptr) do
+         return Result : constant String := Interfaces.C.Strings.Value (Ptr) do
             g_free (Ptr);
          end return;
       end if;
    end Get_Tooltip_Markup;
 
    function Get_Tooltip_Text
-            (  Attributes : not null access
-                            Gtk_Source_Mark_Atributes_Record;
-               Mark       : not null access Gtk_Source_Mark_Record
-            )  return UTF8_String is
+     (Attributes : not null access Gtk_Source_Mark_Atributes_Record;
+      Mark       : not null access Gtk.Source_Mark.Gtk_Source_Mark_Record)
+      return UTF8_String
+   is
       function Internal
-               (  Attributes : Address;
-                  Mark       : Address
-               )  return chars_ptr;
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_source_mark_attributes_get_tooltip_text"
-             );
-      Ptr : constant chars_ptr :=
-            Internal (Get_Object (Attributes), Get_Object (Mark));
+        (Attributes : System.Address;
+         Mark       : System.Address) return Interfaces.C.Strings.chars_ptr;
+      pragma Import (C,
+                     Internal,
+                     "gtk_source_mark_attributes_get_tooltip_text");
+      Ptr : constant Interfaces.C.Strings.chars_ptr :=
+              Internal (Get_Object (Attributes), Get_Object (Mark));
+
+      use type Interfaces.C.Strings.chars_ptr;
    begin
-      if Ptr = Null_Ptr then
+      if Ptr = Interfaces.C.Strings.Null_Ptr then
          return "";
       else
-         return Result : constant String := Value (Ptr) do
+         return Result : constant String := Interfaces.C.Strings.Value (Ptr) do
             g_free (Ptr);
          end return;
       end if;
    end Get_Tooltip_Text;
 
-   procedure Gtk_New (Attributes : out Gtk_Source_Mark_Atributes) is
+   procedure Gtk_New (Attributes : out Gtk_Source_Mark_Atributes)
+   is
       procedure Free is
-         new Ada.Unchecked_Deallocation
-             (  Gtk_Source_Mark_Atributes_Record'Class,
-                Gtk_Source_Mark_Atributes
-             );
+        new Ada.Unchecked_Deallocation
+          (Gtk_Source_Mark_Atributes_Record'Class,
+           Gtk_Source_Mark_Atributes);
    begin
       Attributes := new Gtk_Source_Mark_Atributes_Record;
       Gtk.Source_Mark_Attributes.Initialize (Attributes);
@@ -190,133 +185,104 @@ package body Gtk.Source_Mark_Attributes is
    end Gtk_New;
 
    procedure Initialize
-             (  Attributes : not null access
-                             Gtk_Source_Mark_Atributes_Record'Class
-             )  is
-      function Internal return Address;
+     (Attributes : not null access Gtk_Source_Mark_Atributes_Record'Class)
+   is
+      function Internal return System.Address;
       pragma Import (C, Internal, "gtk_source_mark_attributes_new");
    begin
-     Set_Object (Attributes, Internal);
+      Set_Object (Attributes, Internal);
    end Initialize;
 
    function Render_Icon
-            (  Attributes : not null access
-                            Gtk_Source_Mark_Atributes_Record;
-               Widget     : not null access Gtk_Widget_Record'Class;
-               Size       : Gint
-            )  return Gdk_Pixbuf is
+     (Attributes : not null access Gtk_Source_Mark_Atributes_Record;
+      Widget     : not null access Gtk.Widget.Gtk_Widget_Record'Class;
+      Size       : Gint) return Gdk.Pixbuf.Gdk_Pixbuf
+   is
       function Internal
-               (  Attributes : Address;
-                  Widget     : Address;
-                  Size       : Gint
-               )  return Address;
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_source_mark_attributes_render_icon"
-             );
-      Stub : Gdk_Pixbuf_Record;
+        (Attributes : System.Address;
+         Widget     : System.Address;
+         Size       : Gint) return System.Address;
+      pragma Import (C, Internal, "gtk_source_mark_attributes_render_icon");
+      Stub : Gdk.Pixbuf.Gdk_Pixbuf_Record;
    begin
       return
-         Gdk_Pixbuf
-         (  Get_User_Data_Fast
-            (  Internal
-               (  Get_Object (Attributes),
-                  Get_Object (Widget),
-                  Size
-               ),
-               Stub
-         )  );
+        Gdk.Pixbuf.Gdk_Pixbuf
+          (Get_User_Data_Fast
+             (Internal
+                (Get_Object (Attributes),
+                 Get_Object (Widget),
+                 Size),
+              Stub));
    end Render_Icon;
 
    procedure Set_Background
-             (  Attributes : not null access
-                             Gtk_Source_Mark_Atributes_Record;
-                Background : Gdk_RGBA
-             )  is
+     (Attributes : not null access Gtk_Source_Mark_Atributes_Record;
+      Background : Gdk.RGBA.Gdk_RGBA)
+   is
       procedure Internal
-                (  Attributes : Address;
-                   Background : Gdk_RGBA
-                );
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_source_mark_attributes_set_background"
-             );
+        (Attributes : System.Address;
+         Background : Gdk.RGBA.Gdk_RGBA);
+      pragma Import (C, Internal, "gtk_source_mark_attributes_set_background");
    begin
       Internal (Get_Object (Attributes), Background);
    end Set_Background;
 
    procedure Set_GIcon
-             (  Attributes : not null access
-                             Gtk_Source_Mark_Atributes_Record;
-                Icon       : Glib.G_Icon.G_Icon
-             )  is
+     (Attributes : not null access Gtk_Source_Mark_Atributes_Record;
+      Icon       : Glib.G_Icon.G_Icon)
+   is
       procedure Internal
-                (  Attributes : Address;
-                   Icon       : Glib.G_Icon.G_Icon
-                );
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_source_mark_attributes_set_gicon"
-             );
+        (Attributes : System.Address;
+         Icon       : Glib.G_Icon.G_Icon);
+      pragma Import (C, Internal, "gtk_source_mark_attributes_set_gicon");
    begin
       Internal (Get_Object (Attributes), Icon);
    end Set_GIcon;
 
    procedure Set_Icon_Name
-             (  Attributes : not null access
-                             Gtk_Source_Mark_Atributes_Record;
-                Icon_Name  : UTF8_String
-             )  is
+     (Attributes : not null access Gtk_Source_Mark_Atributes_Record;
+      Icon_Name  : UTF8_String)
+   is
       procedure Internal
-                (  Attributes : Address;
-                   Icon_Name  : char_array
-                );
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_source_mark_attributes_set_icon_name"
-             );
+        (Attributes : System.Address;
+         Icon_Name  : Interfaces.C.char_array);
+      pragma Import (C, Internal, "gtk_source_mark_attributes_set_icon_name");
    begin
-      Internal (Get_Object (Attributes), To_C (Icon_Name));
+      Internal (Get_Object (Attributes), Interfaces.C.To_C (Icon_Name));
    end Set_Icon_Name;
 
    procedure Set_Pixbuf
-             (  Attributes : not null access
-                             Gtk_Source_Mark_Atributes_Record;
-                Pixbuf     : not null access Gdk_Pixbuf_Record'Class
-             )  is
+     (Attributes : not null access Gtk_Source_Mark_Atributes_Record;
+      Pixbuf     : not null access Gdk.Pixbuf.Gdk_Pixbuf_Record'Class)
+   is
       procedure Internal
-                (  Attributes : Address;
-                   Pixbuf     : Address
-                );
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_source_mark_attributes_set_pixbuf"
-             );
+        (Attributes : System.Address;
+         Pixbuf     : System.Address);
+      pragma Import (C, Internal, "gtk_source_mark_attributes_set_pixbuf");
    begin
       Internal (Get_Object (Attributes), Get_Object (Pixbuf));
    end Set_Pixbuf;
 
    procedure Set_Stock_ID
-             (  Attributes : not null access
-                             Gtk_Source_Mark_Atributes_Record;
-                Stock_ID   : UTF8_String
-             )  is
+     (Attributes : not null access Gtk_Source_Mark_Atributes_Record;
+      Stock_ID   : UTF8_String)
+   is
       procedure Internal
-                (  Attributes : Address;
-                   Stock_ID   : char_array
-                );
-      pragma Import
-             (  C,
-                Internal,
-                "gtk_source_mark_attributes_set_stock_id"
-             );
+        (Attributes : System.Address;
+         Stock_ID   : Interfaces.C.char_array);
+      pragma Import (C, Internal, "gtk_source_mark_attributes_set_stock_id");
    begin
-      Internal (Get_Object (Attributes), To_C (Stock_ID));
+      Internal (Get_Object (Attributes), Interfaces.C.To_C (Stock_ID));
    end Set_Stock_ID;
+
+   pragma Warnings (On, "declaration hides ""Attributes""");
+   pragma Warnings (On, "declaration hides ""Background""");
+   pragma Warnings (On, "declaration hides ""Icon""");
+   pragma Warnings (On, "declaration hides ""Icon_Name""");
+   pragma Warnings (On, "declaration hides ""Mark""");
+   pragma Warnings (On, "declaration hides ""Pixbuf""");
+   pragma Warnings (On, "declaration hides ""Size""");
+   pragma Warnings (On, "declaration hides ""Stock_ID""");
+   pragma Warnings (On, "declaration hides ""Widget""");
 
 end Gtk.Source_Mark_Attributes;

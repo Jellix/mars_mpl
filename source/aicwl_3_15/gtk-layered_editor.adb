@@ -86,12 +86,20 @@ with Strings_Edit.Integers;
 
 package body Gtk.Layered_Editor is
 
+   pragma Warnings (Off, "declaration hides ""Adjustment""");
+   pragma Warnings (Off, "declaration hides ""Box""");
+   pragma Warnings (Off, "declaration hides ""Error""");
+   pragma Warnings (Off, "declaration hides ""Frame""");
+   pragma Warnings (Off, "declaration hides ""Index""");
+   pragma Warnings (Off, "declaration hides ""Layered""");
+   pragma Warnings (Off, "declaration hides ""Paned""");
+   pragma Warnings (Off, "declaration hides ""Params""");
+   pragma Warnings (Off, "declaration hides ""Row""");
+   pragma Warnings (Off, "declaration hides ""Widget""");
+
    Default_Width : constant := 12;
 
-   function Where (Name : String) return String is
-   begin
-      return " in Gtk.Layered_Editor." & Name;
-   end Where;
+   function Where (Name : String) return String;
 
    procedure Free is
      new Ada.Unchecked_Deallocation
@@ -159,6 +167,7 @@ package body Gtk.Layered_Editor is
                   Error := True;
                end if;
                Glib.Values.Unset (Value);
+               pragma Unreferenced (Value);
             end;
          end loop;
          if not Error then
@@ -183,11 +192,14 @@ package body Gtk.Layered_Editor is
       begin
          Enum_Property.Set_Enum (Value, Combo.all.Get_Active_Value);
          for Layer_No in Combo.all.Widget.all.Selected_Layers'Range loop
-            Combo.all.Widget.all.Selected_Layers (Layer_No).all.Set_Property_Value
-              (Combo.all.Widget.all.Selected_Properties (Layer_No, Combo.all.No),
-               Value);
+            Combo.all.Widget.all.Selected_Layers.all (Layer_No).all.
+              Set_Property_Value
+                (Combo.all.Widget.all.Selected_Properties.all
+                   (Layer_No, Combo.all.No),
+                 Value);
          end loop;
          Glib.Values.Unset (Value);
+         pragma Unreferenced (Value);
          Gtk.Layered.Queue_Draw (Combo.all.Widget.all.Layered.Get);
       exception
          when Gtk.Missed.No_Selection =>
@@ -240,7 +252,9 @@ package body Gtk.Layered_Editor is
 
    procedure Add
      (Button : access Add_Buttons.Gtk_Style_Button_Record'Class;
-      Widget : Gtk_Annotation_Texts) is
+      Widget : Gtk_Annotation_Texts)
+   is
+      pragma Unreferenced (Button);
    begin
       Remove (Widget, Widget.all.Add);
       if Widget.all.Rows'Length >= Widget.all.Length then
@@ -248,7 +262,7 @@ package body Gtk.Layered_Editor is
             New_Rows : constant Annotation_Array_Ptr :=
                          new Annotation_Array (1 .. Widget.all.Length + 10);
          begin
-            New_Rows (Widget.all.Rows'Range) := Widget.all.Rows.all;
+            New_Rows.all (Widget.all.Rows'Range) := Widget.all.Rows.all;
             Free (Widget.all.Rows);
             Widget.all.Rows := New_Rows;
          end;
@@ -305,6 +319,7 @@ package body Gtk.Layered_Editor is
                null; -- Inconsistent value
             end if;
             Glib.Values.Unset (Value);
+            pragma Unreferenced (Value);
          end;
       end loop;
       Check_Handlers.Connect (Button, "toggled", Toggled'Access);
@@ -419,6 +434,7 @@ package body Gtk.Layered_Editor is
                Max := Glib.Values.Get_Double (Value);
             end if;
             Glib.Values.Unset (Value);
+            pragma Unreferenced (Value);
          end;
       end loop;
       if Min = Max then
@@ -445,7 +461,7 @@ package body Gtk.Layered_Editor is
      (Widget : not null access Gtk_Annotation_Texts_Record;
       Row    : Guint)
    is
-      This : Annotation renames Widget.all.Rows (Row);
+      This : Annotation renames Widget.all.Rows.all (Row);
    begin
       Gtk.Label.Gtk_New (This.Label);
       This.Label.all.Set_Text (Strings_Edit.Integers.Image (Integer (Row)));
@@ -530,6 +546,9 @@ package body Gtk.Layered_Editor is
    is
       procedure Check
         (Edit : not null access Gtk.GEntry.Gtk_Entry_Record'Class;
+         Text : String);
+      procedure Check
+        (Edit : not null access Gtk.GEntry.Gtk_Entry_Record'Class;
          Text : String) is
       begin
          if Gtk.GEntry.Get_Text (Edit) /= Text then
@@ -551,7 +570,7 @@ package body Gtk.Layered_Editor is
             if Index = Properties'First (1) then
                Text := new String'(Glib.Values.Get_String (Value));
                for Index in Text'Range loop
-                  if Text (Index) = Character'Val (10) then
+                  if Text.all (Index) = Character'Val (10) then
                      Count := Count + 1;
                   end if;
                end loop;
@@ -573,17 +592,17 @@ package body Gtk.Layered_Editor is
                      First : Integer := Text'First;
                   begin
                      for Index in Text'Range loop
-                        if Text (Index) = Character'Val (10) then
+                        if Text.all (Index) = Character'Val (10) then
                            Set_Text
-                             (List.all.Rows (Row).Edit,
-                              Text (First .. Index - 1));
+                             (List.all.Rows.all (Row).Edit,
+                              Text.all (First .. Index - 1));
                            First := Index + 1;
                            Row   := Row + 1;
                         end if;
                      end loop;
                      Set_Text
-                       (List.all.Rows (Row).Edit,
-                        Text (First .. Text'Last));
+                       (List.all.Rows.all (Row).Edit,
+                        Text.all (First .. Text'Last));
                   end;
                else
                   Edit := new Gtk_Edit_Record;
@@ -619,23 +638,24 @@ package body Gtk.Layered_Editor is
                      Row   : Guint   := 1;
                   begin
                      for Index in Text'Range loop
-                        if Text (Index) = Character'Val (10) then
+                        if Text.all (Index) = Character'Val (10) then
                            Check
-                             (List.all.Rows (Row).Edit,
-                              Text (First .. Index - 1));
+                             (List.all.Rows.all (Row).Edit,
+                              Text.all (First .. Index - 1));
                            First := Index + 1;
                            Row   := Row + 1;
                         end if;
                      end loop;
                      Check
-                       (List.all.Rows (Row).Edit,
-                        Text (First .. Text'Last));
+                       (List.all.Rows.all (Row).Edit,
+                        Text.all (First .. Text'Last));
                   end;
                else
                   Set_Text (Edit, "");
                end if;
             end if;
             Glib.Values.Unset (Value);
+            pragma Unreferenced (Value);
          end;
       end loop;
       Free (Text);
@@ -693,6 +713,7 @@ package body Gtk.Layered_Editor is
                Max := Glib.Values.Get_Uint (Value);
             end if;
             Glib.Values.Unset (Value);
+            pragma Unreferenced (Value);
          end;
       end loop;
       if Min = Max then
@@ -718,12 +739,13 @@ package body Gtk.Layered_Editor is
      (Object : access GObject_Record'Class;
       Widget : Gtk_Layered_Editor)
    is
+      pragma Unreferenced (Object);
       Value : Glib.Values.GValue;
    begin
       if Widget.all.Border_Color /= null then
          Value :=
-           Widget.all.Selected_Layers (1).all.Get_Property_Value
-           (Widget.all.Selected_Properties (1, Widget.all.Border_Color.all.No));
+           Widget.all.Selected_Layers.all (1).all.Get_Property_Value
+           (Widget.all.Selected_Properties.all (1, Widget.all.Border_Color.all.No));
          Set_Color (Widget.all.Border_Color, Gdk.Color.Get_Value (Value));
          Glib.Values.Unset (Value);
       end if;
@@ -741,15 +763,22 @@ package body Gtk.Layered_Editor is
      (Model : Gtk.Tree_Model.Gtk_Tree_Model;
       Path  : Gtk.Tree_Model.Gtk_Tree_Path;
       Iter  : Gtk.Tree_Model.Gtk_Tree_Iter;
+      Data  : Selection_List_Ptr);
+   procedure Browse_Selected
+     (Model : Gtk.Tree_Model.Gtk_Tree_Model;
+      Path  : Gtk.Tree_Model.Gtk_Tree_Path;
+      Iter  : Gtk.Tree_Model.Gtk_Tree_Iter;
       Data  : Selection_List_Ptr)
    is
+      pragma Unreferenced (Iter);
+      pragma Unreferenced (Model);
       Selection : Selection_List renames Data.all;
       Item      : constant Gint_Array  := Gtk.Tree_Model.Get_Indices (Path);
       Layered   : constant access Gtk.Layered.Gtk_Layered_Record'Class :=
                     Layered_References.Get (Data.all.Widget.all.Layered);
    begin
       Selection.Index := Selection.Index + 1;
-      Selection.List (Selection.Index) :=
+      Selection.List.all (Selection.Index) :=
         Gtk.Layered.Get_Layer
           (Layered_References.Get (Data.all.Widget.all.Layered),
            Layered.all.Get_Depth - Natural (Item (Item'First))).all'Unchecked_Access;
@@ -765,7 +794,9 @@ package body Gtk.Layered_Editor is
 
    procedure Changed_Aspect
      (Object : access GObject_Record'Class;
-      Widget : Gtk_Layered_Editor) is
+      Widget : Gtk_Layered_Editor)
+   is
+      pragma Unreferenced (Object);
    begin
       Widget.all.Layered.Get.all.Set_Aspect_Ratio
         (Double_Edit.Value (Gtk.GEntry.Get_Text (Widget.all.Aspect_Edit)));
@@ -791,13 +822,13 @@ package body Gtk.Layered_Editor is
                Markup_Button_Record'Class (Markup.all)'Unchecked_Access;
    begin
       for Layer_No in This.all.Widget.all.Selected_Layers'Range loop
-         if This.all.Widget.all.Selected_Layers (Layer_No).all in
+         if This.all.Widget.all.Selected_Layers.all (Layer_No).all in
            Gtk.Layered.Annotation_Layer'Class
          then
             declare
                Layer : Gtk.Layered.Annotation_Layer'Class renames
                          Gtk.Layered.Annotation_Layer'Class
-                           (This.all.Widget.all.Selected_Layers (Layer_No).all);
+                           (This.all.Widget.all.Selected_Layers.all (Layer_No).all);
             begin
                Layer.Set_Text
                  (This.all.Position,
@@ -824,8 +855,8 @@ package body Gtk.Layered_Editor is
       Glib.Values.Init (Value, GType_String);
       Glib.Values.Set_String (Value, Text);
       for Layer_No in Edit.all.Widget.all.Selected_Layers'Range loop
-         Edit.all.Widget.all.Selected_Layers (Layer_No).all.Set_Property_Value
-           (Edit.all.Widget.all.Selected_Properties (Layer_No, Edit.all.No),
+         Edit.all.Widget.all.Selected_Layers.all (Layer_No).all.Set_Property_Value
+           (Edit.all.Widget.all.Selected_Properties.all (Layer_No, Edit.all.No),
             Value);
       end loop;
       Glib.Values.Unset (Value);
@@ -844,13 +875,13 @@ package body Gtk.Layered_Editor is
       Text : constant String := Get_Text (Edit);
    begin
       for Layer_No in Edit.all.Widget.all.Selected_Layers'Range loop
-         if Edit.all.Widget.all.Selected_Layers (Layer_No).all in
+         if Edit.all.Widget.all.Selected_Layers.all (Layer_No).all in
            Gtk.Layered.Annotation_Layer'Class
          then
             declare
                Layer : Gtk.Layered.Annotation_Layer'Class renames
                          Gtk.Layered.Annotation_Layer'Class
-                           (Edit.all.Widget.all.Selected_Layers (Layer_No).all);
+                           (Edit.all.Widget.all.Selected_Layers.all (Layer_No).all);
             begin
                Layer.Set_Text
                  (Edit.all.Position,
@@ -879,8 +910,8 @@ package body Gtk.Layered_Editor is
       Button.all.Get_Color (Color);
       Gdk.Color.Set_Value (Value, Color);
       for Layer_No in Button.all.Widget.all.Selected_Layers'Range loop
-         Button.all.Widget.all.Selected_Layers (Layer_No).all.Set_Property_Value
-           (Button.all.Widget.all.Selected_Properties (Layer_No, Button.all.No),
+         Button.all.Widget.all.Selected_Layers.all (Layer_No).all.Set_Property_Value
+           (Button.all.Widget.all.Selected_Properties.all (Layer_No, Button.all.No),
             Value);
       end loop;
       Glib.Values.Unset (Value);
@@ -899,12 +930,13 @@ package body Gtk.Layered_Editor is
      (Button : access Delete_Button_Record'Class;
       Widget : Gtk_Annotation_Texts)
    is
+      function Get_Text (Row : Guint) return String;
       function Get_Text (Row : Guint) return String is
       begin
          if Row = Widget.all.Length then
             return "";
          else
-            return Widget.all.Rows (Row + 1).Edit.all.Get_Text;
+            return Widget.all.Rows.all (Row + 1).Edit.all.Get_Text;
          end if;
       end Get_Text;
       Deleted : constant Guint := Guint (Button.all.Index);
@@ -916,23 +948,23 @@ package body Gtk.Layered_Editor is
             Text : constant String := Get_Text (Index);
          begin
             for Layer_No in Editor.Selected_Layers'Range loop
-               if Editor.Selected_Layers (Layer_No).all in
+               if Editor.Selected_Layers.all (Layer_No).all in
                  Gtk.Layered.Annotation_Layer'Class
                then
                   Gtk.Layered.Annotation_Layer'Class
-                    (Editor.Selected_Layers (Layer_No).all).
+                    (Editor.Selected_Layers.all (Layer_No).all).
                          Set_Text (Integer (Index), Text);
                end if;
             end loop;
          end;
       end loop;
       Widget.all.Remove (Deleted);
-      Widget.all.Rows (Deleted).Label.all.Unref;
-      Widget.all.Rows (Deleted).Edit.all.Unref;
-      Widget.all.Rows (Deleted).Markup.all.Unref;
-      Widget.all.Rows (Deleted).Delete.all.Unref;
-      Widget.all.Rows (Deleted .. Widget.all.Length - 1) :=
-        Widget.all.Rows (Deleted + 1 .. Widget.all.Length);
+      Widget.all.Rows.all (Deleted).Label.all.Unref;
+      Widget.all.Rows.all (Deleted).Edit.all.Unref;
+      Widget.all.Rows.all (Deleted).Markup.all.Unref;
+      Widget.all.Rows.all (Deleted).Delete.all.Unref;
+      Widget.all.Rows.all (Deleted .. Widget.all.Length - 1) :=
+        Widget.all.Rows.all (Deleted + 1 .. Widget.all.Length);
       Resize (Widget, Widget.all.Length, 3);
       Widget.all.Length := Widget.all.Length - 1;
       Widget.all.Insert (Deleted);
@@ -951,6 +983,8 @@ package body Gtk.Layered_Editor is
      (Object : access GObject_Record'Class;
       Widget : Gtk_Layered_Editor)
    is
+      pragma Unreferenced (Object);
+
       procedure Free is
         new Ada.Unchecked_Deallocation
           (Gtk.Layered.Abstract_Layer'Class,
@@ -961,7 +995,7 @@ package body Gtk.Layered_Editor is
          for Index in Widget.all.Selected_Layers'Range loop
             -- Searching for a layer selected
             declare
-               This : Layer_Ptr := Widget.all.Selected_Layers (Index);
+               This : Layer_Ptr := Widget.all.Selected_Layers.all (Index);
             begin
                if This /= null then
                   Free (This);
@@ -982,7 +1016,9 @@ package body Gtk.Layered_Editor is
 
    procedure Destroyed
      (Object : access GObject_Record'Class;
-      Widget : Gtk_Layered_Editor) is
+      Widget : Gtk_Layered_Editor)
+   is
+      pragma Unreferenced (Object);
    begin
       Free (Widget.all.Double_Edits);
       Free (Widget.all.Selected_Layers);
@@ -994,10 +1030,10 @@ package body Gtk.Layered_Editor is
      (Widget : access Gtk_Annotation_Texts_Record'Class) is
    begin
       for Index in 1 .. Widget.all.Length loop
-         Widget.all.Rows (Index).Label.all.Unref;
-         Widget.all.Rows (Index).Markup.all.Unref;
-         Widget.all.Rows (Index).Edit.all.Unref;
-         Widget.all.Rows (Index).Delete.all.Unref;
+         Widget.all.Rows.all (Index).Label.all.Unref;
+         Widget.all.Rows.all (Index).Markup.all.Unref;
+         Widget.all.Rows.all (Index).Edit.all.Unref;
+         Widget.all.Rows.all (Index).Delete.all.Unref;
       end loop;
       Widget.all.Add.all.Unref;
       Free (Widget.all.Rows);
@@ -1005,7 +1041,9 @@ package body Gtk.Layered_Editor is
 
    procedure Down
      (Object : access GObject_Record'Class;
-      Widget : Gtk_Layered_Editor) is
+      Widget : Gtk_Layered_Editor)
+   is
+      pragma Unreferenced (Object);
    begin
       Widget.all.Move ((0.0, Widget.all.Move_Step));
    exception
@@ -1037,7 +1075,9 @@ package body Gtk.Layered_Editor is
 
    procedure Gain_Step_Changed
      (Object : access GObject_Record'Class;
-      Widget : Gtk_Layered_Editor) is
+      Widget : Gtk_Layered_Editor)
+   is
+      pragma Unreferenced (Object);
    begin
       Widget.all.Gain_Step :=
         Gtk.Spin_Button.Get_Value (Widget.all.Gain_Step_Button);
@@ -1073,7 +1113,10 @@ package body Gtk.Layered_Editor is
    end Get_Buttons_Box;
 
    function Get_Common_Properties (List : Layer_List)
-                                   return Properties_List is
+                                   return Properties_List;
+   function Get_Common_Properties (List : Layer_List)
+                                   return Properties_List
+   is
       Count  : Property_Count :=
                  Property_Count (List (1).all.Get_Properties_Number);
       Common : Properties_List (List'Range, 1 .. Count);
@@ -1223,6 +1266,7 @@ package body Gtk.Layered_Editor is
          Gtk.Tree_View_Column.Pack_Start (Column, Text, True);
          Gtk.Tree_View_Column.Add_Attribute (Column, Text, "text", 0);
          Column_No := Gtk.Tree_View.Append_Column (Widget.all.View, Column);
+         pragma Unreferenced (Column_No);
          Gtk.Tree_View_Column.Set_Title (Column, "Layer type");
          Gtk.Tree_View_Column.Set_Resizable (Column, True);
          Gtk.Tree_View_Column.Set_Sort_Column_Id (Column, 0);
@@ -1330,33 +1374,33 @@ package body Gtk.Layered_Editor is
    begin
       for Index in From .. Widget.all.Length loop
          Widget.all.Attach
-           (Widget.all.Rows (Index).Label,
+           (Widget.all.Rows.all (Index).Label,
             0, 1,
             Index - 1, Index,
             Xoptions => Gtk.Enums.Fill,
             Yoptions => Gtk.Enums.Shrink);
-         Gtk.Label.Set_Text (Widget.all.Rows (Index).Label,
+         Gtk.Label.Set_Text (Widget.all.Rows.all (Index).Label,
                              Strings_Edit.Integers.Image (Integer (Index)));
          Widget.all.Attach
-           (Widget.all.Rows (Index).Edit,
+           (Widget.all.Rows.all (Index).Edit,
             1, 2,
             Index - 1, Index,
             Yoptions => Gtk.Enums.Shrink);
-         Widget.all.Rows (Index).Edit.all.Position := Integer (Index);
+         Widget.all.Rows.all (Index).Edit.all.Position := Integer (Index);
          Widget.all.Attach
-           (Widget.all.Rows (Index).Markup,
+           (Widget.all.Rows.all (Index).Markup,
             2, 3,
             Index - 1, Index,
             Xoptions => Gtk.Enums.Shrink,
             Yoptions => Gtk.Enums.Shrink);
-         Widget.all.Rows (Index).Markup.all.Position := Positive (Index);
+         Widget.all.Rows.all (Index).Markup.all.Position := Positive (Index);
          Widget.all.Attach
-           (Widget.all.Rows (Index).Delete,
+           (Widget.all.Rows.all (Index).Delete,
             3, 4,
             Index - 1, Index,
             Xoptions => Gtk.Enums.Shrink,
             Yoptions => Gtk.Enums.Shrink);
-         Widget.all.Rows (Index).Delete.all.Index := Positive (Index);
+         Widget.all.Rows.all (Index).Delete.all.Index := Positive (Index);
       end loop;
       Widget.all.Attach
         (Widget.all.Add,
@@ -1388,6 +1432,7 @@ package body Gtk.Layered_Editor is
      (Object : access GObject_Record'Class;
       Widget : Gtk_Layered_Editor)
    is
+      pragma Unreferenced (Object);
       Under      : access Gtk.Layered.Layer_Location'Class := Widget.all.Layered.Get;
       Adjustment : Gtk.Adjustment.Gtk_Adjustment;
       Position   : Positive;
@@ -1396,8 +1441,8 @@ package body Gtk.Layered_Editor is
    begin
       if Widget.all.Selected_Layers /= null then
          for Index in Widget.all.Selected_Layers'Range loop
-            if Widget.all.Selected_Layers (Index) /= null then
-               Under := Widget.all.Selected_Layers (Index).all.Above;
+            if Widget.all.Selected_Layers.all (Index) /= null then
+               Under := Widget.all.Selected_Layers.all (Index).all.Above;
                exit when Under /= null;
                Under := Widget.all.Layered.Get;
                exit;
@@ -1583,6 +1628,7 @@ package body Gtk.Layered_Editor is
                  Color      => Default_Color,
                  Adjustment => Adjustment).all.Get_Position;
       end case;
+      pragma Unreferenced (Position);
    exception
       when Gtk.Missed.No_Selection =>
          null;
@@ -1600,6 +1646,7 @@ package body Gtk.Layered_Editor is
       Params : Glib.Values.GValues;
       Widget : Gtk_Layered_Editor)
    is
+      pragma Unreferenced (Object);
       Position : constant Natural :=
                    Natural (Glib.Values.Get_Uint (Glib.Values.Nth (Params, 1)));
       Row      : Gtk.Tree_Model.Gtk_Tree_Iter;
@@ -1626,7 +1673,9 @@ package body Gtk.Layered_Editor is
    procedure Layer_Removed
      (Object : access GObject_Record'Class;
       Params : Glib.Values.GValues;
-      Widget : Gtk_Layered_Editor) is
+      Widget : Gtk_Layered_Editor)
+   is
+      pragma Unreferenced (Object);
    begin
       declare
          Position : constant Guint :=
@@ -1681,7 +1730,9 @@ package body Gtk.Layered_Editor is
 
    procedure Left
      (Object : access GObject_Record'Class;
-      Widget : Gtk_Layered_Editor) is
+      Widget : Gtk_Layered_Editor)
+   is
+      pragma Unreferenced (Object);
    begin
       Widget.all.Move ((-1.0 * Widget.all.Move_Step, 0.0));
    exception
@@ -1696,7 +1747,9 @@ package body Gtk.Layered_Editor is
 
    procedure Lift
      (Object : access GObject_Record'Class;
-      Widget : Gtk_Layered_Editor) is
+      Widget : Gtk_Layered_Editor)
+   is
+      pragma Unreferenced (Object);
    begin
       if Widget.all.Selected_Layers = null then
          return;
@@ -1726,7 +1779,9 @@ package body Gtk.Layered_Editor is
 
    procedure Lower
      (Object : access GObject_Record'Class;
-      Widget : Gtk_Layered_Editor) is
+      Widget : Gtk_Layered_Editor)
+   is
+      pragma Unreferenced (Object);
    begin
       if Widget.all.Selected_Layers = null then
          return;
@@ -1759,7 +1814,7 @@ package body Gtk.Layered_Editor is
       Offset : Cairo.Ellipses.Cairo_Tuple) is
    begin
       for Layer_No in Widget.all.Selected_Layers'Range loop
-         Widget.all.Selected_Layers (Layer_No).all.Move (Offset);
+         Widget.all.Selected_Layers.all (Layer_No).all.Move (Offset);
       end loop;
       Update_Double_Edits (Widget);
       Gtk.Layered.Queue_Draw (Widget.all.Layered.Get);
@@ -1775,7 +1830,9 @@ package body Gtk.Layered_Editor is
 
    procedure Move_Step_Changed
      (Object : access GObject_Record'Class;
-      Widget : Gtk_Layered_Editor) is
+      Widget : Gtk_Layered_Editor)
+   is
+      pragma Unreferenced (Object);
    begin
       Widget.all.Move_Step :=
         Gtk.Spin_Button.Get_Value (Widget.all.Move_Step_Button);
@@ -1839,10 +1896,10 @@ package body Gtk.Layered_Editor is
       From   : Guint) is
    begin
       for Index in From .. Widget.all.Length loop
-         Remove (Widget, Widget.all.Rows (Index).Label);
-         Remove (Widget, Widget.all.Rows (Index).Edit);
-         Remove (Widget, Widget.all.Rows (Index).Markup);
-         Remove (Widget, Widget.all.Rows (Index).Delete);
+         Remove (Widget, Widget.all.Rows.all (Index).Label);
+         Remove (Widget, Widget.all.Rows.all (Index).Edit);
+         Remove (Widget, Widget.all.Rows.all (Index).Markup);
+         Remove (Widget, Widget.all.Rows.all (Index).Delete);
       end loop;
       Remove (Widget, Widget.all.Add);
    end Remove;
@@ -1879,7 +1936,9 @@ package body Gtk.Layered_Editor is
 
    procedure Right
      (Object : access GObject_Record'Class;
-      Widget : Gtk_Layered_Editor) is
+      Widget : Gtk_Layered_Editor)
+   is
+      pragma Unreferenced (Object);
    begin
       Widget.all.Move ((Widget.all.Move_Step, 0.0));
    exception
@@ -1898,7 +1957,7 @@ package body Gtk.Layered_Editor is
    begin
       for Layer_No in Widget.all.Selected_Layers'Range loop
          begin
-            Widget.all.Selected_Layers (Layer_No).all.Scale (Gain);
+            Widget.all.Selected_Layers.all (Layer_No).all.Scale (Gain);
          exception
             when Constraint_Error =>
                null;
@@ -1918,7 +1977,9 @@ package body Gtk.Layered_Editor is
 
    procedure Selected_Layer_Combo
      (Object : access GObject_Record'Class;
-      Widget : Gtk_Layered_Editor) is
+      Widget : Gtk_Layered_Editor)
+   is
+      pragma Unreferenced (Object);
    begin
       Insert_Buttons.Set_Sensitive
         (Widget.all.Insert,
@@ -1938,6 +1999,8 @@ package body Gtk.Layered_Editor is
      (Object : access GObject_Record'Class;
       Widget : Gtk_Layered_Editor)
    is
+      pragma Unreferenced (Object);
+
       Count  : aliased Natural := 0;
       Row    : Guint           := 0;
       Layers : aliased Selection_List;
@@ -2334,8 +2397,8 @@ package body Gtk.Layered_Editor is
       Glib.Values.Init (Value, GType_Boolean);
       Glib.Values.Set_Boolean (Value, Get_Active (Button));
       for Layer_No in Button.all.Widget.all.Selected_Layers'Range loop
-         Button.all.Widget.all.Selected_Layers (Layer_No).all.Set_Property_Value
-           (Button.all.Widget.all.Selected_Properties (Layer_No, Button.all.No),
+         Button.all.Widget.all.Selected_Layers.all (Layer_No).all.Set_Property_Value
+           (Button.all.Widget.all.Selected_Properties.all (Layer_No, Button.all.No),
             Value);
       end loop;
       Glib.Values.Unset (Value);
@@ -2352,7 +2415,9 @@ package body Gtk.Layered_Editor is
 
    procedure Up
      (Object : access GObject_Record'Class;
-      Widget : Gtk_Layered_Editor) is
+      Widget : Gtk_Layered_Editor)
+   is
+      pragma Unreferenced (Object);
    begin
       Widget.all.Move ((0.0, -1.0 * Widget.all.Move_Step));
    exception
@@ -2371,12 +2436,12 @@ package body Gtk.Layered_Editor is
       Value : Glib.Values.GValue;
    begin
       for Property in Widget.all.Double_Edits'Range loop
-         if Widget.all.Double_Edits (Property) /= null then
+         if Widget.all.Double_Edits.all (Property) /= null then
             Value :=
-              Widget.all.Selected_Layers (1).all.Get_Property_Value
-              (Widget.all.Selected_Properties (1, Property));
+              Widget.all.Selected_Layers.all (1).all.Get_Property_Value
+              (Widget.all.Selected_Properties.all (1, Property));
             Set_Text
-              (Widget.all.Double_Edits (Property),
+              (Widget.all.Double_Edits.all (Property),
                Double_Edit.Image
                  (Glib.Values.Get_Double (Value), RelSmall => 5));
             Glib.Values.Unset (Value);
@@ -2402,11 +2467,12 @@ package body Gtk.Layered_Editor is
          Glib.Values.Init (Value, GType_Double);
          Glib.Values.Set_Double (Value, Input);
          for Layer_No in Edit.all.Widget.all.Selected_Layers'Range loop
-            Edit.all.Widget.all.Selected_Layers (Layer_No).all.Set_Property_Value
-              (Edit.all.Widget.all.Selected_Properties (Layer_No, Edit.all.No),
+            Edit.all.Widget.all.Selected_Layers.all (Layer_No).all.Set_Property_Value
+              (Edit.all.Widget.all.Selected_Properties.all (Layer_No, Edit.all.No),
                Value);
          end loop;
          Glib.Values.Unset (Value);
+         pragma Unreferenced (Value);
       end;
       Gtk.Layered.Queue_Draw (Edit.all.Widget.all.Layered.Get);
    exception
@@ -2437,11 +2503,12 @@ package body Gtk.Layered_Editor is
          Glib.Values.Init (Value, GType_Uint);
          Glib.Values.Set_Uint (Value, Input);
          for Layer_No in Edit.all.Widget.all.Selected_Layers'Range loop
-            Edit.all.Widget.all.Selected_Layers (Layer_No).all.Set_Property_Value
-              (Edit.all.Widget.all.Selected_Properties (Layer_No, Edit.all.No),
+            Edit.all.Widget.all.Selected_Layers.all (Layer_No).all.Set_Property_Value
+              (Edit.all.Widget.all.Selected_Properties.all (Layer_No, Edit.all.No),
                Value);
          end loop;
          Glib.Values.Unset (Value);
+         pragma Unreferenced (Value);
       end;
       Gtk.Layered.Queue_Draw (Edit.all.Widget.all.Layered.Get);
    exception
@@ -2454,9 +2521,16 @@ package body Gtk.Layered_Editor is
             & Where ("Value_Set"));
    end Value_Set;
 
+   function Where (Name : String) return String is
+   begin
+      return " in Gtk.Layered_Editor." & Name;
+   end Where;
+
    procedure Zoom_In
      (Object : access GObject_Record'Class;
-      Widget : Gtk_Layered_Editor) is
+      Widget : Gtk_Layered_Editor)
+   is
+      pragma Unreferenced (Object);
    begin
       Widget.all.Scale (Widget.all.Gain_Step);
    exception
@@ -2471,7 +2545,9 @@ package body Gtk.Layered_Editor is
 
    procedure Zoom_Out
      (Object : access GObject_Record'Class;
-      Widget : Gtk_Layered_Editor) is
+      Widget : Gtk_Layered_Editor)
+   is
+      pragma Unreferenced (Object);
    begin
       Widget.all.Scale (1.0 / Widget.all.Gain_Step);
    exception
@@ -2483,5 +2559,16 @@ package body Gtk.Layered_Editor is
             & Ada.Exceptions.Exception_Information (Error)
             & Where ("Zoom_Out"));
    end Zoom_Out;
+
+   pragma Warnings (On, "declaration hides ""Adjustment""");
+   pragma Warnings (On, "declaration hides ""Box""");
+   pragma Warnings (On, "declaration hides ""Error""");
+   pragma Warnings (On, "declaration hides ""Frame""");
+   pragma Warnings (On, "declaration hides ""Index""");
+   pragma Warnings (On, "declaration hides ""Layered""");
+   pragma Warnings (On, "declaration hides ""Paned""");
+   pragma Warnings (On, "declaration hides ""Params""");
+   pragma Warnings (On, "declaration hides ""Row""");
+   pragma Warnings (On, "declaration hides ""Widget""");
 
 end Gtk.Layered_Editor;

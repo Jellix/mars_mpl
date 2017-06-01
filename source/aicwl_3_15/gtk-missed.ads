@@ -59,6 +59,13 @@ with Gtk.Widget;
 
 package Gtk.Missed is
 
+   pragma Warnings (Off, "declaration hides ""Container""");
+   pragma Warnings (Off, "declaration hides ""Dialog""");
+   pragma Warnings (Off, "declaration hides ""Error""");
+   pragma Warnings (Off, "declaration hides ""Tree_View""");
+   pragma Warnings (Off, "declaration hides ""User_Data""");
+   pragma Warnings (Off, "declaration hides ""Widget""");
+
    --
    -- GtkAda_Contributions_Domain -- The domain name used for the  error
    --                                log messages  coming  out  of  this
@@ -1052,5 +1059,12 @@ private
          Realized : Boolean;
          Window   : Gdk.Gdk_Window;
       end record;
+
+   pragma Warnings (On, "declaration hides ""Container""");
+   pragma Warnings (On, "declaration hides ""Dialog""");
+   pragma Warnings (On, "declaration hides ""Error""");
+   pragma Warnings (On, "declaration hides ""Tree_View""");
+   pragma Warnings (On, "declaration hides ""User_Data""");
+   pragma Warnings (On, "declaration hides ""Widget""");
 
 end Gtk.Missed;

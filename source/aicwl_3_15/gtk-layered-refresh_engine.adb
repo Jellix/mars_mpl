@@ -23,35 +23,30 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Ada.IO_Exceptions;  use Ada.IO_Exceptions;
-with Glib.Messages;      use Glib.Messages;
-with Gtk.Missed;         use Gtk.Missed;
-
+with Ada.IO_Exceptions;
 with Ada.Unchecked_Deallocation;
+
 with System.Address_To_Access_Conversions;
-with Gdk.Window;
 
 package body Gtk.Layered.Refresh_Engine is
 
-   package Conversions is
-      new System.Address_To_Access_Conversions (Layered_Refresh_Engine);
+   pragma Warnings (Off, "declaration hides ""Widget""");
 
-   function Where (Name : String) return String is
-   begin
-      return " in Gtk.Layered.Refresh_Engine" & Name;
-   end Where;
+   package Conversions is
+     new System.Address_To_Access_Conversions (Layered_Refresh_Engine);
 
    procedure Add
-             (  Engine : in out Layered_Refresh_Engine;
-                Widget : not null access Gtk_Layered_Record'Class
-             )  is
+     (Engine : in out Layered_Refresh_Engine;
+      Widget : not null access Gtk_Layered_Record'Class)
+   is
       Element : List_Element_Ptr;
    begin
       if Engine.Active then
-         raise Use_Error with
-               "Adding a widget while engine is refreshing";
+         raise
+           Ada.IO_Exceptions.Use_Error with
+             "Adding a widget while engine is refreshing";
       end if;
       if Engine.List = null then
          Element := new List_Element;
@@ -61,79 +56,79 @@ package body Gtk.Layered.Refresh_Engine is
             This : not null access List_Element := Engine.List;
          begin
             loop
-               if (  Is_Valid (This.Widget)
-                  and then
-                     Get (This.Widget) = Widget
-                  )
+               if
+                 Layered_Reference.Is_Valid (This.all.Widget) and then
+                 Layered_Reference.Get (This.all.Widget) = Widget
                then
                   return;
                end if;
-               exit when This.Next = Engine.List;
-               This := This.Next;
+               exit when This.all.Next = Engine.List;
+               This := This.all.Next;
             end loop;
          end;
          Element := new List_Element;
-         Element.Prev := Engine.List.Prev;
-         Element.Next := Engine.List;
-         Element.Prev.Next := Element;
-         Element.Next.Prev := Element;
+         Element.all.Prev := Engine.List.all.Prev;
+         Element.all.Next := Engine.List;
+         Element.all.Prev.all.Next := Element;
+         Element.all.Next.all.Prev := Element;
       end if;
-      Element.Widget.Set (Widget.all'Unchecked_Access);
+      Element.all.Widget.Set (Widget.all'Unchecked_Access);
    end Add;
 
    procedure Delete
-             (  Engine : in out Layered_Refresh_Engine'Class;
-                This   : List_Element_Ptr
-             )  is
+     (Engine : in out Layered_Refresh_Engine'Class;
+      This   : List_Element_Ptr);
+   procedure Delete
+     (Engine : in out Layered_Refresh_Engine'Class;
+      This   : List_Element_Ptr)
+   is
       procedure Free is
-         new Ada.Unchecked_Deallocation
-             (  List_Element,
-                List_Element_Ptr
-             );
+        new Ada.Unchecked_Deallocation
+          (List_Element,
+           List_Element_Ptr);
       Ptr : List_Element_Ptr := This;
    begin
       if Engine.List = This then
-         if This.Next = This then
+         if This.all.Next = This then
             Engine.List := null;
          else
-            Engine.List := This.Next;
+            Engine.List := This.all.Next;
          end if;
       end if;
-      This.Prev.Next := This.Next;
-      This.Next.Prev := This.Prev;
+      This.all.Prev.all.Next := This.all.Next;
+      This.all.Next.all.Prev := This.all.Prev;
       Free (Ptr);
    end Delete;
 
    procedure Delete
-             (  Engine : in out Layered_Refresh_Engine;
-                Widget : not null access Gtk_Layered_Record'Class
-             )  is
+     (Engine : in out Layered_Refresh_Engine;
+      Widget : not null access Gtk_Layered_Record'Class) is
    begin
       if Engine.Active then
-         raise Use_Error with
-               "Deleting a widget while engine is refreshing";
+         raise
+           Ada.IO_Exceptions.Use_Error with
+             "Deleting a widget while engine is refreshing";
       end if;
       if Engine.List /= null then
          declare
             This : not null access List_Element := Engine.List;
          begin
             loop
-               if (  Is_Valid (This.Widget)
-                  and then
-                     Get (This.Widget) = Widget
-                  )
+               if
+                 Layered_Reference.Is_Valid (This.all.Widget) and then
+                 Layered_Reference.Get (This.all.Widget) = Widget
                then
                   Delete (Engine, This.all'Unchecked_Access);
                   return;
                end if;
-               exit when This.Next = Engine.List;
-               This := This.Next;
+               exit when This.all.Next = Engine.List;
+               This := This.all.Next;
             end loop;
          end;
       end if;
    end Delete;
 
-   procedure Finalize (Engine : in out Layered_Refresh_Engine) is
+   overriding procedure Finalize (Engine : in out Layered_Refresh_Engine) is
    begin
       if Engine.Timer /= 0 then
          if 0 = Remove (Engine.Timer) then
@@ -150,9 +145,8 @@ package body Gtk.Layered.Refresh_Engine is
    end Get_Period;
 
    procedure Set_Period
-             (  Engine : in out Layered_Refresh_Engine;
-                Period : Duration
-             )  is
+     (Engine : in out Layered_Refresh_Engine;
+      Period : Duration) is
    begin
       if Period /= Engine.Period then
          declare
@@ -166,11 +160,10 @@ package body Gtk.Layered.Refresh_Engine is
                Engine.Timer := 0;
             end if;
             Engine.Timer :=
-               Timeout_Add
-               (  Interval,
-                  Timer'Access,
-                  Engine'Address
-               );
+              Timeout_Add
+                (Interval,
+                 Timer'Access,
+                 Engine'Address);
             Engine.Period := Period;
          end;
       end if;
@@ -187,9 +180,9 @@ package body Gtk.Layered.Refresh_Engine is
             Next : not null access List_Element := This;
          begin
             loop
-               Next := This.Next;
-               if Is_Valid (This.Widget) then
-                  Queue_Draw (Get (This.Widget));
+               Next := This.all.Next;
+               if Layered_Reference.Is_Valid (This.all.Widget) then
+                  Queue_Draw (Layered_Reference.Get (This.all.Widget));
                else
                   Delete (Engine, This.all'Unchecked_Access);
                   exit when Engine.List = null;
@@ -202,5 +195,7 @@ package body Gtk.Layered.Refresh_Engine is
       end if;
       return 1;
    end Timer;
+
+   pragma Warnings (On, "declaration hides ""Widget""");
 
 end Gtk.Layered.Refresh_Engine;

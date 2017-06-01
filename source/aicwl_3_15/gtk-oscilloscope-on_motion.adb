@@ -38,41 +38,38 @@ is
    procedure Put (Destination : in out String;
                   Pointer     : in out Integer;
                   X1, X2      : Gint;
-                  V1, V2, V   : Gdouble)
-   is
-      use Strings_Edit;
-      use Gtk.Layered.Waveform.Edit;
-      use Cairo.Elementary_Functions;
+                  V1, V2, V   : Gdouble) is
    begin
       if X2 <= X1 or else V2 <= V1 or else V = 0.0 then
-         Put (Destination, Pointer, V);
+         Gtk.Layered.Waveform.Edit.Put (Destination, Pointer, V);
       else
          declare
             Power : constant Integer :=
                       (Integer
                          (Gdouble'Truncation
-                            (Log (Gdouble (abs V), 10.0) / 3.0)) * 3);
+                            (Cairo.Elementary_Functions.Log
+                               (Gdouble (abs V), 10.0) / 3.0)) * 3);
          begin
             if Power = 0 then
-               Put
+               Gtk.Layered.Waveform.Edit.Put
                  (Destination => Destination,
                   Pointer     => Pointer,
                   Value       => V,
                   RelSmall    => 3);
             else
-               Put
+               Gtk.Layered.Waveform.Edit.Put
                  (Destination => Destination,
                   Pointer     => Pointer,
                   Value       => V / 10.0 ** Power,
                   RelSmall    => 3);
-               Put (Destination, Pointer, Character'Val (16#C2#));
-               Put (Destination, Pointer, Character'Val (16#B7#));
-               Put (Destination, Pointer, "10<sup>");
+               Strings_Edit.Put (Destination, Pointer, Character'Val (16#C2#));
+               Strings_Edit.Put (Destination, Pointer, Character'Val (16#B7#));
+               Strings_Edit.Put (Destination, Pointer, "10<sup>");
                Strings_Edit.Integers.Put
                  (Destination => Destination,
                   Pointer     => Pointer,
                   Value       => Power);
-               Put (Destination, Pointer, "</sup>");
+               Strings_Edit.Put (Destination, Pointer, "</sup>");
             end if;
          end;
       end if;
@@ -88,8 +85,6 @@ begin
    if Point.X in Box.X1 .. Box.X2 and then Point.Y in Box.Y1 .. Box.Y2 then
       for Index in 1 .. Oscilloscope.all.Channels_Number loop
          declare
-            use Strings_Edit;
-            use Strings_Edit.Integers;
             Waveform : Gtk.Layered.Waveform.Waveform_Layer renames
                        Oscilloscope.all.Channels (Index).Waveform.all;
             T        : Gtk.Layered.Waveform.X_Axis;
@@ -105,19 +100,17 @@ begin
                if abs (Point.Y - Y) <= Oscilloscope.all.Proximity then
                   Position := Pointer;
                   if Position > 1 then
-                     Put
-                     (Oscilloscope.all.Tip_Text,
+                     Strings_Edit.Put
+                       (Oscilloscope.all.Tip_Text,
                         Position,
-                        Character'Val (10)
-                     );
+                        Character'Val (10));
                   end if;
                   Color := Waveform.Get_Line.Color;
-                  Put
-                  (Oscilloscope.all.Tip_Text,
+                  Strings_Edit.Put
+                    (Oscilloscope.all.Tip_Text,
                      Position,
-                     "<span background='#"
-                  );
-                  Put
+                     "<span background='#");
+                  Strings_Edit.Integers.Put
                     (Destination => Oscilloscope.all.Tip_Text,
                      Pointer     => Position,
                      Value       => Integer (Gdk.Color.Red (Color) / 256),
@@ -125,7 +118,7 @@ begin
                      Field       => 2,
                      Fill        => '0',
                      Justify     => Ada.Strings.Right);
-                  Put
+                  Strings_Edit.Integers.Put
                     (Destination => Oscilloscope.all.Tip_Text,
                      Pointer     => Position,
                      Value       => Integer (Gdk.Color.Green (Color) / 256),
@@ -133,7 +126,7 @@ begin
                      Field       => 2,
                      Fill        => '0',
                      Justify     => Ada.Strings.Right);
-                  Put
+                  Strings_Edit.Integers.Put
                     (Destination => Oscilloscope.all.Tip_Text,
                      Pointer     => Position,
                      Value       => Integer (Gdk.Color.Blue (Color) / 256),
@@ -141,13 +134,13 @@ begin
                      Field       => 2,
                      Fill        => '0',
                      Justify     => Ada.Strings.Right);
-                  Put (Oscilloscope.all.Tip_Text, Position, "'>  </span> ");
-                  Put
-                  (Destination => Oscilloscope.all.Tip_Text,
+                  Strings_Edit.Put
+                    (Oscilloscope.all.Tip_Text, Position, "'>  </span> ");
+                  Strings_Edit.Put
+                    (Destination => Oscilloscope.all.Tip_Text,
                      Pointer     => Position,
                      Value       =>
-                        +Oscilloscope.all.Channels (Index).Tip_Prefix
-                  );
+                        +Oscilloscope.all.Channels (Index).Tip_Prefix);
                   Put
                     (Destination => Oscilloscope.all.Tip_Text,
                      Pointer     => Position,
@@ -156,7 +149,7 @@ begin
                      V1          => Gdouble (Waveform.Get_V2),
                      V2          => Gdouble (Waveform.Get_V1),
                      V           => Gdouble (V));
-                  Put
+                  Strings_Edit.Put
                     (Destination => Oscilloscope.all.Tip_Text,
                      Pointer     => Position,
                      Value       =>
@@ -167,9 +160,10 @@ begin
                                   Oscilloscope.all.Time_Axis
                                       (Oscilloscope.all.Get_Sweeper (Index));
                      begin
-                        Put (Oscilloscope.all.Tip_Text, Position, " at ");
+                        Strings_Edit.Put
+                          (Oscilloscope.all.Tip_Text, Position, " at ");
                         if Sweeper.Time_Mode then
-                           Put
+                           Strings_Edit.Put
                              (Oscilloscope.all.Tip_Text,
                               Position,
                               Gtk.Layered.Graph_Paper_Annotation.Image
@@ -184,7 +178,7 @@ begin
                               V2          => Gdouble (Waveform.Get_T2),
                               V           => Gdouble (T));
                         end if;
-                        Put
+                        Strings_Edit.Put
                           (Destination => Oscilloscope.all.Tip_Text,
                            Pointer     => Position,
                            Value       =>

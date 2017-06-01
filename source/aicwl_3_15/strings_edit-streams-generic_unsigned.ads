@@ -23,77 +23,76 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
-
-with Ada.Streams;  use Ada.Streams;
+-- __________________________________________________________________ --
 
 generic
    type Number is range <>;
 package Strings_Edit.Streams.Generic_Unsigned is
---
--- Get -- Number from stream element array
---
---    Data    - The stream element array
---    Pointer - The first element to read
---    Value   - The result
---
--- The parameter Pointer is advanced beyond the value obtained
---
--- Exceptions :
---
---    Data_Error   - The number is too large
---    End_Error    - Not enough data
---    Layout_Error - Pointer is outside bounds
---
+
+   --
+   -- Get -- Number from stream element array
+   --
+   --    Data    - The stream element array
+   --    Pointer - The first element to read
+   --    Value   - The result
+   --
+   -- The parameter Pointer is advanced beyond the value obtained
+   --
+   -- Exceptions :
+   --
+   --    Data_Error   - The number is too large
+   --    End_Error    - Not enough data
+   --    Layout_Error - Pointer is outside bounds
+   --
    procedure Get
-             (  Data    : Stream_Element_Array;
-                Pointer : in out Stream_Element_Offset;
-                Value   : out Number
-             );
---
--- Input - Stream input
---
---    Stream - The stream object to input value from
---
--- Returns :
---
---    Value
---
+     (Data    : Ada.Streams.Stream_Element_Array;
+      Pointer : in out Ada.Streams.Stream_Element_Offset;
+      Value   : out Number);
+
+   --
+   -- Input - Stream input
+   --
+   --    Stream - The stream object to input value from
+   --
+   -- Returns :
+   --
+   --    Value
+   --
    function Input
-            (  Stream : access Root_Stream_Type'Class
-            )  return Number;
---
--- Output - Stream output
---
---    Stream - The stream object to output value into
---    Value  - The value to output
---
--- Exceptions :
---
---    Constraint_Error - Negative value
---
+     (Stream : access Ada.Streams.Root_Stream_Type'Class) return Number;
+
+   --
+   -- Output - Stream output
+   --
+   --    Stream - The stream object to output value into
+   --    Value  - The value to output
+   --
+   -- Exceptions :
+   --
+   --    Constraint_Error - Negative value
+   --
    procedure Output
-             (  Stream : access Root_Stream_Type'Class;
-                Value  : Number
-             );
---
--- Put -- Number into stream element array
---
---    Data    - The stream element array
---    Pointer - The first element to write
---    Value   - The value to encode
---
--- The parameter Pointer is advanced beyond the value output
---
--- Exceptions :
---
---    Constraint_Error - Negative value
---    End_Error        - No room for output
---    Layout_Error     - Pointer is outside bounds
---
+     (Stream : access Ada.Streams.Root_Stream_Type'Class;
+      Value  : Number);
+
+   --
+   -- Put -- Number into stream element array
+   --
+   --    Data    - The stream element array
+   --    Pointer - The first element to write
+   --    Value   - The value to encode
+   --
+   -- The parameter Pointer is advanced beyond the value output
+   --
+   -- Exceptions :
+   --
+   --    Constraint_Error - Negative value
+   --    End_Error        - No room for output
+   --    Layout_Error     - Pointer is outside bounds
+   --
    procedure Put
-             (  Data    : in out Stream_Element_Array;
-                Pointer : in out Stream_Element_Offset;
-                Value   : Number
-             );
+     (Data    : in out Ada.Streams.Stream_Element_Array;
+      Pointer : in out Ada.Streams.Stream_Element_Offset;
+      Value   : Number);
+
 end Strings_Edit.Streams.Generic_Unsigned;

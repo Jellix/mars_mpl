@@ -23,33 +23,33 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Ada.Characters.Handling; use Ada.Characters.Handling;
-with Ada.IO_Exceptions;       use Ada.IO_Exceptions;
+with Ada.Characters.Handling;
+with Ada.IO_Exceptions;
 
 package body Strings_Edit.Roman_Edit is
+
    procedure Get
-             (  Source  : in String;
-                Pointer : in out Integer;
-                Value   : out Roman;
-                First   : in Roman := Roman'First;
-                Last    : in Roman := Roman'Last;
-                ToFirst : in Boolean := False;
-                ToLast  : in Boolean := False
-             )  is
+     (Source  : in String;
+      Pointer : in out Integer;
+      Value   : out Roman;
+      First   : in Roman := Roman'First;
+      Last    : in Roman := Roman'Last;
+      ToFirst : in Boolean := False;
+      ToLast  : in Boolean := False)
+   is
       Result : Integer := 0;
       Index  : Integer := Pointer;
-      function Get (Letter : Character) return Boolean;
-      pragma Inline (Get);
+
+      function Get (Letter : Character) return Boolean with Inline;
+
       function Get (Letter : Character) return Boolean is
       begin
-         if (  Letter /= '.'
-            and then
-               Index <= Source'Last
-            and then
-               To_Lower (Source (Index)) = Letter
-            )
+         if
+           Letter /= '.' and then
+           Index <= Source'Last and then
+           Ada.Characters.Handling.To_Lower (Source (Index)) = Letter
          then
             Index := Index + 1;
             return True;
@@ -57,6 +57,8 @@ package body Strings_Edit.Roman_Edit is
             return False;
          end if;
       end Get;
+
+      function Get (I, V, X : Character) return Integer;
       function Get (I, V, X : Character) return Integer is
       begin
          if Get (I) then
@@ -93,13 +95,13 @@ package body Strings_Edit.Roman_Edit is
       end Get;
    begin
       if Index < Source'First then
-         raise Layout_Error;
+         raise Ada.IO_Exceptions.Layout_Error;
       end if;
       if Index > Source'Last then
          if Index - 1 > Source'Last then
-            raise Layout_Error;
+            raise Ada.IO_Exceptions.Layout_Error;
          else
-            raise End_Error;
+            raise Ada.IO_Exceptions.End_Error;
          end if;
       end if;
       Result := Get ('m', '.', '.');
@@ -107,7 +109,7 @@ package body Strings_Edit.Roman_Edit is
       Result := Result * 10 + Get ('x', 'l', 'c');
       Result := Result * 10 + Get ('i', 'v', 'x');
       if Index = Pointer then
-         raise End_Error;
+         raise Ada.IO_Exceptions.End_Error;
       end if;
       if Result < Integer (First) then
          if ToFirst then
@@ -127,47 +129,42 @@ package body Strings_Edit.Roman_Edit is
       end if;
    end Get;
 
-   function Value
-            (  Source  : in String;
-               First   : in Roman := Roman'First;
-               Last    : in Roman := Roman'Last;
-               ToFirst : in Boolean := False;
-               ToLast  : in Boolean := False
-            )  return Roman is
-      Result  : Roman;
-      Pointer : Integer := Source'First;
+   function Image
+     (Value     : in Roman;
+      LowerCase : in Boolean := False) return String
+   is
+      Text    : String (1 .. 16);
+      Pointer : Integer := Text'First;
    begin
-      Get (Source, Pointer, SpaceAndTab);
-      Get (Source, Pointer, Result, First, Last, ToFirst, ToLast);
-      Get (Source, Pointer, SpaceAndTab);
-      if Pointer /= Source'Last + 1 then
-         raise Data_Error;
-      end if;
-      return Result;
-   end Value;
+      Put (Text, Pointer, Value, LowerCase);
+      return Text (Text'First .. Pointer - 1);
+   end Image;
 
    procedure Put
-             (  Destination : in out String;
-                Pointer     : in out Integer;
-                Value       : in Roman;
-	        LowerCase   : in Boolean := False;
-                Field       : in Natural := 0;
-                Justify     : in Alignment := Left;
-                Fill        : in Character := ' '
-             )  is
-      subtype Digit is Integer range 0..9;
-      type Decimal is array (Integer range 1..4) of Digit;
+     (Destination : in out String;
+      Pointer     : in out Integer;
+      Value       : in Roman;
+      LowerCase   : in Boolean := False;
+      Field       : in Natural := 0;
+      Justify     : in Alignment := Left;
+      Fill        : in Character := ' ')
+   is
+      subtype Digit is Integer range 0 .. 9;
+      type Decimal is array (Integer range 1 .. 4) of Digit;
       Encoded : Decimal;
-      Result  : String (1..16);
+      Result  : String (1 .. 16);
       Index   : Integer := Result'First;
       Number  : Integer := Integer (Value);
-      procedure Put (Letter : Character);
-      pragma Inline (Put);
+
+      procedure Put (Letter : Character) with Inline;
+
       procedure Put (Letter : Character) is
       begin
          Result (Index) := Letter;
          Index := Index + 1;
       end Put;
+
+      procedure Put (Figure : Digit; I, V, X : Character);
       procedure Put (Figure : Digit; I, V, X : Character) is
       begin
          case Figure is
@@ -200,24 +197,31 @@ package body Strings_Edit.Roman_Edit is
          Put (Encoded (4), 'I', 'V', 'X');
       end if;
       Put
-      (  Destination,
+        (Destination,
          Pointer,
-         Result (Result'First..Index - 1),
+         Result (Result'First .. Index - 1),
          Field,
          Justify,
-         Fill
-      );
+         Fill);
    end Put;
 
-   function Image
-            (  Value     : in Roman;
-               LowerCase : in Boolean := False
-            )  return String is
-      Text    : String (1..16);
-      Pointer : Integer := Text'First;
+   function Value
+     (Source  : in String;
+      First   : in Roman := Roman'First;
+      Last    : in Roman := Roman'Last;
+      ToFirst : in Boolean := False;
+      ToLast  : in Boolean := False) return Roman
+   is
+      Result  : Roman;
+      Pointer : Integer := Source'First;
    begin
-      Put (Text, Pointer, Value, LowerCase);
-      return Text (Text'First..Pointer - 1);
-   end Image;
+      Get (Source, Pointer, SpaceAndTab);
+      Get (Source, Pointer, Result, First, Last, ToFirst, ToLast);
+      Get (Source, Pointer, SpaceAndTab);
+      if Pointer /= Source'Last + 1 then
+         raise Ada.IO_Exceptions.Data_Error;
+      end if;
+      return Result;
+   end Value;
 
 end Strings_Edit.Roman_Edit;

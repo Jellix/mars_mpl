@@ -23,21 +23,21 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Ada.IO_Exceptions;      use Ada.IO_Exceptions;
+with Ada.IO_Exceptions;
 
 package body Strings_Edit.Integer_Edit is
    procedure Get
-             (  Source   : in String;
-                Pointer  : in out Integer;
-                Value    : out Number'Base;
-                Base     : in NumberBase := 10;
-                First    : in Number'Base := Number'First;
-                Last     : in Number'Base := Number'Last;
-                ToFirst  : in Boolean := False;
-                ToLast   : in Boolean := False
-             )  is
+     (Source   : in String;
+      Pointer  : in out Integer;
+      Value    : out Number'Base;
+      Base     : in NumberBase  := 10;
+      First    : in Number'Base := Number'First;
+      Last     : in Number'Base := Number'Last;
+      ToFirst  : in Boolean     := False;
+      ToLast   : in Boolean     := False)
+   is
       Radix    : constant Number'Base := Number'Base (Base);
       Min      : constant Number'Base := Number'Base'First / Radix;
       Max      : constant Number'Base := Number'Base'Last / Radix;
@@ -48,21 +48,10 @@ package body Strings_Edit.Integer_Edit is
       Index    : Integer := Pointer;
       Digit    : Integer;
 
-      procedure Skip is
-         pragma Inline (Skip);
-      begin
-         while (  Index <= Source'Last
-               and then
-                  Base > GetDigit (Source (Index))
-               )
-         loop
-            Index := Index + 1;
-         end loop;
-         Pointer := Index;
-      end Skip;
+      procedure Skip with Inline;
 
+      procedure Neg_Overflow with Inline;
       procedure Neg_Overflow is
-         pragma Inline (Neg_Overflow);
       begin
          if not ToFirst then
             raise Constraint_Error;
@@ -71,8 +60,8 @@ package body Strings_Edit.Integer_Edit is
          Skip;
       end Neg_Overflow;
 
+      procedure Pos_Overflow with Inline;
       procedure Pos_Overflow is
-         pragma Inline (Pos_Overflow);
       begin
          if not ToLast then
             raise Constraint_Error;
@@ -80,15 +69,26 @@ package body Strings_Edit.Integer_Edit is
          Value := Last;
          Skip;
       end Pos_Overflow;
+
+      procedure Skip is
+      begin
+         while
+           Index <= Source'Last and then Base > GetDigit (Source (Index))
+         loop
+            Index := Index + 1;
+         end loop;
+         Pointer := Index;
+      end Skip;
+
    begin
       if Index < Source'First then
-         raise Layout_Error;
+         raise Ada.IO_Exceptions.Layout_Error;
       end if;
       if Index > Source'Last then
          if Index - 1 > Source'Last then
-            raise Layout_Error;
+            raise Ada.IO_Exceptions.Layout_Error;
          else
-            raise End_Error;
+            raise Ada.IO_Exceptions.End_Error;
          end if;
       end if;
       --
@@ -143,9 +143,9 @@ package body Strings_Edit.Integer_Edit is
       end if;
       if Start = Index then
          if HasSign then
-            raise Data_Error;
+            raise Ada.IO_Exceptions.Data_Error;
          else
-            raise End_Error;
+            raise Ada.IO_Exceptions.End_Error;
          end if;
       end if;
       if Result < First then
@@ -165,38 +165,30 @@ package body Strings_Edit.Integer_Edit is
       Pointer := Index;
    end Get;
 
-   function Value
-            (  Source  : in String;
-               Base    : in NumberBase := 10;
-               First   : in Number'Base := Number'First;
-               Last    : in Number'Base := Number'Last;
-               ToFirst : in Boolean := False;
-               ToLast  : in Boolean := False
-            )  return Number'Base is
-      Result  : Number'Base;
-      Pointer : Integer := Source'First;
+   function Image
+     (Value   : in Number'Base;
+      Base    : in NumberBase := 10;
+      PutPlus : in Boolean := False) return String
+   is
+      Text    : String (1 .. 80);
+      Pointer : Integer := Text'First;
    begin
-      Get (Source, Pointer, SpaceAndTab);
-      Get (Source, Pointer, Result, Base, First, Last, ToFirst, ToLast);
-      Get (Source, Pointer, SpaceAndTab);
-      if Pointer /= Source'Last + 1 then
-         raise Data_Error;
-      end if;
-      return Result;
-   end Value;
+      Put (Text, Pointer, Value, Base, PutPlus);
+      return Text (Text'First .. Pointer - 1);
+   end Image;
 
    procedure Put
-             (  Destination : in out String;
-                Pointer     : in out Integer;
-                Value       : in Number'Base;
-                Base        : in NumberBase := 10;
-                PutPlus     : in Boolean := False;
-                Field       : in Natural := 0;
-                Justify     : in Alignment := Left;
-                Fill        : in Character := ' '
-             )  is
+     (Destination : in out String;
+      Pointer     : in out Integer;
+      Value       : in Number'Base;
+      Base        : in NumberBase := 10;
+      PutPlus     : in Boolean    := False;
+      Field       : in Natural    := 0;
+      Justify     : in Alignment  := Left;
+      Fill        : in Character  := ' ')
+   is
       Radix  : constant Number'Base := Number'Base (Base);
-      Result : String (1..256);
+      Result : String (1 .. 256);
       Accum  : Number'Base := Value;
       Index  : Positive := Result'Last;
    begin
@@ -225,25 +217,32 @@ package body Strings_Edit.Integer_Edit is
          Index := Index - 1;
       end if;
       Put
-      (  Destination,
+        (Destination,
          Pointer,
-         Result (Index + 1..Result'Last),
+         Result (Index + 1 .. Result'Last),
          Field,
          Justify,
-         Fill
-      );
+         Fill);
    end Put;
 
-   function Image
-            (  Value   : in Number'Base;
-               Base    : in NumberBase := 10;
-               PutPlus : in Boolean := False
-            )  return String is
-      Text    : String (1..80);
-      Pointer : Integer := Text'First;
+   function Value
+     (Source  : in String;
+      Base    : in NumberBase  := 10;
+      First   : in Number'Base := Number'First;
+      Last    : in Number'Base := Number'Last;
+      ToFirst : in Boolean     := False;
+      ToLast  : in Boolean     := False) return Number'Base
+   is
+      Result  : Number'Base;
+      Pointer : Integer := Source'First;
    begin
-      Put (Text, Pointer, Value, Base, PutPlus);
-      return Text (Text'First..Pointer - 1);
-   end Image;
+      Get (Source, Pointer, SpaceAndTab);
+      Get (Source, Pointer, Result, Base, First, Last, ToFirst, ToLast);
+      Get (Source, Pointer, SpaceAndTab);
+      if Pointer /= Source'Last + 1 then
+         raise Ada.IO_Exceptions.Data_Error;
+      end if;
+      return Result;
+   end Value;
 
 end Strings_Edit.Integer_Edit;

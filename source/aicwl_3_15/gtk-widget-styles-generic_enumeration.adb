@@ -34,9 +34,10 @@ package body Gtk.Widget.Styles.Generic_Enumeration is
    is
       pragma Unreferenced (PSpec);
    begin
-      Set_Enum
+      Enumeration_Property.Set_Enum
         (Property_Value.all,
-         Enumeration'Value (Interfaces.C.Strings.Value (RC_String.Str)));
+         Enumeration_Property.Enumeration'Value
+           (Interfaces.C.Strings.Value (RC_String.Str)));
       return 1;
    exception
       when Constraint_Error =>
@@ -55,7 +56,7 @@ package body Gtk.Widget.Styles.Generic_Enumeration is
 
    function Style_Get
      (Widget        : access Gtk_Widget_Record'Class;
-      Property_Name : String) return Enumeration
+      Property_Name : String) return Enumeration_Property.Enumeration
    is
       --
       -- Enumeration   can   be  queried  as  a  number  because  it  is
@@ -64,7 +65,7 @@ package body Gtk.Widget.Styles.Generic_Enumeration is
       --
       Position : constant Guint := Style_Get (Widget, Property_Name);
    begin
-      return Enumeration'Val (Integer (Position));
+      return Enumeration_Property.Enumeration'Val (Integer (Position));
    end Style_Get;
 
 end Gtk.Widget.Styles.Generic_Enumeration;

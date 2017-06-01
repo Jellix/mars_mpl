@@ -23,116 +23,42 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Gdk.Color;                 use Gdk.Color;
-with Gtk.Container;             use Gtk.Container;
-with Gtk.Missed;                use Gtk.Missed;
-with Gtk.Style;                 use Gtk.Style;
-with Glib.Properties.Creation;  use Glib.Properties.Creation;
-with System;                    use System;
+with Glib.Properties.Creation;
 
-with Gtk.Rc;
+with Gtk.Container;
+with Gtk.Missed;
+
 with System.Address_To_Access_Conversions;
 
 package body Gtk.Widget.Styles.Store is
 
+   pragma Warnings (Off, "declaration hides ""Index""");
+   pragma Warnings (Off, "declaration hides ""Mask""");
+   pragma Warnings (Off, "declaration hides ""Widget""");
+
+   -----------------------------------------------------------------------------
    function Style_Get
-            (  Widget        : access Gtk_Widget_Record'Class;
-               Property_Name : UTF8_String
-            )  return Gtk_Border is
-      package Conversions is
-         new System.Address_To_Access_Conversions (Gtk_Border);
-      use Conversions;
-      Result : Gtk_Border;
-      Value  : GValue;
-      Ptr    : Address;
-   begin
-      Init (Value, Border_Get_Type);
-      Style_Get_Property (Widget, Property_Name, Value);
-      Ptr := Get_Boxed (Value);
-      if Ptr = Null_Address then
-         Unset (Value);
-         raise Constraint_Error;
-      else
-         Result := To_Pointer (Ptr).all;
-         Unset (Value);
-         return Result;
-      end if;
---        procedure Internal
---                  (  Widget        : System.Address;
---                     Property_Name : Property;
---                     Border        : out Gtk_Border_Ptr;
---                     Terminator    : System.Address := System.Null_Address
---                  );
---        pragma Import (C, Internal, "gtk_widget_style_get");
---        procedure G_Free (Border : Gtk_Border_Ptr);
---        pragma Import (C, G_Free, "g_free");
---        Ptr    : Gtk_Border_Ptr;
---        Result : Gtk_Border;
---     begin
---        Internal (Get_Object (Widget), Build (Property_Name), Ptr);
---        if Ptr = null then
---           raise Constraint_Error;
---        else
---           Result := Ptr.all;
---           G_Free (Ptr);
---           return Result;
---        end if;
-   end Style_Get;
+     (Widget        : access Gtk_Widget_Record'Class;
+      Property_Name : UTF8_String) return Gtk_Border;
+   -----------------------------------------------------------------------------
 
    procedure Put
-             (  File    : File_Type;
-                Widget  : access Gtk_Widget_Record'Class;
-                Recurse : Boolean;
-                Prefix  : String
-             )  is
-      Figure : constant array (0..15) of Character :=
+     (File    : Ada.Text_IO.File_Type;
+      Widget  : access Gtk_Widget_Record'Class;
+      Recurse : Boolean;
+      Prefix  : String);
+   procedure Put
+     (File    : Ada.Text_IO.File_Type;
+      Widget  : access Gtk_Widget_Record'Class;
+      Recurse : Boolean;
+      Prefix  : String)
+   is
+      Figure : constant array (0 .. 15) of Character :=
                   "0123456789ABCDEF";
-      procedure Put_String (Text : String) is
-         Value : Integer;
-      begin
-         Put (File, '"');
-         for Index in Text'Range loop
-            Value := Character'Pos (Text (Index));
-            if Text (Index) = '\' or else Value in 16#00#..16#1F# then
-               Put (File, "\");
-               Put (File, Figure (Value / 64));
-               Value := Value / 8;
-               Put (File, Figure (Value / 8));
-               Value := Value / 8;
-               Put (File, Figure (Value));
-            else
-               Put (File, Text (Index));
-            end if;
-         end loop;
-         Put (File, '"');
-      end Put_String;
 
-      procedure Put_Flags
-                (  Class_Of : Flags_Class;
-                   Mask     : Glong
-                )  is
-         Flag  : Flags_Value;
-         First : Boolean := True;
-      begin
-         for Index in 0..Guint'Last loop
-            Flag := Nth_Value (Class_Of, Index);
-            exit when Flag = null;
-            if 0 /= (Value (Flag) and Flags_Int_Value (Mask)) then
-               if First then
-                  First := False;
-               else
-                  Put (File, "| ");
-               end if;
-               Put
-               (  File,
-                  Glib.Properties.Creation.Name (Flag)
-               );
-            end if;
-        end loop;
-      end Put_Flags;
-
+      function Get_Prefix return String;
       function Get_Prefix return String is
       begin
          if Prefix'Length = 0 then
@@ -142,25 +68,82 @@ package body Gtk.Widget.Styles.Store is
          end if;
       end Get_Prefix;
 
+      procedure Put_Flags
+        (Class_Of : Glib.Properties.Creation.Flags_Class;
+         Mask     : Glong);
+      procedure Put_Flags
+        (Class_Of : Glib.Properties.Creation.Flags_Class;
+         Mask     : Glong)
+      is
+         Flag  : Glib.Properties.Creation.Flags_Value;
+         First : Boolean := True;
+
+         use type Glib.Properties.Creation.Flags_Value;
+         use type Glib.Properties.Creation.Flags_Int_Value;
+      begin
+         for Index in 0 .. Guint'Last loop
+            Flag := Glib.Properties.Creation.Nth_Value (Class_Of, Index);
+            exit when Flag = null;
+            if
+              0 /= (Glib.Properties.Creation.Value (Flag) and
+                        Glib.Properties.Creation.Flags_Int_Value (Mask))
+            then
+               if First then
+                  First := False;
+               else
+                  Ada.Text_IO.Put (File, "| ");
+               end if;
+               Ada.Text_IO.Put
+                 (File,
+                  Glib.Properties.Creation.Name (Flag));
+            end if;
+         end loop;
+      end Put_Flags;
+
+      procedure Put_String (Text : String);
+      procedure Put_String (Text : String)
+      is
+         Value : Integer;
+      begin
+         Ada.Text_IO.Put (File, '"');
+         for Index in Text'Range loop
+            Value := Character'Pos (Text (Index));
+            if Text (Index) = '\' or else Value in 16#00# .. 16#1F# then
+               Ada.Text_IO.Put (File, "\");
+               Ada.Text_IO.Put (File, Figure (Value / 64));
+               Value := Value / 8;
+               Ada.Text_IO.Put (File, Figure (Value / 8));
+               Value := Value / 8;
+               Ada.Text_IO.Put (File, Figure (Value));
+            else
+               Ada.Text_IO.Put (File, Text (Index));
+            end if;
+         end loop;
+         Ada.Text_IO.Put (File, '"');
+      end Put_String;
+
       New_Prefix : constant String := Get_Prefix;
    begin
-      if Recurse and then Widget.all in Gtk_Container_Record'Class then
+      if
+        Recurse and then Widget.all in Gtk.Container.Gtk_Container_Record'Class
+      then
          declare
-            use Widget_List;
             Children : Widget_List.Glist :=
-               Get_Children
-               (  Gtk_Container_Record'Class (Widget.all)'Access
-               );
-            Child : Widget_List.Glist := First (Children);
+                         Gtk.Container.Get_Children
+                           (Gtk.Container.Gtk_Container_Record'Class
+                              (Widget.all)'Access);
+            Child    : Widget_List.Glist := Widget_List.First (Children);
+
+            use type Widget_List.Glist;
          begin
-            while Child /= Null_List loop
-               Put (File, Get_Data (Child), Recurse, New_Prefix);
-               Child := Next (Child);
+            while Child /= Widget_List.Null_List loop
+               Put (File, Widget_List.Get_Data (Child), Recurse, New_Prefix);
+               Child := Widget_List.Next (Child);
             end loop;
-            Free (Children);
+            Widget_List.Free (Children);
          exception
             when others =>
-               Free (Children);
+               Widget_List.Free (Children);
                raise;
          end;
       end if;
@@ -171,432 +154,443 @@ package body Gtk.Widget.Styles.Store is
          List  : constant Param_Spec_Array :=
                     Class_List_Style_Properties (Class);
       begin
-         Put_Line
-         (  File,
-            (  "style "
-            &  '"'
-            &  Get_Name (Widget)
-            &  "_of_"
-            &  Class_Name
-            &  '"'
-         )  );
-         Put_Line (File, "{ # " & New_Prefix);
+         Ada.Text_IO.Put_Line
+           (File,
+            "style "
+            & '"'
+            & Get_Name (Widget)
+            & "_of_"
+            & Class_Name
+            & '"');
+         Ada.Text_IO.Put_Line (File, "{ # " & New_Prefix);
          for Index in List'Range loop
             declare
                Param      : constant Param_Spec := List (Index);
-               Name       : constant String := Pspec_Name (Param);
-               Param_Type : constant GType  := Value_Type (Param);
+               Name       : constant String :=
+                              Glib.Properties.Creation.Pspec_Name (Param);
+               Param_Type : constant GType  :=
+                              Glib.Properties.Creation.Value_Type (Param);
             begin
-               Put_Line (File, "      # " & Description (Param));
-               Put (File, "      # " & Type_Name (Param_Type));
+               Ada.Text_IO.Put_Line
+                 (File,
+                  "      # " & Glib.Properties.Creation.Description (Param));
+               Ada.Text_IO.Put (File, "      # " & Type_Name (Param_Type));
                if Param_Type = GType_String then
                   declare
-                     This  : constant Param_Spec_String :=
-                             Param_Spec_String (Param);
+                     This : constant Glib.Properties.Creation.Param_Spec_String
+                       := Glib.Properties.Creation.Param_Spec_String (Param);
                      Value : constant String :=
                              Style_Get (Widget, Name);
                   begin
-                     Put (File, " Default is ");
-                     Put_String (Default (This));
-                     New_Line (File);
-                     Put
-                     (  File,
-                        "   " & Class_Name & "::" & Name & " = "
-                     );
+                     Ada.Text_IO.Put (File, " Default is ");
+                     Put_String (Glib.Properties.Creation.Default (This));
+                     Ada.Text_IO.New_Line (File);
+                     Ada.Text_IO.Put
+                       (File,
+                        "   " & Class_Name & "::" & Name & " = ");
                      Put_String (Value);
-                     New_Line (File);
+                     Ada.Text_IO.New_Line (File);
                   end;
                elsif Param_Type = GType_Char then
                   declare
-                     This  : constant Param_Spec_Char :=
-                             Param_Spec_Char (Param);
+                     This  : constant Glib.Properties.Creation.Param_Spec_Char
+                       := Glib.Properties.Creation.Param_Spec_Char (Param);
                      Value : constant Gchar := Style_Get (Widget, Name);
                   begin
-                     Put_Line
-                     (  File,
-                        (  " range "
-                        &  Gint8'Image (Minimum (This))
-                        &  " .."
-                        &  Gint8'Image (Maximum (This))
-                        &  " Default is"
-                        &  Gint8'Image (Default (This))
-                     )  );
-                     Put_Line
-                     (  File,
-                        (  "   "
-                        &  Class_Name & "::" & Name
-                        &  " ="
-                        &  Integer'Image (Gchar'Pos (Value))
-                     )  );
+                     Ada.Text_IO.Put_Line
+                       (File,
+                        " range "
+                        & Gint8'Image (Glib.Properties.Creation.Minimum (This))
+                        & " .."
+                        & Gint8'Image (Glib.Properties.Creation.Maximum (This))
+                        & " Default is"
+                        & Gint8'Image (Glib.Properties.Creation.Default (This)));
+                     Ada.Text_IO.Put_Line
+                       (File,
+                        "   "
+                        & Class_Name & "::" & Name
+                        & " ="
+                        & Integer'Image (Gchar'Pos (Value)));
                   end;
                elsif Param_Type = GType_Double then
                   declare
-                     This  : constant Param_Spec_Double :=
-                             Param_Spec_Double (Param);
+                     This  : constant Glib.Properties.Creation.Param_Spec_Double
+                       := Glib.Properties.Creation.Param_Spec_Double (Param);
                      Value : constant Gdouble :=
                              Style_Get (Widget, Name);
                   begin
-                     Put_Line
-                     (  File,
-                        (  " range "
-                        &  Gdouble'Image (Minimum (This))
-                        &  " .."
-                        &  Gdouble'Image (Maximum (This))
-                        &  " Default is"
-                        &  Gdouble'Image (Default (This))
-                     )  );
-                     Put_Line
-                     (  File,
-                        (  "   "
-                        &  Class_Name
-                        &  "::"
-                        &  Name
-                        &  " ="
-                        &  Gdouble'Image (Value)
-                     )  );
+                     Ada.Text_IO.Put_Line
+                       (File,
+                        " range "
+                        & Gdouble'Image (Glib.Properties.Creation.Minimum (This))
+                        & " .."
+                        & Gdouble'Image (Glib.Properties.Creation.Maximum (This))
+                        & " Default is"
+                        & Gdouble'Image (Glib.Properties.Creation.Default (This)));
+                     Ada.Text_IO.Put_Line
+                       (File,
+                        "   "
+                        & Class_Name
+                        & "::"
+                        & Name
+                        & " ="
+                        & Gdouble'Image (Value));
                   end;
                elsif Param_Type = GType_Float then
                   declare
-                     This  : constant Param_Spec_Float :=
-                             Param_Spec_Float (Param);
+                     This  : constant Glib.Properties.Creation.Param_Spec_Float
+                       := Glib.Properties.Creation.Param_Spec_Float (Param);
                      Value : constant Gfloat :=
                              Style_Get (Widget, Name);
                   begin
-                     Put_Line
-                     (  File,
-                        (  " range "
-                        &  Gfloat'Image (Minimum (This))
-                        &  " .."
-                        &  Gfloat'Image (Maximum (This))
-                        &  " Default is"
-                        &  Gfloat'Image (Default (This))
-                     )  );
-                     Put_Line
-                     (  File,
-                        (  "   "
-                        &  Class_Name
-                        &  "::"
-                        &  Name
-                        &  " ="
-                        &  Gfloat'Image (Value)
-                     )  );
+                     Ada.Text_IO.Put_Line
+                       (File,
+                        " range "
+                        & Gfloat'Image (Glib.Properties.Creation.Minimum (This))
+                        & " .."
+                        & Gfloat'Image (Glib.Properties.Creation.Maximum (This))
+                        & " Default is"
+                        & Gfloat'Image (Glib.Properties.Creation.Default (This)));
+                     Ada.Text_IO.Put_Line
+                       (File,
+                        "   "
+                        & Class_Name
+                        & "::"
+                        & Name
+                        & " ="
+                        & Gfloat'Image (Value));
                   end;
                elsif Param_Type = GType_Long then
                   declare
-                     This  : constant Param_Spec_Long :=
-                             Param_Spec_Long (Param);
+                     This  : constant Glib.Properties.Creation.Param_Spec_Long
+                       := Glib.Properties.Creation.Param_Spec_Long (Param);
                      Value : constant Glong := Style_Get (Widget, Name);
                   begin
-                     Put_Line
-                     (  File,
-                        (  " range "
-                        &  Glong'Image (Minimum (This))
-                        &  " .."
-                        &  Glong'Image (Maximum (This))
-                        &  " Default is"
-                        &  Glong'Image (Default (This))
-                     )  );
-                     Put_Line
-                     (  File,
-                        (  "   "
-                        &  Class_Name
-                        &  "::"
-                        &  Name
-                        &  " ="
-                        &  Glong'Image (Value)
-                     )  );
+                     Ada.Text_IO.Put_Line
+                       (File,
+                        " range "
+                        & Glong'Image (Glib.Properties.Creation.Minimum (This))
+                        & " .."
+                        & Glong'Image (Glib.Properties.Creation.Maximum (This))
+                        & " Default is"
+                        & Glong'Image (Glib.Properties.Creation.Default (This)));
+                     Ada.Text_IO.Put_Line
+                       (File,
+                        "   "
+                        & Class_Name
+                        & "::"
+                        & Name
+                        & " ="
+                        & Glong'Image (Value));
                   end;
                elsif Param_Type = GType_Int then
                   declare
-                     This  : constant Param_Spec_Int :=
-                             Param_Spec_Int (Param);
+                     This  : constant Glib.Properties.Creation.Param_Spec_Int :=
+                               Glib.Properties.Creation.Param_Spec_Int (Param);
                      Value : constant Gint := Style_Get (Widget, Name);
                   begin
-                     Put_Line
-                     (  File,
-                        (  " range "
-                        &  Gint'Image (Minimum (This))
-                        &  " .."
-                        &  Gint'Image (Maximum (This))
-                        &  " Default is"
-                        &  Gint'Image (Default (This))
-                     )  );
-                     Put_Line
-                     (  File,
-                        (  "   "
-                        &  Class_Name
-                        &  "::"
-                        &  Name
-                        &  " ="
-                        &  Gint'Image (Value)
-                     )  );
+                     Ada.Text_IO.Put_Line
+                       (File,
+                        " range "
+                        & Gint'Image (Glib.Properties.Creation.Minimum (This))
+                        & " .."
+                        & Gint'Image (Glib.Properties.Creation.Maximum (This))
+                        & " Default is"
+                        & Gint'Image (Glib.Properties.Creation.Default (This)));
+                     Ada.Text_IO.Put_Line
+                       (File,
+                        "   "
+                        & Class_Name
+                        & "::"
+                        & Name
+                        & " ="
+                        & Gint'Image (Value));
                   end;
                elsif Param_Type = GType_Uchar then
                   declare
-                     This  : constant Param_Spec_Uchar :=
-                             Param_Spec_Uchar (Param);
+                     This  : constant Glib.Properties.Creation.Param_Spec_Uchar
+                       := Glib.Properties.Creation.Param_Spec_Uchar (Param);
                      Value : constant Guchar :=
                              Style_Get (Widget, Name);
                   begin
-                     Put_Line
-                     (  File,
-                        (  " range "
-                        &  Guint8'Image (Minimum (This))
-                        &  " .."
-                        &  Guint8'Image (Maximum (This))
-                        &  " Default is"
-                        &  Guint8'Image (Default (This))
-                     )  );
-                     Put_Line
-                     (  File,
-                        (  "   "
-                        &  Class_Name
-                        &  "::"
-                        &  Name
-                        &  " ="
-                        &  Integer'Image (Guchar'Pos (Value))
-                     )  );
+                     Ada.Text_IO.Put_Line
+                       (File,
+                        " range "
+                        & Guint8'Image (Glib.Properties.Creation.Minimum (This))
+                        & " .."
+                        & Guint8'Image (Glib.Properties.Creation.Maximum (This))
+                        & " Default is"
+                        & Guint8'Image (Glib.Properties.Creation.Default (This)));
+                     Ada.Text_IO.Put_Line
+                       (File,
+                        "   "
+                        & Class_Name
+                        & "::"
+                        & Name
+                        & " ="
+                        & Integer'Image (Guchar'Pos (Value)));
                   end;
                elsif Param_Type = GType_Uint then
                   declare
-                     This  : constant Param_Spec_Uint :=
-                             Param_Spec_Uint (Param);
+                     This  : constant Glib.Properties.Creation.Param_Spec_Uint
+                       := Glib.Properties.Creation.Param_Spec_Uint (Param);
                      Value : constant Guint := Style_Get (Widget, Name);
                   begin
-                     Put_Line
-                     (  File,
-                        (  " range "
-                        &  Guint'Image (Minimum (This))
-                        &  " .."
-                        &  Guint'Image (Maximum (This))
-                        &  " Default is"
-                        &  Guint'Image (Default (This))
-                     )  );
-                     Put_Line
-                     (  File,
-                        (  "   "
-                        &  Class_Name
-                        &  "::"
-                        &  Name
-                        &  " ="
-                        &  Guint'Image (Value)
-                     )  );
+                     Ada.Text_IO.Put_Line
+                       (File,
+                        " range "
+                        & Guint'Image (Glib.Properties.Creation.Minimum (This))
+                        & " .."
+                        & Guint'Image (Glib.Properties.Creation.Maximum (This))
+                        & " Default is"
+                        & Guint'Image (Glib.Properties.Creation.Default (This)));
+                     Ada.Text_IO.Put_Line
+                       (File,
+                        "   "
+                        & Class_Name
+                        & "::"
+                        & Name
+                        & " ="
+                        & Guint'Image (Value));
                   end;
                elsif Param_Type = GType_Ulong then
                   declare
-                     This  : constant Param_Spec_Ulong :=
-                             Param_Spec_Ulong (Param);
+                     This  : constant Glib.Properties.Creation.Param_Spec_Ulong
+                       := Glib.Properties.Creation.Param_Spec_Ulong (Param);
                      Value : constant Gulong :=
                              Style_Get (Widget, Name);
                   begin
-                     Put_Line
-                     (  File,
-                        (  " range "
-                        &  Gulong'Image (Minimum (This))
-                        &  " .."
-                        &  Gulong'Image (Maximum (This))
-                        &  " Default is"
-                        &  Gulong'Image (Default (This))
-                     )  );
-                     Put_Line
-                     (  File,
-                        (  "   "
-                        &  Class_Name
-                        &  "::"
-                        &  Name
-                        &  " ="
-                        &  Gulong'Image (Value)
-                     )  );
+                     Ada.Text_IO.Put_Line
+                       (File,
+                        " range "
+                        & Gulong'Image (Glib.Properties.Creation.Minimum (This))
+                        & " .."
+                        & Gulong'Image (Glib.Properties.Creation.Maximum (This))
+                        & " Default is"
+                        & Gulong'Image (Glib.Properties.Creation.Default (This)));
+                     Ada.Text_IO.Put_Line
+                       (File,
+                        "   "
+                        & Class_Name
+                        & "::"
+                        & Name
+                        & " ="
+                        & Gulong'Image (Value));
                   end;
                elsif Param_Type = GType_Boolean then
                   declare
-                     This  : constant Param_Spec_Boolean :=
-                             Param_Spec_Boolean (Param);
+                     This  : constant Glib.Properties.Creation.Param_Spec_Boolean
+                       := Glib.Properties.Creation.Param_Spec_Boolean (Param);
                      Value : constant Boolean :=
                              Style_Get (Widget, Name);
                   begin
-                     Put_Line
-                     (  File,
-                        (  " Default is"
-                        &  Integer'Image (Boolean'Pos (Default (This)))
-                     )  );
-                     Put_Line
-                     (  File,
-                        (  "   "
-                        &  Class_Name
-                        &  "::"
-                        &  Name
-                        &  " ="
-                        &  Integer'Image (Boolean'Pos (Value))
-                     )  );
+                     Ada.Text_IO.Put_Line
+                       (File,
+                        " Default is"
+                        & Integer'Image (Boolean'Pos (Glib.Properties.Creation.Default (This))));
+                     Ada.Text_IO.Put_Line
+                       (File,
+                        "   "
+                        & Class_Name
+                        & "::"
+                        & Name
+                        & " ="
+                        & Integer'Image (Boolean'Pos (Value)));
                   end;
                elsif Param_Type = Gdk_Color_Type then
                   declare
                      Value   : Gdk_Color;
                      Default : Gdk_Color;
                   begin
-                     New_Line (File);
+                     Ada.Text_IO.New_Line (File);
                      Set_Rgb (Default, 0, 0, 0);
                      Value := Style_Get (Widget, Name, Default);
-                     Put_Line
-                     (  File,
-                        (  "   "
-                        &  Class_Name
-                        &  "::"
-                        &  Name
-                        &  " = ""#"
-                        &  Figure (Integer (Red   (Value) / (256 * 16)))
-                        &  Figure (Integer (Red   (Value) rem 16))
-                        &  Figure (Integer (Green (Value) / (256 * 16)))
-                        &  Figure (Integer (Green (Value) rem 16))
-                        &  Figure (Integer (Blue  (Value) / (256 * 16)))
-                        &  Figure (Integer (Blue  (Value) rem 16))
-                        &  '"'
-                     )  );
+                     Ada.Text_IO.Put_Line
+                       (File,
+                        "   "
+                        & Class_Name
+                        & "::"
+                        & Name
+                        & " = ""#"
+                        & Figure (Integer (Red   (Value) / (256 * 16)))
+                        & Figure (Integer (Red   (Value) rem 16))
+                        & Figure (Integer (Green (Value) / (256 * 16)))
+                        & Figure (Integer (Green (Value) rem 16))
+                        & Figure (Integer (Blue  (Value) / (256 * 16)))
+                        & Figure (Integer (Blue  (Value) rem 16))
+                        & '"');
                   end;
-               elsif Is_A (Param_Type, GType_Enum) then
+               elsif Gtk.Missed.Is_A (Param_Type, GType_Enum) then
                   declare
-                     This     : constant Param_Spec_Enum :=
-                                Param_Spec_Enum (Param);
-                     Value    : Enum_Value;
+                     This     : constant Glib.Properties.Creation.Param_Spec_Enum
+                       := Glib.Properties.Creation.Param_Spec_Enum (Param);
+                     Value    : Glib.Properties.Creation.Enum_Value;
                      First    : Boolean := True;
-                     Class_Of : constant Enum_Class :=
-                                Enumeration (This);
+                     Class_Of : constant Glib.Properties.Creation.Enum_Class :=
+                                  Glib.Properties.Creation.Enumeration (This);
+
+                     use type Glib.Properties.Creation.Enum_Value;
                   begin
-                     Put (File, " (");
-                     for Index in 0..Guint'Last loop
-                        Value := Nth_Value (Class_Of, Index);
+                     Ada.Text_IO.Put (File, " (");
+                     for Index in 0 .. Guint'Last loop
+                        Value :=
+                          Glib.Properties.Creation.Nth_Value (Class_Of, Index);
                         exit when Value = null;
                         if First then
                            First := False;
                         else
-                           Put (File, ", ");
+                           Ada.Text_IO.Put (File, ", ");
                         end if;
-                        Put
-                        (  File,
-                           Glib.Properties.Creation.Name (Value)
-                        );
+                        Ada.Text_IO.Put
+                          (File,
+                           Glib.Properties.Creation.Name (Value));
                      end loop;
-                     Put_Line
-                     (  File,
-                        (  ") Default is "
-                        &  Glib.Properties.Creation.Name
-                           (  Get_Value
-                              (  Class_Of,
-                                 Default (This)
-                     )  )  )  );
-                     Put_Line
-                     (  File,
-                        (  "   "
-                        &  Class_Name
-                        &  "::"
-                        &  Name
-                        &  " = "
-                        &  Glib.Properties.Creation.Name
-                           (  Get_Value
-                              (  Class_Of,
-                                 Style_Get (Widget, Name)
-                     )  )  )  );
+                     Ada.Text_IO.Put_Line
+                       (File,
+                        ") Default is "
+                        & Glib.Properties.Creation.Name
+                            (Glib.Properties.Creation.Get_Value
+                               (Class_Of,
+                                Glib.Properties.Creation.Default (This))));
+                     Ada.Text_IO.Put_Line
+                       (File,
+                        "   "
+                        & Class_Name
+                        & "::"
+                        & Name
+                        & " = "
+                        & Glib.Properties.Creation.Name
+                            (Glib.Properties.Creation.Get_Value
+                               (Class_Of,
+                                Style_Get (Widget, Name))));
                   end;
-               elsif Is_A (Param_Type, GType_Flags) then
+               elsif Gtk.Missed.Is_A (Param_Type, GType_Flags) then
                   declare
-                     This     : constant Param_Spec_Flags :=
-                                Param_Spec_Flags (Param);
-                     Class_Of : constant Flags_Class :=
-                                Flags_Enumeration (This);
-                     Value    : Flags_Value;
+                     This     : constant Glib.Properties.Creation.Param_Spec_Flags
+                       := Glib.Properties.Creation.Param_Spec_Flags (Param);
+                     Class_Of : constant Glib.Properties.Creation.Flags_Class :=
+                                  Glib.Properties.Creation.Flags_Enumeration (This);
+                     Value    : Glib.Properties.Creation.Flags_Value;
                      First    : Boolean := True;
+
+                     use type Glib.Properties.Creation.Flags_Value;
                   begin
-                     Put (File, " (");
-                     for Index in 0..Guint'Last loop
-                        Value := Nth_Value (Class_Of, Index);
+                     Ada.Text_IO.Put (File, " (");
+                     for Index in 0 .. Guint'Last loop
+                        Value :=
+                          Glib.Properties.Creation.Nth_Value (Class_Of, Index);
                         exit when Value = null;
                         if First then
                            First := False;
                         else
-                           Put (File, "or ");
+                           Ada.Text_IO.Put (File, "or ");
                         end if;
-                        Put
-                        (  File,
-                           Glib.Properties.Creation.Name (Value)
-                        );
+                        Ada.Text_IO.Put
+                          (File,
+                           Glib.Properties.Creation.Name (Value));
                      end loop;
-                     Put_Line (File, ") Default is ");
-                     Put_Flags (Class_Of, Default (This));
-                     New_Line (File);
-                     Put
-                     (  File,
-                        (  "   "
-                        &  Class_Name
-                        &  "::"
-                        &  Name
-                        &  " = "
-                     )  );
+                     Ada.Text_IO.Put_Line (File, ") Default is ");
+                     Put_Flags
+                       (Class_Of, Glib.Properties.Creation.Default (This));
+                     Ada.Text_IO.New_Line (File);
+                     Ada.Text_IO.Put
+                       (File,
+                        "   "
+                        & Class_Name
+                        & "::"
+                        & Name
+                        & " = ");
                      Put_Flags (Class_Of, Style_Get (Widget, Name));
-                     New_Line (File);
+                     Ada.Text_IO.New_Line (File);
                   end;
                elsif Param_Type = Border_Get_Type then
-                  New_Line (File);
+                  Ada.Text_IO.New_Line (File);
                   declare
                      Border : Gtk_Border;
                   begin
                      Border := Style_Get (Widget, Name);
-                     Put_Line
-                     (  File,
-                        (  "   "
-                        &  Class_Name
-                        &  "::"
-                        &  Name
-                        &  " = {"
-                        &  Gint16'Image (Border.Left)
-                        &  ","
-                        &  Gint16'Image (Border.Right)
-                        &  ","
-                        &  Gint16'Image (Border.Top)
-                        &  ","
-                        &  Gint16'Image (Border.Bottom)
-                        &  "}"
-                     )  );
+                     Ada.Text_IO.Put_Line
+                       (File,
+                        "   "
+                        & Class_Name
+                        & "::"
+                        & Name
+                        & " = {"
+                        & Gint16'Image (Border.Left)
+                        & ","
+                        & Gint16'Image (Border.Right)
+                        & ","
+                        & Gint16'Image (Border.Top)
+                        & ","
+                        & Gint16'Image (Border.Bottom)
+                        & "}");
                   exception
                      when Constraint_Error =>
-                        Put_Line
-                        (  File,
-                           (  "   "
-                           &  Class_Name
-                           &  "::"
-                           &  Name
-                           &  " = {1,1,1,1} # Undefined"
-                        )  );
+                        Ada.Text_IO.Put_Line
+                          (File,
+                           "   "
+                           & Class_Name
+                           & "::"
+                           & Name
+                           & " = {1,1,1,1} # Undefined");
                   end;
                else
-                  New_Line (File);
-                  Put_Line
-                  (  File,
-                     (  "###"
-                     &  Name
-                     &  " = the type is not supported"
-                  )  );
+                  Ada.Text_IO.New_Line (File);
+                  Ada.Text_IO.Put_Line
+                    (File,
+                     "###"
+                     & Name
+                     & " = the type is not supported");
                end if;
             end;
          end loop;
       end;
-      Put_Line (File, "}");
+      Ada.Text_IO.Put_Line (File, "}");
    end Put;
 
    procedure Put_Styles
-             (  File    : File_Type;
-                Widget  : not null access Gtk_Widget_Record'Class;
-                Recurse : Boolean := True
-             )  is
+     (Widget  : not null access Gtk_Widget_Record'Class;
+      Recurse : Boolean := True) is
+   begin
+      Put (Ada.Text_IO.Standard_Output, Widget, Recurse, "");
+   end Put_Styles;
+
+   procedure Put_Styles
+     (File    : Ada.Text_IO.File_Type;
+      Widget  : not null access Gtk_Widget_Record'Class;
+      Recurse : Boolean := True) is
    begin
       Put (File, Widget, Recurse, "");
    end Put_Styles;
 
-   procedure Put_Styles
-             (  Widget  : not null access Gtk_Widget_Record'Class;
-                Recurse : Boolean := True
-             )  is
+   function Style_Get
+     (Widget        : access Gtk_Widget_Record'Class;
+      Property_Name : UTF8_String) return Gtk_Border
+   is
+      package Conversions is
+        new System.Address_To_Access_Conversions (Gtk_Border);
+
+      Result : Gtk_Border;
+      Value  : GValue;
+      Ptr    : System.Address;
+
+      use type System.Address;
    begin
-      Put (Standard_Output, Widget, Recurse, "");
-   end Put_Styles;
+      Init (Value, Border_Get_Type);
+      Style_Get_Property (Widget, Property_Name, Value);
+      Ptr := Get_Boxed (Value);
+      if Ptr = System.Null_Address then
+         Unset (Value);
+         raise Constraint_Error;
+      else
+         Result := Conversions.To_Pointer (Ptr).all;
+         Unset (Value);
+         return Result;
+      end if;
+   end Style_Get;
+
+   pragma Warnings (On, "declaration hides ""Index""");
+   pragma Warnings (On, "declaration hides ""Mask""");
+   pragma Warnings (On, "declaration hides ""Widget""");
+
 end Gtk.Widget.Styles.Store;

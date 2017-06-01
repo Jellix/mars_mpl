@@ -42,10 +42,9 @@ with System.Address_To_Access_Conversions;
 
 package body Glib.Spawn.Asynchronous is
 
-   function Where (Text : String) return String is
-   begin
-      return " in GLib.Spawn.Asynchronous." & Text;
-   end Where;
+   pragma Warnings (Off, "declaration hides ""Error""");
+
+   function Where (Text : String) return String;
 
    procedure Free is
       new Ada.Unchecked_Deallocation (Reader, Reader_Ptr);
@@ -75,7 +74,9 @@ package body Glib.Spawn.Asynchronous is
       Free (Process.EnvP);
    end Completed;
 
-   function Copy (List : Chars_Ptr_Array) return Chars_Ptr_Array_Ptr is
+   function Copy (List : Chars_Ptr_Array) return Chars_Ptr_Array_Ptr;
+   function Copy (List : Chars_Ptr_Array) return Chars_Ptr_Array_Ptr
+   is
       Result : constant Chars_Ptr_Array_Ptr :=
                  new Chars_Ptr_Array (List'First .. List'Last + 1);
    begin
@@ -87,6 +88,9 @@ package body Glib.Spawn.Asynchronous is
       return Result;
    end Copy;
 
+   function Copy
+     (Name : UTF8_String;
+      List : Chars_Ptr_Array) return Chars_Ptr_Array_Ptr;
    function Copy
      (Name : UTF8_String;
       List : Chars_Ptr_Array) return Chars_Ptr_Array_Ptr
@@ -104,6 +108,8 @@ package body Glib.Spawn.Asynchronous is
       return Result;
    end Copy;
 
+   function Copy (List : Gtk.Enums.String_List.Glist)
+                  return Chars_Ptr_Array_Ptr;
    function Copy (List : Gtk.Enums.String_List.Glist)
                   return Chars_Ptr_Array_Ptr
    is
@@ -132,6 +138,9 @@ package body Glib.Spawn.Asynchronous is
       end;
    end Copy;
 
+   function Copy
+     (Name : UTF8_String;
+      List : Gtk.Enums.String_List.Glist) return Chars_Ptr_Array_Ptr;
    function Copy
      (Name : UTF8_String;
       List : Gtk.Enums.String_List.Glist) return Chars_Ptr_Array_Ptr
@@ -211,17 +220,17 @@ package body Glib.Spawn.Asynchronous is
       return Process.Error;
    end Get_Error;
 
+   function Get_Exit_Status (Process : Asynchronous_Process)
+                             return Gint is
+   begin
+      return Process.Status.Get;
+   end Get_Exit_Status;
+
    function Get_State (Process : Asynchronous_Process)
       return Process_State is
    begin
       return Process.Status.Get;
    end Get_State;
-
-   function Get_Exit_Status (Process : Asynchronous_Process)
-      return Gint is
-   begin
-      return Process.Status.Get;
-   end Get_Exit_Status;
 
    procedure Input
      (Process : in out Asynchronous_Process;
@@ -630,22 +639,27 @@ package body Glib.Spawn.Asynchronous is
       end if;
    end Wait;
 
+   function Where (Text : String) return String is
+   begin
+      return " in GLib.Spawn.Asynchronous." & Text;
+   end Where;
+
    task body Writer is
       Bytes  : Integer;
       Buffer : UTF8_String (1 .. 1024 * 10);
       Count  : Natural;
    begin
       begin
-         loop
+         Input_Loop : loop
             Input (Process.all, Buffer, Count);
-            exit when Count = 0;
+            exit Input_Loop when Count = 0;
             Bytes :=
                GNAT.OS_Lib.Write
                 (GNAT.OS_Lib.File_Descriptor (Pipe),
                  Buffer'Address,
                  Integer (Count));
-            exit when Bytes /= Integer (Count);
-         end loop;
+            exit Input_Loop when Bytes /= Integer (Count);
+         end loop Input_Loop;
       exception
          when Error : others =>
             Glib.Messages.Log
@@ -661,5 +675,7 @@ package body Glib.Spawn.Asynchronous is
       Process.all.Status.Wait_IO;
       Messages.Send (Service_Exit'Access, Process.all'Unchecked_Access);
    end Writer;
+
+   pragma Warnings (On, "declaration hides ""Error""");
 
 end Glib.Spawn.Asynchronous;

@@ -84,7 +84,6 @@ with Gtk.Tree_Selection;
 with Gtk.Tree_Store;
 with Gtk.Tree_View;
 with Gtk.Tree_View_Column;
-with Gtk.Widget;
 
 package Gtk.Abstract_Browser is
    pragma Elaborate_Body (Gtk.Abstract_Browser);

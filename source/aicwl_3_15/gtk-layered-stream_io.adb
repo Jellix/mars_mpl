@@ -91,8 +91,8 @@ package body Gtk.Layered.Stream_IO is
 
    end Generic_Modular_IO;
 
-   package GUInt_IO       is new Generic_Modular_IO (GUInt);
-   package GUInt16_IO     is new Generic_Modular_IO (GUInt16);
+   package GUInt_IO       is new Generic_Modular_IO (Guint);
+   package GUInt16_IO     is new Generic_Modular_IO (Guint16);
    package Unsigned_32_IO is new Generic_Modular_IO (Interfaces.Unsigned_32);
    package Unsigned_64_IO is new Generic_Modular_IO (Interfaces.Unsigned_64);
 

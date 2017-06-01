@@ -41,6 +41,12 @@ with Glib.Error;
 
 package body Pango.Cairo.Fonts is
 
+   pragma Warnings (Off, "declaration hides ""Context""");
+   pragma Warnings (Off, "declaration hides ""Error""");
+   pragma Warnings (Off, "declaration hides ""Font""");
+   pragma Warnings (Off, "declaration hides ""Layout""");
+   pragma Warnings (Off, "declaration hides ""Text""");
+
    function Where (Name : String) return String;
 
    overriding procedure Adjust (Handle : in out Pango_Font_Description_Handle) is
@@ -58,27 +64,26 @@ package body Pango.Cairo.Fonts is
    end Adjust;
 
    procedure Check (Font : Cairo_Font_Face_Handle) is
-      use Ada.IO_Exceptions;
       Error : Cairo_Status;
    begin
       if Font.Face = Null_Font_Face then
-         raise Status_Error with "Null font";
+         raise Ada.IO_Exceptions.Status_Error with "Null font";
       else
          Error := Standard.Cairo.Font_Face.Status (Font.Face);
          if Error /= Cairo_Status_Success then
-            raise Status_Error with Gtk.Missed.To_String (Error);
+            raise
+              Ada.IO_Exceptions.Status_Error with Gtk.Missed.To_String (Error);
          end if;
       end if;
    end Check;
 
    procedure Check (Context : Cairo_Context);
    procedure Check (Context : Cairo_Context) is
-      use Ada.IO_Exceptions;
       Error : Cairo_Status;
    begin
       Error := Status (Context);
       if Error /= Cairo_Status_Success then
-         raise Status_Error with Gtk.Missed.To_String (Error);
+         raise Ada.IO_Exceptions.Status_Error with Gtk.Missed.To_String (Error);
       end if;
    end Check;
 
@@ -716,21 +721,19 @@ package body Pango.Cairo.Fonts is
       end case;
    end Store;
 
-   function Strip_Tags (Text : UTF8_String) return UTF8_String is
-      use Glib.Error;
-      use System;
-      use Interfaces.C;
-
-      function Internal (Markup_Text  : Address;
-                         Length       : int;
-                         Accel_Marker : Gunichar := 0;
-                         Attr_List    : Address  := Null_Address;
-                         Text         : access Interfaces.C.Strings.chars_ptr;
-                         Accel_Char   : Address  := Null_Address;
-                         Error        : access GError) return Gboolean;
+   function Strip_Tags (Text : UTF8_String) return UTF8_String
+   is
+      function Internal
+        (Markup_Text  : System.Address;
+         Length       : Interfaces.C.int;
+         Accel_Marker : Gunichar       := 0;
+         Attr_List    : System.Address := System.Null_Address;
+         Text         : access Interfaces.C.Strings.chars_ptr;
+         Accel_Char   : System.Address := System.Null_Address;
+         Error        : access Glib.Error.GError) return Gboolean;
       pragma Import (C, Internal, "pango_parse_markup");
       Result : aliased Interfaces.C.Strings.chars_ptr;
-      Error  : aliased GError;
+      Error  : aliased Glib.Error.GError;
    begin
       if 0 =  Internal (Markup_Text => Text (Text'First)'Address,
                         Length      => Text'Length,
@@ -751,29 +754,10 @@ package body Pango.Cairo.Fonts is
       return " in Pango.Cairo.Fonts." & Name;
    end Where;
 
---     procedure Show_Layout_Line
---               (  Context : Cairo_Context;
---                  Layout  : not null access Pango_Layout_Record'Class;
---                  Line    : Natural := 0
---               )  is
---        function Get
---                 (  Layout : Address;
---                    Line   : Gint
---                 )  return Address;
---        pragma Import (C, Get, "pango_layout_get_line_readonly");
---        procedure Show
---                  (  Context : Cairo_Context;
---                     Line    : Address
---                  );
---        pragma Import (C, Show, "pango_cairo_show_layout_line");
---        procedure Unref (Line : Address);
---        pragma Import (C, Unref, "pango_layout_line_unref");
---        This : Address := Get (Get_Object (Layout), GInt (Line));
---     begin
---        if This /= Null_Address then
---           Show (Context, This);
---           Unref (This);
---        end if;
---     end Show_Layout_Line;
+   pragma Warnings (On, "declaration hides ""Context""");
+   pragma Warnings (On, "declaration hides ""Error""");
+   pragma Warnings (On, "declaration hides ""Font""");
+   pragma Warnings (On, "declaration hides ""Layout""");
+   pragma Warnings (On, "declaration hides ""Text""");
 
 end Pango.Cairo.Fonts;

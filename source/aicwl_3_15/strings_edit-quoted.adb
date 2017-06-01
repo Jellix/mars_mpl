@@ -23,50 +23,25 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
-with Ada.IO_Exceptions;    use Ada.IO_Exceptions;
-with Strings_Edit.Fields;  use Strings_Edit.Fields;
+with Ada.IO_Exceptions;
+
+with Strings_Edit.Fields;
 
 package body Strings_Edit.Quoted is
 
    function Get_Quoted_Length
-            (  Source  : String;
-               Pointer : access Integer;
-               Mark    : Character := '"'
-            )  return Natural is
-      Index  : Integer := Pointer.all;
-      Length : Natural := 0;
-   begin
-      if Index < Source'First or else Index > Source'Last + 1 then
-         raise Layout_Error;
-      end if;
-      if Index > Source'Last or else Source (Index) /= Mark then
-         raise Data_Error;
-      end if;
-      Index := Index + 1;
-      loop
-         if Index > Source'Last then
-            raise Data_Error;
-         end if;
-         if Source (Index) = Mark then
-            Index := Index + 1;
-            exit when
-               Index > Source'Last or else Source (Index) /= Mark;
-         end if;
-         Length := Length + 1;
-         Index  := Index  + 1;
-      end loop;
-      Pointer.all := Index;
-      return Length;
-   end Get_Quoted_Length;
+     (Source  : String;
+      Pointer : access Integer;
+      Mark    : Character := '"') return Natural;
 
    function Get_Quoted
-            (  Source  : String;
-               Pointer : access Integer;
-               Mark    : Character := '"'
-            )  return String is
-      Result : String (1..Get_Quoted_Length (Source, Pointer, Mark));
+     (Source  : String;
+      Pointer : access Integer;
+      Mark    : Character := '"') return String
+   is
+      Result : String (1 .. Get_Quoted_Length (Source, Pointer, Mark));
       Index  : Integer := Pointer.all - 2;
    begin
       for Item in reverse Result'Range loop
@@ -80,27 +55,59 @@ package body Strings_Edit.Quoted is
       return Result;
    end Get_Quoted;
 
+   function Get_Quoted_Length
+     (Source  : String;
+      Pointer : access Integer;
+      Mark    : Character := '"') return Natural
+   is
+      Index  : Integer := Pointer.all;
+      Length : Natural := 0;
+   begin
+      if Index < Source'First or else Index > Source'Last + 1 then
+         raise Ada.IO_Exceptions.Layout_Error;
+      end if;
+      if Index > Source'Last or else Source (Index) /= Mark then
+         raise Ada.IO_Exceptions.Data_Error;
+      end if;
+      Index := Index + 1;
+      loop
+         if Index > Source'Last then
+            raise Ada.IO_Exceptions.Data_Error;
+         end if;
+         if Source (Index) = Mark then
+            Index := Index + 1;
+            exit when
+               Index > Source'Last or else Source (Index) /= Mark;
+         end if;
+         Length := Length + 1;
+         Index  := Index  + 1;
+      end loop;
+      Pointer.all := Index;
+      return Length;
+   end Get_Quoted_Length;
+
    procedure Put_Quoted
-             (  Destination : in out String;
-                Pointer     : in out Integer;
-                Text        : String;
-                Mark        : Character := '"';
-                Field       : Natural   := 0;
-                Justify     : Alignment := Left;
-                Fill        : Character := ' '
-             )  is
-     Out_Field : constant Natural :=
-                    Get_Output_Field (Destination, Pointer, Field);
-     subtype Output is String (Pointer..Pointer + Out_Field - 1);
-     Result : Output renames
-                 Destination (Pointer..Pointer + Out_Field - 1);
-     Index  : Integer := Pointer;
+     (Destination : in out String;
+      Pointer     : in out Integer;
+      Text        : String;
+      Mark        : Character := '"';
+      Field       : Natural   := 0;
+      Justify     : Alignment := Left;
+      Fill        : Character := ' ')
+   is
+      Out_Field : constant Natural :=
+                    Strings_Edit.Fields.Get_Output_Field
+                      (Destination, Pointer, Field);
+      subtype Output is String (Pointer .. Pointer + Out_Field - 1);
+      Result    : Output renames
+                    Destination (Pointer .. Pointer + Out_Field - 1);
+      Index     : Integer := Pointer;
    begin
       Result (Index) := Mark;
       Index := Index + 1;
       for Item in Text'Range loop
          if Index >= Result'Last then
-            raise Layout_Error;
+            raise Ada.IO_Exceptions.Layout_Error;
          end if;
          Result (Index) := Text (Item);
          Index := Index + 1;
@@ -110,19 +117,18 @@ package body Strings_Edit.Quoted is
          end if;
       end loop;
       if Index > Result'Last then
-         raise Layout_Error;
+         raise Ada.IO_Exceptions.Layout_Error;
       end if;
       Result (Index) := Mark;
       Index := Index + 1;
-      Adjust_Output_Field
-      (  Destination,
+      Strings_Edit.Fields.Adjust_Output_Field
+        (Destination,
          Pointer,
          Index,
          Out_Field,
          Field,
          Justify,
-         Fill
-      );
+         Fill);
    end Put_Quoted;
 
    function Quote (Text : String; Mark : Character := '"')
@@ -135,7 +141,7 @@ package body Strings_Edit.Quoted is
          end if;
       end loop;
       declare
-         Result  : String (1..Length);
+         Result  : String (1 .. Length);
          Pointer : Positive := Result'First;
       begin
          Result (Pointer) := Mark;

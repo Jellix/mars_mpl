@@ -25,7 +25,7 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Glib.Types;  use Glib.Types;
+with Glib.Types;
 
 separate (Gtk.Oscilloscope) function Get_Type return GType is
 begin
@@ -54,14 +54,14 @@ begin
            15 => (0 => GType_Uint,   1 .. 2 => GType_None)))
    then
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Boxed
            (Name       => "background-color",
             Boxed_Type => Gdk.Color.Gdk_Color_Type,
             Nick       => "Background color",
             Blurb      => "The background color"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Double
            (Name    => "background-opacity",
             Nick    => "Background opacity",
@@ -70,7 +70,7 @@ begin
             Default => 1.0,
             Blurb   => "The background opacity"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Uint
            (Name    => "waveform-proximity",
             Nick    => "Proximity",
@@ -82,7 +82,7 @@ begin
               "when the tooltip should contain the value " &
               "of the waveform"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Boxed
            (Name       => "selection-color",
             Boxed_Type => Gdk.Color.Gdk_Color_Type,
@@ -93,7 +93,7 @@ begin
       -- Menus
       --
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_String
            (Name    => "menu-cancel",
             Default => "Cancel selection",
@@ -101,7 +101,7 @@ begin
             Blurb   =>
               "The menu item label causing deletion of the selection"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_String
            (Name    => "menu-copy-values",
             Default => "Get values at the mouse cursor",
@@ -110,7 +110,7 @@ begin
               "The menu item label causing copying " &
               "values under the cursor"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_String
            (Name    => "menu-copy-differences",
             Default => "Subtract values at the mouse cursor",
@@ -120,7 +120,7 @@ begin
               "differences between stored and new values " &
               "under the cursor"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_String
            (Name    => "menu-copy-range",
             Default => "Get differences between the margins",
@@ -130,7 +130,7 @@ begin
               "the differences between values at " &
               "the margins of the selection box"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_String
            (Name    => "menu-latest",
             Default => "Latest data",
@@ -139,28 +139,28 @@ begin
               "The menu item label causing all sweepers " &
               "showing the latest data"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_String
            (Name    => "menu-pause",
             Default => "Hold",
             Nick    => "Hold",
             Blurb   => "The menu item label causing freezing all sweepers"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_String
            (Name    => "menu-redo",
             Default => "Redo zooming",
             Nick    => "Redo",
             Blurb   => "The menu item label redo"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_String
            (Name    => "menu-release",
             Default => "Release",
             Nick    => "Release",
             Blurb   => "The menu item label causing releasing all sweepers"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_String
            (Name    => "menu-snapshot",
             Default => "Snapshot",
@@ -168,28 +168,28 @@ begin
             Blurb   =>
               "The menu item label for capturing oscilloscope's contents"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_String
            (Name    => "menu-toggle-grid",
             Default => "Toggle grid",
             Nick    => "Toggle grid",
             Blurb   => "The menu item label for toggling grid"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_String
            (Name    => "menu-toggle-interpolation",
             Default => "Toggle interpolation mode",
             Nick    => "Toggle interpolation",
             Blurb   => "The menu item label for toggling interpolation mode"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_String
            (Name    => "menu-undo",
             Default => "Undo zooming",
             Nick    => "Undo",
             Blurb   => "The menu item label undo"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_String
            (Name    => "menu-zoom-in",
             Default => "Zoom in",
@@ -197,7 +197,7 @@ begin
             Blurb   =>
               "The menu item label causing zooming into the selected area"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_String
            (Name    => "menu-zoom-in-t",
             Default => "Zoom in time",
@@ -206,7 +206,7 @@ begin
               "The menu item label causing zooming into " &
               "the selected horizontal range"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_String
            (Name    => "menu-zoom-in-v",
             Default => "Zoom in values",
@@ -215,7 +215,7 @@ begin
               "The menu item label causing zooming into " &
               "the selected vertical range"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_String
            (Name    => "menu-zoom-out",
             Default => "Zoom out",
@@ -224,7 +224,7 @@ begin
               "The menu item label causing zooming out " &
               "of the selected area"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_String
            (Name    => "menu-zoom-out-t",
             Default => "Zoom out time",
@@ -233,7 +233,7 @@ begin
               "The menu item label causing zooming out " &
               "of the selected horizontal range"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_String
            (Name    => "menu-zoom-out-v",
             Default => "Zoom out values",
@@ -245,7 +245,7 @@ begin
       -- Time axis properties
       --
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Uint
            (Name       => "time-axis-height",
             Minimum    => 1,
@@ -257,21 +257,21 @@ begin
               "of the waveforms box, where the time " &
               "axis is shown"));
       Gtk.Widget.Styles.Line_Cap_Property.Install_Style
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Cairo.Line_Cap_Property.Gnew_Enum
            (Name    => "time-line-cap",
             Nick    => "Time line cap",
             Blurb   => "The style used for the time axis line",
             Default => Cairo.Cairo_Line_Cap_Round));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Boxed
            (Name       => "time-line-color",
             Boxed_Type => Gdk.Color.Gdk_Color_Type,
             Nick       => "Time line color",
             Blurb      => "The color of the time axis line"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Uint
            (Name       => "time-line-width",
             Minimum    => 0,
@@ -280,14 +280,14 @@ begin
             Nick       => "Time line width",
             Blurb      => "The width of the time axis line"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Boxed
            (Name       => "time-major-tick-color",
             Boxed_Type => Gdk.Color.Gdk_Color_Type,
             Nick       => "Time major color",
             Blurb      => "The color of the time axis major tick"));
       Gtk.Widget.Styles.Line_Cap_Property.Install_Style
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Cairo.Line_Cap_Property.Gnew_Enum
            (Name    => "time-major-tick-cap",
             Nick    => "Time major cap",
@@ -296,7 +296,7 @@ begin
               "The style used for the line of the " &
               "time axis major ticks"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Uint
            (Name       => "time-major-tick-width",
             Minimum    => 0,
@@ -305,14 +305,14 @@ begin
             Nick       => "Time major width",
             Blurb      => "The width of the time axis major tick"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Boxed
            (Name       => "time-minor-tick-color",
             Boxed_Type => Gdk.Color.Gdk_Color_Type,
             Nick       => "Time minor color",
             Blurb      => "The color of the time axis minor tick"));
       Gtk.Widget.Styles.Line_Cap_Property.Install_Style
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Cairo.Line_Cap_Property.Gnew_Enum
            (Name    => "time-minor-tick-cap",
             Nick    => "Time minor cap",
@@ -320,7 +320,7 @@ begin
             Blurb   =>
               "The style used for the line of the time axis minor ticks"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Uint
            (Name       => "time-minor-tick-width",
             Minimum    => 0,
@@ -329,7 +329,7 @@ begin
             Nick       => "Time minor width",
             Blurb      => "The width of the time axis minor tick"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Uint
            (Name       => "time-tick-height",
             Minimum    => 1,
@@ -338,7 +338,7 @@ begin
             Nick       => "Time tick height",
             Blurb      => "The height of the time axis ticks"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Uint
            (Name       => "time-tick-step",
             Minimum    => 1,
@@ -347,7 +347,7 @@ begin
             Nick       => "The time step",
             Blurb      => "The approximate step of time ticks"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Boxed
            (Name       => "time-text-border-color",
             Boxed_Type => Gdk.Color.Gdk_Color_Type,
@@ -356,7 +356,7 @@ begin
               "The color of the rectangle under " &
               "the annotation texts of the time axis"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Double
            (Name       => "time-text-border-opacity",
             Minimum    => 0.0,
@@ -367,7 +367,7 @@ begin
               "The opacity of the rectangle under " &
               "the annotation texts of the time axis"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Uint
            (Name       => "time-text-border",
             Minimum    => 0,
@@ -379,7 +379,7 @@ begin
               "box to obtain the box laid down under " &
               "the text of a time axis"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Int
            (Name       => "time-text-overlap",
             Minimum    => Gint'First,
@@ -398,7 +398,7 @@ begin
       -- Values axis properties
       --
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Uint
            (Name       => "values-axis-width",
             Minimum    => 1,
@@ -410,21 +410,21 @@ begin
               "of the waveforms box, where the values " &
               "axis is shown"));
       Gtk.Widget.Styles.Line_Cap_Property.Install_Style
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Cairo.Line_Cap_Property.Gnew_Enum
            (Name    => "values-line-cap",
             Nick    => "Values line cap",
             Blurb   => "The style used for the values axis line",
             Default => Cairo.Cairo_Line_Cap_Round));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Boxed
            (Name       => "values-line-color",
             Boxed_Type => Gdk.Color.Gdk_Color_Type,
             Nick       => "Values line color",
             Blurb      => "The color of the values axis line"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Uint
            (Name       => "values-line-width",
             Minimum    => 0,
@@ -433,14 +433,14 @@ begin
             Nick       => "Values line width",
             Blurb      => "The width of the values axis line"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Boxed
            (Name       => "values-major-tick-color",
             Boxed_Type => Gdk.Color.Gdk_Color_Type,
             Nick       => "Values major color",
             Blurb      => "The color of the values axis major tick"));
       Gtk.Widget.Styles.Line_Cap_Property.Install_Style
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Cairo.Line_Cap_Property.Gnew_Enum
            (Name    => "values-major-tick-cap",
             Nick    => "Values major cap",
@@ -448,7 +448,7 @@ begin
             Blurb   =>
               "The style used for the line of the values axis major ticks"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Uint
            (Name       => "values-major-tick-width",
             Minimum    => 0,
@@ -457,14 +457,14 @@ begin
             Nick       => "Values major width",
             Blurb      => "The width of the values axis major tick"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Boxed
            (Name       => "values-minor-tick-color",
             Boxed_Type => Gdk.Color.Gdk_Color_Type,
             Nick       => "Values minor color",
             Blurb      => "The color of the values axis minor tick"));
       Gtk.Widget.Styles.Line_Cap_Property.Install_Style
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Cairo.Line_Cap_Property.Gnew_Enum
            (Name    => "values-minor-tick-cap",
             Nick    => "Values minor cap",
@@ -472,7 +472,7 @@ begin
             Blurb   =>
               "The style used for the line of the values axis minor ticks"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Uint
            (Name       => "values-minor-tick-width",
             Minimum    => 0,
@@ -481,7 +481,7 @@ begin
             Nick       => "Values minor width",
             Blurb      => "The width of the values axis minor tick"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Uint
            (Name       => "values-tick-width",
             Minimum    => 1,
@@ -490,7 +490,7 @@ begin
             Nick       => "Values tick width",
             Blurb      => "The width of the values axis ticks"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Uint
            (Name       => "values-tick-step",
             Minimum    => 1,
@@ -499,7 +499,7 @@ begin
             Nick       => "The values step",
             Blurb      => "The approximate step of time ticks"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Boxed
            (Name       => "values-text-border-color",
             Boxed_Type => Gdk.Color.Gdk_Color_Type,
@@ -508,7 +508,7 @@ begin
               "The color of the rectangle under " &
               "the annotation texts of the values axis"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Double
            (Name       => "values-text-border-opacity",
             Minimum    => 0.0,
@@ -519,7 +519,7 @@ begin
               "The opacity of the rectangle under " &
               "the annotation texts of the values axis"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Uint
            (Name       => "values-text-border",
             Minimum    => 0,
@@ -531,7 +531,7 @@ begin
               "box to obtain the box laid down under " &
               "the text of a values axis"));
       Gtk.Widget.Install_Style_Property
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Glib.Properties.Creation.Gnew_Int
            (Name       => "values-text-overlap",
             Minimum    => Gint'First,
@@ -550,7 +550,7 @@ begin
       -- Waveform properties
       --
       Gtk.Widget.Styles.Line_Cap_Property.Install_Style
-        (Class_Ref (Class_Record.all.The_Type),
+        (Glib.Types.Class_Ref (Class_Record.all.The_Type),
          Cairo.Line_Cap_Property.Gnew_Enum
            (Name    => "waveform-line-cap",
             Nick    => "Waeform line cap",

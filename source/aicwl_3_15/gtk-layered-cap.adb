@@ -25,6 +25,7 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
+with Ada.Numerics;
 with Ada.Unchecked_Deallocation;
 
 with Cairo.Elementary_Functions;
@@ -182,6 +183,7 @@ package body Gtk.Layered.Cap is
       Context : Cairo.Cairo_Context;
       Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
+      pragma Unreferenced (Area);
       Box     : constant Cairo.Ellipses.Cairo_Box :=
                   Cairo.Ellipses.Get_Path_Extents (Context);
       Radius  : constant Gdouble   := 0.5 * (Box.X2 - Box.X1);

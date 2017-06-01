@@ -23,12 +23,11 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 with Glib.Properties.Icon_Size;
 with Gtk.Widget.Styles.Generic_Enumeration;
 
 package Gtk.Widget.Styles.Icon_Size is
-   new Gtk.Widget.Styles.Generic_Enumeration
-       (  GLib.Properties.Icon_Size.Property
-       );
+  new Gtk.Widget.Styles.Generic_Enumeration
+    (GLib.Properties.Icon_Size.Property);

@@ -32,15 +32,22 @@ with Glib.Chars_Ptr_Vectors;
 
 package body Gtk.Source_Language is
 
+   pragma Warnings (Off, "declaration hides ""Language""");
+   pragma Warnings (Off, "declaration hides ""Name""");
+   pragma Warnings (Off, "declaration hides ""Object""");
+   pragma Warnings (Off, "declaration hides ""Style""");
+
    function Get_Globs
      (Language : not null access Gtk_Source_Language_Record)
       return Interfaces.C.Strings.chars_ptr_array
    is
-      use Glib.Chars_Ptr_Vectors;
-      function Internal (Object : System.Address) return Chars_Ptr_Ptr;
+      function Internal (Object : System.Address)
+                         return Glib.Chars_Ptr_Vectors.Chars_Ptr_Ptr;
       pragma Import (C, Internal, "gtk_source_language_get_globs");
    begin
-      return Convert_And_Free (Internal (Get_Object (Language)));
+      return
+        Glib.Chars_Ptr_Vectors.Convert_And_Free
+          (Internal (Get_Object (Language)));
    end Get_Globs;
 
    function Get_Hidden
@@ -88,11 +95,13 @@ package body Gtk.Source_Language is
      (Language : not null access Gtk_Source_Language_Record)
       return Interfaces.C.Strings.chars_ptr_array
    is
-      use Glib.Chars_Ptr_Vectors;
-      function Internal (Object : System.Address) return Chars_Ptr_Ptr;
+      function Internal (Object : System.Address)
+                         return Glib.Chars_Ptr_Vectors.Chars_Ptr_Ptr;
       pragma Import (C, Internal, "gtk_source_language_get_mime_types");
    begin
-      return Convert_And_Free (Internal (Get_Object (Language)));
+      return
+        Glib.Chars_Ptr_Vectors.Convert_And_Free
+          (Internal (Get_Object (Language)));
    end Get_Mime_Types;
 
    function Get_Name
@@ -159,11 +168,13 @@ package body Gtk.Source_Language is
      (Language : not null access Gtk_Source_Language_Record)
       return Interfaces.C.Strings.chars_ptr_array
    is
-      use Glib.Chars_Ptr_Vectors;
-      function Internal (Object : System.Address) return Chars_Ptr_Ptr;
+      function Internal (Object : System.Address)
+                         return Glib.Chars_Ptr_Vectors.Chars_Ptr_Ptr;
       pragma Import (C, Internal, "gtk_source_language_get_style_ids");
    begin
-      return Convert_And_Free (Internal (Get_Object (Language)));
+      return
+        Glib.Chars_Ptr_Vectors.Convert_And_Free
+          (Internal (Get_Object (Language)));
    end Get_Style_IDs;
 
    function Get_Style_Name
@@ -186,5 +197,10 @@ package body Gtk.Source_Language is
          return Interfaces.C.Strings.Value (Result);
       end if;
    end Get_Style_Name;
+
+   pragma Warnings (On, "declaration hides ""Language""");
+   pragma Warnings (On, "declaration hides ""Name""");
+   pragma Warnings (On, "declaration hides ""Object""");
+   pragma Warnings (On, "declaration hides ""Style""");
 
 end Gtk.Source_Language;

@@ -25,6 +25,7 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
+with Ada.Numerics;
 with Ada.Unchecked_Deallocation;
 
 with Cairo.Elementary_Functions;
