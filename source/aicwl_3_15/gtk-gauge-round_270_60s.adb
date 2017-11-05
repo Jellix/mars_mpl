@@ -41,6 +41,9 @@ with Gtk.Widget.Styles.Line_Cap_Property;
 
 package body Gtk.Gauge.Round_270_60s is
 
+   pragma Warnings (Off, "declaration hides ""Adjustment""");
+   pragma Warnings (Off, "declaration hides ""Widget""");
+
    Pi : constant := Ada.Numerics.Pi;
 
    Needle_Color      : constant Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.00, 0.00, 0.00);
@@ -483,5 +486,8 @@ package body Gtk.Gauge.Round_270_60s is
          Color   =>
            Gtk.Widget.Styles.Style_Get (Widget, "text-color", Text_Color));
    end Style_Changed;
+
+   pragma Warnings (On, "declaration hides ""Widget""");
+   pragma Warnings (On, "declaration hides ""Adjustment""");
 
 end Gtk.Gauge.Round_270_60s;

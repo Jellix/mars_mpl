@@ -225,9 +225,9 @@ package body Gtk.Layered.Elliptic_Bar is
       end if;
       Set_Source_Rgb
       (  Context,
-         GDouble (Red   (Layer.Line.Color)) / GDouble (Guint16'Last),
-         GDouble (Green (Layer.Line.Color)) / GDouble (Guint16'Last),
-         GDouble (Blue  (Layer.Line.Color)) / GDouble (Guint16'Last)
+         Gdouble (Red   (Layer.Line.Color)) / Gdouble (Guint16'Last),
+         Gdouble (Green (Layer.Line.Color)) / Gdouble (Guint16'Last),
+         Gdouble (Blue  (Layer.Line.Color)) / Gdouble (Guint16'Last)
       );
       Set_Line_Cap (Context, Layer.Line.Line_Cap);
       if Layer.Scaled then
@@ -274,12 +274,12 @@ package body Gtk.Layered.Elliptic_Bar is
       return Layer.Ellipse;
    end Get_Ellipse;
 
-   function Get_From (Layer : Elliptic_Bar_Layer) return GDouble is
+   function Get_From (Layer : Elliptic_Bar_Layer) return Gdouble is
    begin
       return Layer.From;
    end Get_From;
 
-   function Get_Length  (Layer : Elliptic_Bar_Layer) return GDouble is
+   function Get_Length  (Layer : Elliptic_Bar_Layer) return Gdouble is
    begin
       return Layer.Length;
    end Get_Length;
@@ -315,8 +315,8 @@ package body Gtk.Layered.Elliptic_Bar is
                   Gnew_Double
                   (  Name    => "x",
                      Nick    => "x",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb =>
                         "The x-coordinate of the bar's ellipse center"
@@ -326,8 +326,8 @@ package body Gtk.Layered.Elliptic_Bar is
                   Gnew_Double
                   (  Name    => "y",
                      Nick    => "y",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb =>
                         "The y-coordinate of the bar's ellipse center"
@@ -338,7 +338,7 @@ package body Gtk.Layered.Elliptic_Bar is
                   (  Name    => "k",
                      Nick    => "k",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb =>
                         "The curvature of the bar's ellipse major axis"
@@ -349,7 +349,7 @@ package body Gtk.Layered.Elliptic_Bar is
                   (  Name    => "r",
                      Nick    => "r",
                      Minimum => 1.0E-6,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 0.5,
                      Blurb =>
                         "The radius of the bar's ellipse minor axis"
@@ -395,7 +395,7 @@ package body Gtk.Layered.Elliptic_Bar is
                   (  Name    => "width",
                      Nick    => "width",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 1.0,
                      Blurb   => "The width of the bar's line"
                   );
@@ -412,7 +412,7 @@ package body Gtk.Layered.Elliptic_Bar is
                   Cairo.Line_Cap_Property.Gnew_Enum
                   (  Name    => "line-cap",
                      Nick    => "line cap",
-                     Default => CAIRO_LINE_CAP_BUTT,
+                     Default => Cairo_Line_Cap_Butt,
                      Blurb   => "The cap style of the line of the bar"
                   );
             when Property_Value =>
@@ -510,7 +510,7 @@ package body Gtk.Layered.Elliptic_Bar is
       return Layer.Scaled;
    end Get_Scaled;
 
-   function Get_Value (Layer : Elliptic_Bar_Layer) return GDouble is
+   function Get_Value (Layer : Elliptic_Bar_Layer) return Gdouble is
    begin
       return Layer.Value;
    end Get_Value;
@@ -539,8 +539,8 @@ package body Gtk.Layered.Elliptic_Bar is
                 Layer  : in out Elliptic_Bar_Layer
              )  is
       Ellipse    : Ellipse_Parameters;
-      From       : GDouble;
-      Length     : GDouble;
+      From       : Gdouble;
+      Length     : Gdouble;
       Line       : Line_Parameters;
       Adjustment : Boolean;
    begin
@@ -565,7 +565,7 @@ package body Gtk.Layered.Elliptic_Bar is
          end;
       else
          declare
-            Value : GDouble;
+            Value : Gdouble;
          begin
             Restore (Stream, Value);
             Set_Value (Layer, Value);
@@ -575,7 +575,7 @@ package body Gtk.Layered.Elliptic_Bar is
 
    procedure Scale
              (  Layer  : in out Elliptic_Bar_Layer;
-                Factor : GDouble
+                Factor : Gdouble
              )  is
       Ellipse : constant Ellipse_Parameters := Layer.Ellipse * Factor;
    begin
@@ -591,8 +591,8 @@ package body Gtk.Layered.Elliptic_Bar is
    procedure Set
              (  Layer   : in out Elliptic_Bar_Layer;
                 Ellipse : Ellipse_Parameters;
-                From    : GDouble;
-                Length  : GDouble;
+                From    : Gdouble;
+                Length  : Gdouble;
                 Line    : Line_Parameters
              )  is
    begin
@@ -639,18 +639,18 @@ package body Gtk.Layered.Elliptic_Bar is
                Layer.Ellipse.Angle := Get_Double (Value);
                if Layer.Ellipse.Angle not in -2.0 * Pi..2.0 * Pi then
                   Layer.Ellipse.Angle :=
-                     GDouble'Remainder (Layer.Ellipse.Angle, 2.0 * Pi);
+                     Gdouble'Remainder (Layer.Ellipse.Angle, 2.0 * Pi);
                end if;
             when Property_From =>
                Layer.From := Get_Double (Value);
                if Layer.From not in -2.0 * Pi..2.0 * Pi then
-                  Layer.From := GDouble'Remainder (Layer.From, 2.0 * Pi);
+                  Layer.From := Gdouble'Remainder (Layer.From, 2.0 * Pi);
                end if;
             when Property_Length =>
                Layer.Length := Get_Double (Value);
                if Layer.Length not in -2.0 * Pi..2.0 * Pi then
                   Layer.Length :=
-                     GDouble'Remainder (Layer.Length, 2.0 * Pi);
+                     Gdouble'Remainder (Layer.Length, 2.0 * Pi);
                end if;
             when Property_Line_Width =>
                Layer.Line.Width := Get_Double (Value);
@@ -684,7 +684,7 @@ package body Gtk.Layered.Elliptic_Bar is
 
    procedure Set_Value
              (  Layer : in out Elliptic_Bar_Layer;
-                Value : GDouble
+                Value : Gdouble
              )  is
    begin
       if Value <= 0.0 then

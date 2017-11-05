@@ -218,8 +218,8 @@ package body Gtk.Layered.Sector_Needle is
             (  Under      : not null access Layer_Location'Class;
                Outer      : Ellipse_Parameters := Unit_Circle;
                Inner      : Ellipse_Parameters;
-               From       : GDouble   := 3.0 * Pi / 4.0;
-               Length     : GDouble   := 3.0 * Pi / 2.0;
+               From       : Gdouble   := 3.0 * Pi / 4.0;
+               Length     : Gdouble   := 3.0 * Pi / 2.0;
                Color      : Gdk_Color := RGB (1.0, 0.0, 0.0);
                Adjustment : access Gtk_Adjustment_Record'Class := null;
                Scaled     : Boolean   := False
@@ -251,8 +251,8 @@ package body Gtk.Layered.Sector_Needle is
             (  Under      : not null access Layer_Location'Class;
                Outer      : Ellipse_Parameters := Unit_Circle;
                Center     : Cairo_Tuple;
-               From       : GDouble   := 3.0 * Pi / 4.0;
-               Length     : GDouble   := 3.0 * Pi / 2.0;
+               From       : Gdouble   := 3.0 * Pi / 4.0;
+               Length     : Gdouble   := 3.0 * Pi / 2.0;
                Color      : Gdk_Color := RGB (1.0, 0.0, 0.0);
                Adjustment : access Gtk_Adjustment_Record'Class := null;
                Scaled     : Boolean   := False
@@ -283,8 +283,8 @@ package body Gtk.Layered.Sector_Needle is
    function Add_Sector_Needle
             (  Under      : not null access Layer_Location'Class;
                Outer      : Ellipse_Parameters := Unit_Circle;
-               From       : GDouble   := 3.0 * Pi / 4.0;
-               Length     : GDouble   := 3.0 * Pi / 2.0;
+               From       : Gdouble   := 3.0 * Pi / 4.0;
+               Length     : Gdouble   := 3.0 * Pi / 2.0;
                Color      : Gdk_Color := RGB (1.0, 0.0, 0.0);
                Adjustment : access Gtk_Adjustment_Record'Class := null;
                Scaled     : Boolean   := False
@@ -316,9 +316,9 @@ package body Gtk.Layered.Sector_Needle is
              (  Adjustment : access GObject_Record'Class;
                 Needle      : Needle_Ptr
              )  is
-      Lower : constant GDouble := Get_Lower (Needle.Adjustment);
-      Upper : constant GDouble := Get_Upper (Needle.Adjustment);
-      Value : constant GDouble := Get_Value (Needle.Adjustment);
+      Lower : constant Gdouble := Get_Lower (Needle.Adjustment);
+      Upper : constant Gdouble := Get_Upper (Needle.Adjustment);
+      Value : constant Gdouble := Get_Value (Needle.Adjustment);
    begin
       if Upper <= Lower or else Value <= Lower then
          Needle.Set_Value (0.0);
@@ -337,14 +337,14 @@ package body Gtk.Layered.Sector_Needle is
                 Context : Cairo_Context;
                 Area    : Gdk_Rectangle
              )  is
-      Length : constant GDouble := Layer.Length * Layer.Value;
+      Length : constant Gdouble := Layer.Length * Layer.Value;
    begin
       New_Path (Context);
       if Get_Scaled (Layer) then
          declare
             Center : constant Cairo_Tuple :=
                               Layer.Get_Widget.Get_Center;
-            Size   : constant GDouble := Layer.Get_Widget.Get_Size;
+            Size   : constant Gdouble := Layer.Get_Widget.Get_Size;
          begin
             Elliptic_Arc_Abs
             (  Context,
@@ -400,11 +400,11 @@ package body Gtk.Layered.Sector_Needle is
          end if;
       end if;
       Close_Path (Context);
-      Set_Source_RGB
+      Set_Source_Rgb
       (  Context,
-         GDouble (Red   (Layer.Color)) / GDouble (Guint16'Last),
-         GDouble (Green (Layer.Color)) / GDouble (Guint16'Last),
-         GDouble (Blue  (Layer.Color)) / GDouble (Guint16'Last)
+         Gdouble (Red   (Layer.Color)) / Gdouble (Guint16'Last),
+         Gdouble (Green (Layer.Color)) / Gdouble (Guint16'Last),
+         Gdouble (Blue  (Layer.Color)) / Gdouble (Guint16'Last)
       );
       Fill (Context);
       Layer.Updated := False;
@@ -432,7 +432,7 @@ package body Gtk.Layered.Sector_Needle is
       return Layer.Color;
    end Get_Color;
 
-   function Get_From (Layer : Sector_Needle_Layer) return GDouble is
+   function Get_From (Layer : Sector_Needle_Layer) return Gdouble is
    begin
       return Layer.From;
    end Get_From;
@@ -443,7 +443,7 @@ package body Gtk.Layered.Sector_Needle is
       return Layer.Inner;
    end Get_Inner;
 
-   function Get_Length  (Layer : Sector_Needle_Layer) return GDouble is
+   function Get_Length  (Layer : Sector_Needle_Layer) return Gdouble is
    begin
       return Layer.Length;
    end Get_Length;
@@ -479,8 +479,8 @@ package body Gtk.Layered.Sector_Needle is
                   Gnew_Double
                   (  Name    => "outer-x",
                      Nick    => "outer x",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb =>
                         "The x-coordinate of the outer ellipse's center"
@@ -490,8 +490,8 @@ package body Gtk.Layered.Sector_Needle is
                   Gnew_Double
                   (  Name    => "outer-y",
                      Nick    => "outer y",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb =>
                         "The y-coordinate of the outer ellipse's center"
@@ -502,7 +502,7 @@ package body Gtk.Layered.Sector_Needle is
                   (  Name    => "outer-k",
                      Nick    => "outer k",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb   => "The curvature of the major axis of " &
                                 "the outer ellipse"
@@ -513,7 +513,7 @@ package body Gtk.Layered.Sector_Needle is
                   (  Name    => "outer-r",
                      Nick    => "outer r",
                      Minimum => 1.0E-6,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 0.5,
                      Blurb   => "The radius of the minor axis of " &
                                 "outer ellipse"
@@ -542,8 +542,8 @@ package body Gtk.Layered.Sector_Needle is
                   Gnew_Double
                   (  Name    => "inner-x",
                      Nick    => "inner x",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb =>
                         "When shape is bagel, then this " &
@@ -558,8 +558,8 @@ package body Gtk.Layered.Sector_Needle is
                   Gnew_Double
                   (  Name    => "inner-y",
                      Nick    => "inner y",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb =>
                         "When shape is bagel, then this " &
@@ -575,7 +575,7 @@ package body Gtk.Layered.Sector_Needle is
                   (  Name    => "inner-k",
                      Nick    => "inner k",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb =>
                         "When shape is bagel, then this " &
@@ -589,7 +589,7 @@ package body Gtk.Layered.Sector_Needle is
                   (  Name    => "inner-r",
                      Nick    => "inner r",
                      Minimum => 1.0E-6,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 0.5,
                      Blurb =>
                         "When shape is bagel, then this " &
@@ -772,7 +772,7 @@ package body Gtk.Layered.Sector_Needle is
       return Layer.Scaled;
    end Get_Scaled;
 
-   function Get_Value (Layer : Sector_Needle_Layer) return GDouble is
+   function Get_Value (Layer : Sector_Needle_Layer) return Gdouble is
    begin
       return Layer.Value;
    end Get_Value;
@@ -806,8 +806,8 @@ package body Gtk.Layered.Sector_Needle is
              )  is
       Outer      : Ellipse_Parameters;
       Inner      : Elliptic_Arc_Closure;
-      From       : GDouble;
-      Length     : GDouble;
+      From       : Gdouble;
+      Length     : Gdouble;
       Color      : Gdk_Color;
       Adjustment : Boolean;
    begin
@@ -834,7 +834,7 @@ package body Gtk.Layered.Sector_Needle is
          end;
       else
          declare
-            Value : GDouble;
+            Value : Gdouble;
          begin
             Restore (Stream, Value);
             Set_Value (Layer, Value);
@@ -844,7 +844,7 @@ package body Gtk.Layered.Sector_Needle is
 
    procedure Scale
              (  Layer  : in out Sector_Needle_Layer;
-                Factor : GDouble
+                Factor : Gdouble
              )  is
       Outer : constant Ellipse_Parameters := Layer.Outer * Factor;
       Inner : Elliptic_Arc_Closure := Layer.Inner;
@@ -879,8 +879,8 @@ package body Gtk.Layered.Sector_Needle is
              (  Layer  : in out Sector_Needle_Layer;
                 Outer  : Ellipse_Parameters;
                 Inner  : Elliptic_Arc_Closure;
-                From   : GDouble;
-                Length : GDouble;
+                From   : Gdouble;
+                Length : Gdouble;
                 Color  : Gdk_Color
              )  is
    begin
@@ -935,7 +935,7 @@ package body Gtk.Layered.Sector_Needle is
                Layer.Outer.Angle := Get_Double (Value);
                if Layer.Outer.Angle not in -2.0 * Pi..2.0 * Pi then
                   Layer.Outer.Angle :=
-                     GDouble'Remainder (Layer.Outer.Angle, 2.0 * Pi);
+                     Gdouble'Remainder (Layer.Outer.Angle, 2.0 * Pi);
                end if;
             when Property_Shape =>
                case Gtk.Layered.
@@ -999,7 +999,7 @@ package body Gtk.Layered.Sector_Needle is
                      if Layer.Inner.Arc.Angle not in -2.0 * Pi..2.0 * Pi
                      then
                         Layer.Inner.Arc.Angle :=
-                           GDouble'Remainder
+                           Gdouble'Remainder
                            (  Layer.Inner.Arc.Angle, 2.0 * Pi
                            );
                      end if;
@@ -1009,13 +1009,13 @@ package body Gtk.Layered.Sector_Needle is
             when Property_From =>
                Layer.From := Get_Double (Value);
                if Layer.From not in -2.0 * Pi..2.0 * Pi then
-                  Layer.From := GDouble'Remainder (Layer.From, 2.0 * Pi);
+                  Layer.From := Gdouble'Remainder (Layer.From, 2.0 * Pi);
                end if;
             when Property_Length =>
                Layer.Length := Get_Double (Value);
                if Layer.Length not in -2.0 * Pi..2.0 * Pi then
                   Layer.Length :=
-                     GDouble'Remainder (Layer.Length, 2.0 * Pi);
+                     Gdouble'Remainder (Layer.Length, 2.0 * Pi);
                end if;
             when Property_Color =>
                Layer.Color := Get_Value (Value);
@@ -1039,7 +1039,7 @@ package body Gtk.Layered.Sector_Needle is
 
    procedure Set_Value
              (  Layer : in out Sector_Needle_Layer;
-                Value : GDouble
+                Value : Gdouble
              )  is
    begin
       if Value <= 0.0 then

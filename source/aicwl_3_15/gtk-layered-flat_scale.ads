@@ -108,7 +108,7 @@ package Gtk.Layered.Flat_Scale is
 --
 --    The scale angle
 --
-   function Get_Angle (Layer : Flat_Scale_Layer) return GDouble;
+   function Get_Angle (Layer : Flat_Scale_Layer) return Gdouble;
 --
 -- Get_Breadth -- The tick length
 --
@@ -118,7 +118,7 @@ package Gtk.Layered.Flat_Scale is
 --
 --    The tick length
 --
-   function Get_Breadth (Layer : Flat_Scale_Layer) return GDouble;
+   function Get_Breadth (Layer : Flat_Scale_Layer) return Gdouble;
 --
 -- Get_From -- Position of the scale beginning
 --
@@ -138,7 +138,7 @@ package Gtk.Layered.Flat_Scale is
 --
 --    The scale length
 --
-   function Get_Length (Layer : Flat_Scale_Layer) return GDouble;
+   function Get_Length (Layer : Flat_Scale_Layer) return Gdouble;
 --
 -- Get_Line -- Ticks line parameters
 --
@@ -180,9 +180,9 @@ package Gtk.Layered.Flat_Scale is
                 Line    : Line_Parameters;
                 Ticks   : Tick_Parameters;
                 From    : Cairo_Tuple;
-                Length  : GDouble;
-                Breadth : GDouble;
-                Angle   : GDouble
+                Length  : Gdouble;
+                Breadth : Gdouble;
+                Angle   : Gdouble
              );
 
    overriding
@@ -229,7 +229,7 @@ package Gtk.Layered.Flat_Scale is
    overriding
       procedure Scale
                 (  Layer  : in out Flat_Scale_Layer;
-                   Factor : GDouble
+                   Factor : Gdouble
                 );
    overriding
       procedure Set_Property_Value
@@ -259,9 +259,9 @@ private
       Ticks   : Tick_Parameters;
       Line    : Line_Parameters;
       From    : Cairo_Tuple;
-      Length  : GDouble;
-      Breadth : GDouble;
-      Angle   : GDouble;
+      Length  : Gdouble;
+      Breadth : Gdouble;
+      Angle   : Gdouble;
       Scaled  : Boolean := False;
       Widened : Boolean := False;
       Updated : Boolean := True;

@@ -23,49 +23,27 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 package body Strings_Edit.UTF8.Wildcards is
 
    type Outcome is (Success, Mismatch, Failure);
    subtype Tail is Character range
-      Character'Val (2#1000_0000#)..Character'Val (2#1011_1111#);
-   --
-   -- Unchecked_Skip -- One UTF-8 character
-   --
-   --    Text    - The text
-   --    Pointer - To start at
-   --
-   -- An UTF-8 encoded character has the tail of octets 2#10xx_xxxx#.
-   -- Any other octet is the head of another character. The procedure
-   -- skips one character (the head) and then loop over the tail.
-   --
-   -- Exceptions :
-   --
-   --    Constraint_Error - Pointer is out of range
-   --
-   procedure Unchecked_Skip
-             (  Text    : String;
-                Pointer : in out Integer
-             )  is
-      pragma Inline (Unchecked_Skip);
-      Index : Integer := Pointer + 1;
-   begin
-      while Index <= Text'Last and then Text (Index) in Tail loop
-         Index := Index + 1;
-      end loop;
-      Pointer := Index;
-   end Unchecked_Skip;
+     Character'Val (2#1000_0000#) .. Character'Val (2#1011_1111#);
 
-   function Match
-            (  Text       : String;
-               Pattern    : String;
-               Wide_Space : Boolean       := False;
-               Blanks     : Character_Set := SpaceAndTab
-            )  return Boolean is
+   procedure Unchecked_Skip (Text    : String;
+                             Pointer : in out Integer) with Inline;
 
+   function Match (Text       : String;
+                   Pattern    : String;
+                   Wide_Space : Boolean                        := False;
+                   Blanks     : Ada.Strings.Maps.Character_Set := SpaceAndTab)
+                   return Boolean
+   is
+      function Match (Text_Pointer, Pattern_Index : Integer) return Outcome;
       function Match (Text_Pointer, Pattern_Index : Integer)
-         return Outcome is
+                      return Outcome
+      is
          Index   : Integer := Pattern_Index;
          Pointer : Integer := Text_Pointer;
       begin
@@ -117,14 +95,13 @@ package body Strings_Edit.UTF8.Wildcards is
                -- blank character and any number of following ones.
                --
                Index := Index + 1;
-               if not Is_In (Text (Pointer), Blanks) then
+               if not Ada.Strings.Maps.Is_In (Text (Pointer), Blanks) then
                   return Mismatch;
                end if;
                Unchecked_Skip (Text, Pointer);
-               while (  Pointer <= Text'Last
-                     and then
-                        Is_In (Text (Pointer), Blanks)
-                     )
+               while
+                 Pointer <= Text'Last and then
+                 Ada.Strings.Maps.Is_In (Text (Pointer), Blanks)
                loop
                   Unchecked_Skip (Text, Pointer);
                end loop;
@@ -162,15 +139,16 @@ package body Strings_Edit.UTF8.Wildcards is
    end Match;
 
    function Match
-            (  Text       : String;
-               Pattern    : String;
-               Map        : Unicode_Mapping;
-               Wide_Space : Boolean       := False;
-               Blanks     : Character_Set := SpaceAndTab
-            )  return Boolean is
+     (Text       : String;
+      Pattern    : String;
+      Map        : Unicode_Mapping;
+      Wide_Space : Boolean                        := False;
+      Blanks     : Ada.Strings.Maps.Character_Set := SpaceAndTab) return Boolean
+   is
 
+      function Match (Text_Pointer, Pattern_Index : Integer) return Outcome;
       function Match (Text_Pointer, Pattern_Index : Integer)
-         return Outcome is
+                      return Outcome is
          Index   : Integer := Pattern_Index;
          Pointer : Integer := Text_Pointer;
       begin
@@ -222,14 +200,13 @@ package body Strings_Edit.UTF8.Wildcards is
                -- blank character and any number of following ones.
                --
                Index := Index + 1;
-               if not Is_In (Text (Pointer), Blanks) then
+               if not Ada.Strings.Maps.Is_In (Text (Pointer), Blanks) then
                   return Mismatch;
                end if;
                Unchecked_Skip (Text, Pointer);
-               while (  Pointer <= Text'Last
-                     and then
-                        Is_In (Text (Pointer), Blanks)
-                     )
+               while
+                 Pointer <= Text'Last and then
+                 Ada.Strings.Maps.Is_In (Text (Pointer), Blanks)
                loop
                   Unchecked_Skip (Text, Pointer);
                end loop;
@@ -262,5 +239,30 @@ package body Strings_Edit.UTF8.Wildcards is
    begin
       return Match (Text'First, Pattern'First) = Success;
    end Match;
+
+   --
+   -- Unchecked_Skip -- One UTF-8 character
+   --
+   --    Text    - The text
+   --    Pointer - To start at
+   --
+   -- An UTF-8 encoded character has the tail of octets 2#10xx_xxxx#.
+   -- Any other octet is the head of another character. The procedure
+   -- skips one character (the head) and then loop over the tail.
+   --
+   -- Exceptions :
+   --
+   --    Constraint_Error - Pointer is out of range
+   --
+   procedure Unchecked_Skip (Text    : String;
+                             Pointer : in out Integer)
+   is
+      Index : Integer := Pointer + 1;
+   begin
+      while Index <= Text'Last and then Text (Index) in Tail loop
+         Index := Index + 1;
+      end loop;
+      Pointer := Index;
+   end Unchecked_Skip;
 
 end Strings_Edit.UTF8.Wildcards;

@@ -23,17 +23,17 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 with Ada.IO_Exceptions;    use Ada.IO_Exceptions;
 
 package body Strings_Edit.UTF8 is
 
    procedure Get
-             (  Source  : String;
-                Pointer : in out Integer;
-                Value   : out UTF8_Code_Point
-             )  is
+     (Source  : String;
+      Pointer : in out Integer;
+      Value   : out UTF8_Code_Point)
+   is
       Accum : UTF8_Code_Point'Base;
       Code  : UTF8_Code_Point'Base;
       Index : Integer := Pointer;
@@ -51,11 +51,11 @@ package body Strings_Edit.UTF8 is
       end if;
       Code := UTF8_Code_Point (Character'Pos (Source (Index)));
       case Code is
-         when 0..16#7F# => -- 1 byte (ASCII)
+         when 0 .. 16#7F# => -- 1 byte (ASCII)
             Value   := Code;
             Pointer := Index + 1;
             return;
-         when 16#C2#..16#DF# => -- 2 bytes
+         when 16#C2# .. 16#DF# => -- 2 bytes
             Accum := (Code and 16#1F#) * 2**6;
             Last  := True;
          when 16#E0# => -- 3 bytes
@@ -64,12 +64,12 @@ package body Strings_Edit.UTF8 is
                raise Data_Error;
             end if;
             Code := UTF8_Code_Point (Character'Pos (Source (Index)));
-            if Code not in 16#A0#..16#BF# then
+            if Code not in 16#A0# .. 16#BF# then
                raise Data_Error;
             end if;
             Accum := (Code and 16#3F#) * 2**6;
             Last  := True;
-         when 16#E1#..16#EF# => -- 3 bytes
+         when 16#E1# .. 16#EF# => -- 3 bytes
             Accum := (Code and 16#0F#) * 2**12;
          when 16#F0# => -- 4 bytes
             Index := Index + 1;
@@ -77,18 +77,18 @@ package body Strings_Edit.UTF8 is
                raise Data_Error;
             end if;
             Code := UTF8_Code_Point (Character'Pos (Source (Index)));
-            if Code not in 16#90#..16#BF# then
+            if Code not in 16#90# .. 16#BF# then
                raise Data_Error;
             end if;
             Accum := (Code and 16#3F#) * 2**12;
-         when 16#F1#..16#F3# => -- 4 bytes
+         when 16#F1# .. 16#F3# => -- 4 bytes
             Accum := (Code and 16#07#) * 2**18;
             Index := Index + 1;
             if Index >= Source'Last then
                raise Data_Error;
             end if;
             Code := UTF8_Code_Point (Character'Pos (Source (Index)));
-            if Code not in 16#80#..16#BF# then
+            if Code not in 16#80# .. 16#BF# then
                raise Data_Error;
             end if;
             Accum := Accum or (Code and 16#3F#) * 2**12;
@@ -99,7 +99,7 @@ package body Strings_Edit.UTF8 is
                raise Data_Error;
             end if;
             Code := UTF8_Code_Point (Character'Pos (Source (Index)));
-            if Code not in 16#80#..16#8F# then
+            if Code not in 16#80# .. 16#8F# then
                raise Data_Error;
             end if;
             Accum := Accum or (Code and 16#3F#) * 2**12;
@@ -113,7 +113,7 @@ package body Strings_Edit.UTF8 is
             raise Data_Error;
          end if;
          Code := UTF8_Code_Point (Character'Pos (Source (Index)));
-         if Code not in 16#80#..16#BF# then
+         if Code not in 16#80# .. 16#BF# then
             raise Data_Error;
          end if;
          Accum := Accum or (Code and 16#3F#) * 2**6;
@@ -124,7 +124,7 @@ package body Strings_Edit.UTF8 is
          raise Data_Error;
       end if;
       Code := UTF8_Code_Point (Character'Pos (Source (Index)));
-      if Code not in 16#80#..16#BF# then
+      if Code not in 16#80# .. 16#BF# then
          raise Data_Error;
       end if;
       Value   := Accum or (Code and 16#3F#);
@@ -132,10 +132,10 @@ package body Strings_Edit.UTF8 is
    end Get;
 
    procedure Get_Backwards
-             (  Source  : String;
-                Pointer : in out Integer;
-                Value   : out UTF8_Code_Point
-             )  is
+     (Source  : String;
+      Pointer : in out Integer;
+      Value   : out UTF8_Code_Point)
+   is
       First  : Integer := Pointer;
       Last   : Integer;
       Result : UTF8_Code_Point;
@@ -152,7 +152,7 @@ package body Strings_Edit.UTF8 is
       end if;
       loop
          First := First - 1;
-         exit when Character'Pos (Source (First)) not in 16#80#..16#BF#;
+         exit when Character'Pos (Source (First)) not in 16#80# .. 16#BF#;
          if First = Source'First then
             raise Data_Error;
          end if;
@@ -167,11 +167,11 @@ package body Strings_Edit.UTF8 is
    end Get_Backwards;
 
    function Image (Value : UTF8_Code_Point) return String is
-      Result  : String (1..4);
+      Result  : String (1 .. 4);
       Pointer : Integer := Result'First;
    begin
       Put (Result, Pointer, Value);
-      return Result (1..Pointer - 1);
+      return Result (1 .. Pointer - 1);
    end Image;
 
    function Length (Source : String) return Natural is
@@ -187,10 +187,9 @@ package body Strings_Edit.UTF8 is
    end Length;
 
    procedure Put
-             (  Destination : in out String;
-                Pointer     : in out Integer;
-                Value       : UTF8_Code_Point
-             )  is
+     (Destination : in out String;
+      Pointer     : in out Integer;
+      Value       : UTF8_Code_Point) is
    begin
       if Pointer not in Destination'Range then
          raise Layout_Error;
@@ -235,16 +234,14 @@ package body Strings_Edit.UTF8 is
    end Put;
 
    procedure Reverse_Put
-             (  Destination : in out String;
-                Pointer     : in out Integer;
-                Prefix      : String;
-                Position    : Natural
-             )  is
+     (Destination : in out String;
+      Pointer     : in out Integer;
+      Prefix      : String;
+      Position    : Natural) is
    begin
-      if (  Pointer not in Destination'Range
-         or else
-            Pointer - Destination'First < Prefix'Length
-         )
+      if
+        Pointer not in Destination'Range or else
+        Pointer - Destination'First < Prefix'Length
       then
          raise Layout_Error;
       end if;
@@ -257,27 +254,23 @@ package body Strings_Edit.UTF8 is
    end Reverse_Put;
 
    procedure Skip
-             (  Source  : String;
-                Pointer : in out Integer;
-                Count   : Natural := 1
-             )  is
+     (Source  : String;
+      Pointer : in out Integer;
+      Count   : Natural := 1) is
    begin
       if Count > 0 then
          declare
             Accum : UTF8_Code_Point;
             Index : Integer := Pointer;
          begin
-            for Character in 1..Count loop
+            for C in 1 .. Count loop
                Get (Source, Index, Accum);
             end loop;
             Pointer := Index;
          end;
-      elsif (  Pointer < Source'First
-            or else
-               (  Pointer > Source'Last
-               and then
-                  Pointer - 1 > Source'Last
-            )  )
+      elsif
+        Pointer < Source'First or else
+        (Pointer > Source'Last and then Pointer - 1 > Source'Last)
       then
          raise Layout_Error;
       end if;

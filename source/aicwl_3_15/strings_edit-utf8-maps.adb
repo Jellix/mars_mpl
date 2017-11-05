@@ -143,7 +143,7 @@ package body Strings_Edit.UTF8.Maps is
 
    function Complement
             (  Ranges    : Code_Points_Ranges;
-               Indicator : Unicode_Indicator_function := null
+               Indicator : Unicode_Indicator_Function := null
             )  return Unicode_Set is
       Append  : Natural := 1;
       Prepend : Natural := 1;
@@ -212,9 +212,9 @@ package body Strings_Edit.UTF8.Maps is
 
    function Equivalent
             (  Ranges_1    : Code_Points_Ranges;
-               Indicator_1 : Unicode_Indicator_function;
+               Indicator_1 : Unicode_Indicator_Function;
                Ranges_2    : Code_Points_Ranges;
-               Indicator_2 : Unicode_Indicator_function
+               Indicator_2 : Unicode_Indicator_Function
             )  return Boolean is
    begin
       if Indicator_1 = Indicator_2 then

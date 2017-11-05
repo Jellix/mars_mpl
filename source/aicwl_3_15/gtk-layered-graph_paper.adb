@@ -706,8 +706,8 @@ package body Gtk.Layered.Graph_Paper is
                   Gnew_Double
                   (  Name    => "y1",
                      Nick    => "y1",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb   => "The x-coordinate of the waveform's " &
                                 "box top margin"
@@ -717,15 +717,15 @@ package body Gtk.Layered.Graph_Paper is
                   Gnew_Double
                   (  Name    => "y2",
                      Nick    => "y2",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 1.0,
                      Blurb   => "The y-coordinate of the waveform's " &
                                 "box bottom margin"
                   );
             when Property_X_Tick_Length =>
                return
-                  Gnew_UInt
+                  Gnew_Uint
                   (  Name    => "x-tick-width",
                      Nick    => "x tick",
                      Minimum => 1,
@@ -736,7 +736,7 @@ package body Gtk.Layered.Graph_Paper is
                   );
             when Property_Y_Tick_Length =>
                return
-                  Gnew_UInt
+                  Gnew_Uint
                   (  Name    => "y-tick-width",
                      Nick    => "y tick",
                      Minimum => 1,
@@ -751,7 +751,7 @@ package body Gtk.Layered.Graph_Paper is
                   (  Name    => "major-tick-line-width",
                      Nick    => "major width",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 1.0,
                      Blurb   => "The major tick line's width, " &
                                 "when 0 the line is not drawn"
@@ -769,7 +769,7 @@ package body Gtk.Layered.Graph_Paper is
                   Cairo.Line_Cap_Property.Gnew_Enum
                   (  Name    => "major-tick-line-cap",
                      Nick    => "major tick line cap",
-                     Default => CAIRO_LINE_CAP_BUTT,
+                     Default => Cairo_Line_Cap_Butt,
                      Blurb   => "The cap style of the major tick lines"
                   );
             when Property_Minor_Line_Width =>
@@ -778,7 +778,7 @@ package body Gtk.Layered.Graph_Paper is
                   (  Name    => "minor-tick-line-width",
                      Nick    => "minor width",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 1.0,
                      Blurb   => "The minor tick line's width, " &
                                 "when 0 the line is not drawn"
@@ -796,7 +796,7 @@ package body Gtk.Layered.Graph_Paper is
                   Cairo.Line_Cap_Property.Gnew_Enum
                   (  Name    => "minor-tick-line-cap",
                      Nick    => "minor tick line cap",
-                     Default => CAIRO_LINE_CAP_BUTT,
+                     Default => Cairo_Line_Cap_Butt,
                      Blurb   => "The cap style of the minor tick lines"
                   );
             when Property_Scaled =>
@@ -866,11 +866,11 @@ package body Gtk.Layered.Graph_Paper is
                      Layer.Minor_Line.Line_Cap
                   );
                when Property_X_Tick_Length =>
-                  Init (Value, GType_UInt);
-                  Set_UInt (Value, Layer.X_Tick_Length);
+                  Init (Value, GType_Uint);
+                  Set_Uint (Value, Layer.X_Tick_Length);
                when Property_Y_Tick_Length =>
-                  Init (Value, GType_UInt);
-                  Set_UInt (Value, Layer.Y_Tick_Length);
+                  Init (Value, GType_Uint);
+                  Set_Uint (Value, Layer.Y_Tick_Length);
                when Property_Scaled =>
                   Init (Value, GType_Boolean);
                   Set_Boolean (Value, Layer.Scaled);
@@ -999,8 +999,8 @@ package body Gtk.Layered.Graph_Paper is
       Box           : Cairo_Box;
       Major_Line    : Line_Parameters;
       Minor_Line    : Line_Parameters;
-      X_Tick_Length : GUInt;
-      Y_Tick_Length : GUInt;
+      X_Tick_Length : Guint;
+      Y_Tick_Length : Guint;
       X_Axis        : Boolean;
       Y_Axis        : Boolean;
    begin
@@ -1019,10 +1019,10 @@ package body Gtk.Layered.Graph_Paper is
          Major_Line    => Major_Line,
          Minor_Line    => Minor_Line,
          X_Tick_Length => Positive
-                          (  GUInt'Min (Max_Tick, X_Tick_Length)
+                          (  Guint'Min (Max_Tick, X_Tick_Length)
                           ),
          Y_Tick_Length => Positive
-                          (  GUInt'Min (Max_Tick, Y_Tick_Length)
+                          (  Guint'Min (Max_Tick, Y_Tick_Length)
       )                   );
       if X_Axis then
          declare
@@ -1044,15 +1044,15 @@ package body Gtk.Layered.Graph_Paper is
 
    procedure Scale
              (  Layer  : in out Graph_Paper_Layer;
-                Factor : GDouble
+                Factor : Gdouble
              )  is
-      Center_X    : constant GDouble :=
+      Center_X    : constant Gdouble :=
                        (Layer.Box.X1 + Layer.Box.X2) * 0.5;
-      Center_Y    : constant GDouble :=
+      Center_Y    : constant Gdouble :=
                        (Layer.Box.Y1 + Layer.Box.Y2) * 0.5;
-      Half_Width  : constant GDouble :=
+      Half_Width  : constant Gdouble :=
                        (Layer.Box.X2 - Layer.Box.X1) * 0.5;
-      Half_Height : constant GDouble :=
+      Half_Height : constant Gdouble :=
                        (Layer.Box.Y2 - Layer.Box.Y1) * 0.5;
    begin
       Set
@@ -1091,8 +1091,8 @@ package body Gtk.Layered.Graph_Paper is
          raise Constraint_Error with "Non-positive y-axis tick length";
       end if;
       Layer.Box           := Box;
-      Layer.X_Tick_Length := GUInt (X_Tick_Length);
-      Layer.Y_Tick_Length := GUInt (Y_Tick_Length);
+      Layer.X_Tick_Length := Guint (X_Tick_Length);
+      Layer.Y_Tick_Length := Guint (Y_Tick_Length);
       Layer.Major_Line    := Major_Line;
       Layer.Minor_Line    := Minor_Line;
       Layer.Changed       := True;
@@ -1111,7 +1111,7 @@ package body Gtk.Layered.Graph_Paper is
          case Layer_Property'Val (Property - 1) is
             when Property_X1 =>
                declare
-                  New_Value : constant GDouble := Get_Double (Value);
+                  New_Value : constant Gdouble := Get_Double (Value);
                begin
                   if New_Value >= Layer.Box.X2 then
                      Layer.Box.X2 := New_Value + 1.0;
@@ -1121,7 +1121,7 @@ package body Gtk.Layered.Graph_Paper is
                end;
             when Property_X2 =>
                declare
-                  New_Value : constant GDouble := Get_Double (Value);
+                  New_Value : constant Gdouble := Get_Double (Value);
                begin
                   if Layer.Box.X1 > New_Value then
                      Layer.Box.X1 := New_Value - 1.0;
@@ -1131,7 +1131,7 @@ package body Gtk.Layered.Graph_Paper is
                end;
             when Property_Y1 =>
                declare
-                  New_Value : constant GDouble := Get_Double (Value);
+                  New_Value : constant Gdouble := Get_Double (Value);
                begin
                   if New_Value >= Layer.Box.Y2 then
                      Layer.Box.Y2 := New_Value + 1.0;
@@ -1141,7 +1141,7 @@ package body Gtk.Layered.Graph_Paper is
                end;
             when Property_Y2 =>
                declare
-                  New_Value : constant GDouble := Get_Double (Value);
+                  New_Value : constant Gdouble := Get_Double (Value);
                begin
                   if Layer.Box.Y1 >= New_Value then
                      Layer.Box.Y1 := New_Value - 1.0;
@@ -1177,26 +1177,26 @@ package body Gtk.Layered.Graph_Paper is
                Layer.Changed := True;
             when Property_X_Tick_Length =>
                declare
-                  Tick_Length : constant GUInt := Get_UInt (Value);
+                  Tick_Length : constant Guint := Get_Uint (Value);
                begin
                   if Tick_Length < 1 then
                      Layer.X_Tick_Length := 1;
                   elsif Tick_Length > Max_Tick then
                      Layer.X_Tick_Length := Max_Tick;
                   else
-                     Layer.X_Tick_Length := Get_UInt (Value);
+                     Layer.X_Tick_Length := Get_Uint (Value);
                   end if;
                end;
             when Property_Y_Tick_Length =>
                declare
-                  Tick_Length : constant GUInt := Get_UInt (Value);
+                  Tick_Length : constant Guint := Get_Uint (Value);
                begin
                   if Tick_Length < 1 then
                      Layer.Y_Tick_Length := 1;
                   elsif Tick_Length > Max_Tick then
                      Layer.Y_Tick_Length := Max_Tick;
                   else
-                     Layer.Y_Tick_Length := Get_UInt (Value);
+                     Layer.Y_Tick_Length := Get_Uint (Value);
                   end if;
                end;
             when Property_Scaled =>
@@ -1255,7 +1255,7 @@ package body Gtk.Layered.Graph_Paper is
       if Length > Max_Tick then
          Layer.X_Tick_Length := Max_Tick;
       else
-         Layer.X_Tick_Length := GUInt (Length);
+         Layer.X_Tick_Length := Guint (Length);
       end if;
       Layer.Changed := True;
       Layer.Updated := True;
@@ -1299,7 +1299,7 @@ package body Gtk.Layered.Graph_Paper is
       if Length > Max_Tick then
          Layer.Y_Tick_Length := Max_Tick;
       else
-         Layer.Y_Tick_Length := GUInt (Length);
+         Layer.Y_Tick_Length := Guint (Length);
       end if;
       Layer.Changed := True;
       Layer.Updated := True;

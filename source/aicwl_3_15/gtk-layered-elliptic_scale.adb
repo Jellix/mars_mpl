@@ -167,8 +167,8 @@ package body Gtk.Layered.Elliptic_Scale is
       Set_Source_Rgb
       (  Context,
          Gdouble (Red   (Layer.Line.Color)) / Gdouble (Guint16'Last),
-         GDouble (Green (Layer.Line.Color)) / GDouble (Guint16'Last),
-         GDouble (Blue  (Layer.Line.Color)) / GDouble (Guint16'Last)
+         Gdouble (Green (Layer.Line.Color)) / Gdouble (Guint16'Last),
+         Gdouble (Blue  (Layer.Line.Color)) / Gdouble (Guint16'Last)
       );
       Set_Line_Cap (Context, Layer.Line.Line_Cap);
       if Layer.Widened then
@@ -182,14 +182,14 @@ package body Gtk.Layered.Elliptic_Scale is
       if Layer.Scaled then
          declare
             Center : constant Cairo_Tuple := Layer.Widget.Get_Center;
-            Size   : constant GDouble      := Layer.Widget.Get_Size;
+            Size   : constant Gdouble      := Layer.Widget.Get_Size;
             Inner  : constant Ellipse_Parameters :=
                         Layer.Inner * Size + Center;
             Outer  : constant Ellipse_Parameters :=
                         Layer.Outer * Size + Center;
          begin
             for Index in Natural'Range loop
-               This := Layer.Ticks.Step * GDouble (Index);
+               This := Layer.Ticks.Step * Gdouble (Index);
                exit when abs This > Length;
                if Thick = Layer.Ticks.Skipped then
                   Thick := 1;
@@ -211,7 +211,7 @@ package body Gtk.Layered.Elliptic_Scale is
          end;
       else
          for Index in Natural'Range loop
-            This := Layer.Ticks.Step * GDouble (Index);
+            This := Layer.Ticks.Step * Gdouble (Index);
             exit when abs This > Length;
             if Thick = Layer.Ticks.Skipped then
                Thick := 1;
@@ -241,7 +241,7 @@ package body Gtk.Layered.Elliptic_Scale is
       Layer.Updated := False;
    end Draw;
 
-   function Get_From (Layer : Elliptic_Scale_Layer) return GDouble is
+   function Get_From (Layer : Elliptic_Scale_Layer) return Gdouble is
    begin
       return Layer.From;
    end Get_From;
@@ -252,7 +252,7 @@ package body Gtk.Layered.Elliptic_Scale is
       return Layer.Inner;
    end Get_Inner;
 
-   function Get_Length (Layer : Elliptic_Scale_Layer) return GDouble is
+   function Get_Length (Layer : Elliptic_Scale_Layer) return Gdouble is
    begin
       return Layer.Length;
    end Get_Length;
@@ -292,8 +292,8 @@ package body Gtk.Layered.Elliptic_Scale is
                   Gnew_Double
                   (  Name    => "x",
                      Nick    => "x",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb   => "The x-coordinate of the outer and " &
                                 "inner ellipses' center"
@@ -303,8 +303,8 @@ package body Gtk.Layered.Elliptic_Scale is
                   Gnew_Double
                   (  Name    => "y",
                      Nick    => "y",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb   => "The y-coordinate of the outer and " &
                                 "inner ellipses' center"
@@ -315,7 +315,7 @@ package body Gtk.Layered.Elliptic_Scale is
                   (  Name    => "outer-k",
                      Nick    => "outer k",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb   => "The curvature of the major axis of " &
                                 "the outer ellipse"
@@ -326,7 +326,7 @@ package body Gtk.Layered.Elliptic_Scale is
                   (  Name    => "outer-r",
                      Nick    => "outer r",
                      Minimum => 1.0E-6,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 0.5,
                      Blurb   => "The radius of the minor axis of " &
                                 "the outer ellipse"
@@ -348,7 +348,7 @@ package body Gtk.Layered.Elliptic_Scale is
                   (  Name    => "inner-k",
                      Nick    => "inner k",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb   => "The curvature of the major axis of " &
                                 "the inner ellipse"
@@ -359,7 +359,7 @@ package body Gtk.Layered.Elliptic_Scale is
                   (  Name    => "inner-r",
                      Nick    => "inner r",
                      Minimum => 1.0E-6,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 0.5,
                      Blurb   => "The radius of the minor axis of " &
                                 "the inner ellipse"
@@ -409,11 +409,11 @@ package body Gtk.Layered.Elliptic_Scale is
                   );
             when Property_Tick_First =>
                return
-                  Gnew_UInt
+                  Gnew_Uint
                   (  Name    => "first-tick",
                      Nick    => "first tick",
-                     Minimum => GUInt (Tick_Number'First),
-                     Maximum => GUInt (Tick_Number'Last),
+                     Minimum => Guint (Tick_Number'First),
+                     Maximum => Guint (Tick_Number'Last),
                      Default => 1,
                      Blurb   => "The number of the first tick. " &
                                 "The first tick is located at " &
@@ -421,12 +421,12 @@ package body Gtk.Layered.Elliptic_Scale is
                   );
             when Property_Tick_Skipped =>
                return
-                  Gnew_UInt
+                  Gnew_Uint
                   (  Name    => "skipped-tick",
                      Nick    => "skipped tick",
                      Minimum => 2,
-                     Maximum => GUInt (Tick_Number'Last),
-                     Default => GUInt (Tick_Number'Last),
+                     Maximum => Guint (Tick_Number'Last),
+                     Default => Guint (Tick_Number'Last),
                      Blurb   => "The number of the skipped tick. " &
                                 "The ticks are numbered from 1 to " &
                                 "skipped-tick. The ticks with this " &
@@ -438,7 +438,7 @@ package body Gtk.Layered.Elliptic_Scale is
                   (  Name    => "line-width",
                      Nick    => "line width",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 1.0,
                      Blurb   => "The tick line's width"
                   );
@@ -455,7 +455,7 @@ package body Gtk.Layered.Elliptic_Scale is
                   Cairo.Line_Cap_Property.Gnew_Enum
                   (  Name    => "line-cap",
                      Nick    => "line cap",
-                     Default => CAIRO_LINE_CAP_BUTT,
+                     Default => Cairo_Line_Cap_Butt,
                      Blurb   => "The cap style of the tick lines"
                   );
             when Property_Scaled =>
@@ -536,11 +536,11 @@ package body Gtk.Layered.Elliptic_Scale is
                   Init (Value, GType_Double);
                   Set_Double (Value, Layer.Ticks.Step);
                when Property_Tick_First =>
-                  Init (Value, GType_UInt);
-                  Set_UInt (Value, GUInt (Layer.Ticks.First));
+                  Init (Value, GType_Uint);
+                  Set_Uint (Value, Guint (Layer.Ticks.First));
                when Property_Tick_Skipped =>
-                  Init (Value, GType_UInt);
-                  Set_UInt (Value, GUInt (Layer.Ticks.Skipped));
+                  Init (Value, GType_Uint);
+                  Set_Uint (Value, Guint (Layer.Ticks.Skipped));
                when Property_Scaled =>
                   Init (Value, GType_Boolean);
                   Set_Boolean (Value, Layer.Scaled);
@@ -594,8 +594,8 @@ package body Gtk.Layered.Elliptic_Scale is
       Inner  : Ellipse_Parameters;
       Ticks  : Tick_Parameters;
       Line   : Line_Parameters;
-      From   : GDouble;
-      Length : GDouble;
+      From   : Gdouble;
+      Length : Gdouble;
    begin
       Restore (Stream, Outer);
       Restore (Stream, Inner);
@@ -617,7 +617,7 @@ package body Gtk.Layered.Elliptic_Scale is
 
    procedure Scale
              (  Layer  : in out Elliptic_Scale_Layer;
-                Factor : GDouble
+                Factor : Gdouble
              )  is
       Outer : constant Ellipse_Parameters := Layer.Outer * Factor;
       Inner : constant Ellipse_Parameters := Layer.Inner * Factor;
@@ -646,8 +646,8 @@ package body Gtk.Layered.Elliptic_Scale is
                 Inner  : Ellipse_Parameters;
                 Line   : Line_Parameters;
                 Ticks  : Tick_Parameters;
-                From   : GDouble;
-                Length : GDouble
+                From   : Gdouble;
+                Length : Gdouble
              )  is
    begin
       if Ticks.Step < Min_Step then
@@ -708,7 +708,7 @@ package body Gtk.Layered.Elliptic_Scale is
                Layer.Outer.Angle := Get_Double (Value);
                if Layer.Outer.Angle not in -2.0 * Pi..2.0 * Pi then
                   Layer.Outer.Angle :=
-                     GDouble'Remainder (Layer.Outer.Angle, 2.0 * Pi);
+                     Gdouble'Remainder (Layer.Outer.Angle, 2.0 * Pi);
                end if;
             when Property_Inner_Curvature =>
                Layer.Inner.Major_Curvature := Get_Double (Value);
@@ -724,18 +724,18 @@ package body Gtk.Layered.Elliptic_Scale is
                Layer.Inner.Angle := Get_Double (Value);
                if Layer.Inner.Angle not in -2.0 * Pi..2.0 * Pi then
                   Layer.Inner.Angle :=
-                     GDouble'Remainder (Layer.Inner.Angle, 2.0 * Pi);
+                     Gdouble'Remainder (Layer.Inner.Angle, 2.0 * Pi);
                end if;
             when Property_From =>
                Layer.From := Get_Double (Value);
                if Layer.From not in -2.0 * Pi..2.0 * Pi then
-                  Layer.From := GDouble'Remainder (Layer.From, 2.0 * Pi);
+                  Layer.From := Gdouble'Remainder (Layer.From, 2.0 * Pi);
                end if;
             when Property_Length =>
                Layer.Length := Get_Double (Value);
                if Layer.Length not in -2.0 * Pi..2.0 * Pi then
                   Layer.Length :=
-                     GDouble'Remainder (Layer.Length, 2.0 * Pi);
+                     Gdouble'Remainder (Layer.Length, 2.0 * Pi);
                end if;
             when Property_Line_Width =>
                Layer.Line.Width := Get_Double (Value);
@@ -753,20 +753,20 @@ package body Gtk.Layered.Elliptic_Scale is
                   Layer.Ticks.Step := 1.0E-6;
                end if;
             when Property_Tick_First =>
-               if Get_UInt (Value) < 1 then
+               if Get_Uint (Value) < 1 then
                   Layer.Ticks.First := 1;
-               elsif Get_UInt (Value) > GUInt (Tick_Number'Last) then
+               elsif Get_Uint (Value) > Guint (Tick_Number'Last) then
                   Layer.Ticks.First := Tick_Number'Last;
                else
-                  Layer.Ticks.First := Tick_Number (Get_UInt (Value));
+                  Layer.Ticks.First := Tick_Number (Get_Uint (Value));
                end if;
             when Property_Tick_Skipped =>
-               if Get_UInt (Value) < 2 then
+               if Get_Uint (Value) < 2 then
                   Layer.Ticks.Skipped := 2;
-               elsif Get_UInt (Value) > GUInt (Tick_Number'Last) then
+               elsif Get_Uint (Value) > Guint (Tick_Number'Last) then
                   Layer.Ticks.Skipped := Tick_Number'Last;
                else
-                  Layer.Ticks.Skipped := Tick_Number (Get_UInt (Value));
+                  Layer.Ticks.Skipped := Tick_Number (Get_Uint (Value));
                end if;
             when Property_Scaled =>
                Layer.Scaled := Get_Boolean (Value);

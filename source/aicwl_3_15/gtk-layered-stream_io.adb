@@ -310,7 +310,7 @@ package body Gtk.Layered.Stream_IO is
                 Value_5 : out Boolean;
                 Value_6 : out Boolean
              )  is
-      Value : GUInt16;
+      Value : Guint16;
    begin
       Restore (Stream, Value);
       Value_1 := 0 /= (Value and 1);
@@ -331,7 +331,7 @@ package body Gtk.Layered.Stream_IO is
                 Value_6 : out Boolean;
                 Value_7 : out Boolean
              )  is
-      Value : GUInt16;
+      Value : Guint16;
    begin
       Restore (Stream, Value);
       Value_1 := 0 /= (Value and 1);
@@ -354,7 +354,7 @@ package body Gtk.Layered.Stream_IO is
                 Value_7 : out Boolean;
                 Value_8 : out Boolean
              )  is
-      Value : GUInt16;
+      Value : Guint16;
    begin
       Restore (Stream, Value);
       Value_1 := 0 /= (Value and 1);
@@ -372,7 +372,7 @@ package body Gtk.Layered.Stream_IO is
                 Value  : out Cairo_Font_Face
              )  is
       use Interfaces.C.Strings;
-      Family : aliased Char_Array :=
+      Family : aliased char_array :=
                   To_C (UTF8_String'(Restore (Stream'Access)));
       Slant  : Cairo_Font_Slant;
       Weight : Cairo_Font_Weight;
@@ -391,7 +391,7 @@ package body Gtk.Layered.Stream_IO is
              (  Stream : in out Root_Stream_Type'Class;
                 Value  : out Cairo_Font_Slant
              )  is
-      Position : GUInt16;
+      Position : Guint16;
    begin
       Restore (Stream, Position);
       Value := Cairo_Font_Slant'Val (Position);
@@ -404,7 +404,7 @@ package body Gtk.Layered.Stream_IO is
              (  Stream : in out Root_Stream_Type'Class;
                 Value  : out Cairo_Font_Weight
              )  is
-      Position : GUInt16;
+      Position : Guint16;
    begin
       Restore (Stream, Position);
       Value := Cairo_Font_Weight'Val (Position);
@@ -417,7 +417,7 @@ package body Gtk.Layered.Stream_IO is
              (  Stream : in out Root_Stream_Type'Class;
                 Value  : out Cairo_Line_Cap
              )  is
-      Position : GUInt16;
+      Position : Guint16;
    begin
       Restore (Stream, Position);
       Value := Cairo_Line_Cap'Val (Position);
@@ -466,7 +466,7 @@ package body Gtk.Layered.Stream_IO is
              (  Stream : in out Root_Stream_Type'Class;
                 Value  : out Elliptic_Shape_Type
              )  is
-      Position : GUInt16;
+      Position : Guint16;
    begin
       Restore (Stream, Position);
       Value := Elliptic_Shape_Type'Val (Position);
@@ -489,19 +489,19 @@ package body Gtk.Layered.Stream_IO is
              (  Stream : in out Root_Stream_Type'Class;
                 Value  : out Gdk_Color
              )  is
-      R, G, B : GUInt16;
+      R, G, B : Guint16;
    begin
       Restore (Stream, R);
       Restore (Stream, G);
       Restore (Stream, B);
-      Set_RGB (Value, R, G, B);
+      Set_Rgb (Value, R, G, B);
    end Restore;
 
    procedure Restore
              (  Stream : in out Root_Stream_Type'Class;
                 Value  : out Gtk_Shadow_Type
              )  is
-      Position : GUInt16;
+      Position : Guint16;
    begin
       Restore (Stream, Position);
       Value := Gtk_Shadow_Type'Val (Position);
@@ -514,7 +514,7 @@ package body Gtk.Layered.Stream_IO is
              (  Stream : in out Root_Stream_Type'Class;
                 Value  : out Interpolation_Mode
              )  is
-      Position : GUInt16;
+      Position : Guint16;
    begin
       Restore (Stream, Position);
       Value := Interpolation_Mode'Val (Position);
@@ -525,14 +525,14 @@ package body Gtk.Layered.Stream_IO is
 
    procedure Restore
              (  Stream : in out Root_Stream_Type'Class;
-                Value  : out GDouble
+                Value  : out Gdouble
              )  is
       Fraction : Unsigned_32;
       Exponent : Unsigned_32;
    begin
       Restore (Stream, Fraction);
       Restore (Stream, Exponent);
-      Value := GDouble (Fraction) / 2.0**30;
+      Value := Gdouble (Fraction) / 2.0**30;
       if 0 /= (Exponent and 1) then
          Value := -Value;
       end if;
@@ -556,19 +556,19 @@ package body Gtk.Layered.Stream_IO is
 
    procedure Restore
              (  Stream : in out Root_Stream_Type'Class;
-                Value  : out GUInt
+                Value  : out Guint
              )  renames GUInt_IO.Restore;
 
    procedure Restore
              (  Stream : in out Root_Stream_Type'Class;
-                Value  : out GUInt16
+                Value  : out Guint16
              )  renames GUInt16_IO.Restore;
 
    procedure Restore
              (  Stream : in out Root_Stream_Type'Class;
                 Value  : out Layer_Type
              )  is
-      Position : GUInt16;
+      Position : Guint16;
    begin
       Restore (Stream, Position);
       Value := Layer_Type'Val (Position);
@@ -635,7 +635,7 @@ package body Gtk.Layered.Stream_IO is
              (  Stream : in out Root_Stream_Type'Class;
                 Value  : out Text_Transformation
              )  is
-      Position : GUInt16;
+      Position : Guint16;
    begin
       Restore (Stream, Position);
       Value := Text_Transformation'Val (Position);
@@ -648,7 +648,7 @@ package body Gtk.Layered.Stream_IO is
              (  Stream : in out Root_Stream_Type'Class;
                 Value  : out Vertical_Alignment
              )  is
-      Position : GUInt16;
+      Position : Guint16;
    begin
       Restore (Stream, Position);
       Value := Vertical_Alignment'Val (Position);
@@ -661,7 +661,7 @@ package body Gtk.Layered.Stream_IO is
              (  Stream : in out Root_Stream_Type'Class;
                 Value  : out Waveform_Drawing_Method
              )  is
-      Position : GUInt16;
+      Position : Guint16;
    begin
       Restore (Stream, Position);
       Value := Waveform_Drawing_Method'Val (Position);
@@ -706,14 +706,14 @@ package body Gtk.Layered.Stream_IO is
                 Value  : Alignment
              )  is
    begin
-      Store (Stream, GUInt16 (Alignment'Pos (Value)));
+      Store (Stream, Guint16 (Alignment'Pos (Value)));
    end Store;
 
    procedure Store
              (  Stream : in out Root_Stream_Type'Class;
                 Value  : Boolean
              )  is
-      Data : GUInt16 := 0;
+      Data : Guint16 := 0;
    begin
       if Value then
          Data := Data or 1;
@@ -726,7 +726,7 @@ package body Gtk.Layered.Stream_IO is
                 Value_1 : Boolean;
                 Value_2 : Boolean
              )  is
-      Value : GUInt16 := 0;
+      Value : Guint16 := 0;
    begin
       if Value_1 then
          Value := Value or 1;
@@ -743,7 +743,7 @@ package body Gtk.Layered.Stream_IO is
                 Value_2 : Boolean;
                 Value_3 : Boolean
              )  is
-      Value : GUInt16 := 0;
+      Value : Guint16 := 0;
    begin
       if Value_1 then
          Value := Value or 1;
@@ -764,7 +764,7 @@ package body Gtk.Layered.Stream_IO is
                 Value_3 : Boolean;
                 Value_4 : Boolean
              )  is
-      Value : GUInt16 := 0;
+      Value : Guint16 := 0;
    begin
       if Value_1 then
          Value := Value or 1;
@@ -789,7 +789,7 @@ package body Gtk.Layered.Stream_IO is
                 Value_4 : Boolean;
                 Value_5 : Boolean
              )  is
-      Value : GUInt16 := 0;
+      Value : Guint16 := 0;
    begin
       if Value_1 then
          Value := Value or 1;
@@ -818,7 +818,7 @@ package body Gtk.Layered.Stream_IO is
                 Value_5 : Boolean;
                 Value_6 : Boolean
              )  is
-      Value : GUInt16 := 0;
+      Value : Guint16 := 0;
    begin
       if Value_1 then
          Value := Value or 1;
@@ -851,7 +851,7 @@ package body Gtk.Layered.Stream_IO is
                 Value_6 : Boolean;
                 Value_7 : Boolean
              )  is
-      Value : GUInt16 := 0;
+      Value : Guint16 := 0;
    begin
       if Value_1 then
          Value := Value or 1;
@@ -888,7 +888,7 @@ package body Gtk.Layered.Stream_IO is
                 Value_7 : Boolean;
                 Value_8 : Boolean
              )  is
-      Value : GUInt16 := 0;
+      Value : Guint16 := 0;
    begin
       if Value_1 then
          Value := Value or 1;
@@ -936,7 +936,7 @@ package body Gtk.Layered.Stream_IO is
                 Value  : Cairo_Font_Slant
              )  is
    begin
-      Store (Stream, GUInt16 (Cairo_Font_Slant'Pos (Value)));
+      Store (Stream, Guint16 (Cairo_Font_Slant'Pos (Value)));
    end Store;
 
    procedure Store
@@ -944,7 +944,7 @@ package body Gtk.Layered.Stream_IO is
                 Value  : Cairo_Font_Weight
              )  is
    begin
-      Store (Stream, GUInt16 (Cairo_Font_Weight'Pos (Value)));
+      Store (Stream, Guint16 (Cairo_Font_Weight'Pos (Value)));
    end Store;
 
    procedure Store
@@ -952,7 +952,7 @@ package body Gtk.Layered.Stream_IO is
                 Value  : Cairo_Line_Cap
              )  is
    begin
-      Store (Stream, GUInt16 (Cairo_Line_Cap'Pos (Value)));
+      Store (Stream, Guint16 (Cairo_Line_Cap'Pos (Value)));
    end Store;
 
    procedure Store
@@ -982,7 +982,7 @@ package body Gtk.Layered.Stream_IO is
                 Value  : Elliptic_Shape_Type
              )  is
    begin
-      Store (Stream, GUInt16 (Elliptic_Shape_Type'Pos (Value)));
+      Store (Stream, Guint16 (Elliptic_Shape_Type'Pos (Value)));
    end Store;
 
    procedure Store
@@ -1007,23 +1007,23 @@ package body Gtk.Layered.Stream_IO is
 
    procedure Store
              (  Stream : in out Root_Stream_Type'Class;
-                Value  : GUInt
+                Value  : Guint
              )  renames GUInt_IO.Store;
 
    procedure Store
              (  Stream : in out Root_Stream_Type'Class;
-                Value  : GUInt16
+                Value  : Guint16
              )  renames GUInt16_IO.Store;
 
    procedure Store
              (  Stream : in out Root_Stream_Type'Class;
-                Value  : GDouble
+                Value  : Gdouble
              )  is
-      Fraction : GDouble  := abs Value;
+      Fraction : Gdouble  := abs Value;
       Exponent : Integer := 0;
    begin
       if Fraction > 0.0 then
-         Exponent := Integer (log (Fraction, 2.0));
+         Exponent := Integer (Log (Fraction, 2.0));
       end if;
       Fraction := Fraction / 2.0**Exponent;
       Store (Stream, Unsigned_32 (Fraction * 2.0**30));
@@ -1058,7 +1058,7 @@ package body Gtk.Layered.Stream_IO is
                 Value  : Gtk_Shadow_Type
              )  is
    begin
-      Store (Stream, GUInt16'(Gtk_Shadow_Type'Pos (Value)));
+      Store (Stream, Guint16'(Gtk_Shadow_Type'Pos (Value)));
    end Store;
 
    procedure Store
@@ -1066,7 +1066,7 @@ package body Gtk.Layered.Stream_IO is
                 Value  : Interpolation_Mode
              )  is
    begin
-      Store (Stream, GUInt16'(Interpolation_Mode'Pos (Value)));
+      Store (Stream, Guint16'(Interpolation_Mode'Pos (Value)));
    end Store;
 
    procedure Store
@@ -1074,7 +1074,7 @@ package body Gtk.Layered.Stream_IO is
                 Value  : Layer_Type
              )  is
    begin
-      Store (Stream, GUInt16 (Layer_Type'Pos (Value)));
+      Store (Stream, Guint16 (Layer_Type'Pos (Value)));
    end Store;
 
    procedure Store
@@ -1126,7 +1126,7 @@ package body Gtk.Layered.Stream_IO is
                 Value  : Text_Transformation
              )  is
    begin
-      Store (Stream, GUInt16'(Text_Transformation'Pos (Value)));
+      Store (Stream, Guint16'(Text_Transformation'Pos (Value)));
    end Store;
 
    procedure Store
@@ -1144,7 +1144,7 @@ package body Gtk.Layered.Stream_IO is
                 Value  : Vertical_Alignment
              )  is
    begin
-      Store (Stream, GUInt16 (Vertical_Alignment'Pos (Value)));
+      Store (Stream, Guint16 (Vertical_Alignment'Pos (Value)));
    end Store;
 
    procedure Store
@@ -1152,7 +1152,7 @@ package body Gtk.Layered.Stream_IO is
                 Value  : Waveform_Drawing_Method
              )  is
    begin
-      Store (Stream, GUInt16'(Waveform_Drawing_Method'Pos (Value)));
+      Store (Stream, Guint16'(Waveform_Drawing_Method'Pos (Value)));
    end Store;
 
 end Gtk.Layered.Stream_IO;

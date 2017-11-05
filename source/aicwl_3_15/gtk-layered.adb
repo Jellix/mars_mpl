@@ -92,9 +92,9 @@ package body Gtk.Layered is
    function Match_ULong is
       new Match (Gulong, GType_Ulong, Param_Spec_Ulong);
    function Match_Float is
-      new Match (GFloat, GType_Float, Param_Spec_Float);
+      new Match (Gfloat, GType_Float, Param_Spec_Float);
    function Match_Double is
-      new Match (GDouble, GType_Double, Param_Spec_Double);
+      new Match (Gdouble, GType_Double, Param_Spec_Double);
 
    function Above (Layer : Abstract_Layer)
       return access Abstract_Layer'Class is
@@ -163,7 +163,7 @@ package body Gtk.Layered is
       Layer.Next.Prev      := Layer.all'Unchecked_Access;
       Layer.Widget.Depth   := Layer.Widget.Depth + 1;
       Layer.Widget.Updated := True;
-      Emit (Layer.Widget, Layer_Added_ID, GUInt (Layer.Get_Position));
+      Emit (Layer.Widget, Layer_Added_ID, Guint (Layer.Get_Position));
    exception
       when Error : others =>
          Log
@@ -254,12 +254,12 @@ package body Gtk.Layered is
 
    procedure Emit
              (  Widget : not null access Gtk_Layered_Record'Class;
-                Signal : Signal_ID;
-                Value  : GUInt
+                Signal : Signal_Id;
+                Value  : Guint
              )  is
       procedure EmitV
                 (  Params : System.Address;
-                   Signal : Signal_ID;
+                   Signal : Signal_Id;
                    Quark  : GQuark;
                    Result : System.Address
                 );
@@ -272,7 +272,7 @@ package body Gtk.Layered is
       Params : GValue_Array (0..1);
       Result : GValue;
    begin
-      if Class /= GLib.Object.Uninitialized_Class then
+      if Class /= Glib.Object.Uninitialized_Class then
          declare
             This : constant GType := Get_Type;
          begin
@@ -281,8 +281,8 @@ package body Gtk.Layered is
             (  Params (0),
                Gtk.Widget.Convert (Widget.all'Unchecked_Access)
             );
-            Init (Params (1), GType_UInt);
-            Set_UInt (Params (1), Value);
+            Init (Params (1), GType_Uint);
+            Set_Uint (Params (1), Value);
             EmitV (Params (0)'Address, Signal, 0, Result'Address);
             Unset (Params (0));
             Unset (Params (1));
@@ -388,7 +388,7 @@ package body Gtk.Layered is
 
    function Get_Aspect_Ratio
             (  Widget : not null access constant Gtk_Layered_Record
-            )  return GDouble is
+            )  return Gdouble is
    begin
       return Widget.Aspect_Ratio;
    end Get_Aspect_Ratio;
@@ -479,7 +479,7 @@ package body Gtk.Layered is
 
    function Get_Size
             (  Widget : not null access constant Gtk_Layered_Record
-            )  return GDouble is
+            )  return Gdouble is
    begin
       return Widget.Size;
    end Get_Size;
@@ -491,8 +491,8 @@ package body Gtk.Layered is
          Class_Record => Class,
          Type_Name    => "GtkLayered",
          Signals      => Signal_Names,
-         Parameters   => (  0 => (0 => GType_UInt),
-                            1 => (0 => GType_UInt)
+         Parameters   => (  0 => (0 => GType_Uint),
+                            1 => (0 => GType_Uint)
       )                  );
       return Class.The_Type;
    end Get_Type;
@@ -525,7 +525,7 @@ package body Gtk.Layered is
       Gtk.Layered.Initialize (Widget);
    exception
       when others =>
-         GLib.Object.Checked_Destroy (Widget);
+         Glib.Object.Checked_Destroy (Widget);
          Widget := null;
          raise;
    end Gtk_New;
@@ -639,8 +639,8 @@ package body Gtk.Layered is
       From   : Integer            := 1;
       Bottom : Abstract_Layer_Ptr := Widget.Bottom;
       Area   : Gdk_Rectangle;
-      Width  : GDouble;
-      Height : GDouble;
+      Width  : Gdouble;
+      Height : Gdouble;
    begin
       Widget.Get_Allocation (Area);
 --        declare
@@ -715,11 +715,11 @@ package body Gtk.Layered is
 --              );
 --           end if;
 --        end;
-      Width  := GDouble (Area.Width);
-      Height := GDouble (Area.Height);
+      Width  := Gdouble (Area.Width);
+      Height := Gdouble (Area.Height);
       Widget.Center := (X => Width * 0.5, Y => Height * 0.5);
       Widget.Size :=
-         GDouble'Min (Width, Height * Widget.Aspect_Ratio);
+         Gdouble'Min (Width, Height * Widget.Aspect_Ratio);
       Widget.Drawing := True;
       Widget.Drawing_Time := Clock;
       --
@@ -778,11 +778,11 @@ package body Gtk.Layered is
    end Refresh;
 
    procedure Remove (Layer : in out Abstract_Layer) is
-      Position : GUInt;
+      Position : Guint;
       Widget   : access Gtk_Layered_Record'Class;
    begin
       if Layer.Next /= null then
-         Position := GUInt (Layer.Get_Position);
+         Position := Guint (Layer.Get_Position);
          if Layer.Next = Layer'Unchecked_Access then
             Layer.Widget.Bottom := null;
          else
@@ -825,7 +825,7 @@ package body Gtk.Layered is
 
    procedure Set_Aspect_Ratio
              (  Widget       : not null access Gtk_Layered_Record;
-                Aspect_Ratio : GDouble
+                Aspect_Ratio : Gdouble
              )  is
    begin
       if Aspect_Ratio < 0.0 then
@@ -834,12 +834,12 @@ package body Gtk.Layered is
       Widget.Aspect_Ratio := Aspect_Ratio;
       if Widget.Get_Realized then
          declare
-            Width  : constant GDouble :=
-                     GDouble (Widget.Get_Allocated_Width);
-            Height : constant GDouble :=
-                     GDouble (Widget.Get_Allocated_Height);
+            Width  : constant Gdouble :=
+                     Gdouble (Widget.Get_Allocated_Width);
+            Height : constant Gdouble :=
+                     Gdouble (Widget.Get_Allocated_Height);
          begin
-            Widget.Size := GDouble'Min (Width, Height * Aspect_Ratio);
+            Widget.Size := Gdouble'Min (Width, Height * Aspect_Ratio);
          end;
       end if;
    end Set_Aspect_Ratio;
@@ -862,13 +862,13 @@ package body Gtk.Layered is
    begin
       Widget.Get_Allocation (Area);
       Widget.Center :=
-         (  X => GDouble (Area.Width)  * 0.5,
-            Y => GDouble (Area.Height) * 0.5
+         (  X => Gdouble (Area.Width)  * 0.5,
+            Y => Gdouble (Area.Height) * 0.5
          );
       Widget.Size :=
-         GDouble'Min
-         (  GDouble (Area.Width),
-            GDouble (Area.Height) * Widget.Aspect_Ratio
+         Gdouble'Min
+         (  Gdouble (Area.Width),
+            Gdouble (Area.Height) * Widget.Aspect_Ratio
          );
       Resized (Widget, Allocation.all);
       for Position in 1..Widget.Depth loop

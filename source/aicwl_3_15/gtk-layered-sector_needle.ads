@@ -201,8 +201,8 @@ package Gtk.Layered.Sector_Needle is
              (  Layer  : in out Sector_Needle_Layer;
                 Outer  : Ellipse_Parameters;
                 Inner  : Elliptic_Arc_Closure;
-                From   : GDouble;
-                Length : GDouble;
+                From   : Gdouble;
+                Length : Gdouble;
                 Color  : Gdk_Color
              );
 
@@ -238,7 +238,7 @@ package Gtk.Layered.Sector_Needle is
    overriding
       function Get_Scaled (Layer : Sector_Needle_Layer) return Boolean;
    overriding
-      function Get_Value (Layer : Sector_Needle_Layer) return GDouble;
+      function Get_Value (Layer : Sector_Needle_Layer) return Gdouble;
    overriding
       function Is_Updated (Layer : Sector_Needle_Layer) return Boolean;
    overriding
@@ -254,7 +254,7 @@ package Gtk.Layered.Sector_Needle is
    overriding
       procedure Scale
                 (  Layer  : in out Sector_Needle_Layer;
-                   Factor : GDouble
+                   Factor : Gdouble
                 );
    overriding
       procedure Set_Property_Value
@@ -270,7 +270,7 @@ package Gtk.Layered.Sector_Needle is
    overriding
       procedure Set_Value
                 (  Layer : in out Sector_Needle_Layer;
-                   Value : GDouble
+                   Value : Gdouble
                 );
    overriding
       procedure Store
@@ -283,9 +283,9 @@ private
    record
       Outer         : Ellipse_Parameters;
       Inner         : Elliptic_Arc_Closure;
-      From          : GDouble;
-      Length        : GDouble;
-      Value         : GDouble := 0.0;
+      From          : Gdouble;
+      Length        : Gdouble;
+      Value         : Gdouble := 0.0;
       Color         : Gdk_Color;
       Adjustment    : Gtk_Adjustment;
       Changed       : Handler_Id;

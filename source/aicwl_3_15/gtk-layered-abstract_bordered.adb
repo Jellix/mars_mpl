@@ -157,9 +157,9 @@ package body Gtk.Layered.Abstract_Bordered is
          end if;
          Set_Source_Rgb
          (  Context,
-            Gdouble (Red   (Color)) / Gdouble (GUInt16'Last),
-            GDouble (Green (Color)) / GDouble (GUInt16'Last),
-            GDouble (Blue  (Color)) / GDouble (GUInt16'Last)
+            Gdouble (Red   (Color)) / Gdouble (Guint16'Last),
+            Gdouble (Green (Color)) / Gdouble (Guint16'Last),
+            Gdouble (Blue  (Color)) / Gdouble (Guint16'Last)
          );
       end Set_Light;
 
@@ -171,18 +171,18 @@ package body Gtk.Layered.Abstract_Bordered is
          else
             Color := Layer.Border_Color.Color;
          end if;
-         Set_Source_RGB
+         Set_Source_Rgb
          (  Context,
-            GDouble (Red   (Color)) / GDouble (GUInt16'Last),
-            GDouble (Green (Color)) / GDouble (GUInt16'Last),
-            GDouble (Blue  (Color)) / GDouble (GUInt16'Last)
+            Gdouble (Red   (Color)) / Gdouble (Guint16'Last),
+            Gdouble (Green (Color)) / Gdouble (Guint16'Last),
+            Gdouble (Blue  (Color)) / Gdouble (Guint16'Last)
          );
       end Set_Normal;
 
-      Shadow_Depth : GDouble; -- The width of the visible shadow
-      Border_Width : GDouble;
-      Extent       : GDouble;
-      Scaling      : GDouble;
+      Shadow_Depth : Gdouble; -- The width of the visible shadow
+      Border_Width : Gdouble;
+      Extent       : Gdouble;
+      Scaling      : Gdouble;
       Box_Center   : Cairo_Tuple;
       Path         : Cairo_Path_Access;
    --
@@ -196,12 +196,12 @@ package body Gtk.Layered.Abstract_Bordered is
    --            FX = (Bound - Width) / Extent
    --
       procedure Draw
-                (  Shift, Bound, Width : GDouble;
+                (  Shift, Bound, Width : Gdouble;
                    Action : Drawing_Action := Line
                 )  is
-         F : constant GDouble := (Bound - Width) / Extent;
-         S : constant GDouble := Shift * Shadow_Depth * 0.5;
-         FX, FY : GDouble;
+         F : constant Gdouble := (Bound - Width) / Extent;
+         S : constant Gdouble := Shift * Shadow_Depth * 0.5;
+         FX, FY : Gdouble;
          State  : Context_State := Save (Context);
       begin
          if Layer.Aspected then
@@ -236,9 +236,9 @@ package body Gtk.Layered.Abstract_Bordered is
          end case;
       end Draw;
 
-      Outer_Size  : GDouble;
-      Middle_Size : GDouble;
-      Inner_Size  : GDouble;
+      Outer_Size  : Gdouble;
+      Middle_Size : Gdouble;
+      Inner_Size  : Gdouble;
       Box         : Cairo_Box := Get_Path_Extents (Context);
    begin
       if Layer.Foreground /= null then
@@ -435,7 +435,7 @@ package body Gtk.Layered.Abstract_Bordered is
    end Get_Border_Color;
 
    function Get_Border_Depth (Layer : Abstract_Bordered_Layer)
-      return GDouble is
+      return Gdouble is
    begin
       return Layer.Border_Depth;
    end Get_Border_Depth;
@@ -447,7 +447,7 @@ package body Gtk.Layered.Abstract_Bordered is
    end Get_Border_Shadow;
 
    function Get_Border_Width (Layer : Abstract_Bordered_Layer)
-      return GDouble is
+      return Gdouble is
    begin
       return Layer.Border_Width;
    end Get_Border_Width;
@@ -527,7 +527,7 @@ package body Gtk.Layered.Abstract_Bordered is
                   (  Name    => "border-width",
                      Nick    => "border width",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 1.0,
                      Blurb   => "The border line width"
                   );
@@ -537,7 +537,7 @@ package body Gtk.Layered.Abstract_Bordered is
                   (  Name    => "border-depth",
                      Nick    => "border depth",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 1.0,
                      Blurb   => "The visual width of the shadows " &
                                 "dropped by the border"
@@ -710,8 +710,8 @@ package body Gtk.Layered.Abstract_Bordered is
              )  is
       Color      : Gdk_Color;
       Shadow     : Gtk_Shadow_Type;
-      Width      : GDouble;
-      Depth      : GDouble;
+      Width      : Gdouble;
+      Depth      : Gdouble;
       User_Color : Boolean;
    begin
       Restore
@@ -747,8 +747,8 @@ package body Gtk.Layered.Abstract_Bordered is
 
    procedure Set
              (  Layer         : in out Abstract_Bordered_Layer;
-                Border_Width  : GDouble;
-                Border_Depth  : GDouble;
+                Border_Width  : Gdouble;
+                Border_Depth  : Gdouble;
                 Border_Color  : Border_Color_Type;
                 Border_Shadow : Gtk_Shadow_Type
              )  is

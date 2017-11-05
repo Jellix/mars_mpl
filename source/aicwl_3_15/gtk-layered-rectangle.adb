@@ -428,16 +428,16 @@ package body Gtk.Layered.Rectangle is
          Color => Color,
          Line_Width => Gdouble'Max (0.0, Width),
          Opacity => Gdouble'Min (1.0, Gdouble'Max (0.0, Opacity)),
-         Box     => (  X1 => GDouble'Min (From.X, To.X),
-                       Y1 => GDouble'Min (From.Y, To.Y),
-                       X2 => GDouble'Max (From.X, To.X),
-                       Y2 => GDouble'Max (From.Y, To.Y)
+         Box     => (  X1 => Gdouble'Min (From.X, To.X),
+                       Y1 => Gdouble'Min (From.Y, To.Y),
+                       X2 => Gdouble'Max (From.X, To.X),
+                       Y2 => Gdouble'Max (From.Y, To.Y)
       )             );
    end Restore;
 
    procedure Scale
              (  Layer  : in out Rectangle_Layer;
-                Factor : GDouble
+                Factor : Gdouble
              )  is
    begin
       Layer.Box.X1 := Layer.Box.X1 * Factor;
@@ -451,7 +451,7 @@ package body Gtk.Layered.Rectangle is
              (  Layer      : in out Rectangle_Layer;
                 Box        : Cairo_Box;
                 Color      : Gdk_Color;
-                Line_Width : GDouble;
+                Line_Width : Gdouble;
                 Opacity    : Fill_Opacity
              )  is
    begin
@@ -497,11 +497,11 @@ package body Gtk.Layered.Rectangle is
                Layer.Color := Get_Value (Value);
             when Property_Opacity =>
                declare
-                  New_Value : GDouble := Get_Double (Value);
+                  New_Value : Gdouble := Get_Double (Value);
                begin
                   New_Value :=
-                     GDouble'Min (1.0, GDouble'Max (0.0, New_Value));
-                  if New_Value /= GDouble (Layer.Opacity) then
+                     Gdouble'Min (1.0, Gdouble'Max (0.0, New_Value));
+                  if New_Value /= Gdouble (Layer.Opacity) then
                      Layer.Opacity := New_Value;
                      Layer.Updated := True;
                   end if;

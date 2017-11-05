@@ -270,10 +270,10 @@ package body Gtk.Layered.Waveform.Amplifier is
       function Get_Count return Positive is
          Length : Gdouble := Amplifier.Width;
       begin
-         Length := Length / GDouble (Amplifier.Tick);
+         Length := Length / Gdouble (Amplifier.Tick);
          if Length < 1.0 then
             return 1;
-         elsif Length > GDouble (Integer'Last) then
+         elsif Length > Gdouble (Integer'Last) then
             return Integer'Last;
          else
             return Integer (Length);
@@ -298,15 +298,15 @@ package body Gtk.Layered.Waveform.Amplifier is
                          Gtk_Adjustment_Record
                          (  Amplifier
                          ) 'Unchecked_Access;
-            From  : constant GDouble := GDouble (Amplifier.Y1);
-            To    : constant GDouble := GDouble (Amplifier.Y2);
-            Span  : constant GDouble :=
-                             (To - From) * GDouble (Amplifier.Scaling);
-            Size  : GDouble;
-            V1    : GDouble := Get_Value (Parent);
-            V2    : GDouble := V1 + Get_Page_Size (Parent);
-            Lower : GDouble := Get_Lower (Parent);
-            Upper : GDouble := Get_Upper (Parent);
+            From  : constant Gdouble := Gdouble (Amplifier.Y1);
+            To    : constant Gdouble := Gdouble (Amplifier.Y2);
+            Span  : constant Gdouble :=
+                             (To - From) * Gdouble (Amplifier.Scaling);
+            Size  : Gdouble;
+            V1    : Gdouble := Get_Value (Parent);
+            V2    : Gdouble := V1 + Get_Page_Size (Parent);
+            Lower : Gdouble := Get_Lower (Parent);
+            Upper : Gdouble := Get_Upper (Parent);
          begin
             if From < V1 then
                V1 := From - Span;
@@ -328,13 +328,13 @@ package body Gtk.Layered.Waveform.Amplifier is
                   Changed := Changed or Empty;
                end if;
                declare
-                  V     : GDouble;
+                  V     : Gdouble;
                   Scale : constant Rasters.Scale :=
                                    Rasters.Create (V1, V2, Get_Count);
                begin
-                  V := V1 - GDouble'Remainder (V1, Scale.Minor);
+                  V := V1 - Gdouble'Remainder (V1, Scale.Minor);
                   declare
-                     Bound : constant GDouble := From - Scale.Minor;
+                     Bound : constant Gdouble := From - Scale.Minor;
                   begin
                      while V > Bound loop
                         V := V - Scale.Minor;
@@ -344,9 +344,9 @@ package body Gtk.Layered.Waveform.Amplifier is
                      V1 := V;
                      Changed := Changed or Raster_V1;
                   end if;
-                  V := V2 - GDouble'Remainder (V2, Scale.Minor);
+                  V := V2 - Gdouble'Remainder (V2, Scale.Minor);
                   declare
-                     Bound : constant GDouble := To + Scale.Minor;
+                     Bound : constant Gdouble := To + Scale.Minor;
                   begin
                      while V < Bound loop
                         V := V + Scale.Minor;
@@ -360,13 +360,13 @@ package body Gtk.Layered.Waveform.Amplifier is
             end if;
             if 0 /= Changed then
                Size  := V2 - V1;
-               Lower := GDouble'Min (From, GDouble'Min (Lower, V1));
-               Upper := GDouble'Max (To,   GDouble'Max (Upper, V2));
+               Lower := Gdouble'Min (From, Gdouble'Min (Lower, V1));
+               Upper := Gdouble'Max (To,   Gdouble'Max (Upper, V2));
                if 0 /= (Tracing_Mode and Trace_Amplifier) then ---------
                   if 0 /= (Changed and Undeflow_V1) then
                      Trace_Line
                      (  Amplifier'Address,
-                        (  Edit.Image (GDouble (Amplifier.Y1))
+                        (  Edit.Image (Gdouble (Amplifier.Y1))
                         &  " = V1 < ["
                         &  Edit.Image (Get_Value (Parent))
                         &  " set to "
@@ -374,9 +374,9 @@ package body Gtk.Layered.Waveform.Amplifier is
                         &  ".."
                         &  Edit.Image (V2)
                         &  " ["
-                        &  Edit.Image (GDouble (Amplifier.Y1))
+                        &  Edit.Image (Gdouble (Amplifier.Y1))
                         &  ".."
-                        &  Edit.Image (GDouble (Amplifier.Y2))
+                        &  Edit.Image (Gdouble (Amplifier.Y2))
                         &  "]"
                      )  );
                   end if;
@@ -387,15 +387,15 @@ package body Gtk.Layered.Waveform.Amplifier is
                         &  "]>>>"
                         &  Edit.Image (Span)
                         &  " < V1 = "
-                        &  Edit.Image (GDouble (Amplifier.Y1))
+                        &  Edit.Image (Gdouble (Amplifier.Y1))
                         &  " set to "
                         &  Edit.Image (V1)
                         &  ".."
                         &  Edit.Image (V2)
                         &  " ["
-                        &  Edit.Image (GDouble (Amplifier.Y1))
+                        &  Edit.Image (Gdouble (Amplifier.Y1))
                         &  ".."
-                        &  Edit.Image (GDouble (Amplifier.Y2))
+                        &  Edit.Image (Gdouble (Amplifier.Y2))
                         &  " ]"
                      )  );
                   end if;
@@ -407,22 +407,22 @@ package body Gtk.Layered.Waveform.Amplifier is
                            +  Get_Page_Size (Parent)
                            )
                         &  "] < V2 = "
-                        &  Edit.Image (GDouble (Amplifier.Y2))
+                        &  Edit.Image (Gdouble (Amplifier.Y2))
                         &  " set to "
                         &  Edit.Image (V1)
                         &  ".."
                         &  Edit.Image (V2)
                         &  " ["
-                        &  Edit.Image (GDouble (Amplifier.Y1))
+                        &  Edit.Image (Gdouble (Amplifier.Y1))
                         &  ".."
-                        &  Edit.Image (GDouble (Amplifier.Y2))
+                        &  Edit.Image (Gdouble (Amplifier.Y2))
                         &  " ]"
                      )  );
                   end if;
                   if 0 /= (Changed and Overflow_V2) then
                      Trace_Line
                      (  Amplifier'Address,
-                        (  Edit.Image (GDouble (Amplifier.Y2))
+                        (  Edit.Image (Gdouble (Amplifier.Y2))
                         &  " = V2 < "
                         &  Edit.Image (Span)
                         &  " <<<["
@@ -435,9 +435,9 @@ package body Gtk.Layered.Waveform.Amplifier is
                         &  " .."
                         &  Edit.Image (V2)
                         &  " ["
-                        &  Edit.Image (GDouble (Amplifier.Y1))
+                        &  Edit.Image (Gdouble (Amplifier.Y1))
                         &  " .."
-                        &  Edit.Image (GDouble (Amplifier.Y2))
+                        &  Edit.Image (Gdouble (Amplifier.Y2))
                         &  " ]"
                      )  );
                   end if;
@@ -449,9 +449,9 @@ package body Gtk.Layered.Waveform.Amplifier is
                         &  ".."
                         &  Edit.Image (V2)
                         &  " ["
-                        &  Edit.Image (GDouble (Amplifier.Y1))
+                        &  Edit.Image (Gdouble (Amplifier.Y1))
                         &  ".."
-                        &  Edit.Image (GDouble (Amplifier.Y2))
+                        &  Edit.Image (Gdouble (Amplifier.Y2))
                         &  " ]"
                      )  );
                   end if;
@@ -463,9 +463,9 @@ package body Gtk.Layered.Waveform.Amplifier is
                         &  ".."
                         &  Edit.Image (V2)
                         &  " ["
-                        &  Edit.Image (GDouble (Amplifier.Y1))
+                        &  Edit.Image (Gdouble (Amplifier.Y1))
                         &  ".."
-                        &  Edit.Image (GDouble (Amplifier.Y2))
+                        &  Edit.Image (Gdouble (Amplifier.Y2))
                         &  " ]"
                      )  );
                   end if;
@@ -477,9 +477,9 @@ package body Gtk.Layered.Waveform.Amplifier is
                         &  ".."
                         &  Edit.Image (V2)
                         &  " ["
-                        &  Edit.Image (GDouble (Amplifier.Y1))
+                        &  Edit.Image (Gdouble (Amplifier.Y1))
                         &  ".."
-                        &  Edit.Image (GDouble (Amplifier.Y2))
+                        &  Edit.Image (Gdouble (Amplifier.Y2))
                         &  " ]"
                      )  );
                   end if;

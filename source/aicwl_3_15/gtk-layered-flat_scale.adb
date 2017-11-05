@@ -120,9 +120,9 @@ package body Gtk.Layered.Flat_Scale is
                Length   : Gdouble        := 1.0;
                Breadth  : Gdouble        := 1.0;
                Angle    : Gdouble        := 0.0;
-               Width    : GDouble        := 1.0;
+               Width    : Gdouble        := 1.0;
                Color    : Gdk_Color      := RGB (0.0, 0.0, 0.0);
-               Line_Cap : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+               Line_Cap : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                Scaled   : Boolean        := False;
                Widened  : Boolean        := False
             )  return not null access Flat_Scale_Layer is
@@ -153,22 +153,22 @@ package body Gtk.Layered.Flat_Scale is
                 Context : Cairo_Context;
                 Area    : Gdk_Rectangle
              )  is
-      X_Size : GDouble := cos (Layer.Angle);
-      Y_Size : GDouble := sin (Layer.Angle);
-      This   : GDouble;
+      X_Size : Gdouble := Cos (Layer.Angle);
+      Y_Size : Gdouble := Sin (Layer.Angle);
+      This   : Gdouble;
       From   : Cairo_Tuple;
-      Width  : constant GDouble := Layer.Breadth * 0.5;
+      Width  : constant Gdouble := Layer.Breadth * 0.5;
       Thick  : Natural := Layer.Ticks.First;
-      Length : constant GDouble := Layer.Length
+      Length : constant Gdouble := Layer.Length
                                  + Layer.Ticks.Step * 0.05;
       State  : Context_State := Save (Context);
    begin
       New_Path (Context);
-      Set_Source_RGB
+      Set_Source_Rgb
       (  Context,
-         GDouble (Red   (Layer.Line.Color)) / GDouble (Guint16'Last),
-         GDouble (Green (Layer.Line.Color)) / GDouble (Guint16'Last),
-         GDouble (Blue  (Layer.Line.Color)) / GDouble (Guint16'Last)
+         Gdouble (Red   (Layer.Line.Color)) / Gdouble (Guint16'Last),
+         Gdouble (Green (Layer.Line.Color)) / Gdouble (Guint16'Last),
+         Gdouble (Blue  (Layer.Line.Color)) / Gdouble (Guint16'Last)
       );
       Set_Line_Cap (Context, Layer.Line.Line_Cap);
       if Layer.Widened then
@@ -181,7 +181,7 @@ package body Gtk.Layered.Flat_Scale is
       end if;
       if Layer.Scaled then
          declare
-            Size : constant GDouble := Layer.Widget.Get_Size;
+            Size : constant Gdouble := Layer.Widget.Get_Size;
          begin
             X_Size := X_Size * Size;
             Y_Size := Y_Size * Size;
@@ -192,7 +192,7 @@ package body Gtk.Layered.Flat_Scale is
          From := Layer.From;
       end if;
       for Index in Natural'Range loop
-         This := Layer.Ticks.Step * GDouble (Index);
+         This := Layer.Ticks.Step * Gdouble (Index);
          exit when abs This > Length;
          if Thick = Layer.Ticks.Skipped then
             Thick := 1;
@@ -219,12 +219,12 @@ package body Gtk.Layered.Flat_Scale is
       Layer.Updated := False;
    end Draw;
 
-   function Get_Angle (Layer : Flat_Scale_Layer) return GDouble is
+   function Get_Angle (Layer : Flat_Scale_Layer) return Gdouble is
    begin
       return Layer.Angle;
    end Get_Angle;
 
-   function Get_Breadth (Layer : Flat_Scale_Layer) return GDouble is
+   function Get_Breadth (Layer : Flat_Scale_Layer) return Gdouble is
    begin
       return Layer.Breadth;
    end Get_Breadth;
@@ -234,7 +234,7 @@ package body Gtk.Layered.Flat_Scale is
       return Layer.From;
    end Get_From;
 
-   function Get_Length (Layer : Flat_Scale_Layer) return GDouble is
+   function Get_Length (Layer : Flat_Scale_Layer) return Gdouble is
    begin
       return Layer.Length;
    end Get_Length;
@@ -270,8 +270,8 @@ package body Gtk.Layered.Flat_Scale is
                   Gnew_Double
                   (  Name    => "x0",
                      Nick    => "x0",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb   => "The x-coordinate of the point " &
                                 "corresponding to the value 0"
@@ -281,8 +281,8 @@ package body Gtk.Layered.Flat_Scale is
                   Gnew_Double
                   (  Name    => "y0",
                      Nick    => "y0",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb   => "The y-coordinate of the point " &
                                 "corresponding to the value 0"
@@ -292,8 +292,8 @@ package body Gtk.Layered.Flat_Scale is
                   Gnew_Double
                   (  Name    => "length",
                      Nick    => "length",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb   => "The scale length. The end of the" &
                                 "scale corresponds to the value 1"
@@ -316,7 +316,7 @@ package body Gtk.Layered.Flat_Scale is
                   (  Name    => "tick-length",
                      Nick    => "tick length",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 1.0,
                      Blurb   => "The length of the ticks. The ticks" &
                                 "are drawn perpendicular to the " &
@@ -328,18 +328,18 @@ package body Gtk.Layered.Flat_Scale is
                   (  Name    => "step",
                      Nick    => "step",
                      Minimum => 1.0E-6,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 1.0,
                      Blurb   => "The distance between two " &
                                 "consequent ticks"
                   );
             when Property_Tick_First =>
                return
-                  Gnew_UInt
+                  Gnew_Uint
                   (  Name    => "first-tick",
                      Nick    => "first tick",
-                     Minimum => GUInt (Tick_Number'First),
-                     Maximum => GUInt (Tick_Number'Last),
+                     Minimum => Guint (Tick_Number'First),
+                     Maximum => Guint (Tick_Number'Last),
                      Default => 1,
                      Blurb   => "The number of the first tick. " &
                                 "The first tick is located at " &
@@ -347,12 +347,12 @@ package body Gtk.Layered.Flat_Scale is
                   );
             when Property_Tick_Skipped =>
                return
-                  Gnew_UInt
+                  Gnew_Uint
                   (  Name    => "skipped-tick",
                      Nick    => "skipped tick",
                      Minimum => 2,
-                     Maximum => GUInt (Tick_Number'Last),
-                     Default => GUInt (Tick_Number'Last),
+                     Maximum => Guint (Tick_Number'Last),
+                     Default => Guint (Tick_Number'Last),
                      Blurb   => "The number of the skipped tick. " &
                                 "The ticks are numbered from 1 to " &
                                 "skipped-tick. The ticks with this " &
@@ -364,7 +364,7 @@ package body Gtk.Layered.Flat_Scale is
                   (  Name    => "line-width",
                      Nick    => "line width",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 1.0,
                      Blurb   => "The tick line's width"
                   );
@@ -381,7 +381,7 @@ package body Gtk.Layered.Flat_Scale is
                   Cairo.Line_Cap_Property.Gnew_Enum
                   (  Name    => "line-cap",
                      Nick    => "line cap",
-                     Default => CAIRO_LINE_CAP_BUTT,
+                     Default => Cairo_Line_Cap_Butt,
                      Blurb   => "The cap style of the tick lines"
                   );
             when Property_Scaled =>
@@ -447,11 +447,11 @@ package body Gtk.Layered.Flat_Scale is
                   Init (Value, GType_Double);
                   Set_Double (Value, Layer.Ticks.Step);
                when Property_Tick_First =>
-                  Init (Value, GType_UInt);
-                  Set_UInt (Value, GUInt (Layer.Ticks.First));
+                  Init (Value, GType_Uint);
+                  Set_Uint (Value, Guint (Layer.Ticks.First));
                when Property_Tick_Skipped =>
-                  Init (Value, GType_UInt);
-                  Set_UInt (Value, GUInt (Layer.Ticks.Skipped));
+                  Init (Value, GType_Uint);
+                  Set_Uint (Value, Guint (Layer.Ticks.Skipped));
                when Property_Scaled =>
                   Init (Value, GType_Boolean);
                   Set_Boolean (Value, Layer.Scaled);
@@ -502,9 +502,9 @@ package body Gtk.Layered.Flat_Scale is
       Ticks   : Tick_Parameters;
       Line    : Line_Parameters;
       From    : Cairo_Tuple;
-      Length  : GDouble;
-      Breadth : GDouble;
-      Angle   : GDouble;
+      Length  : Gdouble;
+      Breadth : Gdouble;
+      Angle   : Gdouble;
    begin
       Restore (Stream, Ticks);
       Restore (Stream, Line);
@@ -526,10 +526,10 @@ package body Gtk.Layered.Flat_Scale is
 
    procedure Scale
              (  Layer  : in out Flat_Scale_Layer;
-                Factor : GDouble
+                Factor : Gdouble
              )  is
       Ticks   : Tick_Parameters  := Layer.Ticks;
-      Breadth : constant GDouble := Layer.Breadth * Factor;
+      Breadth : constant Gdouble := Layer.Breadth * Factor;
    begin
       Ticks.Step := Ticks.Step * Factor;
       if Ticks.Step < Min_Step then
@@ -548,9 +548,9 @@ package body Gtk.Layered.Flat_Scale is
                 Line    : Line_Parameters;
                 Ticks   : Tick_Parameters;
                 From    : Cairo_Tuple;
-                Length  : GDouble;
-                Breadth : GDouble;
-                Angle   : GDouble
+                Length  : Gdouble;
+                Breadth : Gdouble;
+                Angle   : Gdouble
              )  is
    begin
       if Ticks.Step < Min_Step then
@@ -594,7 +594,7 @@ package body Gtk.Layered.Flat_Scale is
                Layer.Angle := Get_Double (Value);
                if Layer.Angle not in -2.0 * Pi..2.0 * Pi then
                   Layer.Angle :=
-                     GDouble'Remainder (Layer.Angle, 2.0 * Pi);
+                     Gdouble'Remainder (Layer.Angle, 2.0 * Pi);
                end if;
             when Property_Line_Width =>
                Layer.Line.Width := Get_Double (Value);
@@ -617,20 +617,20 @@ package body Gtk.Layered.Flat_Scale is
                   Layer.Ticks.Step := 1.0E-6;
                end if;
             when Property_Tick_First =>
-               if Get_UInt (Value) < 1 then
+               if Get_Uint (Value) < 1 then
                   Layer.Ticks.First := 1;
-               elsif Get_UInt (Value) > GUInt (Tick_Number'Last) then
+               elsif Get_Uint (Value) > Guint (Tick_Number'Last) then
                   Layer.Ticks.First := Tick_Number'Last;
                else
-                  Layer.Ticks.First := Tick_Number (Get_UInt (Value));
+                  Layer.Ticks.First := Tick_Number (Get_Uint (Value));
                end if;
             when Property_Tick_Skipped =>
-               if Get_UInt (Value) < 2 then
+               if Get_Uint (Value) < 2 then
                   Layer.Ticks.Skipped := 2;
-               elsif Get_UInt (Value) > GUInt (Tick_Number'Last) then
+               elsif Get_Uint (Value) > Guint (Tick_Number'Last) then
                   Layer.Ticks.Skipped := Tick_Number'Last;
                else
-                  Layer.Ticks.Skipped := Tick_Number (Get_UInt (Value));
+                  Layer.Ticks.Skipped := Tick_Number (Get_Uint (Value));
                end if;
             when Property_Scaled =>
                Layer.Scaled := Get_Boolean (Value);

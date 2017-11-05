@@ -172,7 +172,7 @@ package body Gtk.Layered.Rectangular_Clip_Region is
              )  is
       Half_Width  : Gdouble := Layer.Width  / 2.0;
       Half_Height : Gdouble := Layer.Height / 2.0;
-      Radius      : GDouble := Layer.Radius;
+      Radius      : Gdouble := Layer.Radius;
       T           : Translate_And_Rotate;
    begin
       Rotate (T, Layer.Angle);
@@ -181,7 +181,7 @@ package body Gtk.Layered.Rectangular_Clip_Region is
       if Layer.Scaled then
          declare
             Center : constant Cairo_Tuple := Layer.Widget.Get_Center;
-            Size   : constant GDouble     := Layer.Widget.Get_Size;
+            Size   : constant Gdouble     := Layer.Widget.Get_Size;
          begin
             Half_Width  := Half_Width  * Size;
             Half_Height := Half_Height * Size;
@@ -295,13 +295,13 @@ package body Gtk.Layered.Rectangular_Clip_Region is
    end Get_Center;
 
    function Get_Height (Layer : Rectangular_Clip_Region_On_Layer)
-     return GDouble is
+     return Gdouble is
    begin
       return Layer.Height;
    end Get_Height;
 
    function Get_Corner_Radius (Layer : Rectangular_Clip_Region_On_Layer)
-      return GDouble is
+      return Gdouble is
    begin
       return Layer.Radius;
    end Get_Corner_Radius;
@@ -338,8 +338,8 @@ package body Gtk.Layered.Rectangular_Clip_Region is
                   Gnew_Double
                   (  Name    => "x",
                      Nick    => "x",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb =>
                         "The x-coordinate of the rectangle's center"
@@ -349,8 +349,8 @@ package body Gtk.Layered.Rectangular_Clip_Region is
                   Gnew_Double
                   (  Name    => "y",
                      Nick    => "y",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb =>
                         "The y-coordinate of the rectangle's center"
@@ -361,7 +361,7 @@ package body Gtk.Layered.Rectangular_Clip_Region is
                   (  Name    => "height",
                      Nick    => "height",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 1.0,
                      Blurb   => "The rectnagle's height"
                   );
@@ -371,7 +371,7 @@ package body Gtk.Layered.Rectangular_Clip_Region is
                   (  Name    => "width",
                      Nick    => "width",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 1.0,
                      Blurb   => "The rectnagle's width"
                   );
@@ -393,7 +393,7 @@ package body Gtk.Layered.Rectangular_Clip_Region is
                   (  Name    => "corner-r",
                      Nick    => "corner r",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb   => "The radius of the circles rounding " &
                                 "the corners of the rectangle"
@@ -472,7 +472,7 @@ package body Gtk.Layered.Rectangular_Clip_Region is
 
    function Get_Rotation_Angle
             (  Layer : Rectangular_Clip_Region_On_Layer
-            )  return GDouble is
+            )  return Gdouble is
    begin
       return Layer.Angle;
    end Get_Rotation_Angle;
@@ -484,7 +484,7 @@ package body Gtk.Layered.Rectangular_Clip_Region is
    end Get_Scaled;
 
    function Get_Width (Layer : Rectangular_Clip_Region_On_Layer)
-      return GDouble is
+      return Gdouble is
    begin
       return Layer.Width;
    end Get_Width;
@@ -526,11 +526,11 @@ package body Gtk.Layered.Rectangular_Clip_Region is
              (  Stream : in out Root_Stream_Type'Class;
                 Layer  : in out Rectangular_Clip_Region_On_Layer
              )  is
-      Height : GDouble;
-      Width  : GDouble;
+      Height : Gdouble;
+      Width  : Gdouble;
       Center : Cairo_Tuple;
-      Angle  : GDouble;
-      Radius : GDouble;
+      Angle  : Gdouble;
+      Radius : Gdouble;
    begin
       Restore (Stream, Height);
       Restore (Stream, Width);
@@ -550,11 +550,11 @@ package body Gtk.Layered.Rectangular_Clip_Region is
 
    procedure Scale
              (  Layer  : in out Rectangular_Clip_Region_On_Layer;
-                Factor : GDouble
+                Factor : Gdouble
              )  is
-      Radius : constant GDouble := Layer.Radius * Factor;
-      Height : constant GDouble := Layer.Height * Factor;
-      Width  : constant GDouble := Layer.Width  * Factor;
+      Radius : constant Gdouble := Layer.Radius * Factor;
+      Height : constant Gdouble := Layer.Height * Factor;
+      Width  : constant Gdouble := Layer.Width  * Factor;
    begin
       if 2.0 * Radius > Height then
          raise Constraint_Error with
@@ -575,11 +575,11 @@ package body Gtk.Layered.Rectangular_Clip_Region is
 
    procedure Set
              (  Layer   : in out Rectangular_Clip_Region_On_Layer;
-                Height         : GDouble;
-                Width          : GDouble;
+                Height         : Gdouble;
+                Width          : Gdouble;
                 Center         : Cairo_Tuple;
-                Rotation_Angle : GDouble;
-                Corner_Radius  : GDouble
+                Rotation_Angle : Gdouble;
+                Corner_Radius  : Gdouble
              )  is
    begin
       if 2.0 * Corner_Radius > Height then
@@ -638,7 +638,7 @@ package body Gtk.Layered.Rectangular_Clip_Region is
                Layer.Angle := Get_Double (Value);
                if Layer.Angle not in -2.0 * Pi..2.0 * Pi then
                   Layer.Angle :=
-                     GDouble'Remainder (Layer.Angle, 2.0 * Pi);
+                     Gdouble'Remainder (Layer.Angle, 2.0 * Pi);
                end if;
             when Property_Scaled =>
                Layer.Scaled := Get_Boolean (Value);

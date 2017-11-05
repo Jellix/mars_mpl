@@ -18,7 +18,7 @@ procedure Simulator is
    Next_Cycle        : Ada.Real_Time.Time;
 
    use type Ada.Real_Time.Time;
-   use type Altimeter.Height;
+   use type Altimeter.Altitude;
    use type Altimeter.Velocity;
    use type Touchdown_Monitor.Run_State;
 
@@ -26,16 +26,16 @@ procedure Simulator is
    procedure Update_GUI is
       All_Legs : Landing_Legs.All_Legs_State;
       Thruster : Boolean;
-      Height   : Altimeter.Height;
+      Altitude : Altimeter.Altitude;
       Velocity : Altimeter.Velocity;
    begin
-      Altimeter.Current_Height (H => Height);
+      Altimeter.Current_Altitude (A => Altitude);
       Altimeter.Current_Velocity (V => Velocity);
       Landing_Legs.Read_State (State => All_Legs);
       Thrusters.Get_State (Disabled => Thruster);
       GUI.Update (New_State => GUI.State'(Legs     => All_Legs,
                                           Thruster => not Thruster,
-                                          Height   => Height,
+                                          Altitude => Altitude,
                                           Velocity => Velocity));
    end Update_GUI;
 
@@ -46,22 +46,22 @@ begin
    Next_Cycle := Global.Start_Time + Cycle;
 
    declare
-      Current_Height   : Altimeter.Height;
+      Current_Altitude : Altimeter.Altitude;
       Current_Velocity : Altimeter.Velocity;
    begin
-      Altimeter.Current_Height (H => Current_Height);
+      Altimeter.Current_Altitude (A => Current_Altitude);
       Altimeter.Current_Velocity (V => Current_Velocity);
 
-      while Current_Height > 1.0 loop
-         Altimeter.Current_Height (H => Current_Height);
+      while Current_Altitude > 1.0 loop
+         Altimeter.Current_Altitude (A => Current_Altitude);
          Altimeter.Current_Velocity (V => Current_Velocity);
 
-         if not Legs_Deployed and then Current_Height <= 1500.0 then
+         if not Legs_Deployed and then Current_Altitude <= 1500.0 then
             Landing_Legs.Deploy;
             Legs_Deployed := True;
          end if;
 
-         if not Monitor_Enabled and then Current_Height <= 40.0 then
+         if not Monitor_Enabled and then Current_Altitude <= 40.0 then
             Global.Log (Message => "Enabling monitors...");
             Touchdown_Monitor.Enable;
             Monitor_Enabled := True;

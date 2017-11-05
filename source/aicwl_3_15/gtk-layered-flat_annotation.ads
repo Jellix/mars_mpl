@@ -110,17 +110,17 @@ package Gtk.Layered.Flat_Annotation is
                 Skipped     : Tick_Number := Tick_Number'Last;
                 From        : Cairo_Tuple := (0.0, 0.0);
                 Length      : Gdouble     := 1.0;
-                Scale_Angle : GDouble     := 0.0;
+                Scale_Angle : Gdouble     := 0.0;
                 Face        : Pango_Cairo_Font :=
                                  Create_Toy
                                  (  Family => "arial",
-                                    Slant  => CAIRO_FONT_SLANT_NORMAL,
-                                    Weight => CAIRO_FONT_WEIGHT_NORMAL
+                                    Slant  => Cairo_Font_Slant_Normal,
+                                    Weight => Cairo_Font_Weight_Normal
                                  );
-                Height      : GDouble     := 12.0;
-                Stretch     : GDouble     := 1.0;
+                Height      : Gdouble     := 12.0;
+                Stretch     : Gdouble     := 1.0;
                 Color       : Gdk_Color   := RGB (0.0, 0.0, 0.0);
-                Text_Angle  : GDouble     := 0.0;
+                Text_Angle  : Gdouble     := 0.0;
                 Justify     : Alignment   := Center;
                 Markup      : Boolean     := False;
                 Scaled      : Boolean     := False
@@ -128,22 +128,22 @@ package Gtk.Layered.Flat_Annotation is
    procedure Add_Flat_Annotation
              (  Under       : not null access Layer_Location'Class;
                 Texts       : UTF8_String;
-                Step        : GDouble;
+                Step        : Gdouble;
                 First       : Tick_Number := Tick_Number'Last;
                 Skipped     : Tick_Number := Tick_Number'Last;
                 From        : Cairo_Tuple := (0.0, 0.0);
-                Length      : GDouble     := 1.0;
-                Scale_Angle : GDouble     := 0.0;
+                Length      : Gdouble     := 1.0;
+                Scale_Angle : Gdouble     := 0.0;
                 Face        : Pango_Cairo_Font :=
                                  Create_Toy
                                  (  Family => "arial",
-                                    Slant  => CAIRO_FONT_SLANT_NORMAL,
-                                    Weight => CAIRO_FONT_WEIGHT_NORMAL
+                                    Slant  => Cairo_Font_Slant_Normal,
+                                    Weight => Cairo_Font_Weight_Normal
                                  );
-                Height      : GDouble     := 12.0;
-                Stretch     : GDouble     := 1.0;
+                Height      : Gdouble     := 12.0;
+                Stretch     : Gdouble     := 1.0;
                 Color       : Gdk_Color   := RGB (0.0, 0.0, 0.0);
-                Text_Angle  : GDouble     := 0.0;
+                Text_Angle  : Gdouble     := 0.0;
                 Justify     : Alignment   := Center;
                 Delimiter   : Character   := ' ';
                 Markup      : Boolean     := False;
@@ -151,23 +151,23 @@ package Gtk.Layered.Flat_Annotation is
              );
    function Add_Flat_Annotation
             (  Under       : not null access Layer_Location'Class;
-               Texts       : Gtk.Enums.String_List.GList;
-               Step        : GDouble;
+               Texts       : Gtk.Enums.String_List.Glist;
+               Step        : Gdouble;
                First       : Tick_Number := Tick_Number'Last;
                Skipped     : Tick_Number := Tick_Number'Last;
                From        : Cairo_Tuple := (0.0, 0.0);
-               Length      : GDouble     := 1.0;
-               Scale_Angle : GDouble     := 0.0;
+               Length      : Gdouble     := 1.0;
+               Scale_Angle : Gdouble     := 0.0;
                Face        : Pango_Cairo_Font :=
                                 Create_Toy
                                 (  Family => "arial",
-                                   Slant  => CAIRO_FONT_SLANT_NORMAL,
-                                   Weight => CAIRO_FONT_WEIGHT_NORMAL
+                                   Slant  => Cairo_Font_Slant_Normal,
+                                   Weight => Cairo_Font_Weight_Normal
                                 );
-               Height      : GDouble     := 12.0;
-               Stretch     : GDouble     := 1.0;
+               Height      : Gdouble     := 12.0;
+               Stretch     : Gdouble     := 1.0;
                Color       : Gdk_Color   := RGB (0.0, 0.0, 0.0);
-               Text_Angle  : GDouble     := 0.0;
+               Text_Angle  : Gdouble     := 0.0;
                Justify     : Alignment   := Center;
                Markup      : Boolean     := False;
                Scaled      : Boolean     := False
@@ -175,22 +175,22 @@ package Gtk.Layered.Flat_Annotation is
    function Add_Flat_Annotation
             (  Under       : not null access Layer_Location'Class;
                Texts       : Controlled_String_List;
-               Step        : GDouble;
+               Step        : Gdouble;
                First       : Tick_Number := Tick_Number'Last;
                Skipped     : Tick_Number := Tick_Number'Last;
                From        : Cairo_Tuple := (0.0, 0.0);
-               Length      : GDouble     := 1.0;
-               Scale_Angle : GDouble     := 0.0;
+               Length      : Gdouble     := 1.0;
+               Scale_Angle : Gdouble     := 0.0;
                Face        : Pango_Cairo_Font :=
                                 Create_Toy
                                 (  Family => "arial",
-                                   Slant  => CAIRO_FONT_SLANT_NORMAL,
-                                   Weight => CAIRO_FONT_WEIGHT_NORMAL
+                                   Slant  => Cairo_Font_Slant_Normal,
+                                   Weight => Cairo_Font_Weight_Normal
                                 );
-               Height      : GDouble     := 12.0;
-               Stretch     : GDouble     := 1.0;
+               Height      : Gdouble     := 12.0;
+               Stretch     : Gdouble     := 1.0;
                Color       : Gdk_Color   := RGB (0.0, 0.0, 0.0);
-               Text_Angle  : GDouble     := 0.0;
+               Text_Angle  : Gdouble     := 0.0;
                Justify     : Alignment   := Center;
                Markup      : Boolean     := False;
                Scaled      : Boolean     := False
@@ -198,22 +198,22 @@ package Gtk.Layered.Flat_Annotation is
    function Add_Flat_Annotation
             (  Under       : not null access Layer_Location'Class;
                Texts       : UTF8_String;
-               Step        : GDouble;
+               Step        : Gdouble;
                First       : Tick_Number := Tick_Number'Last;
                Skipped     : Tick_Number := Tick_Number'Last;
                From        : Cairo_Tuple := (0.0, 0.0);
-               Length      : GDouble     := 1.0;
-               Scale_Angle : GDouble     := 0.0;
+               Length      : Gdouble     := 1.0;
+               Scale_Angle : Gdouble     := 0.0;
                Face        : Pango_Cairo_Font :=
                                 Create_Toy
                                 (  Family => "arial",
-                                   Slant  => CAIRO_FONT_SLANT_NORMAL,
-                                   Weight => CAIRO_FONT_WEIGHT_NORMAL
+                                   Slant  => Cairo_Font_Slant_Normal,
+                                   Weight => Cairo_Font_Weight_Normal
                                 );
-               Height      : GDouble     := 12.0;
-               Stretch     : GDouble     := 1.0;
+               Height      : Gdouble     := 12.0;
+               Stretch     : Gdouble     := 1.0;
                Color       : Gdk_Color   := RGB (0.0, 0.0, 0.0);
-               Text_Angle  : GDouble     := 0.0;
+               Text_Angle  : Gdouble     := 0.0;
                Justify     : Alignment   := Center;
                Delimiter   : Character   := ' ';
                Markup      : Boolean     := False;
@@ -261,7 +261,7 @@ package Gtk.Layered.Flat_Annotation is
 --    The length of the line
 --
    function Get_Length (Layer : Flat_Annotation_Layer)
-      return GDouble;
+      return Gdouble;
 --
 -- Get_Scale_Angle -- The angle of the annotation line
 --
@@ -272,7 +272,7 @@ package Gtk.Layered.Flat_Annotation is
 --    The angle of the line along which annotation texts are arranged
 --
    function Get_Scale_Angle (Layer : Flat_Annotation_Layer)
-      return GDouble;
+      return Gdouble;
 --
 -- Get_Text_Angle -- The angle of the annotation texts
 --
@@ -283,7 +283,7 @@ package Gtk.Layered.Flat_Annotation is
 --    The angle of the texts
 --
    function Get_Text_Angle (Layer : Flat_Annotation_Layer)
-      return GDouble;
+      return Gdouble;
 --
 -- Set -- Parameters of the annotation
 --
@@ -307,13 +307,13 @@ package Gtk.Layered.Flat_Annotation is
              (  Layer       : in out Flat_Annotation_Layer;
                 Ticks       : Tick_Parameters;
                 From        : Cairo_Tuple;
-                Length      : GDouble;
-                Scale_Angle : GDouble;
+                Length      : Gdouble;
+                Scale_Angle : Gdouble;
                 Face        : Pango_Cairo_Font;
-                Height      : GDouble;
-                Stretch     : GDouble;
+                Height      : Gdouble;
+                Stretch     : Gdouble;
                 Color       : Gdk_Color;
-                Text_Angle  : GDouble;
+                Text_Angle  : Gdouble;
                 Justify     : Alignment
              );
 
@@ -335,7 +335,7 @@ package Gtk.Layered.Flat_Annotation is
          return Pango_Cairo_Font;
    overriding
       function Get_Height (Layer : Flat_Annotation_Layer)
-         return GDouble;
+         return Gdouble;
    overriding
       function Get_Markup
                (  Layer    : Flat_Annotation_Layer;
@@ -360,7 +360,7 @@ package Gtk.Layered.Flat_Annotation is
          return Boolean;
    overriding
       function Get_Stretch (Layer : Flat_Annotation_Layer)
-         return GDouble;
+         return Gdouble;
    overriding
       function Get_Text
                (  Layer    : Flat_Annotation_Layer;
@@ -388,7 +388,7 @@ package Gtk.Layered.Flat_Annotation is
    overriding
       procedure Scale
                 (  Layer  : in out Flat_Annotation_Layer;
-                   Factor : GDouble
+                   Factor : Gdouble
                 );
    overriding
       procedure Set_Face
@@ -416,7 +416,7 @@ package Gtk.Layered.Flat_Annotation is
    overriding
       procedure Set_Texts
              (  Layer  : in out Flat_Annotation_Layer;
-                Texts  : Gtk.Enums.String_List.GList;
+                Texts  : Gtk.Enums.String_List.Glist;
                 Markup : Boolean := False
              );
    overriding
@@ -449,12 +449,12 @@ private
       new Abstract_Layer and Annotation_Layer and Scalable_Layer with
    record
       Face        : Pango_Cairo_Font;
-      Height      : GDouble;
-      Stretch     : GDouble;
+      Height      : Gdouble;
+      Stretch     : Gdouble;
       From        : Cairo_Tuple;
-      Length      : GDouble;
-      Scale_Angle : GDouble;
-      Text_Angle  : GDouble;
+      Length      : Gdouble;
+      Scale_Angle : Gdouble;
+      Text_Angle  : Gdouble;
       Ticks       : Tick_Parameters;
       Color       : Gdk_Color;
       Texts       : Annotation_List_Ptr;

@@ -23,7 +23,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 with Strings_Edit.UTF8.Maps;  use Strings_Edit.UTF8.Maps;
 
@@ -57,18 +57,17 @@ package Strings_Edit.UTF8.Wildcards is
 --
 --    True if Pattern matches Text
 --
-   function Match
-            (  Text       : String;
-               Pattern    : String;
-               Wide_Space : Boolean       := False;
-               Blanks     : Character_Set := SpaceAndTab
-            )  return Boolean;
-   function Match
-            (  Text       : String;
-               Pattern    : String;
-               Map        : Unicode_Mapping;
-               Wide_Space : Boolean       := False;
-               Blanks     : Character_Set := SpaceAndTab
-            )  return Boolean;
+   function Match (Text       : String;
+                   Pattern    : String;
+                   Wide_Space : Boolean                        := False;
+                   Blanks     : Ada.Strings.Maps.Character_Set := SpaceAndTab)
+                   return Boolean;
+
+   function Match (Text       : String;
+                   Pattern    : String;
+                   Map        : Unicode_Mapping;
+                   Wide_Space : Boolean                        := False;
+                   Blanks     : Ada.Strings.Maps.Character_Set := SpaceAndTab)
+                   return Boolean;
 
 end Strings_Edit.UTF8.Wildcards;

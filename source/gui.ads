@@ -7,7 +7,7 @@ package GUI is
       record
          Legs     : Landing_Legs.All_Legs_State;
          Thruster : Boolean;
-         Height   : Altimeter.Height;
+         Altitude : Altimeter.Altitude;
          Velocity : Altimeter.Velocity;
       end record;
 

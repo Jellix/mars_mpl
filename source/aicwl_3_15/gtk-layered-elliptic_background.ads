@@ -142,10 +142,10 @@ package Gtk.Layered.Elliptic_Background is
                Outer  : Ellipse_Parameters := Unit_Circle;
                Center : Cairo_Tuple;
                From          : Gdouble    := 0.0;
-               Length        : GDouble    := 2.0 * Pi;
+               Length        : Gdouble    := 2.0 * Pi;
                Color         : Gdk_Color := RGB (0.0, 0.0, 0.0);
-               Border_Width  : GDouble    := 0.0;
-               Border_Depth  : GDouble    := 1.0;
+               Border_Width  : Gdouble    := 0.0;
+               Border_Depth  : Gdouble    := 1.0;
                Border_Color  : Border_Color_Type := Default_Color;
                Border_Shadow : Gtk_Shadow_Type   := Shadow_In;
                Deepened      : Boolean           := False;
@@ -155,11 +155,11 @@ package Gtk.Layered.Elliptic_Background is
    function Add_Elliptic_Background
             (  Under  : not null access Layer_Location'Class;
                Outer  : Ellipse_Parameters := Unit_Circle;
-               From          : GDouble    := 0.0;
-               Length        : GDouble    := 2.0 * Pi;
+               From          : Gdouble    := 0.0;
+               Length        : Gdouble    := 2.0 * Pi;
                Color         : Gdk_Color := RGB (0.0, 0.0, 0.0);
-               Border_Width  : GDouble    := 0.0;
-               Border_Depth  : GDouble    := 1.0;
+               Border_Width  : Gdouble    := 0.0;
+               Border_Depth  : Gdouble    := 1.0;
                Border_Color  : Border_Color_Type := Default_Color;
                Border_Shadow : Gtk_Shadow_Type   := Shadow_In;
                Deepened      : Boolean           := False;
@@ -186,7 +186,7 @@ package Gtk.Layered.Elliptic_Background is
 --
 --    The angle
 --
-   function Get_From (Layer : Elliptic_Background_Layer) return GDouble;
+   function Get_From (Layer : Elliptic_Background_Layer) return Gdouble;
 --
 -- Get_Inner -- Inner ellipse parameters of the background
 --
@@ -208,7 +208,7 @@ package Gtk.Layered.Elliptic_Background is
 --    The angle
 --
    function Get_Length (Layer : Elliptic_Background_Layer)
-      return GDouble;
+      return Gdouble;
 --
 -- Get_Outer -- Outer ellipse parameters of the background
 --
@@ -242,11 +242,11 @@ package Gtk.Layered.Elliptic_Background is
              (  Layer         : in out Elliptic_Background_Layer;
                 Outer         : Ellipse_Parameters;
                 Inner         : Elliptic_Arc_Closure;
-                From          : GDouble;
-                Length        : GDouble;
+                From          : Gdouble;
+                Length        : Gdouble;
                 Color         : Gdk_Color;
-                Border_Width  : GDouble;
-                Border_Depth  : GDouble;
+                Border_Width  : Gdouble;
+                Border_Depth  : Gdouble;
                 Border_Color  : Border_Color_Type;
                 Border_Shadow : Gtk_Shadow_Type
              );
@@ -289,7 +289,7 @@ package Gtk.Layered.Elliptic_Background is
    overriding
       procedure Scale
                 (  Layer  : in out Elliptic_Background_Layer;
-                   Factor : GDouble
+                   Factor : Gdouble
                 );
    overriding
       procedure Set_Property_Value
@@ -314,8 +314,8 @@ private
    record
       Outer  : Ellipse_Parameters;
       Inner  : Elliptic_Arc_Closure;
-      From   : GDouble;
-      Length : GDouble;
+      From   : Gdouble;
+      Length : Gdouble;
       Color  : Gdk_Color;
    end record;
 

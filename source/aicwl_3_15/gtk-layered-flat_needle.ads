@@ -96,10 +96,10 @@ package Gtk.Layered.Flat_Needle is
                Length      : Gdouble        := 1.0;
                Tip_Length  : Gdouble        := 20.0;
                Tip_Width   : Gdouble        := 2.0;
-               Tip_Cap     : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
-               Rear_Length : GDouble        := 3.0;
-               Rear_Width  : GDouble        := 3.0;
-               Rear_Cap    : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+               Tip_Cap     : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
+               Rear_Length : Gdouble        := 3.0;
+               Rear_Width  : Gdouble        := 3.0;
+               Rear_Cap    : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                Color       : Gdk_Color      := RGB (1.0, 0.0, 0.0);
                Adjustment  : access Gtk_Adjustment_Record'Class := null;
                Scaled      : Boolean        := False
@@ -108,12 +108,12 @@ package Gtk.Layered.Flat_Needle is
              (  Under       : not null access Layer_Location'Class;
                 From        : Cairo_Tuple    := (0.0, 0.0);
                 To          : Cairo_Tuple    := (0.0, 1.0);
-                Tip_Length  : GDouble        := 20.0;
-                Tip_Width   : GDouble        := 2.0;
-                Tip_Cap     : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
-                Rear_Length : GDouble        := 3.0;
-                Rear_Width  : GDouble        := 3.0;
-                Rear_Cap    : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+                Tip_Length  : Gdouble        := 20.0;
+                Tip_Width   : Gdouble        := 2.0;
+                Tip_Cap     : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
+                Rear_Length : Gdouble        := 3.0;
+                Rear_Width  : Gdouble        := 3.0;
+                Rear_Cap    : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                 Color       : Gdk_Color      := RGB (1.0, 0.0, 0.0);
                 Adjustment  : access Gtk_Adjustment_Record'Class :=
                                      null;
@@ -123,12 +123,12 @@ package Gtk.Layered.Flat_Needle is
             (  Under       : not null access Layer_Location'Class;
                From        : Cairo_Tuple    := (0.0, 0.0);
                To          : Cairo_Tuple    := (0.0, 1.0);
-               Tip_Length  : GDouble        := 20.0;
-               Tip_Width   : GDouble        := 2.0;
-               Tip_Cap     : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
-               Rear_Length : GDouble        := 3.0;
-               Rear_Width  : GDouble        := 3.0;
-               Rear_Cap    : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
+               Tip_Length  : Gdouble        := 20.0;
+               Tip_Width   : Gdouble        := 2.0;
+               Tip_Cap     : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
+               Rear_Length : Gdouble        := 3.0;
+               Rear_Width  : Gdouble        := 3.0;
+               Rear_Cap    : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                Color       : Gdk_Color      := RGB (1.0, 0.0, 0.0);
                Adjustment  : access Gtk_Adjustment_Record'Class := null;
                Scaled      : Boolean        := False
@@ -142,7 +142,7 @@ package Gtk.Layered.Flat_Needle is
 --
 --    The line angle along which the needle moves
 --
-   function Get_Angle (Layer : Flat_Needle_Layer) return GDouble;
+   function Get_Angle (Layer : Flat_Needle_Layer) return Gdouble;
 --
 -- Get_Color -- The needle color
 --
@@ -172,7 +172,7 @@ package Gtk.Layered.Flat_Needle is
 --
 --    The angle
 --
-   function Get_Length (Layer : Flat_Needle_Layer) return GDouble;
+   function Get_Length (Layer : Flat_Needle_Layer) return Gdouble;
 --
 -- Get_Rear -- The parameters of the needle's rear end
 --
@@ -220,8 +220,8 @@ package Gtk.Layered.Flat_Needle is
    procedure Set
              (  Layer  : in out Flat_Needle_Layer;
                 From   : Cairo_Tuple;
-                Angle  : GDouble;
-                Length : GDouble;
+                Angle  : Gdouble;
+                Length : Gdouble;
                 Tip    : End_Parameters;
                 Rear   : End_Parameters;
                 Color  : Gdk_Color
@@ -267,7 +267,7 @@ package Gtk.Layered.Flat_Needle is
    overriding
       function Get_Scaled (Layer : Flat_Needle_Layer) return Boolean;
    overriding
-      function Get_Value (Layer : Flat_Needle_Layer) return GDouble;
+      function Get_Value (Layer : Flat_Needle_Layer) return Gdouble;
    overriding
       function Is_Updated (Layer : Flat_Needle_Layer) return Boolean;
    overriding
@@ -283,7 +283,7 @@ package Gtk.Layered.Flat_Needle is
    overriding
       procedure Scale
                 (  Layer  : in out Flat_Needle_Layer;
-                   Factor : GDouble
+                   Factor : Gdouble
                 );
    overriding
       procedure Set_Property_Value
@@ -299,7 +299,7 @@ package Gtk.Layered.Flat_Needle is
    overriding
       procedure Set_Value
                 (  Layer : in out Flat_Needle_Layer;
-                   Value : GDouble
+                   Value : Gdouble
                 );
    overriding
       procedure Store
@@ -312,8 +312,8 @@ private
    record
       From          : Cairo_Tuple;
       To            : Cairo_Tuple;
-      Angle         : GDouble := 0.0;
-      Value         : GDouble := 0.0;
+      Angle         : Gdouble := 0.0;
+      Value         : Gdouble := 0.0;
       Tip           : End_Parameters;
       Rear          : End_Parameters;
       Color         : Gdk_Color;

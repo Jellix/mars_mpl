@@ -1266,7 +1266,7 @@ package body Gtk.Layered.Waveform is
          end;
       else
          declare
-            T1, T2 : GDouble;
+            T1, T2 : Gdouble;
          begin
             Restore (Stream, T1);
             Restore (Stream, T2);
@@ -1289,15 +1289,15 @@ package body Gtk.Layered.Waveform is
 
    procedure Scale
              (  Layer  : in out Waveform_Layer;
-                Factor : GDouble
+                Factor : Gdouble
              )  is
-      Center_X    : constant GDouble :=
+      Center_X    : constant Gdouble :=
                        (Layer.Box.X1 + Layer.Box.X2) * 0.5;
-      Center_Y    : constant GDouble :=
+      Center_Y    : constant Gdouble :=
                        (Layer.Box.Y1 + Layer.Box.Y2) * 0.5;
-      Half_Width  : constant GDouble :=
+      Half_Width  : constant Gdouble :=
                        (Layer.Box.X2 - Layer.Box.X1 + 1.0) * 0.5;
-      Half_Height : constant GDouble :=
+      Half_Height : constant Gdouble :=
                        (Layer.Box.Y2 - Layer.Box.Y1 + 1.0) * 0.5;
    begin
       Set
@@ -1484,10 +1484,10 @@ package body Gtk.Layered.Waveform is
          case Layer_Property'Val (Property - 1) is
             when Property_Opacity =>
                Layer.Set_Opacity
-               (  GDouble
-                  (  GDouble'Min
+               (  Gdouble
+                  (  Gdouble'Min
                      (  1.0,
-                        GDouble'Max (0.0, Get_Double (Value))
+                        Gdouble'Max (0.0, Get_Double (Value))
                )  )  );
             when Property_T1 =>
                declare
@@ -1555,7 +1555,7 @@ package body Gtk.Layered.Waveform is
                Layer.Updated := True;
             when Property_X1 =>
                declare
-                  New_Value : constant GDouble := Get_Double (Value);
+                  New_Value : constant Gdouble := Get_Double (Value);
                begin
                   if New_Value >= Layer.Box.X2 then
                      Layer.Box.X2 := New_Value + 1.0;
@@ -1570,7 +1570,7 @@ package body Gtk.Layered.Waveform is
                Layer.Updated := True;
             when Property_X2 =>
                declare
-                  New_Value : constant GDouble := Get_Double (Value);
+                  New_Value : constant Gdouble := Get_Double (Value);
                begin
                   if Layer.Box.X1 > New_Value then
                      Layer.Box.X1 := New_Value - 1.0;
@@ -1585,7 +1585,7 @@ package body Gtk.Layered.Waveform is
                Layer.Updated := True;
             when Property_Y1 =>
                declare
-                  New_Value : constant GDouble := Get_Double (Value);
+                  New_Value : constant Gdouble := Get_Double (Value);
                begin
                   if New_Value >= Layer.Box.Y2 then
                      Layer.Box.Y2 := New_Value + 1.0;
@@ -1600,7 +1600,7 @@ package body Gtk.Layered.Waveform is
                Layer.Updated := True;
             when Property_Y2 =>
                declare
-                  New_Value : constant GDouble := Get_Double (Value);
+                  New_Value : constant Gdouble := Get_Double (Value);
                begin
                   if Layer.Box.Y1 >= New_Value then
                      Layer.Box.Y1 := New_Value - 1.0;
@@ -1784,14 +1784,14 @@ package body Gtk.Layered.Waveform is
 
    procedure Set_Y_Conversion
              (  Layer  : in out Waveform_Layer;
-                Y1, Y2 : GDouble
+                Y1, Y2 : Gdouble
              )  is
    begin
       Layer.YY :=
-         (  (Y2 - Y1 + GDouble'Model_Epsilon)
-         /  (GDouble (Layer.V1 - Layer.V2) + GDouble'Model_Epsilon * 2.0)
+         (  (Y2 - Y1 + Gdouble'Model_Epsilon)
+         /  (Gdouble (Layer.V1 - Layer.V2) + Gdouble'Model_Epsilon * 2.0)
          );
-      Layer.Y0 := Y2 + Layer.YY * GDouble (Layer.V2);
+      Layer.Y0 := Y2 + Layer.YY * Gdouble (Layer.V2);
    end Set_Y_Conversion;
 
    procedure Store
@@ -1829,14 +1829,14 @@ package body Gtk.Layered.Waveform is
       if Store_Amplifier then
          Store (Stream, Layer.Amplifier_Adjustment);
       else
-         Store (Stream, GDouble (Layer.V1));
-         Store (Stream, GDouble (Layer.V2));
+         Store (Stream, Gdouble (Layer.V1));
+         Store (Stream, Gdouble (Layer.V2));
       end if;
       if Store_Sweeper then
          Store (Stream, Layer.Sweeper_Adjustment);
       else
-         Store (Stream, GDouble (Layer.T1));
-         Store (Stream, GDouble (Layer.T2));
+         Store (Stream, Gdouble (Layer.T1));
+         Store (Stream, Gdouble (Layer.T2));
       end if;
    end Store;
 
@@ -1901,29 +1901,29 @@ package body Gtk.Layered.Waveform is
       end if;
    end Sweep;
 
-   function To_Double (Value : Time) return GDouble is
+   function To_Double (Value : Time) return Gdouble is
    begin
-      return GDouble (To_Duration (Value - Epoch));
+      return Gdouble (To_Duration (Value - Epoch));
    end To_Double;
 
-   function To_Double (Value : Ada.Calendar.Time) return GDouble is
+   function To_Double (Value : Ada.Calendar.Time) return Gdouble is
    begin
-      return GDouble (Value - Calendar_Epoch);
+      return Gdouble (Value - Calendar_Epoch);
    end To_Double;
 
-   function To_Time (Value : GDouble) return Time is
+   function To_Time (Value : Gdouble) return Time is
    begin
       return Epoch + To_Time_Span (Duration (Value));
    end To_Time;
 
-   function To_Time (Value : GDouble) return Ada.Calendar.Time is
+   function To_Time (Value : Gdouble) return Ada.Calendar.Time is
    begin
       return Calendar_Epoch + Duration (Value);
    end To_Time;
 
-   function To_Y (Layer : Waveform_Layer; V : Y_Axis) return GDouble is
+   function To_Y (Layer : Waveform_Layer; V : Y_Axis) return Gdouble is
    begin
-      return Layer.Y0 - Layer.YY * GDouble (V) + 0.5;
+      return Layer.Y0 - Layer.YY * Gdouble (V) + 0.5;
    end To_Y;
 
 begin

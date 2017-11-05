@@ -137,7 +137,7 @@ package Gtk.Layered.Rectangular_Background is
 --    The corner's radius
 --
    function Get_Corner_Radius (Layer : Rectangular_Background_Layer)
-      return GDouble;
+      return Gdouble;
 --
 -- Get_Height -- The height of the rectangle
 --
@@ -148,7 +148,7 @@ package Gtk.Layered.Rectangular_Background is
 --    The rectangle's height
 --
    function Get_Height (Layer : Rectangular_Background_Layer)
-      return GDouble;
+      return Gdouble;
 --
 -- Get_Rotation_Angle -- The rotation angle
 --
@@ -159,7 +159,7 @@ package Gtk.Layered.Rectangular_Background is
 --    The angle
 --
    function Get_Rotation_Angle (Layer : Rectangular_Background_Layer)
-      return GDouble;
+      return Gdouble;
 --
 -- Get_Width -- The width of the rectangle
 --
@@ -170,7 +170,7 @@ package Gtk.Layered.Rectangular_Background is
 --    The rectangle's width
 --
    function Get_Width (Layer : Rectangular_Background_Layer)
-      return GDouble;
+      return Gdouble;
 --
 -- Set -- Parameters of the background
 --
@@ -192,14 +192,14 @@ package Gtk.Layered.Rectangular_Background is
 --
    procedure Set
              (  Layer          : in out Rectangular_Background_Layer;
-                Height         : GDouble;
-                Width          : GDouble;
+                Height         : Gdouble;
+                Width          : Gdouble;
                 Center         : Cairo_Tuple;
-                Rotation_Angle : GDouble;
-                Corner_Radius  : GDouble;
+                Rotation_Angle : Gdouble;
+                Corner_Radius  : Gdouble;
                 Color          : Gdk_Color;
-                Border_Width   : GDouble;
-                Border_Depth   : GDouble;
+                Border_Width   : Gdouble;
+                Border_Depth   : Gdouble;
                 Border_Color   : Border_Color_Type;
                 Border_Shadow  : Gtk_Shadow_Type
              );
@@ -242,7 +242,7 @@ package Gtk.Layered.Rectangular_Background is
    overriding
       procedure Scale
                 (  Layer  : in out Rectangular_Background_Layer;
-                   Factor : GDouble
+                   Factor : Gdouble
                 );
    overriding
       procedure Set_Contents_Path
@@ -265,11 +265,11 @@ private
    type Rectangular_Background_Layer is
       new Abstract_Bordered_Layer with
    record
-      Height : GDouble;
-      Width  : GDouble;
+      Height : Gdouble;
+      Width  : Gdouble;
       Center : Cairo_Tuple;
-      Angle  : GDouble;
-      Radius : GDouble;
+      Angle  : Gdouble;
+      Radius : Gdouble;
       Color  : Gdk_Color;
    end record;
 

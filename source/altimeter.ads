@@ -5,7 +5,7 @@ with Ada.Real_Time;
 
 package Altimeter is
 
-   type Height   is delta 1.0 / 2.0 ** 9 range        0.0 .. 200_000.0;
+   type Altitude is delta 1.0 / 2.0 ** 9 range        0.0 .. 200_000.0;
    type Velocity is delta 1.0 / 2.0 ** 9 range -100_000.0 .. 100_000.0;
 
    -- Sample cycle of simulated height sensor.
@@ -14,11 +14,11 @@ package Altimeter is
 
    Acceleration  : constant          := 3.8; -- m/s**2
    Base_Velocity : constant Velocity := 0.0;
-   Base_Height   : constant Height   := 2_000.0;
+   Base_Altitude : constant Altitude := 2_000.0;
 
-   procedure Current_Height (H : out Height);
+   procedure Current_Altitude (A : out Altitude);
    procedure Current_Velocity (V : out Velocity);
-   function Image (H : Height) return String;
+   function Image (A : Altitude) return String;
    function Image (V : Velocity) return String;
 
 end Altimeter;

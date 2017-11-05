@@ -23,7 +23,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 package Strings_Edit.UTF8.Wildcards.Case_Insensitive is
 --
@@ -39,10 +39,10 @@ package Strings_Edit.UTF8.Wildcards.Case_Insensitive is
 --    True if Pattern matches Text
 --
    function Match_Insensitive
-            (  Text       : String;
-               Pattern    : String;
-               Wide_Space : Boolean       := False;
-               Blanks     : Character_Set := SpaceAndTab
-            )  return Boolean;
+     (Text       : String;
+      Pattern    : String;
+      Wide_Space : Boolean                        := False;
+      Blanks     : Ada.Strings.Maps.Character_Set := SpaceAndTab)
+      return Boolean;
 
 end Strings_Edit.UTF8.Wildcards.Case_Insensitive;

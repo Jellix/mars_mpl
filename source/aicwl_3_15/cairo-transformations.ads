@@ -33,10 +33,10 @@ package Cairo.Transformations is
 -- Translate_And_Rotate -- Transformation
 --
    type Translate_And_Rotate is record
-      X, Y  : GDouble := 0.0;
-      Angle : GDouble := 0.0;
-      Cos   : GDouble := 0.0;
-      Sin   : GDouble := 0.0;
+      X, Y  : Gdouble := 0.0;
+      Angle : Gdouble := 0.0;
+      Cos   : Gdouble := 0.0;
+      Sin   : Gdouble := 0.0;
    end record;
 --
 -- Rotate -- By an angle
@@ -46,7 +46,7 @@ package Cairo.Transformations is
 --
    procedure Rotate
              (  T     : in out Translate_And_Rotate;
-                Angle : GDouble
+                Angle : Gdouble
              );
 --
 -- Translate -- Move
@@ -57,8 +57,8 @@ package Cairo.Transformations is
 --
    procedure Translate
              (  T : in out Translate_And_Rotate;
-                X : GDouble;
-                Y : GDouble
+                X : Gdouble;
+                Y : Gdouble
              );
 --
 -- Drawing operations while applying the transforamtion
@@ -66,10 +66,10 @@ package Cairo.Transformations is
    procedure Arc
              (  Context : Cairo_Context;
                 T       : Translate_And_Rotate;
-                X, Y    : GDouble;
-                Radius  : GDouble;
-                Angle1  : GDouble;
-                Angle2  : GDouble
+                X, Y    : Gdouble;
+                Radius  : Gdouble;
+                Angle1  : Gdouble;
+                Angle2  : Gdouble
              );
    procedure Elliptic_Arc
              (  Context  : Cairo_Context;
@@ -82,18 +82,18 @@ package Cairo.Transformations is
              (  Context  : Cairo_Context;
                 T        : Translate_And_Rotate;
                 Ellipse  : Ellipse_Parameters;
-                From     : GDouble := 0.0;
-                Length   : GDouble := 2.0 * Pi
+                From     : Gdouble := 0.0;
+                Length   : Gdouble := 2.0 * Pi
              );
    procedure Line_To
              (  Context : Cairo_Context;
                 T       : Translate_And_Rotate;
-                X, Y    : GDouble
+                X, Y    : Gdouble
              );
    procedure Move_To
              (  Context : Cairo_Context;
                 T       : Translate_And_Rotate;
-                X, Y    : GDouble
+                X, Y    : Gdouble
              );
 private
    pragma Inline (Arc);

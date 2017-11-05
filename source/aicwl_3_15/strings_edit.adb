@@ -23,7 +23,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 with Ada.IO_Exceptions;  use Ada.IO_Exceptions;
 
@@ -84,9 +84,8 @@ package body Strings_Edit is
    end Is_Prefix;
 
    function Is_Prefix
-            (  Prefix, Source : String;
-               Map            : Character_Mapping
-            )  return Boolean is
+     (Prefix, Source : String;
+      Map            : Ada.Strings.Maps.Character_Mapping) return Boolean is
    begin
       if Prefix'Length = 0 then
          return True;
@@ -96,32 +95,30 @@ package body Strings_Edit is
       declare
          J : Integer := Source'First;
       begin
-         for I in Prefix'First..Prefix'Last - 1 loop
-            if Value (Map, Prefix (I)) /= Value (Map, Source (J)) then
+         for I in Prefix'First .. Prefix'Last - 1 loop
+            if
+              Ada.Strings.Maps.Value (Map, Prefix (I)) /=
+                Ada.Strings.Maps.Value (Map, Source (J))
+            then
                return False;
             end if;
             J := J + 1;
          end loop;
          return
-            Value (Map, Prefix (Prefix'Last)) = Value (Map, Source (J));
+           Ada.Strings.Maps.Value (Map, Prefix (Prefix'Last)) =
+             Ada.Strings.Maps.Value (Map, Source (J));
       end;
    end Is_Prefix;
 
    function Is_Prefix
-            (  Prefix, Source : String;
-               Pointer        : Integer;
-               Map            : Character_Mapping
-            )  return Boolean is
+     (Prefix, Source : String;
+      Pointer        : Integer;
+      Map            : Ada.Strings.Maps.Character_Mapping) return Boolean is
    begin
-      if (  Pointer < Source'First
-         or else
-            (  Pointer > Source'Last
-            and then
-               Pointer /= Source'Last + 1
-            )
-         or else
-            Source'Last - Pointer + 1 < Prefix'Length
-         )
+      if
+        Pointer < Source'First or else
+        (Pointer > Source'Last and then Pointer /= Source'Last + 1) or else
+        Source'Last - Pointer + 1 < Prefix'Length
       then
          return False;
       end if;
@@ -129,13 +126,17 @@ package body Strings_Edit is
          J : Integer := Pointer;
       begin
          for I in Prefix'First..Prefix'Last - 1 loop
-            if Value (Map, Prefix (I)) /= Value (Map, Source (J)) then
+            if
+              Ada.Strings.Maps.Value (Map, Prefix (I)) /=
+                Ada.Strings.Maps.Value (Map, Source (J))
+            then
                return False;
             end if;
             J := J + 1;
          end loop;
          return
-            Value (Map, Prefix (Prefix'Last)) = Value (Map, Source (J));
+           Ada.Strings.Maps.Value (Map, Prefix (Prefix'Last)) =
+             Ada.Strings.Maps.Value (Map, Source (J));
       end;
    end Is_Prefix;
 --
@@ -149,20 +150,16 @@ package body Strings_Edit is
                (  Source : String;
                   Blank  : Character := ' '
                )  return String;
-      function TrimSet
-               (  Source : String;
-                  Blanks : Character_Set
-               )  return String;
+      function TrimSet (Source : String;
+                        Blanks : Ada.Strings.Maps.Character_Set) return String;
       procedure GetCharacter
                 (  Source  : String;
                    Pointer : in out Integer;
                    Blank   : Character := ' '
                 );
-      procedure GetSet
-                (  Source  : String;
-                   Pointer : in out Integer;
-                   Blanks  : Character_Set
-                );
+      procedure GetSet (Source  : String;
+                        Pointer : in out Integer;
+                        Blanks  : Ada.Strings.Maps.Character_Set);
       procedure PutString
                 (  Destination : in out String;
                    Pointer     : in out Integer;
@@ -185,21 +182,23 @@ package body Strings_Edit is
    function Trim
             (  Source : String;
                Blank  : Character := ' '
-            )  return String renames Text_Edit.TrimCharacter;
-   function Trim
-            (  Source : String;
-               Blanks : Character_Set
-            )  return String renames Text_Edit.TrimSet;
+              )  return String renames Text_Edit.TrimCharacter;
+
+   function Trim (Source : String;
+                  Blanks : Ada.Strings.Maps.Character_Set) return String
+                  renames Text_Edit.TrimSet;
+
    procedure Get
              (  Source  : String;
                 Pointer : in out Integer;
                 Blank   : Character := ' '
-             )  renames Text_Edit.GetCharacter;
-   procedure Get
-             (  Source  : String;
-                Pointer : in out Integer;
-                Blanks  : Character_Set
-             )  renames Text_Edit.GetSet;
+               )  renames Text_Edit.GetCharacter;
+
+   procedure Get (Source  : String;
+                  Pointer : in out Integer;
+                  Blanks  : Ada.Strings.Maps.Character_Set)
+                  renames Text_Edit.GetSet;
+
    procedure Put
              (  Destination : in out String;
                 Pointer     : in out Integer;

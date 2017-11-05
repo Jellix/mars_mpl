@@ -120,8 +120,8 @@ package body Gtk.Layered.Rectangular_Background is
                Rotation_Angle : Gdouble      := 0.0;
                Corner_Radius  : Gdouble      := 0.0;
                Color          : Gdk_Color   := RGB (0.0, 0.0, 0.0);
-               Border_Width   : GDouble            := 0.0;
-               Border_Depth   : GDouble            := 1.0;
+               Border_Width   : Gdouble            := 0.0;
+               Border_Depth   : Gdouble            := 1.0;
                Border_Color   : Border_Color_Type := Default_Color;
                Border_Shadow  : Gtk_Shadow_Type   := Shadow_In;
                Deepened       : Boolean           := False;
@@ -163,11 +163,11 @@ package body Gtk.Layered.Rectangular_Background is
                 Area    : Gdk_Rectangle
              )  is
    begin
-      Set_Source_RGB
+      Set_Source_Rgb
       (  Context,
-         GDouble (Red   (Layer.Color)) / GDouble (GUInt16'Last),
-         GDouble (Green (Layer.Color)) / GDouble (GUInt16'Last),
-         GDouble (Blue  (Layer.Color)) / GDouble (GUInt16'Last)
+         Gdouble (Red   (Layer.Color)) / Gdouble (Guint16'Last),
+         Gdouble (Green (Layer.Color)) / Gdouble (Guint16'Last),
+         Gdouble (Blue  (Layer.Color)) / Gdouble (Guint16'Last)
       );
       Cairo.Fill (Context);
    end Draw_Contents;
@@ -185,13 +185,13 @@ package body Gtk.Layered.Rectangular_Background is
    end Get_Color;
 
    function Get_Height (Layer : Rectangular_Background_Layer)
-     return GDouble is
+     return Gdouble is
    begin
       return Layer.Height;
    end Get_Height;
 
    function Get_Corner_Radius (Layer : Rectangular_Background_Layer)
-      return GDouble is
+      return Gdouble is
    begin
       return Layer.Radius;
    end Get_Corner_Radius;
@@ -228,8 +228,8 @@ package body Gtk.Layered.Rectangular_Background is
                   Gnew_Double
                   (  Name    => "x",
                      Nick    => "x",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb =>
                         "The x-coordinate of the rectangle's center"
@@ -239,8 +239,8 @@ package body Gtk.Layered.Rectangular_Background is
                   Gnew_Double
                   (  Name    => "y",
                      Nick    => "y",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb =>
                         "The y-coordinate of the rectangle's center"
@@ -251,7 +251,7 @@ package body Gtk.Layered.Rectangular_Background is
                   (  Name    => "height",
                      Nick    => "height",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 1.0,
                      Blurb   => "The rectnagle's height"
                   );
@@ -261,7 +261,7 @@ package body Gtk.Layered.Rectangular_Background is
                   (  Name    => "width",
                      Nick    => "width",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 1.0,
                      Blurb   => "The rectnagle's width"
                   );
@@ -283,7 +283,7 @@ package body Gtk.Layered.Rectangular_Background is
                   (  Name    => "corner-r",
                      Nick    => "corner r",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb   => "The radius of the circles rounding " &
                                 "the corners of the rectangle"
@@ -349,13 +349,13 @@ package body Gtk.Layered.Rectangular_Background is
    end Get_Property_Value;
 
    function Get_Rotation_Angle (Layer : Rectangular_Background_Layer)
-      return GDouble is
+      return Gdouble is
    begin
       return Layer.Angle;
    end Get_Rotation_Angle;
 
    function Get_Width (Layer : Rectangular_Background_Layer)
-      return GDouble is
+      return Gdouble is
    begin
       return Layer.Width;
    end Get_Width;
@@ -374,11 +374,11 @@ package body Gtk.Layered.Rectangular_Background is
              (  Stream : in out Root_Stream_Type'Class;
                 Layer  : in out Rectangular_Background_Layer
              )  is
-      Height : GDouble;
-      Width  : GDouble;
+      Height : Gdouble;
+      Width  : Gdouble;
       Center : Cairo_Tuple;
-      Angle  : GDouble;
-      Radius : GDouble;
+      Angle  : Gdouble;
+      Radius : Gdouble;
       Color  : Gdk_Color;
    begin
       Restore (Stream, Height);
@@ -409,11 +409,11 @@ package body Gtk.Layered.Rectangular_Background is
 
    procedure Scale
              (  Layer  : in out Rectangular_Background_Layer;
-                Factor : GDouble
+                Factor : Gdouble
              )  is
-      Radius : constant GDouble := Layer.Radius * Factor;
-      Height : constant GDouble := Layer.Height * Factor;
-      Width  : constant GDouble := Layer.Width  * Factor;
+      Radius : constant Gdouble := Layer.Radius * Factor;
+      Height : constant Gdouble := Layer.Height * Factor;
+      Width  : constant Gdouble := Layer.Width  * Factor;
    begin
       if 2.0 * Radius > Height then
          raise Constraint_Error with
@@ -434,14 +434,14 @@ package body Gtk.Layered.Rectangular_Background is
 
    procedure Set
              (  Layer          : in out Rectangular_Background_Layer;
-                Height         : GDouble;
-                Width          : GDouble;
+                Height         : Gdouble;
+                Width          : Gdouble;
                 Center         : Cairo_Tuple;
-                Rotation_Angle : GDouble;
-                Corner_Radius  : GDouble;
+                Rotation_Angle : Gdouble;
+                Corner_Radius  : Gdouble;
                 Color          : Gdk_Color;
-                Border_Width   : GDouble;
-                Border_Depth   : GDouble;
+                Border_Width   : Gdouble;
+                Border_Depth   : Gdouble;
                 Border_Color   : Border_Color_Type;
                 Border_Shadow  : Gtk_Shadow_Type
              )  is
@@ -477,16 +477,16 @@ package body Gtk.Layered.Rectangular_Background is
                 Context : Cairo_Context;
                 Area    : Gdk_Rectangle
              )  is
-      Half_Width  : GDouble;
-      Half_Height : GDouble;
-      Radius      : GDouble;
+      Half_Width  : Gdouble;
+      Half_Height : Gdouble;
+      Radius      : Gdouble;
       T           : Translate_And_Rotate;
    begin
       if Get_Scaled (Layer) then
          declare
             Center : constant Cairo_Tuple :=
                               Layer.Get_Widget.Get_Center;
-            Size   : constant GDouble := Layer.Get_Widget.Get_Size;
+            Size   : constant Gdouble := Layer.Get_Widget.Get_Size;
          begin
             Translate
             (  T => T,
@@ -602,7 +602,7 @@ package body Gtk.Layered.Rectangular_Background is
                Layer.Angle := Get_Double (Value);
                if Layer.Angle not in -2.0 * Pi..2.0 * Pi then
                   Layer.Angle :=
-                     GDouble'Remainder (Layer.Angle, 2.0 * Pi);
+                     Gdouble'Remainder (Layer.Angle, 2.0 * Pi);
                end if;
             when Property_Color =>
                Layer.Color := Get_Value (Value);

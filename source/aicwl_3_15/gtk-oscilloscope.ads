@@ -61,6 +61,9 @@ with Pango.Cairo.Fonts;
 
 package Gtk.Oscilloscope is
 
+   pragma Warnings (Off, "declaration hides ""Oscilloscope""");
+   pragma Warnings (Off, "declaration hides ""Widget""");
+
    --
    -- Selection_Action -- What to do when user selects a square area of
    --
@@ -2773,5 +2776,8 @@ private
      new Gtk.Handlers.User_Callback
        (Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper_Record,
         Gtk_Oscilloscope);
+
+   pragma Warnings (On, "declaration hides ""Widget""");
+   pragma Warnings (On, "declaration hides ""Oscilloscope""");
 
 end Gtk.Oscilloscope;

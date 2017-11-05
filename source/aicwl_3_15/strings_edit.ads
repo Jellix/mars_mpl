@@ -23,7 +23,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 --
 -- The following I/O items are supported by the package:
 --
@@ -124,17 +124,18 @@
 -- Image  functions convert a value into string. Unlike standard S'Image
 -- they do not place an extra space character.
 --
-with Ada.Strings.Maps;  use Ada.Strings.Maps;
 
-with Ada.Strings;
 with Ada.Characters.Latin_1;
+with Ada.Strings.Maps;
 
 package Strings_Edit is
    pragma Elaborate_Body (Strings_Edit);
+
    MaxSmall    : constant := 250;  -- Bigger than any possible
    Figures     : constant String := "0123456789ABCDEF";
    Blanks      : constant String := ' ' & Ada.Characters.Latin_1.HT;
-   SpaceAndTab : constant Character_Set := To_Set (Blanks);
+   SpaceAndTab : constant Ada.Strings.Maps.Character_Set :=
+                   Ada.Strings.Maps.To_Set (Blanks);
 
    subtype Alignment is Ada.Strings.Alignment;
 
@@ -142,10 +143,11 @@ package Strings_Edit is
    Left   : Alignment renames Ada.Strings.Left;
    Right  : Alignment renames Ada.Strings.Right;
 
-   subtype NumberBase is Integer range 2..16;
---
--- S T R I N G S
---
+   subtype NumberBase is Integer range 2 .. 16;
+
+   --
+   -- S T R I N G S
+   --
    -- Get -- Skip blank characters
    --
    --    Source  - The string to be processed
@@ -160,11 +162,10 @@ package Strings_Edit is
    --
    --    Layout_Error - Pointer is not in Source'First..Source'Last + 1
    --
-   procedure Get
-             (  Source  : String;
-                Pointer : in out Integer;
-                Blank   : Character := ' '
-             );
+   procedure Get (Source  : String;
+                  Pointer : in out Integer;
+                  Blank   : Character := ' ');
+
    --
    -- Get -- Skip blank characters
    --
@@ -180,11 +181,10 @@ package Strings_Edit is
    --
    --    Layout_Error - Pointer is not in Source'First..Source'Last + 1
    --
-   procedure Get
-             (  Source  : String;
-                Pointer : in out Integer;
-                Blanks  : Character_Set
-             );
+   procedure Get (Source  : String;
+                  Pointer : in out Integer;
+                  Blanks  : Ada.Strings.Maps.Character_Set);
+
    --
    -- Put -- Put a character into a string
    --
@@ -204,14 +204,13 @@ package Strings_Edit is
    --    Layout_Error - Pointer  is not in Destination'Range or there is
    --                   no room for the output.
    --
-   procedure Put
-             (  Destination : in out String;
-                Pointer     : in out Integer;
-                Value       : Character;
-                Field       : Natural   := 0;
-                Justify     : Alignment := Left;
-                Fill        : Character := ' '
-             );
+   procedure Put (Destination : in out String;
+                  Pointer     : in out Integer;
+                  Value       : Character;
+                  Field       : Natural   := 0;
+                  Justify     : Alignment := Left;
+                  Fill        : Character := ' ');
+
    --
    -- Put -- Put a string into another string
    --
@@ -231,29 +230,28 @@ package Strings_Edit is
    --    Layout_Error - Pointer  is not in Destination'Range or there is
    --                   no room for the output.
    --
-   procedure Put
-             (  Destination : in out String;
-                Pointer     : in out Integer;
-                Value       : String;
-                Field       : Natural   := 0;
-                Justify     : Alignment := Left;
-                Fill        : Character := ' '
-             );
---
--- R O M A N   N U M B E R S
---
+   procedure Put (Destination : in out String;
+                  Pointer     : in out Integer;
+                  Value       : String;
+                  Field       : Natural   := 0;
+                  Justify     : Alignment := Left;
+                  Fill        : Character := ' ');
+
+   --
+   -- R O M A N   N U M B E R S
+   --
    -- Roman_Edit -- Child package for roman numbers
---
--- I N T E G E R   N U M B E R S
---
+   --
+   -- I N T E G E R   N U M B E R S
+   --
    -- Integer_Edit -- Generic child package for integer numbers
---
--- F L O A T I N G - P O I N T   N U M B E R S
---
+   --
+   -- F L O A T I N G - P O I N T   N U M B E R S
+   --
    -- Float_Edit -- Generic child package for floating-point numbers
---
--- P R E F I X   T E S T
---
+   --
+   -- P R E F I X   T E S T
+   --
    --
    -- Is_Prefix -- Test if Prefix is a prefix of Text
    --
@@ -266,23 +264,22 @@ package Strings_Edit is
    --
    --   True if Prefix is a prefix of Source
    --
-   function Is_Prefix (Prefix, Source : String) return Boolean;
+   function Is_Prefix (Prefix, Source : String) return Boolean with Inline;
+   function Is_Prefix (Prefix, Source : String;
+                       Pointer        : Integer) return Boolean with Inline;
    function Is_Prefix
-            (  Prefix, Source : String;
-               Pointer        : Integer
-            )  return Boolean;
+     (Prefix, Source : String;
+      Map            : Ada.Strings.Maps.Character_Mapping) return Boolean
+     with Inline;
    function Is_Prefix
-            (  Prefix, Source : String;
-               Map            : Character_Mapping
-            )  return Boolean;
-   function Is_Prefix
-            (  Prefix, Source : String;
-               Pointer        : Integer;
-               Map            : Character_Mapping
-            )  return Boolean;
---
--- T R I M   F U N C T I O N S
---
+     (Prefix, Source : String;
+      Pointer        : Integer;
+      Map            : Ada.Strings.Maps.Character_Mapping) return Boolean
+     with Inline;
+
+   --
+   -- T R I M   F U N C T I O N S
+   --
    -- Trim -- Delete blank characters form string ends
    --
    --    Source - The string to be processed
@@ -295,10 +292,9 @@ package Strings_Edit is
    --
    --    The result string
    --
-   function Trim
-            (  Source : String;
-               Blank  : Character := ' '
-            )  return String;
+   function Trim (Source : String;
+                  Blank  : Character := ' ') return String;
+
    --
    -- Trim -- Delete blank characters form string ends
    --
@@ -312,24 +308,21 @@ package Strings_Edit is
    --
    --    The result string
    --
-   function Trim
-            (  Source : String;
-               Blanks : Character_Set
-            )  return String;
+   function Trim (Source : String;
+                  Blanks : Ada.Strings.Maps.Character_Set) return String;
 
 private
-   pragma Inline (Is_Prefix);
+
    --
    -- GetDigit -- Get one digit
    --
-   --	   Symbol - To be decoded
+   --   Symbol - To be decoded
    --
    -- Returns :
    --
-   --	 [0..15]  The decoded digit value
+   --    [0..15]  The decoded digit value
    --    [16]   The Symbol is not a digit
    --
-   function GetDigit (Symbol : Character) return Natural;
-   pragma Inline (GetDigit);
+   function GetDigit (Symbol : Character) return Natural with Inline;
 
 end Strings_Edit;

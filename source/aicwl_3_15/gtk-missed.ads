@@ -24,37 +24,38 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Cairo;                     use Cairo;
-with Gdk.Color;                 use Gdk.Color;
-with Gdk.Rectangle;             use Gdk.Rectangle;
-with Gdk.Pixbuf;                use Gdk.Pixbuf;
-with Gdk.RGBA;                  use Gdk.RGBA;
-with Gdk.Types;                 use Gdk.Types;
-with Glib.Error;                use Glib.Error;
-with Glib.Properties.Creation;  use Glib.Properties.Creation;
-with Glib.Values;               use Glib.Values;
-with Gtk.Button;                use Gtk.Button;
-with Gtk.Cell_Renderer_Pixbuf;  use Gtk.Cell_Renderer_Pixbuf;
-with Gtk.Container;             use Gtk.Container;
-with Gtk.Dialog;                use Gtk.Dialog;
-with Gtk.Enums;                 use Gtk.Enums;
-with Gtk.List_Store;            use Gtk.List_Store;
-with Gtk.Stock;                 use Gtk.Stock;
-with Gtk.Style_Context;         use Gtk.Style_Context;
-with Gtk.Text_Buffer;           use Gtk.Text_Buffer;
-with Gtk.Text_Iter;             use Gtk.Text_Iter;
-with Gtk.Tree_Model;            use Gtk.Tree_Model;
-with Gtk.Tree_Store;            use Gtk.Tree_Store;
-with Gtk.Tree_View;             use Gtk.Tree_View;
-with Gtk.Tree_View_Column;      use Gtk.Tree_View_Column;
-with Gtk.Widget;                use Gtk.Widget;
-
 with Ada.Finalization;
+
+with Cairo;
+
+with Gdk.Color;
 with Gdk.Event;
-with Glib;
+with Gdk.Rectangle;
+with Gdk.Pixbuf;
+with Gdk.RGBA;
+with Gdk.Types;
+
+with Glib.Error;
 with Glib.Object;
-with Glib.Properties;
+with Glib.Properties.Creation;
+with Glib.Values;
+
+with Gtk.Button;
 with Gtk.Cell_Renderer;
+with Gtk.Cell_Renderer_Pixbuf;
+with Gtk.Container;
+with Gtk.Dialog;
+with Gtk.Enums;
+with Gtk.List_Store;
+with Gtk.Stock;
+with Gtk.Style_Context;
+with Gtk.Text_Buffer;
+with Gtk.Text_Iter;
+with Gtk.Tree_Model;
+with Gtk.Tree_Store;
+with Gtk.Tree_View;
+with Gtk.Tree_View_Column;
+with Gtk.Widget;
 
 package Gtk.Missed is
 
@@ -86,6 +87,7 @@ package Gtk.Missed is
    File_Test_Exists        : constant GFileTest := 2 ** 4;
 
    type GDir is new Glib.C_Proxy;
+
    --
    -- Add_Button_From_Stock -- A replacement for deprecated Add_Button
    --
@@ -100,26 +102,27 @@ package Gtk.Missed is
    --    Relief    - The button relief
    --
    procedure Add_Button_From_Stock
-     (Dialog     : not null access Gtk_Dialog_Record'Class;
-      Response   : Gtk_Response_Type;
-      Label      : UTF8_String   := "";
-      Icon       : UTF8_String   := "";
-      Icon_Left  : Boolean       := True;
-      Size       : Gtk_Icon_Size := Icon_Size_Button;
-      Spacing    : Guint         := 3;
-      Tip        : UTF8_String   := "";
-      Relief     : Gtk_Relief_Style := Relief_Normal);
+     (Dialog     : not null access Gtk.Dialog.Gtk_Dialog_Record'Class;
+      Response   : Gtk.Dialog.Gtk_Response_Type;
+      Label      : UTF8_String                := "";
+      Icon       : UTF8_String                := "";
+      Icon_Left  : Boolean                    := True;
+      Size       : Gtk.Enums.Gtk_Icon_Size    := Gtk.Enums.Icon_Size_Button;
+      Spacing    : Guint                      := 3;
+      Tip        : UTF8_String                := "";
+      Relief     : Gtk.Enums.Gtk_Relief_Style := Gtk.Enums.Relief_Normal);
 
    function Add_Button_From_Stock
-     (Dialog     : not null access Gtk_Dialog_Record'Class;
-      Response   : Gtk_Response_Type;
-      Label      : UTF8_String   := "";
-      Icon       : UTF8_String   := "";
-      Icon_Left  : Boolean       := True;
-      Size       : Gtk_Icon_Size := Icon_Size_Button;
-      Spacing    : Guint         := 3;
-      Tip        : UTF8_String   := "";
-      Relief     : Gtk_Relief_Style := Relief_Normal) return Gtk_Button;
+     (Dialog     : not null access Gtk.Dialog.Gtk_Dialog_Record'Class;
+      Response   : Gtk.Dialog.Gtk_Response_Type;
+      Label      : UTF8_String                := "";
+      Icon       : UTF8_String                := "";
+      Icon_Left  : Boolean                    := True;
+      Size       : Gtk.Enums.Gtk_Icon_Size    := Gtk.Enums.Icon_Size_Button;
+      Spacing    : Guint                      := 3;
+      Tip        : UTF8_String                := "";
+      Relief     : Gtk.Enums.Gtk_Relief_Style := Gtk.Enums.Relief_Normal)
+      return Gtk.Button.Gtk_Button;
 
    --
    -- Add_Named -- Add a named stock image
@@ -130,9 +133,8 @@ package Gtk.Missed is
    -- This procedure is a replacement to deprecated Add_Static.  It is used
    -- in combination with Add_Stock_Attribute.
    --
-   procedure Add_Named
-     (Name : UTF8_String;
-      Icon : Gdk_Pixbuf);
+   procedure Add_Named (Name : UTF8_String;
+                        Icon : Gdk.Pixbuf.Gdk_Pixbuf);
 
    --
    -- Add_Stock_Attribute -- Add stock image specified by the name
@@ -149,8 +151,8 @@ package Gtk.Missed is
    -- and then in the list of themed icons.
    --
    procedure Add_Stock_Attribute
-     (Cell_Layout : not null access Gtk_Tree_View_Column_Record'Class;
-      Cell        : not null access Gtk_Cell_Renderer_Pixbuf_Record'Class;
+     (Cell_Layout : not null access Gtk.Tree_View_Column.Gtk_Tree_View_Column_Record'Class;
+      Cell        : not null access Gtk.Cell_Renderer_Pixbuf.Gtk_Cell_Renderer_Pixbuf_Record'Class;
       Column      : Gint);
 
    --
@@ -208,38 +210,40 @@ package Gtk.Missed is
    --
    --    Status_Error - If status is not success
    --
-   procedure Check (Context : Cairo_Context);
+   procedure Check (Context : Cairo.Cairo_Context) with Inline;
+
    --
    -- Class_From_Type -- Get class object from its type
    --
    function Class_From_Type (Typ : GType) return GObject_Class;
+
    --
    -- Class_Install_Property -- Install property for a class
    --
    procedure Class_Install_Property
      (Class_Record  : GObject_Class;
-      Prop_Id       : Property_Id;
+      Prop_Id       : Glib.Properties.Creation.Property_Id;
       Property_Spec : Param_Spec);
 
    function Compare
-     (Model : Gtk_Tree_Model;
-      A     : Gtk_Tree_Path;
-      B     : Gtk_Tree_Path) return Row_Order;
+     (Model : Gtk.Tree_Model.Gtk_Tree_Model;
+      A     : Gtk.Tree_Model.Gtk_Tree_Path;
+      B     : Gtk.Tree_Model.Gtk_Tree_Path) return Row_Order;
 
    function Compare
-     (Model : Gtk_Tree_Model;
-      A     : Gtk_Tree_Iter;
-      B     : Gtk_Tree_Path) return Row_Order;
+     (Model : Gtk.Tree_Model.Gtk_Tree_Model;
+      A     : Gtk.Tree_Model.Gtk_Tree_Iter;
+      B     : Gtk.Tree_Model.Gtk_Tree_Path) return Row_Order;
 
    function Compare
-     (Model : Gtk_Tree_Model;
-      A     : Gtk_Tree_Path;
-      B     : Gtk_Tree_Iter) return Row_Order;
+     (Model : Gtk.Tree_Model.Gtk_Tree_Model;
+      A     : Gtk.Tree_Model.Gtk_Tree_Path;
+      B     : Gtk.Tree_Model.Gtk_Tree_Iter) return Row_Order;
 
    function Compare
-     (Model : Gtk_Tree_Model;
-      A     : Gtk_Tree_Iter;
-      B     : Gtk_Tree_Iter) return Row_Order;
+     (Model : Gtk.Tree_Model.Gtk_Tree_Model;
+      A     : Gtk.Tree_Model.Gtk_Tree_Iter;
+      B     : Gtk.Tree_Model.Gtk_Tree_Iter) return Row_Order;
 
    --
    -- Delete_Event_Handler -- Typical handler of the "delete-event" signal
@@ -251,7 +255,7 @@ package Gtk.Missed is
    -- The implementation returns False
    --
    function Delete_Event_Handler
-     (Widget : access Gtk_Widget_Record'Class;
+     (Widget : access Gtk.Widget.Gtk_Widget_Record'Class;
       Event  : Gdk.Event.Gdk_Event) return Boolean;
 
    --
@@ -264,7 +268,7 @@ package Gtk.Missed is
    -- The implementation calls Gtk.Main.Main_Quit
    --
    procedure Destroy_Handler
-     (Widget : access Gtk_Widget_Record'Class);
+     (Widget : access Gtk.Widget.Gtk_Widget_Record'Class);
 
    --
    -- Dir_Close -- Close directory opened by Dir_Open
@@ -275,6 +279,7 @@ package Gtk.Missed is
    -- null.
    --
    procedure Dir_Close (Dir : in out GDir);
+
    --
    -- Dir_Open -- Open a directory to enumerate its entities
    --
@@ -290,7 +295,7 @@ package Gtk.Missed is
    procedure Dir_Open
      (Path  : UTF8_String;
       Dir   : out GDir;
-      Error : out GError);
+      Error : out Glib.Error.GError);
 
    --
    -- Dir_Read_Name -- Read directory
@@ -306,6 +311,7 @@ package Gtk.Missed is
    --    End_Error - No more items in the directory
    --
    function Dir_Read_Name (Dir : GDir) return UTF8_String;
+
    --
    -- Dir_Rewind -- Reset the directory
    --
@@ -315,13 +321,14 @@ package Gtk.Missed is
    -- Dir_Read_Name will return the first entry again.
    --
    procedure Dir_Rewind (Dir : GDir);
+
    --
    -- Erase -- Elements of the container
    --
    --    Container - The container
    --
    procedure Erase
-     (Container : not null access Gtk_Container_Record'Class);
+     (Container : not null access Gtk.Container.Gtk_Container_Record'Class);
 
    --
    -- File_Test -- Test file status
@@ -349,6 +356,7 @@ package Gtk.Missed is
    --    Flags tested
    --
    function File_Test (File_Name : UTF8_String) return GFileTest;
+
    --
    -- Find_Program_In_Path -- Find an executable program by name
    --
@@ -361,8 +369,8 @@ package Gtk.Missed is
    --
    --    Absolute path of the program or else empty string
    --
-   function Find_Program_In_Path (Program : UTF8_String)
-                                  return UTF8_String;
+   function Find_Program_In_Path (Program : UTF8_String) return UTF8_String;
+
    --
    -- Find_Property -- Find property of a class or an object
    --
@@ -373,13 +381,11 @@ package Gtk.Missed is
    --
    --    The property specification or null if there is none
    --
-   function Find_Property
-     (Class : GObject_Class;
-      Name  : UTF8_String) return Param_Spec;
+   function Find_Property (Class : GObject_Class;
+                           Name  : UTF8_String) return Param_Spec;
 
-   function Find_Property
-     (Object : not null access GObject_Record'Class;
-      Name   : UTF8_String) return Param_Spec;
+   function Find_Property (Object : not null access GObject_Record'Class;
+                           Name   : UTF8_String) return Param_Spec;
 
    --
    -- Freeze_Notify -- Freeze emitting signals
@@ -396,8 +402,7 @@ package Gtk.Missed is
    -- prevent premature  notification  while  the  object  is  still  being
    -- modified.
    --
-   procedure Freeze_Notify
-     (Object : not null access GObject_Record'Class);
+   procedure Freeze_Notify (Object : not null access GObject_Record'Class);
 
    --
    -- From_RGBA -- Conversion from RGBA to color
@@ -408,7 +413,8 @@ package Gtk.Missed is
    --
    --    The coresponding color
    --
-   function From_RGBA (Color : Gdk_RGBA) return Gdk_Color;
+   function From_RGBA (Color : Gdk.RGBA.Gdk_RGBA) return Gdk.Color.Gdk_Color;
+
    --
    -- Get -- Replacement of Gtk.Tree_Store.Get_String which has bugs
    --
@@ -421,18 +427,18 @@ package Gtk.Missed is
    --    The cell value
    --
    function Get
-     (Store  : not null access Gtk_List_Store_Record'Class;
-      Row    : Gtk_Tree_Iter;
+     (Store  : not null access Gtk.List_Store.Gtk_List_Store_Record'Class;
+      Row    : Gtk.Tree_Model.Gtk_Tree_Iter;
       Column : Gint) return String;
 
    function Get
-     (Store  : Gtk_Tree_Model;
-      Row    : Gtk_Tree_Iter;
+     (Store  : Gtk.Tree_Model.Gtk_Tree_Model;
+      Row    : Gtk.Tree_Model.Gtk_Tree_Iter;
       Column : Gint) return String;
 
    function Get
-     (Store  : not null access Gtk_Tree_Store_Record'Class;
-      Row    : Gtk_Tree_Iter;
+     (Store  : not null access Gtk.Tree_Store.Gtk_Tree_Store_Record'Class;
+      Row    : Gtk.Tree_Model.Gtk_Tree_Iter;
       Column : Gint) return String;
 
    --
@@ -446,8 +452,8 @@ package Gtk.Missed is
    -- It also does not use NUL as terminator.
    --
    procedure Insert_Alt
-     (Buffer : not null access Gtk_Text_Buffer_Record'Class;
-      Iter   : in out Gtk_Text_Iter;
+     (Buffer : not null access Gtk.Text_Buffer.Gtk_Text_Buffer_Record'Class;
+      Iter   : in out Gtk.Text_Iter.Gtk_Text_Iter;
       Text   : UTF8_String);
 
    --
@@ -461,8 +467,9 @@ package Gtk.Missed is
    --    True if the
    --
    function Is_In
-     (Container : not null access Gtk_Container_Record'Class;
-      Element   : not null access Gtk_Widget_Record'Class) return Boolean;
+     (Container : not null access Gtk.Container.Gtk_Container_Record'Class;
+      Element   : not null access Gtk.Widget.Gtk_Widget_Record'Class)
+      return Boolean;
 
    --
    -- Get_Application_Name -- Returns application name
@@ -472,6 +479,7 @@ package Gtk.Missed is
    --    The application name in a human readable form
    --
    function Get_Application_Name return UTF8_String;
+
    --
    -- Get_Clip_Rectangle -- Get approximation of clipping rectangle
    --
@@ -480,8 +488,8 @@ package Gtk.Missed is
    --    Empty     - No clipping rectangle set
    --
    procedure Get_Clip_Rectangle
-     (Context   : Cairo_Context;
-      Rectangle : out Gdk_Rectangle;
+     (Context   : Cairo.Cairo_Context;
+      Rectangle : out Gdk.Rectangle.Gdk_Rectangle;
       Empty     : out Boolean);
 
    --
@@ -493,7 +501,8 @@ package Gtk.Missed is
    --
    --    True if there is a clipping region
    --
-   function Get_Clip_Rectangle (Context : Cairo_Context) return Boolean;
+   function Get_Clip_Rectangle (Context : Cairo.Cairo_Context) return Boolean;
+
    --
    -- Get_Current_Dir -- Returns current directory
    --
@@ -502,6 +511,7 @@ package Gtk.Missed is
    --    Current directory
    --
    function Get_Current_Dir return UTF8_String;
+
    --
    -- Get_PRGName -- Returns program name
    --
@@ -511,72 +521,61 @@ package Gtk.Missed is
    --
    function Get_PRGName return UTF8_String;
 
-   function Is_A (Derived, Ancestor : GType) return Boolean;
+   function Is_A (Derived, Ancestor : GType) return Boolean with Inline;
 
-   function Is_In
-     (Model : Gtk_Tree_Model;
-      A     : Gtk_Tree_Path;
-      B     : Gtk_Tree_Path) return Boolean;
+   function Is_In (Model : Gtk.Tree_Model.Gtk_Tree_Model;
+                   A     : Gtk.Tree_Model.Gtk_Tree_Path;
+                   B     : Gtk.Tree_Model.Gtk_Tree_Path) return Boolean;
 
-   function Is_In
-     (Model : Gtk_Tree_Model;
-      A     : Gtk_Tree_Iter;
-      B     : Gtk_Tree_Path) return Boolean;
+   function Is_In (Model : Gtk.Tree_Model.Gtk_Tree_Model;
+                   A     : Gtk.Tree_Model.Gtk_Tree_Iter;
+                   B     : Gtk.Tree_Model.Gtk_Tree_Path) return Boolean;
 
-   function Is_In
-     (Model : Gtk_Tree_Model;
-      A     : Gtk_Tree_Path;
-      B     : Gtk_Tree_Iter) return Boolean;
+   function Is_In (Model : Gtk.Tree_Model.Gtk_Tree_Model;
+                   A     : Gtk.Tree_Model.Gtk_Tree_Path;
+                   B     : Gtk.Tree_Model.Gtk_Tree_Iter) return Boolean;
 
-   function Is_In
-     (Model : Gtk_Tree_Model;
-      A     : Gtk_Tree_Iter;
-      B     : Gtk_Tree_Iter) return Boolean;
+   function Is_In (Model : Gtk.Tree_Model.Gtk_Tree_Model;
+                   A     : Gtk.Tree_Model.Gtk_Tree_Iter;
+                   B     : Gtk.Tree_Model.Gtk_Tree_Iter) return Boolean;
 
-   function Is_Parent
-     (Model : Gtk_Tree_Model;
-      A     : Gtk_Tree_Path;
-      B     : Gtk_Tree_Path) return Boolean;
+   function Is_Parent (Model : Gtk.Tree_Model.Gtk_Tree_Model;
+                       A     : Gtk.Tree_Model.Gtk_Tree_Path;
+                       B     : Gtk.Tree_Model.Gtk_Tree_Path) return Boolean;
 
-   function Is_Parent
-     (Model : Gtk_Tree_Model;
-      A     : Gtk_Tree_Iter;
-      B     : Gtk_Tree_Path) return Boolean;
+   function Is_Parent (Model : Gtk.Tree_Model.Gtk_Tree_Model;
+                       A     : Gtk.Tree_Model.Gtk_Tree_Iter;
+                       B     : Gtk.Tree_Model.Gtk_Tree_Path) return Boolean;
 
-   function Is_Parent
-     (Model : Gtk_Tree_Model;
-      A     : Gtk_Tree_Path;
-      B     : Gtk_Tree_Iter) return Boolean;
+   function Is_Parent (Model : Gtk.Tree_Model.Gtk_Tree_Model;
+                       A     : Gtk.Tree_Model.Gtk_Tree_Path;
+                       B     : Gtk.Tree_Model.Gtk_Tree_Iter) return Boolean;
 
-   function Is_Parent
-     (Model : Gtk_Tree_Model;
-      A     : Gtk_Tree_Iter;
-      B     : Gtk_Tree_Iter) return Boolean;
+   function Is_Parent (Model : Gtk.Tree_Model.Gtk_Tree_Model;
+                       A     : Gtk.Tree_Model.Gtk_Tree_Iter;
+                       B     : Gtk.Tree_Model.Gtk_Tree_Iter) return Boolean;
 
-   function Is_Sibling
-     (Model : Gtk_Tree_Model;
-      A     : Gtk_Tree_Path;
-      B     : Gtk_Tree_Path) return Boolean;
+   function Is_Sibling (Model : Gtk.Tree_Model.Gtk_Tree_Model;
+                        A     : Gtk.Tree_Model.Gtk_Tree_Path;
+                        B     : Gtk.Tree_Model.Gtk_Tree_Path) return Boolean;
 
-   function Is_Sibling
-     (Model : Gtk_Tree_Model;
-      A     : Gtk_Tree_Iter;
-      B     : Gtk_Tree_Path) return Boolean;
+   function Is_Sibling (Model : Gtk.Tree_Model.Gtk_Tree_Model;
+                        A     : Gtk.Tree_Model.Gtk_Tree_Iter;
+                        B     : Gtk.Tree_Model.Gtk_Tree_Path) return Boolean;
 
-   function Is_Sibling
-     (Model : Gtk_Tree_Model;
-      A     : Gtk_Tree_Path;
-      B     : Gtk_Tree_Iter) return Boolean;
+   function Is_Sibling (Model : Gtk.Tree_Model.Gtk_Tree_Model;
+                        A     : Gtk.Tree_Model.Gtk_Tree_Path;
+                        B     : Gtk.Tree_Model.Gtk_Tree_Iter) return Boolean;
 
-   function Is_Sibling
-     (Model : Gtk_Tree_Model;
-      A     : Gtk_Tree_Iter;
-      B     : Gtk_Tree_Iter) return Boolean;
+   function Is_Sibling (Model : Gtk.Tree_Model.Gtk_Tree_Model;
+                        A     : Gtk.Tree_Model.Gtk_Tree_Iter;
+                        B     : Gtk.Tree_Model.Gtk_Tree_Iter) return Boolean;
 
    function Get_Background_Area
-     (Tree_View : not null access Gtk_Tree_View_Record'Class;
-      Path      : Gtk_Tree_Path;
-      Column    : Gtk_Tree_View_Column := null) return Gdk_Rectangle;
+     (Tree_View : not null access Gtk.Tree_View.Gtk_Tree_View_Record'Class;
+      Path      : Gtk.Tree_Model.Gtk_Tree_Path;
+      Column    : Gtk.Tree_View_Column.Gtk_Tree_View_Column := null)
+      return Gdk.Rectangle.Gdk_Rectangle;
 
    --
    -- Get_Background_Color -- Get background color
@@ -591,8 +590,8 @@ package Gtk.Missed is
    --    The background color
    --
    function Get_Background_Color
-     (Context : not null access Gtk_Style_Context_Record'Class;
-      State   : Gtk_State_Flags) return Gdk_RGBA;
+     (Context : not null access Gtk.Style_Context.Gtk_Style_Context_Record'Class;
+      State   : Gtk.Enums.Gtk_State_Flags) return Gdk.RGBA.Gdk_RGBA;
 
    --
    -- Set_Background_Color -- Set background color
@@ -604,8 +603,8 @@ package Gtk.Missed is
    -- widget.
    --
    procedure Set_Background_Color
-     (Widget : not null access Gtk_Widget_Record'Class;
-      Color  : Gdk_RGBA);
+     (Widget : not null access Gtk.Widget.Gtk_Widget_Record'Class;
+      Color  : Gdk.RGBA.Gdk_RGBA);
 
    --
    -- Get_Basename -- File base name
@@ -623,6 +622,7 @@ package Gtk.Missed is
    --    The base name
    --
    function Get_Basename (File_Name : UTF8_String) return UTF8_String;
+
    --
    -- Get_Column -- Get column from a value
    --
@@ -637,7 +637,9 @@ package Gtk.Missed is
    --
    --    The column
    --
-   function Get_Column (Value : GValue) return Gtk_Tree_View_Column;
+   function Get_Column (Value : Glib.Values.GValue)
+                        return Gtk.Tree_View_Column.Gtk_Tree_View_Column;
+
    --
    -- Get_Column_No -- Get column number
    --
@@ -649,8 +651,8 @@ package Gtk.Missed is
    --    The number of Column 0.. or else -1
    --
    function Get_Column_No
-     (Tree_View : not null access Gtk_Tree_View_Record'Class;
-      Column    : not null access Gtk_Tree_View_Column_Record'Class)
+     (Tree_View : not null access Gtk.Tree_View.Gtk_Tree_View_Record'Class;
+      Column    : not null access Gtk.Tree_View_Column.Gtk_Tree_View_Column_Record'Class)
       return Gint;
 
    --
@@ -666,6 +668,7 @@ package Gtk.Missed is
    --    The directory name
    --
    function Get_Dirname (File_Name : UTF8_String) return UTF8_String;
+
    --
    -- Get_Root -- Of a file name
    --
@@ -683,6 +686,7 @@ package Gtk.Missed is
    --    Use_Error - File_Name is not an absolute name
    --
    function Get_Root (File_Name : UTF8_String) return UTF8_String;
+
    --
    -- Get_Row_No -- Get row number
    --
@@ -693,18 +697,17 @@ package Gtk.Missed is
    --
    --    The row number 0.. or else -1
    --
-   function Get_Row_No
-     (Model : Gtk_Tree_Model;
-      Path  : Gtk_Tree_Path) return Gint;
+   function Get_Row_No (Model : Gtk.Tree_Model.Gtk_Tree_Model;
+                        Path  : Gtk.Tree_Model.Gtk_Tree_Path) return Gint;
 
-   function Get_Row_No
-     (Model : Gtk_Tree_Model;
-      Iter  : Gtk_Tree_Iter) return Gint;
+   function Get_Row_No (Model : Gtk.Tree_Model.Gtk_Tree_Model;
+                        Iter  : Gtk.Tree_Model.Gtk_Tree_Iter) return Gint;
 
    --
    -- GType_Icon -- Type of GIcon
    --
    function GType_Icon return GType;
+
    --
    -- Get_Screen_Position -- Get screen coordinates of a widget
    --
@@ -717,7 +720,7 @@ package Gtk.Missed is
    -- window. This procedure takes this into account.
    --
    procedure Get_Screen_Position
-     (Widget : not null access Gtk_Widget_Record'Class;
+     (Widget : not null access Gtk.Widget.Gtk_Widget_Record'Class;
       X      : out Gint;
       Y      : out Gint);
 
@@ -734,9 +737,9 @@ package Gtk.Missed is
                                   return UTF8_String;
 
    procedure Get_Visible_Range
-     (Tree_View  : not null access Gtk_Tree_View_Record'Class;
-      Start_Path : out Gtk_Tree_Path;
-      End_Path   : out Gtk_Tree_Path);
+     (Tree_View  : not null access Gtk.Tree_View.Gtk_Tree_View_Record'Class;
+      Start_Path : out Gtk.Tree_Model.Gtk_Tree_Path;
+      End_Path   : out Gtk.Tree_Model.Gtk_Tree_Path);
 
    --
    -- Is_Absolute -- File path check
@@ -753,7 +756,9 @@ package Gtk.Missed is
    --
    function Is_Absolute (File_Name : UTF8_String) return Boolean;
 
-   function Keyval_To_Unicode (Key_Val : Gdk_Key_Type) return Gunichar;
+   function Keyval_To_Unicode (Key_Val : Gdk.Types.Gdk_Key_Type)
+                               return Gunichar;
+
    --
    -- Keyval_To_UTF8 -- Key to UTF8 conversion
    --
@@ -766,7 +771,9 @@ package Gtk.Missed is
    --
    --    The value UTF-8 encoded
    --
-   function Keyval_To_UTF8 (Key_Val : Gdk_Key_Type) return UTF8_String;
+   function Keyval_To_UTF8 (Key_Val : Gdk.Types.Gdk_Key_Type)
+                            return UTF8_String;
+
    --
    -- Message_Dialog -- Replacement for GtkAda.Dialog
    --
@@ -784,11 +791,11 @@ package Gtk.Missed is
    --
    procedure Message_Dialog
      (Message       : UTF8_String;
-      Parent        : not null access Gtk_Widget_Record'Class;
-      Title         : UTF8_String       := "";
-      Mode          : UTF8_String       := Stock_Dialog_Error;
-      Justification : Gtk_Justification := Justify_Center;
-      Response      : access Gtk_Response_Type := null);
+      Parent        : not null access Gtk.Widget.Gtk_Widget_Record'Class;
+      Title         : UTF8_String                         := "";
+      Mode          : UTF8_String                         := Gtk.Stock.Stock_Dialog_Error;
+      Justification : Gtk.Enums.Gtk_Justification         := Gtk.Enums.Justify_Center;
+      Response      : access Gtk.Dialog.Gtk_Response_Type := null);
 
    --
    -- Remove -- Delete a file or a directory
@@ -801,6 +808,7 @@ package Gtk.Missed is
    --    Use_Error  - The file cannot be deleted
    --
    procedure Remove (File_Name : UTF8_String);
+
    --
    -- Rename -- Rename a file or a directory
    --
@@ -813,6 +821,7 @@ package Gtk.Missed is
    --    Use_Error  - The file cannot be renamed
    --
    procedure Rename (Old_File_Name, New_File_Name : UTF8_String);
+
    --
    -- RGB -- Color construction
    --
@@ -822,7 +831,8 @@ package Gtk.Missed is
    --
    --    The coresponding color
    --
-   function RGB (Red, Green, Blue : Gdouble) return Gdk_Color;
+   function RGB (Red, Green, Blue : Gdouble) return Gdk.Color.Gdk_Color;
+
    --
    -- Set_Tip -- Remove tooltip
    --
@@ -838,21 +848,22 @@ package Gtk.Missed is
    --    Value  - The value to set
    --
    procedure Set
-     (Store  : not null access Gtk_List_Store_Record'Class;
-      Row    : Gtk_Tree_Iter;
+     (Store  : not null access Gtk.List_Store.Gtk_List_Store_Record'Class;
+      Row    : Gtk.Tree_Model.Gtk_Tree_Iter;
       Column : Gint;
       Value  : String);
 
    procedure Set
-     (Store  : not null access Gtk_Tree_Store_Record'Class;
-      Row    : Gtk_Tree_Iter;
+     (Store  : not null access Gtk.Tree_Store.Gtk_Tree_Store_Record'Class;
+      Row    : Gtk.Tree_Model.Gtk_Tree_Iter;
       Column : Gint;
       Value  : String);
 
    --
    -- Set -- Missing in 2.14.0, GLib.Value.Set_Object since 2.14.2
    --
-   procedure Set (Value : in out GValue; Object : GObject);
+   procedure Set (Value : in out Glib.Values.GValue; Object : GObject);
+
    --
    -- Skip_Root -- In a file name
    --
@@ -870,6 +881,7 @@ package Gtk.Missed is
    --    Use_Error - File_Name is not an absolute name
    --
    function Skip_Root (File_Name : UTF8_String) return UTF8_String;
+
    --
    -- Thaw_Notify -- Thaw emitting signals
    --
@@ -896,6 +908,7 @@ package Gtk.Missed is
    --    The icon or null
    --
    function Themed_Icon_New (Icon_Name : UTF8_String) return GObject;
+
    --
    -- Themed_Icon_New_With_Default_Fallbacks -- Create icon by name
    --
@@ -905,8 +918,8 @@ package Gtk.Missed is
    --
    --    The icon
    --
-   function Themed_Icon_New_With_Default_Fallbacks
-     (Icon_Name : UTF8_String) return GObject;
+   function Themed_Icon_New_With_Default_Fallbacks (Icon_Name : UTF8_String)
+                                                    return GObject;
 
    --
    -- To_RGBA -- Conversion to RGBA
@@ -917,7 +930,8 @@ package Gtk.Missed is
    --
    --    The coresponding color in RGBA
    --
-   function To_RGBA (Color : Gdk_Color) return Gdk_RGBA;
+   function To_RGBA (Color : Gdk.Color.Gdk_Color) return Gdk.RGBA.Gdk_RGBA;
+
    --
    -- To_String -- Convert cairo status to string
    --
@@ -927,19 +941,21 @@ package Gtk.Missed is
    --
    --    The corresponding string
    --
-   function To_String (Status : Cairo_Status) return String;
+   function To_String (Status : Cairo.Cairo_Status) return String;
 
-   function Unicode_To_Keyval (WC : Gunichar) return Gdk_Key_Type;
+   function Unicode_To_Keyval (WC : Gunichar) return Gdk.Types.Gdk_Key_Type;
+
    --
    -- Wait_Cursor -- Temporarily show wait cursor
    --
    --    Widget - To show wait cursor at
    --
    type Wait_Cursor
-     (Widget : not null access Gtk_Widget_Record'Class) is
+     (Widget : not null access Gtk.Widget.Gtk_Widget_Record'Class) is
      new Ada.Finalization.Limited_Controlled with private;
    overriding procedure Finalize (Cursor : in out Wait_Cursor);
    overriding procedure Initialize (Cursor : in out Wait_Cursor);
+
    --
    -- Gtk.Generic_Enum_Combo_Box styles:
    --
@@ -955,6 +971,7 @@ package Gtk.Missed is
       Capitalize_First);
 
    No_Selection : exception; -- Used in Gtk.Generic_Enum_Combo_Box
+
    --
    -- Set_Column_Cell_Data -- Column cell data functions
    --
@@ -968,7 +985,6 @@ package Gtk.Missed is
       type User_Data (<>) is private;
       with procedure Destroy (Data : in out User_Data) is null;
    package Set_Column_Cell_Data is
-      use Gtk.Cell_Renderer;
       --
       -- Cell_Data_Function -- The function to call
       --
@@ -983,10 +999,10 @@ package Gtk.Missed is
       -- column's cell renderer as appropriate.
       --
       type Cell_Data_Function is access procedure
-        (Column : not null access Gtk_Tree_View_Column_Record'Class;
-         Cell   : not null access Gtk_Cell_Renderer_Record'Class;
-         Model  : Gtk_Tree_Model;
-         Iter   : Gtk_Tree_Iter;
+        (Column : not null access Gtk.Tree_View_Column.Gtk_Tree_View_Column_Record'Class;
+         Cell   : not null access Gtk.Cell_Renderer.Gtk_Cell_Renderer_Record'Class;
+         Model  : Gtk.Tree_Model.Gtk_Tree_Model;
+         Iter   : Gtk.Tree_Model.Gtk_Tree_Iter;
          Data   : User_Data);
 
       --
@@ -1000,16 +1016,13 @@ package Gtk.Missed is
       -- When  set to  null the old function is removed.
       --
       procedure Set_Cell_Data_Func
-        (Column : not null access Gtk_Tree_View_Column_Record'Class;
-         Cell   : not null access Gtk_Cell_Renderer_Record'Class;
+        (Column : not null access Gtk.Tree_View_Column.Gtk_Tree_View_Column_Record'Class;
+         Cell   : not null access Gtk.Cell_Renderer.Gtk_Cell_Renderer_Record'Class;
          Func   : Cell_Data_Function;
          Data   : User_Data);
    end Set_Column_Cell_Data;
 
 private
-   pragma Inline (Check);
-   pragma Inline (Is_A);
-
    pragma Import (C, Class_From_Type,   "g_type_class_peek");
    pragma Import (C, Keyval_To_Unicode, "gdk_keyval_to_unicode");
    pragma Import (C, Unicode_To_Keyval, "gdk_unicode_to_keyval");
@@ -1021,7 +1034,7 @@ private
    -- Search_Data -- To enumerate elements of a container
    --
    type Search_Data is record
-      Item  : Gtk_Widget;
+      Item  : Gtk.Widget.Gtk_Widget;
       Found : Boolean;
    end record;
    type Search_Data_Ptr is not null access all Search_Data;
@@ -1029,11 +1042,11 @@ private
    package For_Test is
      new Gtk.Container.Foreach_User_Data (Search_Data_Ptr);
    procedure Test
-     (Item : not null access Gtk_Widget_Record'Class;
+     (Item : not null access Gtk.Widget.Gtk_Widget_Record'Class;
       Data : Search_Data_Ptr);
 
    type Wait_Cursor
-     (Widget : not null access Gtk_Widget_Record'Class) is
+     (Widget : not null access Gtk.Widget.Gtk_Widget_Record'Class) is
      new Ada.Finalization.Limited_Controlled with
       record
          Realized : Boolean;

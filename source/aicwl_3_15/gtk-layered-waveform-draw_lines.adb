@@ -176,11 +176,11 @@ begin
                Set_Source_Rgb
                (  Cr    => Context,
                   Red   => Gdouble (Red (Layer.Line.Color)) /
-                           GDouble (GUInt16'Last),
-                  Green => GDouble (Green (Layer.Line.Color)) /
-                           GDouble (GUInt16'Last),
-                  Blue  => GDouble (Blue (Layer.Line.Color)) /
-                           GDouble (GUInt16'Last)
+                           Gdouble (Guint16'Last),
+                  Green => Gdouble (Green (Layer.Line.Color)) /
+                           Gdouble (Guint16'Last),
+                  Blue  => Gdouble (Blue (Layer.Line.Color)) /
+                           Gdouble (Guint16'Last)
                );
                Stroke (Context);
             end if;

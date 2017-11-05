@@ -173,17 +173,17 @@ package body Gtk.Layered.Waveform.Sweeper is
              (  Sweeper : not null access
                           Gtk_Waveform_Sweeper_Record'Class
              )  is
-      To : constant GDouble := To_Double (Clock);
+      To : constant Gdouble := To_Double (Clock);
    begin
       G_New (Sweeper, Get_Type);
       Gtk.Adjustment.Initialize
       (  Adjustment     => Sweeper,
-         Value          => To - GDouble (Def_Page),
-         Lower          => To - GDouble (Def_Page),
+         Value          => To - Gdouble (Def_Page),
+         Lower          => To - Gdouble (Def_Page),
          Upper          => To,
-         Step_Increment => GDouble (Def_Page) / 10.0,
-         Page_Increment => GDouble (Def_Page) / 3.0,
-         Page_Size      => GDouble (Def_Page)
+         Step_Increment => Gdouble (Def_Page) / 10.0,
+         Page_Increment => Gdouble (Def_Page) / 3.0,
+         Page_Size      => Gdouble (Def_Page)
       );
       --***
       -- This is a bug in GTK, which manifests itself as not setting all
@@ -192,12 +192,12 @@ package body Gtk.Layered.Waveform.Sweeper is
       -- parameters. Normally Configure would be not necessary
       --
       Sweeper.Configure
-      (  Value          => To - GDouble (Def_Page),
-         Lower          => To - GDouble (Def_Page),
+      (  Value          => To - Gdouble (Def_Page),
+         Lower          => To - Gdouble (Def_Page),
          Upper          => To,
-         Step_Increment => GDouble (Def_Page) / 10.0,
-         Page_Increment => GDouble (Def_Page) / 3.0,
-         Page_Size      => GDouble (Def_Page)
+         Step_Increment => Gdouble (Def_Page) / 10.0,
+         Page_Increment => Gdouble (Def_Page) / 3.0,
+         Page_Size      => Gdouble (Def_Page)
       );
       if Freezing_Changed_ID = Invalid_Signal_Id then
          declare
@@ -227,12 +227,12 @@ package body Gtk.Layered.Waveform.Sweeper is
              )  is
    begin
       Sweeper.Configure
-      (  Value          => To_Double (Date) - GDouble (Page_Span),
+      (  Value          => To_Double (Date) - Gdouble (Page_Span),
          Lower          => To_Double (From),
          Upper          => To_Double (To),
-         Page_Size      => GDouble (Page_Span),
-         Step_Increment => GDouble (Step_Increment),
-         Page_Increment => GDouble (Page_Increment)
+         Page_Size      => Gdouble (Page_Span),
+         Step_Increment => Gdouble (Step_Increment),
+         Page_Increment => Gdouble (Page_Increment)
       );
    end Set;
 
@@ -247,12 +247,12 @@ package body Gtk.Layered.Waveform.Sweeper is
              )  is
    begin
       Sweeper.Configure
-      (  Value          => To_Double (Date) - GDouble (Page_Span),
+      (  Value          => To_Double (Date) - Gdouble (Page_Span),
          Lower          => To_Double (From),
          Upper          => To_Double (To),
-         Page_Size      => GDouble (Page_Span),
-         Step_Increment => GDouble (Step_Increment),
-         Page_Increment => GDouble (Page_Increment)
+         Page_Size      => Gdouble (Page_Span),
+         Step_Increment => Gdouble (Step_Increment),
+         Page_Increment => Gdouble (Page_Increment)
       );
    end Set;
 
@@ -261,9 +261,9 @@ package body Gtk.Layered.Waveform.Sweeper is
                 Stamp   : Time;
                 Active  : Boolean := False
              )  is
-      Value : constant GDouble := To_Double (Stamp);
-      Upper : constant GDouble := Sweeper.Get_Upper;
-      Lower : constant GDouble := Sweeper.Get_Lower;
+      Value : constant Gdouble := To_Double (Stamp);
+      Upper : constant Gdouble := Sweeper.Get_Upper;
+      Lower : constant Gdouble := Sweeper.Get_Lower;
    begin
       if Active then
          Sweeper.Active := Sweeper.Active + 1;
@@ -311,17 +311,17 @@ package body Gtk.Layered.Waveform.Sweeper is
              (  Sweeper   : not null access Gtk_Waveform_Sweeper_Record;
                 Page_Span : Duration
              )  is
-      Upper : GDouble := Sweeper.Get_Upper;
-      Lower : GDouble := Sweeper.Get_Lower;
-      Value : GDouble := Sweeper.Get_Value + Sweeper.Get_Page_Size;
-      Page  : GDouble;
+      Upper : Gdouble := Sweeper.Get_Upper;
+      Lower : Gdouble := Sweeper.Get_Lower;
+      Value : Gdouble := Sweeper.Get_Value + Sweeper.Get_Page_Size;
+      Page  : Gdouble;
    begin
       if Page_Span < Min_Page then
-         Page := GDouble (Min_Page);
+         Page := Gdouble (Min_Page);
       elsif Page_Span > Max_Page then
-         Page := GDouble (Max_Page);
+         Page := Gdouble (Max_Page);
       else
-         Page := GDouble (Page_Span);
+         Page := Gdouble (Page_Span);
       end if;
       Value := Value - Page;
       if Value < Lower then
@@ -358,11 +358,11 @@ package body Gtk.Layered.Waveform.Sweeper is
 
    procedure Set_Time
              (  Sweeper : not null access Gtk_Waveform_Sweeper_Record;
-                Stamp   : GDouble
+                Stamp   : Gdouble
              )  is
-      Upper : constant GDouble := Sweeper.Get_Upper;
-      Lower : constant GDouble := Sweeper.Get_Lower;
-      Page  : constant GDouble := Sweeper.Get_Page_Size;
+      Upper : constant Gdouble := Sweeper.Get_Upper;
+      Lower : constant Gdouble := Sweeper.Get_Lower;
+      Page  : constant Gdouble := Sweeper.Get_Page_Size;
    begin
       if Stamp > Upper then
          Sweeper.Set_Value (Upper - Page);

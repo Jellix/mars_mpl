@@ -110,11 +110,11 @@ package Gtk.Layered.Clock_Hand is
                Tip_Width     : Gdouble        := 2.0;
                Tip_Cap       : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
                Rear_Length   : Gdouble        := 3.0;
-               Rear_Width    : GDouble        := 3.0;
-               Rear_Cap      : Cairo_Line_Cap := CAIRO_LINE_CAP_BUTT;
-               Bulb_Position : GDouble        := 13.0;
-               Bulb_Radius   : GDouble        := 5.0;
-               Bulb_Width    : GDouble        := 2.0;
+               Rear_Width    : Gdouble        := 3.0;
+               Rear_Cap      : Cairo_Line_Cap := Cairo_Line_Cap_Butt;
+               Bulb_Position : Gdouble        := 13.0;
+               Bulb_Radius   : Gdouble        := 5.0;
+               Bulb_Width    : Gdouble        := 2.0;
                Color         : Gdk_Color      := RGB (1.0, 0.0, 0.0);
                Adjustment    : access Gtk_Adjustment_Record'Class :=
                                       null;
@@ -130,7 +130,7 @@ package Gtk.Layered.Clock_Hand is
 --    The position of the bulb
 --
    function Get_Bulb_Position (Layer : Clock_Hand_Layer)
-      return GDouble;
+      return Gdouble;
 --
 -- Get_Bulb_Radius -- The bulb radius
 --
@@ -140,7 +140,7 @@ package Gtk.Layered.Clock_Hand is
 --
 --    The radius
 --
-   function Get_Bulb_Radius (Layer : Clock_Hand_Layer) return GDouble;
+   function Get_Bulb_Radius (Layer : Clock_Hand_Layer) return Gdouble;
 --
 -- Get_Bulb_Width -- The bulb line width
 --
@@ -150,7 +150,7 @@ package Gtk.Layered.Clock_Hand is
 --
 --    The radius
 --
-   function Get_Bulb_Width (Layer : Clock_Hand_Layer) return GDouble;
+   function Get_Bulb_Width (Layer : Clock_Hand_Layer) return Gdouble;
 --
 -- Get_Center -- Center of the needle
 --
@@ -180,7 +180,7 @@ package Gtk.Layered.Clock_Hand is
 --
 --    The angle
 --
-   function Get_From (Layer : Clock_Hand_Layer) return GDouble;
+   function Get_From (Layer : Clock_Hand_Layer) return Gdouble;
 --
 -- Get_Length -- The angular length of the needle positions
 --
@@ -190,7 +190,7 @@ package Gtk.Layered.Clock_Hand is
 --
 --    The angle
 --
-   function Get_Length (Layer : Clock_Hand_Layer) return GDouble;
+   function Get_Length (Layer : Clock_Hand_Layer) return Gdouble;
 --
 -- Get_Rear -- The parameters of the needle's rear end
 --
@@ -232,13 +232,13 @@ package Gtk.Layered.Clock_Hand is
    procedure Set
              (  Layer         : in out Clock_Hand_Layer;
                 Center        : Cairo_Tuple;
-                From          : GDouble;
-                Length        : GDouble;
+                From          : Gdouble;
+                Length        : Gdouble;
                 Tip           : End_Parameters;
                 Rear          : End_Parameters;
-                Bulb_Position : GDouble;
-                Bulb_Radius   : GDouble;
-                Bulb_Width    : GDouble;
+                Bulb_Position : Gdouble;
+                Bulb_Radius   : Gdouble;
+                Bulb_Width    : Gdouble;
                 Color         : Gdk_Color
              );
 
@@ -275,7 +275,7 @@ package Gtk.Layered.Clock_Hand is
       function Get_Scaled (Layer : Clock_Hand_Layer) return Boolean;
    overriding procedure Finalize (Layer : in out Clock_Hand_Layer);
    overriding
-      function Get_Value (Layer : Clock_Hand_Layer) return GDouble;
+      function Get_Value (Layer : Clock_Hand_Layer) return Gdouble;
    overriding
       function Is_Updated (Layer : Clock_Hand_Layer) return Boolean;
    overriding
@@ -297,7 +297,7 @@ package Gtk.Layered.Clock_Hand is
    overriding
       procedure Scale
                 (  Layer  : in out Clock_Hand_Layer;
-                   Factor : GDouble
+                   Factor : Gdouble
                 );
    overriding
       procedure Set_Scaled
@@ -307,7 +307,7 @@ package Gtk.Layered.Clock_Hand is
    overriding
       procedure Set_Value
                 (  Layer : in out Clock_Hand_Layer;
-                   Value : GDouble
+                   Value : Gdouble
                 );
    overriding
       procedure Store
@@ -321,14 +321,14 @@ private
       and Scalable_Layer with
    record
       Center        : Cairo_Tuple;
-      From          : GDouble;
-      Length        : GDouble;
-      Value         : GDouble := 0.0;
+      From          : Gdouble;
+      Length        : Gdouble;
+      Value         : Gdouble := 0.0;
       Tip           : End_Parameters;
       Rear          : End_Parameters;
-      Bulb_Position : GDouble;
-      Bulb_Radius   : GDouble;
-      Bulb_Width    : GDouble;
+      Bulb_Position : Gdouble;
+      Bulb_Radius   : Gdouble;
+      Bulb_Width    : Gdouble;
       Color         : Gdk_Color;
       Adjustment    : Gtk_Adjustment;
       Changed       : Handler_Id;

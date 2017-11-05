@@ -219,7 +219,7 @@ package Gtk.Layered.Bar is
                   Property : Positive
                )  return GValue;
    overriding function Get_Scaled (Layer : Bar_Layer) return Boolean;
-   overriding function Get_Value (Layer : Bar_Layer) return GDouble;
+   overriding function Get_Value (Layer : Bar_Layer) return Gdouble;
    overriding function Get_Widened (Layer : Bar_Layer) return Boolean;
    overriding function Is_Updated (Layer : Bar_Layer) return Boolean;
    overriding

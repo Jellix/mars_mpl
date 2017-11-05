@@ -44,8 +44,8 @@ package body Altimeter is
       end Set;
    end Store;
 
-   package Altimeter_Store is new Store (Stored_Type   => Height,
-                                         Initial_Value => Height'Last);
+   package Altimeter_Store is new Store (Stored_Type   => Altitude,
+                                         Initial_Value => Altitude'Last);
    package Velocity_Store  is new Store (Stored_Type   => Velocity,
                                          Initial_Value => Velocity'First);
 
@@ -53,21 +53,22 @@ package body Altimeter is
 
    task body Radar_Simulator is
       Next_Cycle   : Ada.Real_Time.Time := Global.Start_Time;
-      Measurement  : Height;
+      Measurement  : Altitude;
    begin
-      Measurement := Base_Height;
+      Measurement := Base_Altitude;
 
       while Measurement > 0.0 loop
          declare
             T : constant Duration :=
                   Ada.Real_Time.To_Duration
                     (TS => Next_Cycle - Global.Start_Time);
-            Distance : constant Height :=
-                         Height
+            Distance : constant Altitude :=
+                         Altitude
                            (0.5 * Float (Acceleration) * Float (T) * Float (T));
             Speed : constant Velocity := Velocity (Float (Acceleration) * Float (T));
          begin
-            Measurement := Base_Height - Height'Min (Base_Height, Distance);
+            Measurement :=
+              Base_Altitude - Altitude'Min (Base_Altitude, Distance);
 
             Altimeter_Store.Set (New_Value => Measurement);
             Velocity_Store.Set (New_Value => Base_Velocity + Speed);
@@ -81,19 +82,19 @@ package body Altimeter is
       Velocity_Store.Set (New_Value => 0.0);
    end Radar_Simulator;
 
-   procedure Current_Height (H : out Height) is
+   procedure Current_Altitude (A : out Altitude) is
    begin
-      H := Altimeter_Store.Get;
-   end Current_Height;
+      A := Altimeter_Store.Get;
+   end Current_Altitude;
 
    procedure Current_Velocity (V : out Velocity) is
    begin
       V := Velocity_Store.Get;
    end Current_Velocity;
 
-   function Image (H : Height) return String is
+   function Image (A : Altitude) return String is
    begin
-      return Height'Image (H) & " m";
+      return Altitude'Image (A) & " m";
    end Image;
 
    function Image (V : Velocity) return String is

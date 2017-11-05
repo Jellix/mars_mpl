@@ -186,7 +186,7 @@ package body Gtk.Layered.Elliptic_Background is
                Length        : Gdouble    := 2.0 * Pi;
                Color         : Gdk_Color := RGB (0.0, 0.0, 0.0);
                Border_Width  : Gdouble    := 0.0;
-               Border_Depth  : GDouble    := 1.0;
+               Border_Depth  : Gdouble    := 1.0;
                Border_Color  : Border_Color_Type := Default_Color;
                Border_Shadow : Gtk_Shadow_Type   := Shadow_In;
                Deepened      : Boolean           := False;
@@ -223,11 +223,11 @@ package body Gtk.Layered.Elliptic_Background is
             (  Under  : not null access Layer_Location'Class;
                Outer  : Ellipse_Parameters := Unit_Circle;
                Center : Cairo_Tuple;
-               From          : GDouble    := 0.0;
-               Length        : GDouble    := 2.0 * Pi;
+               From          : Gdouble    := 0.0;
+               Length        : Gdouble    := 2.0 * Pi;
                Color         : Gdk_Color := RGB (0.0, 0.0, 0.0);
-               Border_Width  : GDouble    := 0.0;
-               Border_Depth  : GDouble    := 1.0;
+               Border_Width  : Gdouble    := 0.0;
+               Border_Depth  : Gdouble    := 1.0;
                Border_Color  : Border_Color_Type := Default_Color;
                Border_Shadow : Gtk_Shadow_Type   := Shadow_In;
                Deepened      : Boolean           := False;
@@ -263,11 +263,11 @@ package body Gtk.Layered.Elliptic_Background is
    function Add_Elliptic_Background
             (  Under  : not null access Layer_Location'Class;
                Outer  : Ellipse_Parameters := Unit_Circle;
-               From          : GDouble    := 0.0;
-               Length        : GDouble    := 2.0 * Pi;
+               From          : Gdouble    := 0.0;
+               Length        : Gdouble    := 2.0 * Pi;
                Color         : Gdk_Color := RGB (0.0, 0.0, 0.0);
-               Border_Width  : GDouble    := 0.0;
-               Border_Depth  : GDouble    := 1.0;
+               Border_Width  : Gdouble    := 0.0;
+               Border_Depth  : Gdouble    := 1.0;
                Border_Color  : Border_Color_Type := Default_Color;
                Border_Shadow : Gtk_Shadow_Type   := Shadow_In;
                Deepened      : Boolean           := False;
@@ -321,11 +321,11 @@ package body Gtk.Layered.Elliptic_Background is
                 Area    : Gdk_Rectangle
              )  is
    begin
-      Set_Source_RGB
+      Set_Source_Rgb
       (  Context,
-         GDouble (Red   (Layer.Color)) / GDouble (Guint16'Last),
-         GDouble (Green (Layer.Color)) / GDouble (Guint16'Last),
-         GDouble (Blue  (Layer.Color)) / GDouble (Guint16'Last)
+         Gdouble (Red   (Layer.Color)) / Gdouble (Guint16'Last),
+         Gdouble (Green (Layer.Color)) / Gdouble (Guint16'Last),
+         Gdouble (Blue  (Layer.Color)) / Gdouble (Guint16'Last)
       );
       Cairo.Fill (Context);
    end Draw_Contents;
@@ -337,7 +337,7 @@ package body Gtk.Layered.Elliptic_Background is
    end Get_Color;
 
    function Get_From (Layer : Elliptic_Background_Layer)
-      return GDouble is
+      return Gdouble is
    begin
       return Layer.From;
    end Get_From;
@@ -349,7 +349,7 @@ package body Gtk.Layered.Elliptic_Background is
    end Get_Inner;
 
    function Get_Length (Layer : Elliptic_Background_Layer)
-      return GDouble is
+      return Gdouble is
    begin
       return Layer.Length;
    end Get_Length;
@@ -392,8 +392,8 @@ package body Gtk.Layered.Elliptic_Background is
                   Gnew_Double
                   (  Name    => "outer-x",
                      Nick    => "outer x",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb =>
                         "The x-coordinate of the outer ellipse's center"
@@ -403,8 +403,8 @@ package body Gtk.Layered.Elliptic_Background is
                   Gnew_Double
                   (  Name    => "outer-y",
                      Nick    => "outer y",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb =>
                         "The y-coordinate of the outer ellipse's center"
@@ -415,7 +415,7 @@ package body Gtk.Layered.Elliptic_Background is
                   (  Name    => "outer-k",
                      Nick    => "outer k",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb   => "The curvature of the major axis of " &
                                 "the outer ellipse"
@@ -426,7 +426,7 @@ package body Gtk.Layered.Elliptic_Background is
                   (  Name    => "outer-r",
                      Nick    => "outer r",
                      Minimum => 1.0E-6,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 0.5,
                      Blurb   => "The radius of the minor axis of " &
                                 "outer ellipse"
@@ -455,8 +455,8 @@ package body Gtk.Layered.Elliptic_Background is
                   Gnew_Double
                   (  Name    => "inner-x",
                      Nick    => "inner x",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb =>
                         "When background-shape is bagel, then this " &
@@ -471,8 +471,8 @@ package body Gtk.Layered.Elliptic_Background is
                   Gnew_Double
                   (  Name    => "inner-y",
                      Nick    => "inner y",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb =>
                         "When background-shape is bagel, then this " &
@@ -488,7 +488,7 @@ package body Gtk.Layered.Elliptic_Background is
                   (  Name    => "inner-k",
                      Nick    => "inner k",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb =>
                         "When background-shape is bagel, then this " &
@@ -502,7 +502,7 @@ package body Gtk.Layered.Elliptic_Background is
                   (  Name    => "inner-r",
                      Nick    => "inner r",
                      Minimum => 1.0E-6,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 0.5,
                      Blurb =>
                         "When background-shape is bagel, then this " &
@@ -688,8 +688,8 @@ package body Gtk.Layered.Elliptic_Background is
              )  is
       Outer  : Ellipse_Parameters;
       Inner  : Elliptic_Arc_Closure;
-      From   : GDouble;
-      Length : GDouble;
+      From   : Gdouble;
+      Length : Gdouble;
       Color  : Gdk_Color;
    begin
       Restore (Stream, Outer);
@@ -722,7 +722,7 @@ package body Gtk.Layered.Elliptic_Background is
 
    procedure Scale
              (  Layer  : in out Elliptic_Background_Layer;
-                Factor : GDouble
+                Factor : Gdouble
              )  is
       Outer : constant Ellipse_Parameters := Layer.Outer * Factor;
       Inner : Elliptic_Arc_Closure := Layer.Inner;
@@ -757,11 +757,11 @@ package body Gtk.Layered.Elliptic_Background is
              (  Layer         : in out Elliptic_Background_Layer;
                 Outer         : Ellipse_Parameters;
                 Inner         : Elliptic_Arc_Closure;
-                From          : GDouble;
-                Length        : GDouble;
+                From          : Gdouble;
+                Length        : Gdouble;
                 Color         : Gdk_Color;
-                Border_Width  : GDouble;
-                Border_Depth  : GDouble;
+                Border_Width  : Gdouble;
+                Border_Depth  : Gdouble;
                 Border_Color  : Border_Color_Type;
                 Border_Shadow : Gtk_Shadow_Type
              )  is
@@ -803,7 +803,7 @@ package body Gtk.Layered.Elliptic_Background is
          declare
             Center : constant Cairo_Tuple :=
                               Layer.Get_Widget.Get_Center;
-            Size   : constant GDouble := Layer.Get_Widget.Get_Size;
+            Size   : constant Gdouble := Layer.Get_Widget.Get_Size;
          begin
             Elliptic_Arc_Abs
             (  Context,
@@ -894,7 +894,7 @@ package body Gtk.Layered.Elliptic_Background is
                Layer.Outer.Angle := Get_Double (Value);
                if Layer.Outer.Angle not in -2.0 * Pi..2.0 * Pi then
                   Layer.Outer.Angle :=
-                     GDouble'Remainder (Layer.Outer.Angle, 2.0 * Pi);
+                     Gdouble'Remainder (Layer.Outer.Angle, 2.0 * Pi);
                end if;
             when Property_Shape =>
                case Gtk.Layered.
@@ -958,7 +958,7 @@ package body Gtk.Layered.Elliptic_Background is
                      if Layer.Inner.Arc.Angle not in -2.0 * Pi..2.0 * Pi
                      then
                         Layer.Inner.Arc.Angle :=
-                           GDouble'Remainder
+                           Gdouble'Remainder
                            (  Layer.Inner.Arc.Angle, 2.0 * Pi
                            );
                      end if;
@@ -968,13 +968,13 @@ package body Gtk.Layered.Elliptic_Background is
             when Property_From =>
                Layer.From := Get_Double (Value);
                if Layer.From not in -2.0 * Pi..2.0 * Pi then
-                  Layer.From := GDouble'Remainder (Layer.From, 2.0 * Pi);
+                  Layer.From := Gdouble'Remainder (Layer.From, 2.0 * Pi);
                end if;
             when Property_Length =>
                Layer.Length := Get_Double (Value);
                if Layer.Length not in -2.0 * Pi..2.0 * Pi then
                   Layer.Length :=
-                     GDouble'Remainder (Layer.Length, 2.0 * Pi);
+                     Gdouble'Remainder (Layer.Length, 2.0 * Pi);
                end if;
             when Property_Color =>
                Layer.Color := Get_Value (Value);

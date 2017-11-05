@@ -65,6 +65,7 @@ package body Touchdown_Monitor is
 
    task type Touchdown_Monitor_Execute;
    Legs_Task    : array (Landing_Legs.Legs_Index) of Touchdown_Monitor_Execute;
+   pragma Unreferenced (Legs_Task);
    Legs_Control : array (Landing_Legs.Legs_Index) of Task_Control;
 
    task body Touchdown_Monitor_Execute is

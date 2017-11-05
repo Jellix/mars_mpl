@@ -52,10 +52,10 @@ package body Cairo.Transformations is
    procedure Arc
              (  Context : Cairo_Context;
                 T       : Translate_And_Rotate;
-                X, Y    : GDouble;
-                Radius  : GDouble;
-                Angle1  : GDouble;
-                Angle2  : GDouble
+                X, Y    : Gdouble;
+                Radius  : Gdouble;
+                Angle1  : Gdouble;
+                Angle2  : Gdouble
              )  is
       Point : constant Cairo_Tuple := T * (X, Y);
    begin
@@ -89,8 +89,8 @@ package body Cairo.Transformations is
              (  Context  : Cairo_Context;
                 T        : Translate_And_Rotate;
                 Ellipse  : Ellipse_Parameters;
-                From     : GDouble := 0.0;
-                Length   : GDouble := 2.0 * Pi
+                From     : Gdouble := 0.0;
+                Length   : Gdouble := 2.0 * Pi
              )  is
    begin
       Elliptic_Arc_Abs
@@ -104,7 +104,7 @@ package body Cairo.Transformations is
    procedure Line_To
              (  Context : Cairo_Context;
                 T       : Translate_And_Rotate;
-                X, Y    : GDouble
+                X, Y    : Gdouble
              )  is
       Point : constant Cairo_Tuple := T * (X, Y);
    begin
@@ -118,7 +118,7 @@ package body Cairo.Transformations is
    procedure Move_To
              (  Context : Cairo_Context;
                 T       : Translate_And_Rotate;
-                X, Y    : GDouble
+                X, Y    : Gdouble
              )  is
       Point : constant Cairo_Tuple := T * (X, Y);
    begin
@@ -131,7 +131,7 @@ package body Cairo.Transformations is
 
    procedure Rotate
              (  T     : in out Translate_And_Rotate;
-                Angle : GDouble
+                Angle : Gdouble
              )  is
    begin
       T.Angle := T.Angle + Angle;
@@ -141,8 +141,8 @@ package body Cairo.Transformations is
 
    procedure Translate
              (  T : in out Translate_And_Rotate;
-                X : GDouble;
-                Y : GDouble
+                X : Gdouble;
+                Y : Gdouble
              )  is
    begin
       T.X := T.X + X;

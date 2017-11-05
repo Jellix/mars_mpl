@@ -35,6 +35,8 @@ with Gtk.Layered.Cache;
 
 package Gtk.Gauge.Elliptic_180 is
 
+   pragma Warnings (Off, "declaration hides ""Adjustment""");
+
    --
    -- Class_Name - Of the widget
    --
@@ -205,5 +207,7 @@ private
          Annotation  : access Gtk.Layered.Elliptic_Annotation.Elliptic_Annotation_Layer;
          Needle      : access Gtk.Layered.Needle.Needle_Layer;
       end record;
+
+   pragma Warnings (On, "declaration hides ""Adjustment""");
 
 end Gtk.Gauge.Elliptic_180;

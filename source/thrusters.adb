@@ -34,14 +34,14 @@ package body Thrusters is
                        Landing_Legs.Legs_Index'Image (Source) & ".");
       else
          declare
-            Current_Height : Altimeter.Height;
+            Current_Altitude : Altimeter.Altitude;
          begin
-            Altimeter.Current_Height (H => Current_Height);
+            Altimeter.Current_Altitude (A => Current_Altitude);
             Global.Log
               (Message =>
                  "Thrusters have been disabled due to signal from leg " &
                  Landing_Legs.Legs_Index'Image (Source) & ", at height" &
-                 Altimeter.Image (Current_Height) & ".");
+                 Altimeter.Image (A => Current_Altitude) & ".");
          end;
       end if;
    end Disable;

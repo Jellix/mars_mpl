@@ -56,6 +56,9 @@ with Strings_Edit.UTF8.Wildcards.Case_Insensitive;
 
 package body Gtk.Oscilloscope is
 
+   pragma Warnings (Off, "declaration hides ""Oscilloscope""");
+   pragma Warnings (Off, "declaration hides ""Widget""");
+
    function "+" (Value : String_Ptr) return UTF8_String;
    function "+" (Value : String_Ptr) return UTF8_String is
    begin
@@ -4955,5 +4958,8 @@ package body Gtk.Oscilloscope is
       Amplifier.all.Set_Page_Size (Page * A);
       Amplifier.all.Set_Value (A * Value + B);
    end Zoom_Out;
+
+   pragma Warnings (On, "declaration hides ""Widget""");
+   pragma Warnings (On, "declaration hides ""Oscilloscope""");
 
 end Gtk.Oscilloscope;

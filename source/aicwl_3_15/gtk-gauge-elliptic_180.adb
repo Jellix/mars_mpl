@@ -38,6 +38,9 @@ with Pango.Cairo.Fonts;
 
 package body Gtk.Gauge.Elliptic_180 is
 
+   pragma Warnings (Off, "declaration hides ""Adjustment""");
+   pragma Warnings (Off, "declaration hides ""Widget""");
+
    Needle_Color     : constant Gdk.Color.Gdk_Color :=
                         Gtk.Missed.RGB (1.0, 0.0, 0.0);
    Background_Color : constant Gdk.Color.Gdk_Color :=
@@ -405,5 +408,8 @@ package body Gtk.Gauge.Elliptic_180 is
          Color   =>
            Gtk.Widget.Styles.Style_Get (Widget, "text-color", Text_Color));
    end Style_Changed;
+
+   pragma Warnings (On, "declaration hides ""Widget""");
+   pragma Warnings (On, "declaration hides ""Adjustment""");
 
 end Gtk.Gauge.Elliptic_180;

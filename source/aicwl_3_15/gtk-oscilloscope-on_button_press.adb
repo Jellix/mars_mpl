@@ -31,6 +31,7 @@ function On_Button_Press (Object       : access GObject_Record'Class;
                           Oscilloscope : Gtk_Oscilloscope) return Boolean
 is
    pragma Unreferenced (Object);
+
    procedure Free is new
      Ada.Unchecked_Deallocation (Gtk.Menu.Gtk_Menu_Record'Class,
                                  Gtk.Menu.Gtk_Menu);
@@ -299,6 +300,7 @@ begin
          null;
    end case;
    return True;
+
 exception
    when Error : others =>
       Glib.Messages.Log
@@ -307,4 +309,5 @@ exception
          "Fault: " & Ada.Exceptions.Exception_Information (Error) &
            Where ("On_Button_Press"));
       return True;
+
 end On_Button_Press;

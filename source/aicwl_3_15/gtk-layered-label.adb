@@ -211,9 +211,9 @@ package body Gtk.Layered.Label is
              )  is
       Size    : constant Gdouble     := Layer.Widget.Get_Size;
       Text    : constant UTF8_String := Text_Mutex.Get_Text (Layer);
-      Gain    : GDouble              := 1.0;
+      Gain    : Gdouble              := 1.0;
       State   : Context_State        := Save (Context);
-      X, Y    : aliased GDouble;
+      X, Y    : aliased Gdouble;
       Extents : Cairo_Text_Extents;
    begin
       if Layer.Scaled then
@@ -265,22 +265,22 @@ package body Gtk.Layered.Label is
                (  Cr => Context,
                   Tx => ( -Extents.Width
                         *  0.5 * Gain * Layer.Stretch
-                        *  cos (Layer.Angle)
+                        *  Cos (Layer.Angle)
                         ),
                   Ty => ( -Extents.Height
                         *  0.5 * Gain
-                        *  sin (Layer.Angle)
+                        *  Sin (Layer.Angle)
                )        );
             when Moved_Outside =>
                Translate
                (  Cr => Context,
                   Tx => (  Extents.Width
                         *  0.5 * Gain * Layer.Stretch
-                        *  cos (Layer.Angle)
+                        *  Cos (Layer.Angle)
                         ),
                   Ty => (  Extents.Height
                         *  0.5 * Gain
-                        *  sin (Layer.Angle)
+                        *  Sin (Layer.Angle)
                )        );
             when Moved_Centered =>
                null;
@@ -304,11 +304,11 @@ package body Gtk.Layered.Label is
                declare
                   Matrix : aliased Cairo_Matrix;
                begin
-                  Matrix.XX := 1.0;
-                  Matrix.XY := -1.0 * tan (Layer.Skew);
+                  Matrix.Xx := 1.0;
+                  Matrix.Xy := -1.0 * Tan (Layer.Skew);
                   Matrix.X0 := 0.0;
-                  Matrix.YX := 0.0;
-                  Matrix.YY := 1.0;
+                  Matrix.Yx := 0.0;
+                  Matrix.Yy := 1.0;
                   Matrix.Y0 := 0.0;
                   Transform (Context, Matrix'Access);
                end;
@@ -360,11 +360,11 @@ package body Gtk.Layered.Label is
 --           Close_Path (Context);
 --           Stroke (Context);
 
-         Set_Source_RGB
+         Set_Source_Rgb
          (  Context,
-            GDouble (Red   (Layer.Color)) / GDouble (Guint16'Last),
-            GDouble (Green (Layer.Color)) / GDouble (Guint16'Last),
-            GDouble (Blue  (Layer.Color)) / GDouble (Guint16'Last)
+            Gdouble (Red   (Layer.Color)) / Gdouble (Guint16'Last),
+            Gdouble (Green (Layer.Color)) / Gdouble (Guint16'Last),
+            Gdouble (Blue  (Layer.Color)) / Gdouble (Guint16'Last)
          );
          Move_To
          (  Cr => Context,
@@ -386,7 +386,7 @@ package body Gtk.Layered.Label is
       Free (Layer.Text);
    end Finalize;
 
-   function Get_Angle (Layer : Label_Layer) return GDouble is
+   function Get_Angle (Layer : Label_Layer) return Gdouble is
    begin
       return Layer.Angle;
    end Get_Angle;
@@ -401,7 +401,7 @@ package body Gtk.Layered.Label is
       return Layer.Face;
    end Get_Face;
 
-   function Get_Height (Layer : Label_Layer) return GDouble is
+   function Get_Height (Layer : Label_Layer) return Gdouble is
    begin
       return Layer.Height;
    end Get_Height;
@@ -446,8 +446,8 @@ package body Gtk.Layered.Label is
                   Gnew_Double
                   (  Name    => "x",
                      Nick    => "x",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb   => "The x-coordinate of the label's " &
                                 "center"
@@ -457,8 +457,8 @@ package body Gtk.Layered.Label is
                   Gnew_Double
                   (  Name    => "y",
                      Nick    => "y",
-                     Minimum => GDouble'First,
-                     Maximum => GDouble'Last,
+                     Minimum => Gdouble'First,
+                     Maximum => Gdouble'Last,
                      Default => 0.0,
                      Blurb   => "The y-coordinate of the label's " &
                                 "center"
@@ -469,7 +469,7 @@ package body Gtk.Layered.Label is
                   (  Name    => "stretch",
                      Nick    => "stretch",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 1.0,
                      Blurb   => "The relation of the rendered width " &
                                 "of the text to its original width. " &
@@ -482,7 +482,7 @@ package body Gtk.Layered.Label is
                   (  Name    => "height",
                      Nick    => "height",
                      Minimum => 0.0,
-                     Maximum => GDouble'Last,
+                     Maximum => Gdouble'Last,
                      Default => 12.0,
                      Blurb   => "The text font height"
                   );
@@ -518,16 +518,16 @@ package body Gtk.Layered.Label is
                   Cairo.Font_Slant_Property.Gnew_Enum
                   (  Name    => "font-slant",
                      Nick    => "font slant",
-                     Default => CAIRO_FONT_SLANT_NORMAL,
+                     Default => Cairo_Font_Slant_Normal,
                      Blurb   => "The text font slant"
                   );
             when Property_Font_Size =>
                return
-                  Gnew_UInt
+                  Gnew_Uint
                   (  Name    => "font-size",
                      Nick    => "font size",
                      Minimum => 1,
-                     Maximum => GUInt (GInt'Last),
+                     Maximum => Guint (Gint'Last),
                      Default => 12,
                      Blurb   => "The font size in points. " &
                                 "The value is only relevant for " &
@@ -655,8 +655,8 @@ package body Gtk.Layered.Label is
                      Get_Slant (Layer.Face)
                   );
                when Property_Font_Size =>
-                  Init (Value, GType_UInt);
-                  Set_UInt (Value, GUInt (Get_Size (Layer.Face)));
+                  Init (Value, GType_Uint);
+                  Set_Uint (Value, Guint (Get_Size (Layer.Face)));
                when Property_Weight =>
                   Pango.Enums.Weight_Property.Set_Enum
                   (  Value,
@@ -689,12 +689,12 @@ package body Gtk.Layered.Label is
       return Layer.Scaled;
    end Get_Scaled;
 
-   function Get_Skew (Layer : Label_Layer) return GDouble is
+   function Get_Skew (Layer : Label_Layer) return Gdouble is
    begin
       return Layer.Skew;
    end Get_Skew;
 
-   function Get_Stretch (Layer : Label_Layer) return GDouble is
+   function Get_Stretch (Layer : Label_Layer) return Gdouble is
    begin
       return Layer.Stretch;
    end Get_Stretch;
@@ -723,14 +723,14 @@ package body Gtk.Layered.Label is
              (  Stream : in out Root_Stream_Type'Class;
                 Layer  : in out Label_Layer
              )  is
-      X, Y    : GDouble;
+      X, Y    : Gdouble;
       Face    : Pango_Cairo_Font;
-      Height  : GDouble;
-      Stretch : GDouble;
+      Height  : Gdouble;
+      Stretch : Gdouble;
       Mode    : Text_Transformation;
       Color   : Gdk_Color;
-      Angle   : GDouble;
-      Skew    : GDouble;
+      Angle   : Gdouble;
+      Skew    : Gdouble;
    begin
       Restore (Stream, X);
       Restore (Stream, Y);
@@ -758,9 +758,9 @@ package body Gtk.Layered.Label is
 
    procedure Scale
              (  Layer  : in out Label_Layer;
-                Factor : GDouble
+                Factor : Gdouble
              )  is
-      Height : constant GDouble := Layer.Height * Factor;
+      Height : constant Gdouble := Layer.Height * Factor;
    begin
       if Height <= 0.0 then
          raise Constraint_Error with "Non-positive height";
@@ -773,12 +773,12 @@ package body Gtk.Layered.Label is
              (  Layer    : in out Label_Layer;
                 Location : Cairo_Tuple;
                 Face     : Pango_Cairo_Font;
-                Height   : GDouble;
-                Stretch  : GDouble;
+                Height   : Gdouble;
+                Stretch  : Gdouble;
                 Mode     : Text_Transformation;
                 Color    : Gdk_Color;
-                Angle    : GDouble;
-                Skew     : GDouble
+                Angle    : Gdouble;
+                Skew     : Gdouble
              )  is
    begin
       if abs Skew >= Pi / 2.0 - Eps then
@@ -818,13 +818,13 @@ package body Gtk.Layered.Label is
                Layer.Angle := Get_Double (Value);
                if Layer.Angle not in -2.0 * Pi..2.0 * Pi then
                   Layer.Angle :=
-                     GDouble'Remainder (Layer.Angle, 2.0 * Pi);
+                     Gdouble'Remainder (Layer.Angle, 2.0 * Pi);
                end if;
             when Property_Skew =>
                Layer.Skew := Get_Double (Value);
                if Layer.Skew not in -2.0 * Pi..2.0 * Pi then
                   Layer.Skew :=
-                     GDouble'Remainder (Layer.Skew, 2.0 * Pi);
+                     Gdouble'Remainder (Layer.Skew, 2.0 * Pi);
                end if;
             when Property_Stretch =>
                Layer.Stretch := Get_Double (Value);
@@ -856,11 +856,11 @@ package body Gtk.Layered.Label is
             when Property_Font_Size =>
                Set_Size
                (  Layer.Face,
-                  GInt
-                  (  GUInt'Max
-                     (  GUInt'Min
-                        (  Get_UInt (Value),
-                           GUInt (GInt'Last)
+                  Gint
+                  (  Guint'Max
+                     (  Guint'Min
+                        (  Get_Uint (Value),
+                           Guint (Gint'Last)
                         ),
                         1
                )  )  );
