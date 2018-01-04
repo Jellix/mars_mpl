@@ -1,3 +1,4 @@
+with Ada.Exceptions;
 with Ada.Numerics.Discrete_Random;
 with Ada.Real_Time.Timing_Events;
 
@@ -143,6 +144,9 @@ package body Landing_Legs is
                null;
          end case;
       end loop;
+   exception
+      when E : others =>
+         Global.Log (Ada.Exceptions.Exception_Information (E));
    end Simulate_Landing_Legs;
 
    procedure Deploy is

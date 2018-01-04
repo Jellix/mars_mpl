@@ -1,3 +1,5 @@
+with Ada.Exceptions;
+
 with Global;
 
 package body Altimeter is
@@ -52,23 +54,19 @@ package body Altimeter is
    task Radar_Simulator;
 
    task body Radar_Simulator is
-      Next_Cycle   : Ada.Real_Time.Time := Global.Start_Time;
-      Measurement  : Altitude;
+      Next_Cycle  : Ada.Real_Time.Time := Global.Start_Time;
+      Measurement : Altitude;
    begin
       Measurement := Base_Altitude;
 
       while Measurement > 0.0 loop
          declare
             T : constant Duration :=
-                  Ada.Real_Time.To_Duration
-                    (TS => Next_Cycle - Global.Start_Time);
-            Distance : constant Altitude :=
-                         Altitude
-                           (0.5 * Float (Acceleration) * Float (T) * Float (T));
-            Speed : constant Velocity := Velocity (Float (Acceleration) * Float (T));
+                  Ada.Real_Time.To_Duration (Next_Cycle - Global.Start_Time);
+            Distance : constant Altitude := Altitude (0.5 * Acceleration * Float (T) * Float (T));
+            Speed    : constant Velocity := Velocity (Float (Acceleration) * Float (T));
          begin
-            Measurement :=
-              Base_Altitude - Altitude'Min (Base_Altitude, Distance);
+            Measurement := Base_Altitude - Altitude'Min (Base_Altitude, Distance);
 
             Altimeter_Store.Set (New_Value => Measurement);
             Velocity_Store.Set (New_Value => Base_Velocity + Speed);
@@ -80,6 +78,9 @@ package body Altimeter is
 
       Altimeter_Store.Set (New_Value => 0.0);
       Velocity_Store.Set (New_Value => 0.0);
+   exception
+      when E : others =>
+         Global.Log (Ada.Exceptions.Exception_Information (E));
    end Radar_Simulator;
 
    procedure Current_Altitude (A : out Altitude) is

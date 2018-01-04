@@ -22,8 +22,11 @@ procedure Simulator is
    use type Altimeter.Velocity;
    use type Touchdown_Monitor.Run_State;
 
-   procedure Update_GUI;
-   procedure Update_GUI is
+   procedure Update_GUI (Terminated : in Boolean := False;
+                         Time_Stamp : in Ada.Real_Time.Time := Global.Start_Time);
+   procedure Update_GUI (Terminated : in Boolean := False;
+                         Time_Stamp : in Ada.Real_Time.Time := Global.Start_Time)
+   is
       All_Legs : Landing_Legs.All_Legs_State;
       Thruster : Boolean;
       Altitude : Altimeter.Altitude;
@@ -33,10 +36,13 @@ procedure Simulator is
       Altimeter.Current_Velocity (V => Velocity);
       Landing_Legs.Read_State (State => All_Legs);
       Thrusters.Get_State (Disabled => Thruster);
-      GUI.Update (New_State => GUI.State'(Legs     => All_Legs,
-                                          Thruster => not Thruster,
-                                          Altitude => Altitude,
-                                          Velocity => Velocity));
+
+      GUI.Update (New_State => GUI.State'(Legs       => All_Legs,
+                                          Thruster   => not Thruster,
+                                          Altitude   => Altitude,
+                                          Velocity   => Velocity,
+                                          Terminated => Terminated,
+                                          Time_Stamp => Time_Stamp));
    end Update_GUI;
 
 begin
@@ -97,7 +103,12 @@ begin
 
    Global.Log (Message => "Simulation terminated.");
 
-   loop
-      Update_GUI;
-   end loop;
+   declare
+      Now : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
+   begin
+      loop
+         Update_GUI (Terminated => True,
+                     Time_Stamp => Now);
+      end loop;
+   end;
 end Simulator;

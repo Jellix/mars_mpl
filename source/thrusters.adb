@@ -1,4 +1,3 @@
-with Altimeter;
 with Global;
 
 package body Thrusters is
@@ -33,16 +32,10 @@ package body Thrusters is
                        "Signal from leg " &
                        Landing_Legs.Legs_Index'Image (Source) & ".");
       else
-         declare
-            Current_Altitude : Altimeter.Altitude;
-         begin
-            Altimeter.Current_Altitude (A => Current_Altitude);
-            Global.Log
-              (Message =>
-                 "Thrusters have been disabled due to signal from leg " &
-                 Landing_Legs.Legs_Index'Image (Source) & ", at height" &
-                 Altimeter.Image (A => Current_Altitude) & ".");
-         end;
+         Global.Log
+           (Message =>
+              "Thrusters have been disabled due to signal from leg " &
+              Landing_Legs.Legs_Index'Image (Source) & ".");
       end if;
    end Disable;
 

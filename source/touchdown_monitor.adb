@@ -1,3 +1,5 @@
+with Ada.Exceptions;
+
 with Global;
 with Thrusters;
 
@@ -142,7 +144,7 @@ package body Touchdown_Monitor is
             -- the actual result.
             -- Set indicator state only once.
             if
-              -- Event_Enabled and
+              -- Event_Enabled and then
               Last_Indicator    = Landing_Legs.Touched_Down and then
               Current_Indicator = Landing_Legs.Touched_Down
             then
@@ -160,6 +162,9 @@ package body Touchdown_Monitor is
             end if;
          end if;
       end loop;
+   exception
+      when E : others =>
+         Global.Log (Ada.Exceptions.Exception_Information (E));
    end Touchdown_Monitor_Execute;
 
    function Current_State (Leg : Landing_Legs.Legs_Index) return Run_State is

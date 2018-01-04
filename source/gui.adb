@@ -1,4 +1,4 @@
-with Ada.Real_Time;
+with Ada.Exceptions;
 
 with Global;
 
@@ -347,67 +347,72 @@ package body GUI is
       loop
          State_Update.Wait_For_Update (New_State => Update_State);
 
-         declare
-            use type Altimeter.Altitude;
-            use type Altimeter.Velocity;
-            use type Glib.Gdouble;
-            use type Landing_Legs.Leg_State;
-            DE : Dynamic_Elements renames Win.all.Elements;
-         begin
-            for Leg in DE.Leg_Led'Range loop
-               DE.Leg_Led (Leg).all.Set_State
-                 (State => Update_State.Legs (Leg) = Landing_Legs.Touched_Down);
-               DE.Leg_Led (Leg).all.Queue_Draw;
-            end loop;
-            DE.Thruster_Led.all.Set_State (State => Update_State.Thruster);
-            DE.Thruster_Led.all.Queue_Draw;
-
-            -- Altitude
-            DE.Altitude.all.Set_Text
-              (Text => Altimeter.Image (Update_State.Altitude));
-            Win.all.Altimeter_1000.all.Set_Value
-              (Value =>
-                 Glib.Gdouble (abs Update_State.Altitude) /
-                   Altitude_Scale.Factor);
-
+         if not Update_State.Terminated then
             declare
-               Hundreds : constant Glib.Gdouble :=
-                            Glib.Gdouble'Remainder
-                              (Glib.Gdouble (Update_State.Altitude), 1000.0);
+               use type Altimeter.Altitude;
+               use type Altimeter.Velocity;
+               use type Glib.Gdouble;
+               use type Landing_Legs.Leg_State;
+               DE : Dynamic_Elements renames Win.all.Elements;
             begin
-               Win.all.Altimeter_100.all.Set_Value
+               for Leg in DE.Leg_Led'Range loop
+                  DE.Leg_Led (Leg).all.Set_State
+                    (State => Update_State.Legs (Leg) = Landing_Legs.Touched_Down);
+                  DE.Leg_Led (Leg).all.Queue_Draw;
+               end loop;
+               DE.Thruster_Led.all.Set_State (State => Update_State.Thruster);
+               DE.Thruster_Led.all.Queue_Draw;
+
+               -- Altitude
+               DE.Altitude.all.Set_Text
+                 (Text => Altimeter.Image (Update_State.Altitude));
+               Win.all.Altimeter_1000.all.Set_Value
                  (Value =>
-                    10.0 *
-                      (if Hundreds < 0.0
-                       then 1000.0 + Hundreds
-                       else Hundreds) / Altitude_Scale.Factor);
+                    Glib.Gdouble (abs Update_State.Altitude) /
+                      Altitude_Scale.Factor);
+
+               declare
+                  Hundreds : constant Glib.Gdouble :=
+                               Glib.Gdouble'Remainder
+                                 (Glib.Gdouble (Update_State.Altitude), 1000.0);
+               begin
+                  Win.all.Altimeter_100.all.Set_Value
+                    (Value =>
+                       10.0 *
+                         (if Hundreds < 0.0
+                          then 1000.0 + Hundreds
+                          else Hundreds) / Altitude_Scale.Factor);
+               end;
+               Win.all.Altimeter_1000.all.Queue_Draw;
+
+               -- Velocity
+               DE.Velocity.all.Set_Text
+                 (Text => Altimeter.Image (Update_State.Velocity));
+
+               Win.all.Tachometer.all.Set_Value
+                 (Value =>
+                    Glib.Gdouble (abs Update_State.Velocity) /
+                      Velocity_Scale.Factor);
+               Win.all.Tachometer.all.Queue_Draw;
+
+               -- Data plot
+               Win.all.Oscilloscope.all.Feed
+                 (Channel => Win.all.Altitude_Channel,
+                  V       => Glib.Gdouble (Update_State.Altitude));
+               Win.all.Oscilloscope.all.Feed
+                 (Channel => Win.all.Touchdown_Channel,
+                  V       =>
+                    Glib.Gdouble
+                      (Boolean'Pos ((for some L of Update_State.Legs =>
+                                         L = Landing_Legs.Touched_Down))));
+               Win.all.Oscilloscope.all.Feed
+                 (Channel => Win.all.Thruster_Channel,
+                  V       => Glib.Gdouble (Boolean'Pos (Update_State.Thruster)));
             end;
-            Win.all.Altimeter_1000.all.Queue_Draw;
-
-            -- Velocity
-            DE.Velocity.all.Set_Text
-              (Text => Altimeter.Image (Update_State.Velocity));
-
-            Win.all.Tachometer.all.Set_Value
-              (Value =>
-                 Glib.Gdouble (abs Update_State.Velocity) /
-                   Velocity_Scale.Factor);
-            Win.all.Tachometer.all.Queue_Draw;
-
-            -- Data plot
-            Win.all.Oscilloscope.all.Feed
-              (Channel => Win.all.Altitude_Channel,
-               V       => Glib.Gdouble (Update_State.Altitude));
-            Win.all.Oscilloscope.all.Feed
-              (Channel => Win.all.Touchdown_Channel,
-               V       =>
-                 Glib.Gdouble
-                   (Boolean'Pos ((for some L of Update_State.Legs =>
-                                      L = Landing_Legs.Touched_Down))));
-            Win.all.Oscilloscope.all.Feed
-              (Channel => Win.all.Thruster_Channel,
-               V       => Glib.Gdouble (Boolean'Pos (Update_State.Thruster)));
-         end;
+         else
+            Win.all.Oscilloscope.all.Set_Time (Sweeper => Gtk.Oscilloscope.Lower,
+                                               Stamp   => Update_State.Time_Stamp);
+         end if;
 
          while Gtk.Main.Events_Pending loop
             if Gtk.Main.Main_Iteration_Do (Blocking => False) then
@@ -415,6 +420,9 @@ package body GUI is
             end if;
          end loop;
       end loop;
+   exception
+      when E : others =>
+         Global.Log (Ada.Exceptions.Exception_Information (E));
    end GUI_Task;
 
    procedure Update (New_State : State) is
