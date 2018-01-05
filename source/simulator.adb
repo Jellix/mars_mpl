@@ -28,17 +28,14 @@ procedure Simulator is
                          Time_Stamp : in Ada.Real_Time.Time := Global.Start_Time)
    is
       All_Legs : Landing_Legs.All_Legs_State;
-      Thruster : Boolean;
-      Altitude : Altimeter.Altitude;
-      Velocity : Altimeter.Velocity;
+      Thruster : constant Thrusters.State    := Thrusters.Current_State;
+      Altitude : constant Altimeter.Altitude := Altimeter.Current_Altitude;
+      Velocity : constant Altimeter.Velocity := Altimeter.Current_Velocity;
    begin
-      Altimeter.Current_Altitude (A => Altitude);
-      Altimeter.Current_Velocity (V => Velocity);
       Landing_Legs.Read_State (State => All_Legs);
-      Thrusters.Get_State (Disabled => Thruster);
 
       GUI.Update (New_State => GUI.State'(Legs       => All_Legs,
-                                          Thruster   => not Thruster,
+                                          Thruster   => Thruster,
                                           Altitude   => Altitude,
                                           Velocity   => Velocity,
                                           Terminated => Terminated,
@@ -52,15 +49,10 @@ begin
    Next_Cycle := Global.Start_Time + Cycle;
 
    declare
-      Current_Altitude : Altimeter.Altitude;
-      Current_Velocity : Altimeter.Velocity;
+      Current_Altitude : Altimeter.Altitude := Altimeter.Current_Altitude;
    begin
-      Altimeter.Current_Altitude (A => Current_Altitude);
-      Altimeter.Current_Velocity (V => Current_Velocity);
-
       while Current_Altitude > 1.0 loop
-         Altimeter.Current_Altitude (A => Current_Altitude);
-         Altimeter.Current_Velocity (V => Current_Velocity);
+         Current_Altitude := Altimeter.Current_Altitude;
 
          if not Legs_Deployed and then Current_Altitude <= 1500.0 then
             Landing_Legs.Deploy;

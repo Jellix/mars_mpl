@@ -2,13 +2,14 @@ with Ada.Real_Time;
 
 with Altimeter;
 with Landing_Legs;
+with Thrusters;
 
 package GUI is
 
    type State is
       record
          Legs       : Landing_Legs.All_Legs_State;
-         Thruster   : Boolean;
+         Thruster   : Thrusters.State;
          Altitude   : Altimeter.Altitude;
          Velocity   : Altimeter.Velocity;
          Terminated : Boolean;

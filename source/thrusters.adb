@@ -3,31 +3,34 @@ with Global;
 package body Thrusters is
 
    protected Thruster is
-      procedure Disable (Old_Disabled : out Boolean);
-      function Is_Disabled return Boolean;
+      function Get return State;
+      procedure Set (New_State : in     State;
+                     Old_State :    out State);
    private
-      Disabled : Boolean := False;
+      Current_Thruster_State : State := Enabled;
    end Thruster;
 
    protected body Thruster is
-      procedure Disable (Old_Disabled : out Boolean) is
+      function Get return State is
       begin
-         Old_Disabled := Disabled;
-         Disabled     := True;
-      end Disable;
+         return Current_Thruster_State;
+      end Get;
 
-      function Is_Disabled return Boolean is
+      procedure Set (New_State : in     State;
+                     Old_State :    out State) is
       begin
-         return Disabled;
-      end Is_Disabled;
+         Old_State              := Current_Thruster_State;
+         Current_Thruster_State := New_State;
+      end Set;
    end Thruster;
 
    procedure Disable (Source : in Landing_Legs.Legs_Index) is
-      Old_Disabled : Boolean;
+      Old_State : State;
    begin
-      Thruster.Disable (Old_Disabled => Old_Disabled);
+      Thruster.Set (New_State => Disabled,
+                    Old_State => Old_State);
 
-      if Old_Disabled then
+      if Old_State = Disabled then
          Global.Log (Message =>
                        "Signal from leg " &
                        Landing_Legs.Legs_Index'Image (Source) & ".");
@@ -39,9 +42,6 @@ package body Thrusters is
       end if;
    end Disable;
 
-   procedure Get_State (Disabled : out Boolean) is
-   begin
-      Disabled := Thruster.Is_Disabled;
-   end Get_State;
+   function Current_State return State is (Thruster.Get);
 
 end Thrusters;

@@ -3,7 +3,7 @@
 
 package Landing_Legs is
 
-   type Legs_Index is (North, East, South, West);
+   type Legs_Index is (One, Two, Three);
    type Leg_State  is (In_Flight, Touched_Down);
    type All_Legs_State is array (Legs_Index) of Leg_State;
 

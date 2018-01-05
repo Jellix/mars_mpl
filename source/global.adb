@@ -12,6 +12,7 @@ package body Global is
       procedure Write (Msg : in String) is
       begin
          Ada.Text_IO.Put_Line (Msg);
+         --  FIXME: Using a potentially blocking operation within a protected procedure is a bounded error.
       end Write;
    end Logger;
 
