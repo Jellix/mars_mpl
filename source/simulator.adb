@@ -22,10 +22,13 @@ procedure Simulator is
    use type Altimeter.Velocity;
    use type Touchdown_Monitor.Run_State;
 
-   procedure Update_GUI (Terminated : in Boolean := False;
-                         Time_Stamp : in Ada.Real_Time.Time := Global.Start_Time);
-   procedure Update_GUI (Terminated : in Boolean := False;
-                         Time_Stamp : in Ada.Real_Time.Time := Global.Start_Time)
+   procedure Update_GUI
+     (Terminated : in Boolean := False;
+      Time_Stamp : in Ada.Real_Time.Time := Global.Start_Time);
+
+   procedure Update_GUI
+     (Terminated : in Boolean := False;
+      Time_Stamp : in Ada.Real_Time.Time := Global.Start_Time)
    is
       All_Legs : Landing_Legs.All_Legs_State;
       Thruster : constant Thrusters.State    := Thrusters.Current_State;
@@ -51,7 +54,7 @@ begin
    declare
       Current_Altitude : Altimeter.Altitude := Altimeter.Current_Altitude;
    begin
-      while Current_Altitude > 1.0 loop
+      while Current_Altitude > 0.0 loop
          Current_Altitude := Altimeter.Current_Altitude;
 
          if not Legs_Deployed and then Current_Altitude <= 1500.0 then
@@ -74,10 +77,6 @@ begin
 
    Update_GUI;
 
-   Landing_Legs.Touchdown;
-
-   Update_GUI;
-
    All_Monitors_Dead := False;
 
    while not All_Monitors_Dead loop
@@ -88,6 +87,7 @@ begin
 
       if All_Monitors_Dead then
          Global.Log (Message => "All monitors finished.");
+         Update_GUI;
          Touchdown_Monitor.Shutdown;
          Landing_Legs.Shutdown;
       end if;

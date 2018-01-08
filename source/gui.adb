@@ -1,6 +1,7 @@
 with Ada.Exceptions;
 
 with Global;
+with Touchdown_Monitor;
 
 with Cairo;
 
@@ -19,6 +20,7 @@ with Gtk.Layered.Needle;
 with Gtk.Main;
 with Gtk.Missed;
 with Gtk.Oscilloscope;
+with Gtk.Widget;
 with Gtk.Window;
 
 package body GUI is
@@ -45,6 +47,7 @@ package body GUI is
          Tachometer        : Gtk.Gauge.Elliptic_180.Gtk_Gauge_Elliptic_180;
          Altimeter_1000    : Gtk.Gauge.Round_270_60s.Gtk_Gauge_Round_270_60s;
          Altimeter_100     : access Gtk.Layered.Needle.Needle_Layer;
+         Altimeter_10      : access Gtk.Layered.Needle.Needle_Layer;
       end record;
    type Main_Window is access all Main_Window_Record'Class;
 
@@ -63,7 +66,8 @@ package body GUI is
    Velocity_Scale : constant Scaling
      := (Texts  =>
             new Gtk.Enums.String_Lists.Controlled_String_List'
-             ("0" / "20" / "40" / "60" / "80" / "100" / "120" / "140" / "160" / "180" / "200"),
+             ("0" / "20" / "40" / "60" / "80" / "100" /
+              "120" / "140" / "160" / "180" / "200"),
          Factor => 200.0);
 
    package Windows_CB is
@@ -97,7 +101,8 @@ package body GUI is
            (State => Update_State.Legs (Leg) = Landing_Legs.Touched_Down);
          DE.Leg_Led (Leg).all.Queue_Draw;
       end loop;
-      DE.Thruster_Led.all.Set_State (State => Update_State.Thruster = Thrusters.Enabled);
+      DE.Thruster_Led.all.Set_State
+        (State => Update_State.Thruster = Thrusters.Enabled);
       DE.Thruster_Led.all.Queue_Draw;
 
       -- Altitude
@@ -120,6 +125,19 @@ package body GUI is
                  then 1000.0 + Hundreds
                  else Hundreds) / Altitude_Scale.Factor);
       end;
+
+      declare
+         Tens : constant Glib.Gdouble :=
+                  Glib.Gdouble'Remainder
+                    (Glib.Gdouble (Update_State.Altitude), 100.0);
+      begin
+         Win.Altimeter_10.all.Set_Value
+           (Value =>
+              100.0 *
+                (if Tens < 0.0
+                 then 100.0 + Tens
+                 else Tens) / Altitude_Scale.Factor);
+      end;
       Win.Altimeter_1000.all.Queue_Draw;
 
       -- Velocity
@@ -134,7 +152,8 @@ package body GUI is
       --  Data plots
       declare
          Plotter : Gtk.Oscilloscope.Gtk_Oscilloscope_Record renames
-                     Gtk.Oscilloscope.Gtk_Oscilloscope_Record (Win.Oscilloscope.all);
+                     Gtk.Oscilloscope.Gtk_Oscilloscope_Record
+                       (Win.Oscilloscope.all);
       begin
          -- Data plot
          Plotter.Feed
@@ -152,12 +171,153 @@ package body GUI is
                                    L = Landing_Legs.Touched_Down))));
          Plotter.Feed
            (Channel => Win.Thruster_Channel,
-            V       => Glib.Gdouble (Thrusters.State'Pos (Update_State.Thruster)));
+            V       =>
+              Glib.Gdouble (Thrusters.State'Pos (Update_State.Thruster)));
       end;
    end Feed_Values;
 
    procedure Initialize (Window : in out Main_Window_Record'Class);
-   procedure Initialize (Window : in out Main_Window_Record'Class) is
+   procedure Initialize (Window : in out Main_Window_Record'Class)
+   is
+
+      function Create_Altimeter return not null access
+        Gtk.Widget.Gtk_Widget_Record'Class;
+      function Create_LEDs return not null access
+        Gtk.Widget.Gtk_Widget_Record'Class;
+
+      --
+      function Create_Altimeter return not null access
+        Gtk.Widget.Gtk_Widget_Record'Class
+      is
+         Gauge      : Gtk.Gauge.Round_270_60s.Gtk_Gauge_Round_270_60s;
+         Needle_100 : access Gtk.Layered.Needle.Needle_Layer;
+         Needle_10  : access Gtk.Layered.Needle.Needle_Layer;
+         use type Glib.Gdouble;
+      begin
+         Gtk.Gauge.Round_270_60s.Gtk_New
+           (Widget  => Gauge,
+            Texts   => Altitude_Scale.Texts.all,
+            Sectors =>
+              Positive
+                (Gtk.Enums.String_List.Length
+                     (+Altitude_Scale.Texts.all)) - 1);
+
+         Needle_100 :=
+           Gtk.Layered.Needle.Add_Needle
+             (Under       => Gauge,
+              Center      => (0.0, 0.0),
+              Tip_Cap     => Cairo.Cairo_Line_Cap_Round,
+              Adjustment  => null,
+              Tip_Length  => 0.39,
+              Tip_Width   => 0.01,
+              Rear_Length => -0.165,
+              Rear_Width  => 0.01,
+              Color       => Gtk.Missed.RGB (0.0, 0.5, 0.0),
+              Scaled      => True);
+         Needle_10 :=
+           Gtk.Layered.Needle.Add_Needle
+             (Under       => Gauge,
+              Center      => (0.0, 0.0),
+              Tip_Cap     => Cairo.Cairo_Line_Cap_Round,
+              Adjustment  => null,
+              Tip_Length  => 0.35,
+              Tip_Width   => 0.01,
+              Rear_Length => -0.165,
+              Rear_Width  => 0.03,
+              Color       => Gtk.Missed.RGB (0.5, 0.5, 0.0),
+              Scaled      => True);
+         Window.Altimeter_1000 := Gauge;
+         Window.Altimeter_100  := Needle_100;
+         Window.Altimeter_10   := Needle_10;
+
+         return Gauge;
+      end Create_Altimeter;
+
+      --
+      function Create_LEDs return not null access
+        Gtk.Widget.Gtk_Widget_Record'Class
+      is
+         Container : Gtk.Box.Gtk_Vbox;
+
+         function Labeled_LED
+           (The_LED     : not null access Gtk.Widget.Gtk_Widget_Record'Class;
+            Description : String) return not null access
+           Gtk.Widget.Gtk_Widget_Record'Class;
+
+         function Labeled_LED
+           (The_LED     : not null access Gtk.Widget.Gtk_Widget_Record'Class;
+            Description : String) return not null access
+           Gtk.Widget.Gtk_Widget_Record'Class
+         is
+            LED_Box : Gtk.Box.Gtk_Hbox;
+            Label   : Gtk.Label.Gtk_Label;
+         begin
+            Gtk.Box.Gtk_New_Hbox (LED_Box);
+            LED_Box.all.Set_Homogeneous (Homogeneous => True);
+            Gtk.Label.Gtk_New (Label => Label,
+                               Str   => Description);
+            LED_Box.all.Pack_Start (Label);
+            LED_Box.all.Pack_Start (The_LED);
+
+            return LED_Box;
+         end Labeled_LED;
+
+      begin
+         Gtk.Box.Gtk_New_Vbox (Box => Container);
+         Container.all.Set_Size_Request (Width  => 100,
+                                         Height => 100);
+
+         for Leg in Landing_Legs.Legs_Index loop
+            declare
+               Led : Gtk.Gauge.LED_Round.Gtk_Gauge_LED_Round;
+            begin
+               Gtk.Gauge.LED_Round.Gtk_New
+                 (Widget        => Led,
+                  On_Color      => Gtk.Missed.RGB (0.0, 1.0, 0.0),
+                  Off_Color     => Gtk.Missed.RGB (0.5, 0.5, 0.5),
+                  Border_Shadow => Gtk.Enums.Shadow_Etched_Out);
+               Container.all.Pack_Start
+                 (Child =>
+                    Labeled_LED
+                      (The_LED     => Led,
+                       Description =>
+                         "Landing Leg"
+                       & Natural'Image
+                         (Landing_Legs.Legs_Index'Pos (Leg) + 1)));
+               Window.Elements.Leg_Led (Leg) := Led;
+            end;
+         end loop;
+
+         declare
+            Led : Gtk.Gauge.LED_Round.Gtk_Gauge_LED_Round;
+         begin
+            Gtk.Gauge.LED_Round.Gtk_New
+              (Widget        => Led,
+               On_Color      => Gtk.Missed.RGB (1.0, 1.0, 0.5),
+               Off_Color     => Gtk.Missed.RGB (0.5, 0.5, 0.5),
+               Border_Shadow => Gtk.Enums.Shadow_Etched_Out);
+            Container.all.Pack_Start
+              (Child => Labeled_LED (The_LED     => Led,
+                                     Description => "Thruster"));
+            Window.Elements.Thruster_Led := Led;
+         end;
+
+         declare
+            Led : Gtk.Gauge.LED_Round.Gtk_Gauge_LED_Round;
+         begin
+            Gtk.Gauge.LED_Round.Gtk_New
+              (Widget        => Led,
+               On_Color      => Gtk.Missed.RGB (1.0, 0.0, 0.0),
+               Off_Color     => Gtk.Missed.RGB (0.0, 1.0, 0.0),
+               Border_Shadow => Gtk.Enums.Shadow_Etched_Out);
+            Container.all.Pack_Start
+              (Child => Labeled_LED (The_LED     => Led,
+                                     Description => "Bug"));
+            Led.all.Set_State (Touchdown_Monitor.Bug_Enabled);
+         end;
+
+         return Container;
+      end Create_LEDs;
    begin
       Window.Initialize (The_Type => Gtk.Enums.Window_Toplevel);
       Window.Set_Title (Title => "Mars MPL simulation");
@@ -185,70 +345,7 @@ package body GUI is
                begin
                   Gtk.Box.Gtk_New_Vbox (Box => VBox2);
                   HBox.all.Pack_Start (Child => VBox2);
-
-                  declare
-                     Label : Gtk.Label.Gtk_Label;
-                  begin
-                     Gtk.Label.Gtk_New (Label => Label,
-                                        Str   => "Landing legs");
-                     VBox2.all.Pack_Start (Child  => Label);
-                  end;
-
-                  declare
-                     HBox2 : Gtk.Box.Gtk_Hbox;
-                  begin
-                     Gtk.Box.Gtk_New_Hbox (Box => HBox2);
-                     VBox2.all.Pack_Start (HBox2);
-
-                     for Leg in Landing_Legs.Legs_Index loop
-                        declare
-                           use type Glib.Gint;
-                           Led : Gtk.Gauge.LED_Round.Gtk_Gauge_LED_Round;
-                        begin
-                           Gtk.Gauge.LED_Round.Gtk_New
-                             (Widget        => Led,
-                              On_Color      => Gtk.Missed.RGB (0.0, 1.0, 0.0),
-                              Off_Color     => Gtk.Missed.RGB (0.5, 0.5, 0.5),
-                              Border_Shadow => Gtk.Enums.Shadow_Etched_Out);
-                           HBox2.all.Pack_Start (Child => Led);
-                           Window.Elements.Leg_Led (Leg) := Led;
-                        end;
-                     end loop;
-                  end;
-               end;
-
-               declare
-                  VBox2 : Gtk.Box.Gtk_Vbox;
-               begin
-                  Gtk.Box.Gtk_New_Vbox (Box => VBox2);
-                  HBox.all.Pack_Start (Child => VBox2);
-
-                  declare
-                     Label : Gtk.Label.Gtk_Label;
-                  begin
-                     Gtk.Label.Gtk_New (Label => Label,
-                                        Str   => "Thruster");
-                     VBox2.all.Pack_Start (Child => Label);
-                  end;
-
-                  declare
-                     HBox2 : Gtk.Box.Gtk_Hbox;
-                  begin
-                     Gtk.Box.Gtk_New_Hbox (Box => HBox2);
-                     VBox2.all.Pack_Start (HBox2);
-
-                     declare
-                        Led : Gtk.Gauge.LED_Round.Gtk_Gauge_LED_Round;
-                     begin
-                        Gtk.Gauge.LED_Round.Gtk_New
-                          (Widget        => Led,
-                           On_Color      => Gtk.Missed.RGB (1.0, 1.0, 0.5),
-                           Off_Color     => Gtk.Missed.RGB (0.0, 0.0, 1.0),
-                           Border_Shadow => Gtk.Enums.Shadow_Etched_Out);
-                        HBox2.all.Pack_Start (Child  => Led);
-                        Window.Elements.Thruster_Led := Led;
-                     end;
-                  end;
+                  VBox2.all.Pack_Start (Child => Create_LEDs);
                end;
 
                declare
@@ -265,42 +362,13 @@ package body GUI is
                   begin
                      Gtk.Box.Gtk_New_Vbox (Box => VBox2);
                      Altitude_Frame.all.Add (Widget => VBox2);
-
-                     declare
-                        Gauge      : Gtk.Gauge.Round_270_60s.Gtk_Gauge_Round_270_60s;
-                        Needle_100 : access Gtk.Layered.Needle.Needle_Layer;
-                        use type Glib.Gdouble;
-                     begin
-                        Gtk.Gauge.Round_270_60s.Gtk_New
-                          (Widget  => Gauge,
-                           Texts   => Altitude_Scale.Texts.all,
-                           Sectors =>
-                             Positive
-                               (Gtk.Enums.String_List.Length
-                                    (+Altitude_Scale.Texts.all)) - 1);
-                        VBox2.all.Pack_Start (Child => Gauge);
-
-                        Needle_100 :=
-                          Gtk.Layered.Needle.Add_Needle
-                            (Under       => Gauge.all.Get_Needle,
-                             Center      => (0.0, 0.0),
-                             Tip_Cap     => Cairo.Cairo_Line_Cap_Round,
-                             Adjustment  => null,
-                             Tip_Length  => 0.34,
-                             Tip_Width   => 0.01,
-                             Rear_Length => -0.165,
-                             Rear_Width  => 0.03,
-                             Color       => Gtk.Missed.RGB (0.0, 0.5, 0.0),
-                             Scaled      => True);
-                        Window.Altimeter_1000 := Gauge;
-                        Window.Altimeter_100  := Needle_100;
-                     end;
+                     VBox2.all.Pack_Start (Child => Create_Altimeter);
 
                      declare
                         Text : Gtk.GEntry.Gtk_Entry;
                      begin
                         Gtk.GEntry.Gtk_New (The_Entry => Text);
-                        VBox2.all.Add (Widget => Text);
+                        VBox2.all.Pack_End (Child => Text);
                         Window.Elements.Altitude := Text;
                         Text.all.Set_Editable (Is_Editable => False);
                      end;
@@ -340,7 +408,7 @@ package body GUI is
                         Text : Gtk.GEntry.Gtk_Entry;
                      begin
                         Gtk.GEntry.Gtk_New (The_Entry => Text);
-                        VBox2.all.Pack_Start (Child => Text);
+                        VBox2.all.Pack_End (Child => Text);
                         Window.Elements.Velocity := Text;
                         Text.all.Set_Editable (Is_Editable => False);
                      end;
@@ -357,7 +425,6 @@ package body GUI is
             VBox.all.Pack_Start (Child => Frame);
 
             declare
-               use type Ada.Real_Time.Time;
                Plot : Gtk.Oscilloscope.Gtk_Oscilloscope;
             begin
                Gtk.Oscilloscope.Gtk_New (Widget => Plot);
@@ -408,7 +475,6 @@ package body GUI is
    end State_Update;
 
    task body GUI_Task is
-      use type Ada.Real_Time.Time;
       Win          : Main_Window;
       Update_State : State;
    begin
@@ -429,8 +495,9 @@ package body GUI is
             Feed_Values (Win          => Main_Window_Record (Win.all),
                          Update_State => Update_State);
          else
-            Win.all.Oscilloscope.all.Set_Time (Sweeper => Gtk.Oscilloscope.Lower,
-                                               Stamp   => Update_State.Time_Stamp);
+            Win.all.Oscilloscope.all.Set_Time
+              (Sweeper => Gtk.Oscilloscope.Lower,
+               Stamp   => Update_State.Time_Stamp);
          end if;
 
          while Gtk.Main.Events_Pending loop

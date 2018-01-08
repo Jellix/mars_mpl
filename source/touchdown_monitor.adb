@@ -144,7 +144,7 @@ package body Touchdown_Monitor is
             -- the actual result.
             -- Set indicator state only once.
             if
-              -- Event_Enabled and then -- Bug is here.
+              (Bug_Enabled or else Event_Enabled) and then -- Bug is here.
               Last_Indicator    = Landing_Legs.Touched_Down and then
               Current_Indicator = Landing_Legs.Touched_Down
             then

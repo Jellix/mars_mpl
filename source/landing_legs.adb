@@ -15,8 +15,6 @@ package body Landing_Legs is
      with Atomic_Components;
    Leg : All_Legs_State_Atomic;
 
-   package Random_Leg is new Ada.Numerics.Discrete_Random
-     (Result_Subtype => Legs_Index);
    package Random_Time is new Ada.Numerics.Discrete_Random
      (Result_Subtype => Sensor_Glitch);
 
@@ -79,14 +77,12 @@ package body Landing_Legs is
       (Task_Control.Trigger_Timeout'Access);
 
    task body Simulate_Landing_Legs is
-      Legs_G : Random_Leg.Generator;
       Time_G : Random_Time.Generator;
 
-      Num_Spurious_Signals : Natural    := 3;
+      Num_Spurious_Signals : Natural    := Legs_Index'Pos (Legs_Index'First);
       Previous_State       : Task_State := Running;
       Current_State        : Task_State := Running;
    begin
-      Random_Leg.Reset (Gen => Legs_G);
       Random_Time.Reset (Gen => Time_G);
 
       Timing_Events.Set_Handler (Event   => Timed_Trigger,
@@ -110,12 +106,12 @@ package body Landing_Legs is
 
          case Current_State is
             when Deployed =>
-               if Num_Spurious_Signals > 0 then
+               if Num_Spurious_Signals <= Legs_Index'Pos (Legs_Index'Last) then
                   declare
-                     Selected_Leg : constant Legs_Index :=
-                       Random_Leg.Random (Gen => Legs_G);
+                     Selected_Leg : constant Legs_Index    :=
+                                      Legs_Index'Val (Num_Spurious_Signals);
                      MS_Triggered : constant Sensor_Glitch :=
-                       Random_Time.Random (Gen => Time_G);
+                                      Random_Time.Random (Gen => Time_G);
                   begin
                      Global.Log
                        (Message =>
@@ -131,7 +127,7 @@ package body Landing_Legs is
                      Leg (Selected_Leg) := In_Flight;
                   end;
 
-                  Num_Spurious_Signals := Num_Spurious_Signals - 1;
+                  Num_Spurious_Signals := Num_Spurious_Signals + 1;
 
                   Timing_Events.Set_Handler
                     (Event   => Timed_Trigger,

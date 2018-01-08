@@ -6,6 +6,8 @@ with Landing_Legs;
 
 package Touchdown_Monitor is
 
+   Bug_Enabled : constant Boolean := False;
+
    Cycle : constant Ada.Real_Time.Time_Span := Ada.Real_Time.Milliseconds (10);
    -- Monitoring cycle
 

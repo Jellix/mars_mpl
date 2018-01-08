@@ -40,5 +40,17 @@ project Mars_Mpl is
       for Default_Switches ("ada") use ("-g");
    end Linker;
 
+   package Pretty_Printer is
+
+      case Library_Type is
+
+         when "static" =>
+            for Switches ("ada") use ("-N", "--no-separate-is");
+
+         when "relocatable" =>
+
+      end case;
+   end Pretty_Printer;
+
 end Mars_Mpl;
 
