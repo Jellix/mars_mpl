@@ -3,20 +3,17 @@ with Ada.Exceptions;
 with Global;
 with Touchdown_Monitor;
 
-with Cairo;
-
 with Glib;
 
 with Gtk.Box;
 with Gtk.Enums.String_Lists;
 with Gtk.Frame;
-with Gtk.Gauge.Round_270_60s;
+with Gtk.Gauge.Altimeter;
 with Gtk.Gauge.Elliptic_180;
 with Gtk.Gauge.LED_Round;
 with Gtk.GEntry;
 with Gtk.Handlers;
 with Gtk.Label;
-with Gtk.Layered.Needle;
 with Gtk.Main;
 with Gtk.Missed;
 with Gtk.Oscilloscope;
@@ -45,9 +42,7 @@ package body GUI is
          Touchdown_Channel : Gtk.Oscilloscope.Channel_Number;
          Thruster_Channel  : Gtk.Oscilloscope.Channel_Number;
          Tachometer        : Gtk.Gauge.Elliptic_180.Gtk_Gauge_Elliptic_180;
-         Altimeter_1000    : Gtk.Gauge.Round_270_60s.Gtk_Gauge_Round_270_60s;
-         Altimeter_100     : access Gtk.Layered.Needle.Needle_Layer;
-         Altimeter_10      : access Gtk.Layered.Needle.Needle_Layer;
+         Altimeter_1000    : Gtk.Gauge.Altimeter.Gtk_Gauge_Altimeter;
       end record;
    type Main_Window is access all Main_Window_Record'Class;
 
@@ -61,7 +56,7 @@ package body GUI is
    Altitude_Scale : constant Scaling
      := (Texts  =>
             new Gtk.Enums.String_Lists.Controlled_String_List'
-           ("0" / "1" / "2" / "3" / "4" / "5" / "6" / "7" / "8" / "9" / "10"),
+           ("0" / "1" / "2" / "3" / "4" / "5" / "6" / "7" / "8" / "9"),
          Factor => 10000.0);
    Velocity_Scale : constant Scaling
      := (Texts  =>
@@ -112,32 +107,6 @@ package body GUI is
         (Value =>
            Glib.Gdouble (abs Update_State.Altitude) /
              Altitude_Scale.Factor);
-
-      declare
-         Hundreds : constant Glib.Gdouble :=
-                      Glib.Gdouble'Remainder
-                        (Glib.Gdouble (Update_State.Altitude), 1000.0);
-      begin
-         Win.Altimeter_100.all.Set_Value
-           (Value =>
-              10.0 *
-                (if Hundreds < 0.0
-                 then 1000.0 + Hundreds
-                 else Hundreds) / Altitude_Scale.Factor);
-      end;
-
-      declare
-         Tens : constant Glib.Gdouble :=
-                  Glib.Gdouble'Remainder
-                    (Glib.Gdouble (Update_State.Altitude), 100.0);
-      begin
-         Win.Altimeter_10.all.Set_Value
-           (Value =>
-              100.0 *
-                (if Tens < 0.0
-                 then 100.0 + Tens
-                 else Tens) / Altitude_Scale.Factor);
-      end;
       Win.Altimeter_1000.all.Queue_Draw;
 
       -- Velocity
@@ -189,46 +158,18 @@ package body GUI is
       function Create_Altimeter return not null access
         Gtk.Widget.Gtk_Widget_Record'Class
       is
-         Gauge      : Gtk.Gauge.Round_270_60s.Gtk_Gauge_Round_270_60s;
-         Needle_100 : access Gtk.Layered.Needle.Needle_Layer;
-         Needle_10  : access Gtk.Layered.Needle.Needle_Layer;
+         Gauge : Gtk.Gauge.Altimeter.Gtk_Gauge_Altimeter;
          use type Glib.Gdouble;
       begin
-         Gtk.Gauge.Round_270_60s.Gtk_New
+         Gtk.Gauge.Altimeter.Gtk_New
            (Widget  => Gauge,
             Texts   => Altitude_Scale.Texts.all,
             Sectors =>
               Positive
                 (Gtk.Enums.String_List.Length
-                     (+Altitude_Scale.Texts.all)) - 1);
+                     (+Altitude_Scale.Texts.all)));
 
-         Needle_100 :=
-           Gtk.Layered.Needle.Add_Needle
-             (Under       => Gauge,
-              Center      => (0.0, 0.0),
-              Tip_Cap     => Cairo.Cairo_Line_Cap_Round,
-              Adjustment  => null,
-              Tip_Length  => 0.39,
-              Tip_Width   => 0.01,
-              Rear_Length => -0.165,
-              Rear_Width  => 0.01,
-              Color       => Gtk.Missed.RGB (0.0, 0.5, 0.0),
-              Scaled      => True);
-         Needle_10 :=
-           Gtk.Layered.Needle.Add_Needle
-             (Under       => Gauge,
-              Center      => (0.0, 0.0),
-              Tip_Cap     => Cairo.Cairo_Line_Cap_Round,
-              Adjustment  => null,
-              Tip_Length  => 0.35,
-              Tip_Width   => 0.01,
-              Rear_Length => -0.165,
-              Rear_Width  => 0.03,
-              Color       => Gtk.Missed.RGB (0.5, 0.5, 0.0),
-              Scaled      => True);
          Window.Altimeter_1000 := Gauge;
-         Window.Altimeter_100  := Needle_100;
-         Window.Altimeter_10   := Needle_10;
 
          return Gauge;
       end Create_Altimeter;
