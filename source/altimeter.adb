@@ -26,6 +26,8 @@ package body Altimeter is
 
       use type Thrusters.State;
    begin
+      Global.Log ("Altitude control monitor started.");
+
       while Altitude_Now > 0.0 loop
          declare
             T            : constant Float :=
@@ -53,6 +55,7 @@ package body Altimeter is
       end loop;
 
       Landing_Legs.Touchdown;
+      Global.Log ("Altitude control monitor finished.");
    exception
       when E : others =>
          Global.Log (Ada.Exceptions.Exception_Information (E));

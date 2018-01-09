@@ -46,7 +46,7 @@ procedure Simulator is
    end Update_GUI;
 
 begin
-   Global.Log (Message => "Starting monitors...");
+   Global.Log (Message => "Starting touchdown monitors...");
    Touchdown_Monitor.Start;
 
    Next_Cycle := Global.Start_Time + Cycle;
@@ -63,7 +63,7 @@ begin
          end if;
 
          if not Monitor_Enabled and then Current_Altitude <= 40.0 then
-            Global.Log (Message => "Enabling monitors...");
+            Global.Log (Message => "Enabling touchdown monitors...");
             Touchdown_Monitor.Enable;
             Monitor_Enabled := True;
          end if;
@@ -86,7 +86,7 @@ begin
              Touchdown_Monitor.Terminated);
 
       if All_Monitors_Dead then
-         Global.Log (Message => "All monitors finished.");
+         Global.Log (Message => "All touchdown monitors finished.");
          Update_GUI;
          Touchdown_Monitor.Shutdown;
          Landing_Legs.Shutdown;

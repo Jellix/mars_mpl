@@ -27,7 +27,6 @@
 
 with Gtk.Adjustment;
 with Gtk.Enums.String_Lists;
-with Gtk.Layered;
 with Gtk.Layered.Needle;
 with Gtk.Layered.Cache;
 

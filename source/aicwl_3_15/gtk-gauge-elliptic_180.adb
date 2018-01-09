@@ -199,7 +199,7 @@ package body Gtk.Gauge.Elliptic_180 is
          Gtk.Widget.Install_Style_Property
            (Glib.Types.Class_Ref (Class_Record.all.The_Type),
             Glib.Properties.Creation.Gnew_Boxed
-              (Name       => "backgound-color",
+              (Name       => "background-color",
                Boxed_Type => Gdk.Color.Gdk_Color_Type,
                Nick       => "Background color",
                Blurb      => "The background color"));

@@ -3,6 +3,8 @@ with Ada.Exceptions;
 with Global;
 with Touchdown_Monitor;
 
+with Cairo;
+
 with Glib;
 
 with Gtk.Box;
@@ -14,11 +16,14 @@ with Gtk.Gauge.LED_Round;
 with Gtk.GEntry;
 with Gtk.Handlers;
 with Gtk.Label;
+with Gtk.Layered.Label;
 with Gtk.Main;
 with Gtk.Missed;
 with Gtk.Oscilloscope;
 with Gtk.Widget;
 with Gtk.Window;
+
+with Pango.Cairo.Fonts;
 
 package body GUI is
 
@@ -33,16 +38,19 @@ package body GUI is
          Velocity     : Gtk.GEntry.Gtk_Entry;
       end record;
 
+   type Legs_Channels is array (Landing_Legs.Legs_Index) of
+     Gtk.Oscilloscope.Channel_Number;
+
    type Main_Window_Record is new Gtk.Window.Gtk_Window_Record with
       record
          Elements          : Dynamic_Elements;
          Oscilloscope      : Gtk.Oscilloscope.Gtk_Oscilloscope;
          Altitude_Channel  : Gtk.Oscilloscope.Channel_Number;
          Velocity_Channel  : Gtk.Oscilloscope.Channel_Number;
-         Touchdown_Channel : Gtk.Oscilloscope.Channel_Number;
+         Touchdown_Channel : Legs_Channels;
          Thruster_Channel  : Gtk.Oscilloscope.Channel_Number;
          Tachometer        : Gtk.Gauge.Elliptic_180.Gtk_Gauge_Elliptic_180;
-         Altimeter_1000    : Gtk.Gauge.Altimeter.Gtk_Gauge_Altimeter;
+         Altimeter         : Gtk.Gauge.Altimeter.Gtk_Gauge_Altimeter;
       end record;
    type Main_Window is access all Main_Window_Record'Class;
 
@@ -103,11 +111,11 @@ package body GUI is
       -- Altitude
       DE.Altitude.all.Set_Text
         (Text => Altimeter.Image (Update_State.Altitude));
-      Win.Altimeter_1000.all.Set_Value
+      Win.Altimeter.all.Set_Value
         (Value =>
            Glib.Gdouble (abs Update_State.Altitude) /
              Altitude_Scale.Factor);
-      Win.Altimeter_1000.all.Queue_Draw;
+      Win.Altimeter.all.Queue_Draw;
 
       -- Velocity
       DE.Velocity.all.Set_Text
@@ -132,12 +140,16 @@ package body GUI is
            (Channel => Win.Velocity_Channel,
             V       => Glib.Gdouble (Update_State.Velocity));
 
-         Plotter.Feed
-           (Channel => Win.Touchdown_Channel,
-            V       =>
-              Glib.Gdouble
-                (Boolean'Pos ((for some L of Update_State.Legs =>
-                                   L = Landing_Legs.Touched_Down))));
+         for Leg in Landing_Legs.Legs_Index loop
+            Plotter.Feed
+              (Channel => Win.Touchdown_Channel (Leg),
+               V       =>
+                 Glib.Gdouble
+                   (Landing_Legs.Legs_Index'Pos (Leg) *
+                    Boolean'Pos
+                      (Update_State.Legs (Leg) = Landing_Legs.Touched_Down)));
+         end loop;
+
          Plotter.Feed
            (Channel => Win.Thruster_Channel,
             V       =>
@@ -149,30 +161,8 @@ package body GUI is
    procedure Initialize (Window : in out Main_Window_Record'Class)
    is
 
-      function Create_Altimeter return not null access
-        Gtk.Widget.Gtk_Widget_Record'Class;
       function Create_LEDs return not null access
         Gtk.Widget.Gtk_Widget_Record'Class;
-
-      --
-      function Create_Altimeter return not null access
-        Gtk.Widget.Gtk_Widget_Record'Class
-      is
-         Gauge : Gtk.Gauge.Altimeter.Gtk_Gauge_Altimeter;
-         use type Glib.Gdouble;
-      begin
-         Gtk.Gauge.Altimeter.Gtk_New
-           (Widget  => Gauge,
-            Texts   => Altitude_Scale.Texts.all,
-            Sectors =>
-              Positive
-                (Gtk.Enums.String_List.Length
-                     (+Altitude_Scale.Texts.all)));
-
-         Window.Altimeter_1000 := Gauge;
-
-         return Gauge;
-      end Create_Altimeter;
 
       --
       function Create_LEDs return not null access
@@ -259,6 +249,17 @@ package body GUI is
 
          return Container;
       end Create_LEDs;
+
+      Label_Font        : constant Pango.Cairo.Fonts.Pango_Cairo_Font :=
+                            Pango.Cairo.Fonts.Create_Toy
+                              (Family => "arial",
+                               Slant  => Cairo.Cairo_Font_Slant_Normal,
+                               Weight => Cairo.Cairo_Font_Weight_Bold);
+      Label_Font_Italic : constant Pango.Cairo.Fonts.Pango_Cairo_Font :=
+                            Pango.Cairo.Fonts.Create_Toy
+                              (Family => "arial",
+                               Slant  => Cairo.Cairo_Font_Slant_Italic,
+                               Weight => Cairo.Cairo_Font_Weight_Bold);
    begin
       Window.Initialize (The_Type => Gtk.Enums.Window_Toplevel);
       Window.Set_Title (Title => "Mars MPL simulation");
@@ -301,15 +302,46 @@ package body GUI is
                   declare
                      VBox2 : Gtk.Box.Gtk_Vbox;
                   begin
-                     Gtk.Box.Gtk_New_Vbox (Box => VBox2);
+                     Gtk.Box.Gtk_New_Vbox (Box         => VBox2,
+                                           Homogeneous => False,
+                                           Spacing     => 0);
                      Altitude_Frame.all.Add (Widget => VBox2);
-                     VBox2.all.Pack_Start (Child => Create_Altimeter);
+
+                     declare
+                        Gauge : Gtk.Gauge.Altimeter.Gtk_Gauge_Altimeter;
+                     begin
+                        Gtk.Gauge.Altimeter.Gtk_New
+                          (Widget  => Gauge,
+                           Texts   => Altitude_Scale.Texts.all,
+                           Sectors =>
+                             Positive
+                               (Gtk.Enums.String_List.Length
+                                    (+Altitude_Scale.Texts.all)));
+                        Gtk.Layered.Label.Add_Label
+                          (Under    => Gauge.all.Get_Cache,
+                           Text     => "x 1000 m",
+                           Location => (0.0175, 0.175),
+                           Face     => Label_Font,
+                           Height   => 0.04,
+                           Stretch  => 1.0,
+                           Mode     => Gtk.Layered.Moved_Centered,
+                           Color    => Gtk.Missed.RGB (1.0, 1.0, 1.0),
+                           Angle    => 0.0,
+                           Skew     => 0.0,
+                           Markup   => False,
+                           Scaled   => True);
+                        Window.Altimeter := Gauge;
+
+                        VBox2.all.Pack_Start (Child  => Gauge,
+                                              Expand => True);
+                     end;
 
                      declare
                         Text : Gtk.GEntry.Gtk_Entry;
                      begin
                         Gtk.GEntry.Gtk_New (The_Entry => Text);
-                        VBox2.all.Pack_End (Child => Text);
+                        VBox2.all.Pack_End (Child => Text,
+                                            Expand => False);
                         Window.Elements.Altitude := Text;
                         Text.all.Set_Editable (Is_Editable => False);
                      end;
@@ -333,6 +365,7 @@ package body GUI is
 
                      declare
                         Gauge : Gtk.Gauge.Elliptic_180.Gtk_Gauge_Elliptic_180;
+                        use type Glib.Gdouble;
                      begin
                         Gtk.Gauge.Elliptic_180.Gtk_New
                           (Widget  => Gauge,
@@ -341,7 +374,21 @@ package body GUI is
                              Positive
                                (Gtk.Enums.String_List.Length
                                     (+Velocity_Scale.Texts.all)) - 1);
-                        VBox2.all.Pack_Start (Child => Gauge);
+                        Gtk.Layered.Label.Add_Label
+                          (Under    => Gauge.all.Get_Cache,
+                           Text     => "m/s",
+                           Location => (0.0175, 0.1),
+                           Face     => Label_Font_Italic,
+                           Height   => 0.03,
+                           Stretch  => 0.9,
+                           Mode     => Gtk.Layered.Moved_Centered,
+                           Color    => Gtk.Missed.RGB (1.0, 0.6, 0.0),
+                           Angle    => 0.0,
+                           Skew     => 0.0,
+                           Markup   => False,
+                           Scaled   => True);
+                        VBox2.all.Pack_Start (Child  => Gauge,
+                                              Expand => True);
                         Window.Tachometer := Gauge;
                      end;
 
@@ -349,7 +396,8 @@ package body GUI is
                         Text : Gtk.GEntry.Gtk_Entry;
                      begin
                         Gtk.GEntry.Gtk_New (The_Entry => Text);
-                        VBox2.all.Pack_End (Child => Text);
+                        VBox2.all.Pack_End (Child  => Text,
+                                            Expand => False);
                         Window.Elements.Velocity := Text;
                         Text.all.Set_Editable (Is_Editable => False);
                      end;
@@ -380,7 +428,12 @@ package body GUI is
                   G : Gtk.Oscilloscope.Group_Number;
                begin
                   G := Plot.all.Add_Group (Name => "Signals");
-                  Window.Touchdown_Channel := Plot.all.Add_Channel (Group => G);
+
+                  for Leg in Landing_Legs.Legs_Index loop
+                     Window.Touchdown_Channel (Leg) :=
+                       Plot.all.Add_Channel (Group => G);
+                  end loop;
+
                   Window.Thruster_Channel  := Plot.all.Add_Channel (Group => G);
                end;
 

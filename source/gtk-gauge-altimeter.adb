@@ -26,18 +26,20 @@
 -- __________________________________________________________________ --
 
 with Ada.Numerics;
-with Cairo;
+
+with Cairo.Ellipses;
 with Cairo.Line_Cap_Property;
+
 with Gdk.Color;
-with Glib.Properties.Creation;
-with Glib.Types;
-with Gtk.Missed;
-with Gtk.Widget.Styles;
-with Pango.Cairo.Fonts;
 
 with Glib.Object.Checked_Destroy;
+with Glib.Properties.Creation;
+with Glib.Types;
 
+with Gtk.Missed;
 with Gtk.Widget.Styles.Line_Cap_Property;
+
+with Pango.Cairo.Fonts;
 
 package body Gtk.Gauge.Altimeter is
 
@@ -49,9 +51,9 @@ package body Gtk.Gauge.Altimeter is
    Needle_Color_1    : constant Gdk.Color.Gdk_Color :=
                          Gtk.Missed.RGB (1.00, 0.00, 0.00);
    Needle_Color_2    : constant Gdk.Color.Gdk_Color :=
-                         Gtk.Missed.RGB (0.00, 1.00, 0.00);
+                         Gtk.Missed.RGB (1.00, 1.00, 0.00);
    Needle_Color_3    : constant Gdk.Color.Gdk_Color :=
-                         Gtk.Missed.RGB (0.50, 0.50, 1.00);
+                         Gtk.Missed.RGB (0.00, 1.00, 0.00);
 
    Pin_Color         : constant Gdk.Color.Gdk_Color :=
                          Gtk.Missed.RGB (0.70, 0.70, 0.70);
@@ -68,6 +70,10 @@ package body Gtk.Gauge.Altimeter is
 
    Class_Record : aliased Ada_GObject_Class := Uninitialized_Class;
 
+   The_Center   : constant Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
+   From_North   : constant Glib.Gdouble               := 6.0 * Pi / 4.0;
+   Full_Circle  : constant Glib.Gdouble               := 8.0 * Pi / 4.0;
+
    procedure Create_Background
      (Widget  : not null access Gtk_Gauge_Altimeter_Record'Class;
       Sectors : Positive);
@@ -83,7 +89,7 @@ package body Gtk.Gauge.Altimeter is
          Gtk.Layered.Elliptic_Background.Add_Elliptic_Background
           (Under         => Widget,
            Color         => Background_Color,
-           Outer         => ((0.0, 0.0), 1.0 / 0.5, 0.5, 0.0),
+           Outer         => (The_Center, 1.0 / 0.5, 0.5, 0.0),
            Border_Width  => 0.01,
            Border_Depth  => 0.005,
            Border_Shadow => Gtk.Enums.Shadow_Etched_Out,
@@ -94,9 +100,9 @@ package body Gtk.Gauge.Altimeter is
          Gtk.Layered.Elliptic_Background.Add_Elliptic_Background
           (Under         => Widget.all.Background.all.Get_Foreground,
            Color         => Background_Color,
-           Outer         => ((0.0, 0.0), 1.0 / 0.17, 0.17, 0.0),
+           Outer         => (The_Center, 1.0 / 0.10, 0.10, 0.0),
            Border_Depth  => 0.01,
-           Border_Width  => 0.05,
+           Border_Width  => 0.02,
            Border_Color  => (False, Pin_Color),
            Border_Shadow => Gtk.Enums.Shadow_Etched_Out,
            Deepened      => True,
@@ -105,39 +111,39 @@ package body Gtk.Gauge.Altimeter is
       Widget.all.Minor_Ticks :=
         Gtk.Layered.Elliptic_Scale.Add_Elliptic_Scale
           (Under   => Widget.all.Background.all.Get_Foreground,
-           Inner   => ((0.0, 0.0), 1.0 / 0.45, 0.45, Pi * 3.0 / 4.0),
-           Outer   => ((0.0, 0.0), 1.0 / 0.47, 0.47, Pi * 3.0 / 4.0),
+           Inner   => (The_Center, 1.0 / 0.45, 0.45, Pi * 3.0 / 4.0),
+           Outer   => (The_Center, 1.0 / 0.47, 0.47, Pi * 3.0 / 4.0),
            Color   => Minor_Tick_Color,
            Width   => 1.0 / 200.0,
            Skipped => 5,
-           Step    => 8.0 * Pi / (40.0 * Gdouble (Widget.all.Sectors)),
-           From    => 2.0 * Pi / 4.0,
-           Length  => 8.0 * Pi / 4.0,
+           Step    => Full_Circle / (10.0 * Gdouble (Widget.all.Sectors)),
+           From    => From_North,
+           Length  => Full_Circle,
            Scaled  => True,
            Widened => True);
       Widget.all.Middle_Ticks :=
         Gtk.Layered.Elliptic_Scale.Add_Elliptic_Scale
           (Under   => Widget.all.Background.all.Get_Foreground,
-           Inner   => ((0.0, 0.0), 1.0 / 0.44, 0.44, Pi * 3.0 / 4.0),
-           Outer   => ((0.0, 0.0), 1.0 / 0.47, 0.47, Pi * 3.0 / 4.0),
+           Inner   => (The_Center, 1.0 / 0.44, 0.44, Pi * 3.0 / 4.0),
+           Outer   => (The_Center, 1.0 / 0.47, 0.47, Pi * 3.0 / 4.0),
            Color   => Middle_Tick_Color,
            Width   => 1.5 / 200.0,
            Skipped => 2,
-           Step    => 8.0 * Pi / (4.0 * 2.0 * Gdouble (Widget.all.Sectors)),
-           From    => 2.0 * Pi / 4.0,
-           Length  => 8.0 * Pi / 4.0,
+           Step    => Full_Circle / (2.0 * Gdouble (Widget.all.Sectors)),
+           From    => From_North,
+           Length  => Full_Circle,
            Scaled  => True,
            Widened => True);
       Widget.all.Major_Ticks :=
         Gtk.Layered.Elliptic_Scale.Add_Elliptic_Scale
           (Under   => Widget.all.Background.all.Get_Foreground,
-           Inner   => ((0.0, 0.0), 1.0 / 0.42, 0.42, Pi * 3.0 / 4.0),
-           Outer   => ((0.0, 0.0), 1.0 / 0.47, 0.47, Pi * 3.0 / 4.0),
+           Inner   => (The_Center, 1.0 / 0.42, 0.42, Pi * 3.0 / 4.0),
+           Outer   => (The_Center, 1.0 / 0.47, 0.47, Pi * 3.0 / 4.0),
            Color   => Major_Tick_Color,
            Width   => 2.2 / 200.0,
-           Step    => 8.0 * Pi / (4.0 * Gdouble (Widget.all.Sectors)),
-           From    => 2.0 * Pi / 4.0,
-           Length  => 8.0 * Pi / 4.0,
+           Step    => Full_Circle / Gdouble (Widget.all.Sectors),
+           From    => From_North,
+           Length  => Full_Circle,
            Scaled  => True,
            Widened => True);
       Widget.all.Cache :=
@@ -149,47 +155,53 @@ package body Gtk.Gauge.Altimeter is
       Adjustment : Gtk.Adjustment.Gtk_Adjustment);
    procedure Create_Needle
      (Widget     : not null access Gtk_Gauge_Altimeter_Record'Class;
-      Adjustment : Gtk.Adjustment.Gtk_Adjustment) is
+      Adjustment : Gtk.Adjustment.Gtk_Adjustment)
+   is
+      Rear_Length : constant Glib.Gdouble               := -0.095;
+      Tip_Cap     : constant Cairo.Cairo_Line_Cap       :=
+                      Cairo.Cairo_Line_Cap_Square;
+      --  Constants for all needles.
+      --  Where the needle starts (Rear_Length), and tip style (Tip_Cap).
    begin
       Widget.all.Needle_Main :=
          Gtk.Layered.Needle.Add_Needle
           (Under       => Widget,
-           Center      => (0.0, 0.0),
-           From        => 2.0 * Pi / 4.0,
-           Length      => 8.0 * Pi / 4.0,
-           Tip_Cap     => Cairo.Cairo_Line_Cap_Square,
+           Center      => The_Center,
+           From        => From_North,
+           Length      => Full_Circle,
+           Tip_Cap     => Tip_Cap,
            Adjustment  => Adjustment,
            Tip_Length  => 0.35,
-           Tip_Width   => 0.03,
-           Rear_Length => -0.165,
+           Tip_Width   => 0.0525,
+           Rear_Length => Rear_Length,
            Rear_Width  => 0.03,
            Color       => Needle_Color_1,
            Scaled      => True);
       Widget.all.Needle_10ths :=
          Gtk.Layered.Needle.Add_Needle
           (Under       => Widget.all.Needle_Main,
-           Center      => (0.0, 0.0),
-           From        => 2.0 * Pi / 4.0,
-           Length      => 8.0 * Pi / 4.0,
-           Tip_Cap     => Cairo.Cairo_Line_Cap_Square,
+           Center      => The_Center,
+           From        => From_North,
+           Length      => Full_Circle,
+           Tip_Cap     => Tip_Cap,
            Adjustment  => Adjustment,
-           Tip_Length  => 0.40,
-           Tip_Width   => 0.025,
-           Rear_Length => -0.165,
+           Tip_Length  => 0.38,
+           Tip_Width   => 0.04375,
+           Rear_Length => Rear_Length,
            Rear_Width  => 0.025,
            Color       => Needle_Color_2,
            Scaled      => True);
       Widget.all.Needle_100ths :=
          Gtk.Layered.Needle.Add_Needle
           (Under       => Widget.all.Needle_10ths,
-           Center      => (0.0, 0.0),
-           From        => 2.0 * Pi / 4.0,
-           Length      => 8.0 * Pi / 4.0,
-           Tip_Cap     => Cairo.Cairo_Line_Cap_Square,
+           Center      => The_Center,
+           From        => From_North,
+           Length      => Full_Circle,
+           Tip_Cap     => Tip_Cap,
            Adjustment  => Adjustment,
-           Tip_Length  => 0.42,
-           Tip_Width   => 0.02,
-           Rear_Length => -0.165,
+           Tip_Length  => 0.41,
+           Tip_Width   => 0.035,
+           Rear_Length => Rear_Length,
            Rear_Width  => 0.02,
            Color       => Needle_Color_3,
            Scaled      => True);
@@ -258,7 +270,7 @@ package body Gtk.Gauge.Altimeter is
               (Name    => "needle-tip-cap",
                Nick    => "Tip cap",
                Blurb   => "The style used for the needle tip",
-               Default => Cairo.Cairo_Line_Cap_Round));
+               Default => Cairo.Cairo_Line_Cap_Square));
          Gtk.Widget.Styles.Line_Cap_Property.Install_Style
            (Glib.Types.Class_Ref (Class_Record.all.The_Type),
             Cairo.Line_Cap_Property.Gnew_Enum
@@ -381,26 +393,28 @@ package body Gtk.Gauge.Altimeter is
      (Widget     : not null access Gtk_Gauge_Altimeter_Record'Class;
       Texts      : Gtk.Enums.String_List.Glist;
       Adjustment : Gtk.Adjustment.Gtk_Adjustment;
-      Sectors    : Positive) is
+      Sectors    : Positive)
+   is
+      use type Gtk.Enums.String_Lists.Controlled_String_List;
    begin
       Create_Background (Widget, Sectors);
       Widget.all.Annotation :=
          Gtk.Layered.Elliptic_Annotation.Add_Elliptic_Annotation
           (Under   => Widget.all.Cache,
-           Ellipse => ((0.0, 0.0), 1.0 / 0.36, 0.36, 3.0 * Pi / 4.0),
+           Ellipse => (The_Center, 1.0 / 0.35, 0.35, 3.0 * Pi / 4.0),
            Texts   => Texts,
            Face    =>
              Pango.Cairo.Fonts.Create_Toy
                (Family => "arial",
                 Slant  => Cairo.Cairo_Font_Slant_Normal,
                 Weight => Cairo.Cairo_Font_Weight_Bold),
-           Step    => 8.0 * Pi / (4.0 * Gdouble (Sectors)),
+           Step    => Full_Circle / Gdouble (Sectors),
            Height  => 0.1,
-           Stretch => 0.4,
+           Stretch => 1.0,
            Color   => Text_Color,
-           From    => 2.0 * Pi / 4.0,
-           Length  => 8.0 * Pi / 4.0,
-           Mode    => Gtk.Layered.Rotated,
+           From    => From_North,
+           Length  => Full_Circle,
+           Mode    => Gtk.Layered.Moved_Centered,
            Scaled  => True);
       Create_Needle (Widget, Adjustment);
    end Initialize;
@@ -428,7 +442,7 @@ package body Gtk.Gauge.Altimeter is
       Widget.all.Annotation :=
          Gtk.Layered.Elliptic_Annotation.Add_Elliptic_Annotation
           (Under     => Widget.all.Cache,
-           Ellipse   => ((0.0, 0.0), 1.0 / 0.36, 0.36, 3.0 * Pi / 4.0),
+           Ellipse   => (The_Center, 1.0 / 0.36, 0.36, 3.0 * Pi / 4.0),
            Texts     => Texts,
            Delimiter => Delimiter,
            Face      =>
@@ -436,12 +450,12 @@ package body Gtk.Gauge.Altimeter is
                (Family => "arial",
                 Slant  => Cairo.Cairo_Font_Slant_Normal,
                 Weight => Cairo.Cairo_Font_Weight_Bold),
-           Step      => 6.0 * Pi / (4.0 * Gdouble (Sectors)),
+           Step      => Full_Circle / Gdouble (Sectors),
            Height    => 0.1,
            Stretch   => 0.4,
            Color     => Text_Color,
-           From      => 3.0 * Pi / 4.0,
-           Length    => 6.0 * Pi / 4.0,
+           From      => From_North,
+           Length    => Full_Circle,
            Mode      => Gtk.Layered.Rotated,
            Scaled    => True);
       Create_Needle (Widget, Adjustment);
