@@ -1,5 +1,4 @@
 with Ada.Exceptions;
-with Ada.Numerics.Discrete_Random;
 with Ada.Real_Time.Timing_Events;
 
 with Global;
@@ -10,15 +9,6 @@ package body Landing_Legs is
    package Timing_Events renames Ada.Real_Time.Timing_Events;
 
    use type Real_Time.Time;
-
-   type All_Legs_State_Atomic is array (Legs_Index) of Leg_State
-     with Atomic_Components;
-   Leg : All_Legs_State_Atomic;
-
-   package Random_Time is new Ada.Numerics.Discrete_Random
-     (Result_Subtype => Sensor_Glitch);
-
-   task Simulate_Landing_Legs;
 
    type Task_State is (Running, Deployed, Touched_Down, Terminated);
 
@@ -35,10 +25,18 @@ package body Landing_Legs is
       State           : Task_State := Running;
    end Task_Control;
 
+   type All_Legs_State_Atomic is array (Legs_Index) of Leg_State
+     with Atomic_Components;
+
+   Legs_State : All_Legs_State_Atomic;
+
+   Timed_Trigger : Timing_Events.Timing_Event;
+
    protected body Task_Control is
+
       entry Wait_For_Event (Old_State : out Task_State;
-                            New_State : out Task_State) when Event_Triggered
-      is
+                            New_State : out Task_State)
+        when Event_Triggered is
       begin
          Old_State       := Previous_State;
          New_State       := State;
@@ -58,7 +56,8 @@ package body Landing_Legs is
          Event_Triggered := True;
       end Trigger_Shutdown;
 
-      procedure Trigger_Timeout (Event : in out Timing_Events.Timing_Event) is
+      procedure Trigger_Timeout (Event : in out Timing_Events.Timing_Event)
+      is
          pragma Unreferenced (Event);
       begin
          Event_Triggered := True;
@@ -71,80 +70,6 @@ package body Landing_Legs is
       end Trigger_Touchdown;
    end Task_Control;
 
-   Timed_Trigger : Timing_Events.Timing_Event;
-
-   function Handler return Timing_Events.Timing_Event_Handler is
-      (Task_Control.Trigger_Timeout'Access);
-
-   task body Simulate_Landing_Legs is
-      Time_G : Random_Time.Generator;
-
-      Num_Spurious_Signals : Natural    := Legs_Index'Pos (Legs_Index'First);
-      Previous_State       : Task_State := Running;
-      Current_State        : Task_State := Running;
-   begin
-      Random_Time.Reset (Gen => Time_G);
-
-      Timing_Events.Set_Handler (Event   => Timed_Trigger,
-                                 At_Time => Global.Start_Time,
-                                 Handler => Handler);
-
-      while Current_State /= Terminated loop
-         Task_Control.Wait_For_Event (Old_State => Previous_State,
-                                      New_State => Current_State);
-
-         if Previous_State /= Current_State then
-            case Current_State is
-               when Deployed =>
-                  Global.Log (Message => "Landing legs deployed.");
-               when Touched_Down =>
-                  Leg (Legs_Index'Range) := (others => Touched_Down);
-               when Running | Terminated =>
-                  null;
-            end case;
-         end if;
-
-         case Current_State is
-            when Deployed =>
-               if Num_Spurious_Signals <= Legs_Index'Pos (Legs_Index'Last) then
-                  declare
-                     Selected_Leg : constant Legs_Index    :=
-                                      Legs_Index'Val (Num_Spurious_Signals);
-                     MS_Triggered : constant Sensor_Glitch :=
-                                      Random_Time.Random (Gen => Time_G);
-                  begin
-                     Global.Log
-                       (Message =>
-                          "Landing leg " &
-                          Legs_Index'Image (Selected_Leg) &
-                          " triggered for" &
-                          Sensor_Glitch'Image (MS_Triggered) &
-                          " ms.");
-                     Leg (Selected_Leg) := Touched_Down;
-                     delay until
-                       Real_Time.Clock +
-                         Real_Time.Milliseconds (MS => MS_Triggered);
-                     Leg (Selected_Leg) := In_Flight;
-                  end;
-
-                  Num_Spurious_Signals := Num_Spurious_Signals + 1;
-
-                  Timing_Events.Set_Handler
-                    (Event   => Timed_Trigger,
-                     At_Time =>
-                       Real_Time.Clock + Real_Time.Milliseconds (MS => 100),
-                     Handler => Handler);
-               end if;
-
-            when Running | Touched_Down | Terminated =>
-               null;
-         end case;
-      end loop;
-   exception
-      when E : others =>
-         Global.Log (Ada.Exceptions.Exception_Information (E));
-   end Simulate_Landing_Legs;
-
    procedure Deploy is
    begin
       Task_Control.Trigger_Deploy;
@@ -153,13 +78,13 @@ package body Landing_Legs is
    procedure Read_State (Index : in     Legs_Index;
                          State :    out Leg_State) is
    begin
-      State := Leg (Index);
+      State := Legs_State (Index);
    end Read_State;
 
    procedure Read_State (State : out All_Legs_State) is
    begin
-      for I in Legs_Index'Range loop
-         State (I) := Leg (I);
+      for The_Leg in Legs_Index'Range loop
+         State (The_Leg) := Legs_State (The_Leg);
       end loop;
    end Read_State;
 
@@ -172,5 +97,57 @@ package body Landing_Legs is
    begin
       Task_Control.Trigger_Touchdown;
    end Touchdown;
+
+   task Simulate_Landing_Legs;
+
+   package Sensor_Glitch is
+
+      subtype Glitch_Delay    is Integer range 100 .. 500;
+      -- Number of milliseconds the glitch might be delayed since deploy.
+
+      subtype Glitch_Duration is Integer range 1 .. 37;
+      -- Number of milliseconds for sensor glitch.
+
+      procedure Initialize;
+
+      procedure Activate_Glitch;
+
+   end Sensor_Glitch;
+
+   package body Sensor_Glitch is separate;
+
+   task body Simulate_Landing_Legs is
+      Previous_State : Task_State := Running;
+      Current_State  : Task_State := Running;
+   begin
+      Sensor_Glitch.Initialize;
+
+      Timing_Events.Set_Handler (Event   => Timed_Trigger,
+                                 At_Time => Global.Start_Time,
+                                 Handler => Task_Control.Trigger_Timeout'Access);
+
+      while Current_State /= Terminated loop
+         Task_Control.Wait_For_Event (Old_State => Previous_State,
+                                      New_State => Current_State);
+
+         if Previous_State /= Current_State then
+            case Current_State is
+
+               when Deployed             =>
+                  Global.Log (Message => "Landing legs deployed.");
+                  Sensor_Glitch.Activate_Glitch;
+
+               when Touched_Down         =>
+                  Legs_State (Legs_Index'Range) := (others => Touched_Down);
+
+               when Running | Terminated =>
+                  null;
+            end case;
+         end if;
+      end loop;
+   exception
+      when E : others =>
+         Global.Log (Ada.Exceptions.Exception_Information (E));
+   end Simulate_Landing_Legs;
 
 end Landing_Legs;

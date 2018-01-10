@@ -383,7 +383,7 @@ package body Gtk.Gauge.Elliptic_180 is
          Border_Shadow => Widget.all.Background.all.Get_Border_Shadow,
          Color  =>
            Gtk.Widget.Styles.Style_Get
-             (Widget, "backgound-color", Background_Color));
+             (Widget, "background-color", Background_Color));
       Widget.all.Major_Ticks.all.Set
         (Inner  => Widget.all.Major_Ticks.all.Get_Inner,
          Outer  => Widget.all.Major_Ticks.all.Get_Outer,

@@ -9,9 +9,6 @@ package Landing_Legs is
 
    IO_Error : exception;
 
-   subtype Sensor_Glitch is Integer range 1 .. 37;
-   -- Number of milliseconds for sensor glitch.
-
    procedure Deploy;
    procedure Touchdown;
    procedure Read_State (Index : in     Legs_Index;

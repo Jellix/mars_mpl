@@ -215,7 +215,7 @@ package body Gtk.Gauge.Round_270_Outer is
          Gtk.Widget.Install_Style_Property
            (Glib.Types.Class_Ref (Class_Record.all.The_Type),
             Glib.Properties.Creation.Gnew_Boxed
-              (Name       => "backgound-color",
+              (Name       => "background-color",
                Boxed_Type => Gdk.Color.Gdk_Color_Type,
                Nick       => "Background color",
                Blurb      => "The background color"));
@@ -448,7 +448,7 @@ package body Gtk.Gauge.Round_270_Outer is
          Border_Shadow => Widget.all.Background.all.Get_Border_Shadow,
          Color         =>
            Gtk.Widget.Styles.Style_Get
-             (Widget, "backgound-color", Background_Color));
+             (Widget, "background-color", Background_Color));
       Widget.all.Line.all.Set
         (Ellipse => Widget.all.Line.all.Get_Ellipse,
          From    => Widget.all.Line.all.Get_From,
