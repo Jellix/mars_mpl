@@ -46,6 +46,8 @@ package body Gtk.Gauge.Altimeter is
    pragma Warnings (Off, "declaration hides ""Adjustment""");
    pragma Warnings (Off, "declaration hides ""Widget""");
 
+   use type Gtk.Enums.String_Lists.Controlled_String_List;
+
    Pi : constant := Ada.Numerics.Pi;
 
    Needle_Color_1    : constant Gdk.Color.Gdk_Color :=
@@ -393,9 +395,7 @@ package body Gtk.Gauge.Altimeter is
      (Widget     : not null access Gtk_Gauge_Altimeter_Record'Class;
       Texts      : Gtk.Enums.String_List.Glist;
       Adjustment : Gtk.Adjustment.Gtk_Adjustment;
-      Sectors    : Positive)
-   is
-      use type Gtk.Enums.String_Lists.Controlled_String_List;
+      Sectors    : Positive) is
    begin
       Create_Background (Widget, Sectors);
       Widget.all.Annotation :=

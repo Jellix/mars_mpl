@@ -3,34 +3,64 @@ with Ada.Numerics.Discrete_Random;
 separate (Landing_Legs)
 package body Sensor_Glitch is
 
+   use type Ada.Real_Time.Time_Span;
+
    package Random_Delay is new Ada.Numerics.Discrete_Random
      (Result_Subtype => Glitch_Delay);
 
    package Random_Duration is new Ada.Numerics.Discrete_Random
      (Result_Subtype => Glitch_Duration);
 
-   task type Spurious_Trigger
-   is
-      entry Execute (For_Leg      : in Legs_Index;
-                     At_Time      : in Real_Time.Time;
-                     For_Duration : in Real_Time.Time_Span);
-   end Spurious_Trigger;
+   pragma Warnings (Off, "declaration hides ""Task_Control""");
+   protected type Task_Control is
+      procedure Trigger_Glitch (At_Time      : in Ada.Real_Time.Time;
+                                For_Duration : in Ada.Real_Time.Time_Span);
+
+      entry Wait_For_Event (At_Time      : out Ada.Real_Time.Time;
+                            For_Duration : out Ada.Real_Time.Time_Span);
+   private
+      Event_Triggered : Boolean := False;
+      At_Time         : Ada.Real_Time.Time;
+      For_Duration    : Ada.Real_Time.Time_Span;
+   end Task_Control;
+   pragma Warnings (On, "declaration hides ""Task_Control""");
+
+   protected body Task_Control is
+
+      procedure Trigger_Glitch (At_Time      : in Ada.Real_Time.Time;
+                                For_Duration : in Ada.Real_Time.Time_Span) is
+      begin
+         Task_Control.At_Time      := At_Time;
+         Task_Control.For_Duration := For_Duration;
+
+         Task_Control.Event_Triggered := True;
+      end Trigger_Glitch;
+
+      entry Wait_For_Event (At_Time      : out Ada.Real_Time.Time;
+                            For_Duration : out Ada.Real_Time.Time_Span)
+        when Event_Triggered is
+      begin
+         At_Time      := Task_Control.At_Time;
+         For_Duration := Task_Control.For_Duration;
+      end Wait_For_Event;
+
+   end Task_Control;
+
+   type Control_Objects is array (Legs_Index) of Task_Control;
+   Control_Object : Control_Objects;
+
+   task type Spurious_Trigger;
+
+   Assign_Leg : Leg_Iterator;
 
    task body Spurious_Trigger is
       The_Leg      : Legs_Index;
       Activate_At  : Ada.Real_Time.Time;
       Activate_For : Ada.Real_Time.Time_Span;
-
-      use type Ada.Real_Time.Time_Span;
    begin
-      accept Execute (For_Leg      : in Legs_Index;
-                      At_Time      : in Real_Time.Time;
-                      For_Duration : in Real_Time.Time_Span)
-      do
-         The_Leg      := For_Leg;
-         Activate_At  := At_Time;
-         Activate_For := For_Duration;
-      end Execute;
+      Assign_Leg.Next (The_Leg => The_Leg);
+      Control_Object (The_Leg).Wait_For_Event (At_Time      => Activate_At,
+                                               For_Duration => Activate_For);
 
       delay until Activate_At;
       Legs_State (The_Leg) := Touched_Down;
@@ -47,18 +77,19 @@ package body Sensor_Glitch is
            "Landing leg "
          & Legs_Index'Image (The_Leg)
          & " triggered for"
-         & Integer'Image (Activate_For / Real_Time.Milliseconds (1))
+         & Integer'Image (Activate_For / Ada.Real_Time.Milliseconds (1))
          & " ms.");
    end Spurious_Trigger;
 
    type Glitch_Tasks is array (Legs_Index) of Spurious_Trigger;
 
-   Delay_G     : Random_Delay.Generator;
-   Duration_G  : Random_Duration.Generator;
-   Glitch_Task : Glitch_Tasks;
+   Delay_G        : Random_Delay.Generator;
+   Duration_G     : Random_Duration.Generator;
+   Glitch_Task    : Glitch_Tasks;
+   pragma Unreferenced (Glitch_Task);
 
    procedure Activate_Glitch is
-      Now : constant Real_Time.Time := Real_Time.Clock;
+      Now : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
    begin
       for The_Leg in Legs_Index'Range loop
          declare
@@ -67,19 +98,22 @@ package body Sensor_Glitch is
             Trigger_Length : constant Glitch_Duration :=
                                Random_Duration.Random (Gen => Duration_G);
          begin
-            Glitch_Task (The_Leg).Execute
-              (For_Leg      => The_Leg,
-               At_Time      => Now + Real_Time.Milliseconds (Trigger_Offset),
-               For_Duration => Real_Time.Milliseconds (Trigger_Length));
+            Control_Object (The_Leg).Trigger_Glitch
+              (At_Time      => Now + Ada.Real_Time.Milliseconds (Trigger_Offset),
+               For_Duration => Ada.Real_Time.Milliseconds (Trigger_Length));
             Global.Log
               (Message =>
                  "Landing leg "
                & Legs_Index'Image (The_Leg)
                & " scheduled to trigger in"
                & Glitch_Duration'Image (Trigger_Offset)
-               & " ms for"
+               & " ms (@"
+               & Global.Clock_Image (Now + Ada.Real_Time.Milliseconds (MS => Trigger_Offset))
+               & ") for"
                & Glitch_Duration'Image (Trigger_Length)
-               & " ms.");
+               & " ms (@"
+               & Global.Clock_Image (Now + Ada.Real_Time.Milliseconds (MS => Trigger_Offset + Trigger_Length))
+               & ").");
          end;
       end loop;
    end Activate_Glitch;

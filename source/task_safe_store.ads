@@ -1,3 +1,6 @@
+--  pragma Profile (Ravenscar);
+--  pragma Partition_Elaboration_Policy (Sequential);
+
 generic
    type Stored_Type is private;
    Initial_Value : in Stored_Type;

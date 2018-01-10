@@ -1,5 +1,5 @@
--- pragma Profile (Ravenscar);
--- pragma Partition_Elaboration_Policy (Sequential);
+--  pragma Profile (Ravenscar);
+--  pragma Partition_Elaboration_Policy (Sequential);
 
 with Ada.Real_Time;
 with Altimeter;
@@ -16,11 +16,6 @@ procedure Simulator is
    Cycle             : constant Ada.Real_Time.Time_Span :=
                          Ada.Real_Time.Milliseconds (MS => 10);
    Next_Cycle        : Ada.Real_Time.Time;
-
-   use type Ada.Real_Time.Time;
-   use type Altimeter.Altitude;
-   use type Altimeter.Velocity;
-   use type Touchdown_Monitor.Run_State;
 
    procedure Update_GUI
      (Terminated : in Boolean := False;
@@ -45,6 +40,9 @@ procedure Simulator is
                                           Time_Stamp => Time_Stamp));
    end Update_GUI;
 
+   use type Ada.Real_Time.Time;
+   use type Altimeter.Altitude;
+   use type Touchdown_Monitor.Run_State;
 begin
    Global.Log (Message => "Starting touchdown monitors...");
    Touchdown_Monitor.Start;

@@ -27,6 +27,13 @@ with Pango.Cairo.Fonts;
 
 package body GUI is
 
+   use type Altimeter.Altitude;
+   use type Altimeter.Velocity;
+   use type Glib.Gdouble;
+   use type Gtk.Enums.String_Lists.Controlled_String_List;
+   use type Landing_Legs.Leg_State;
+   use type Thrusters.State;
+
    type Leg_Switches is
      array (Landing_Legs.Legs_Index) of Gtk.Gauge.LED_Round.Gtk_Gauge_LED_Round;
 
@@ -60,7 +67,6 @@ package body GUI is
          Factor : Glib.Gdouble;
       end record;
 
-   use type Gtk.Enums.String_Lists.Controlled_String_List;
    Altitude_Scale : constant Scaling
      := (Texts  =>
             new Gtk.Enums.String_Lists.Controlled_String_List'
@@ -91,11 +97,6 @@ package body GUI is
                           Update_State : in State);
    procedure Feed_Values (Win          : in Main_Window_Record;
                           Update_State : in State) is
-      use type Altimeter.Altitude;
-      use type Altimeter.Velocity;
-      use type Glib.Gdouble;
-      use type Landing_Legs.Leg_State;
-      use type Thrusters.State;
       DE : Dynamic_Elements renames Win.Elements;
    begin
       --  LEDs
@@ -365,7 +366,6 @@ package body GUI is
 
                      declare
                         Gauge : Gtk.Gauge.Elliptic_180.Gtk_Gauge_Elliptic_180;
-                        use type Glib.Gdouble;
                      begin
                         Gtk.Gauge.Elliptic_180.Gtk_New
                           (Widget  => Gauge,

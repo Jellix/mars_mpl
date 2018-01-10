@@ -5,10 +5,7 @@ with Global;
 
 package body Landing_Legs is
 
-   package Real_Time     renames Ada.Real_Time;
-   package Timing_Events renames Ada.Real_Time.Timing_Events;
-
-   use type Real_Time.Time;
+   use type Ada.Real_Time.Time;
 
    type Task_State is (Running, Deployed, Touched_Down, Terminated);
 
@@ -16,7 +13,9 @@ package body Landing_Legs is
       procedure Trigger_Deploy;
       procedure Trigger_Touchdown;
       procedure Trigger_Shutdown;
-      procedure Trigger_Timeout (Event : in out Timing_Events.Timing_Event);
+      procedure Trigger_Timeout
+        (Event : in out Ada.Real_Time.Timing_Events.Timing_Event);
+
       entry Wait_For_Event (Old_State : out Task_State;
                             New_State : out Task_State);
    private
@@ -30,7 +29,7 @@ package body Landing_Legs is
 
    Legs_State : All_Legs_State_Atomic;
 
-   Timed_Trigger : Timing_Events.Timing_Event;
+   Timed_Trigger : Ada.Real_Time.Timing_Events.Timing_Event;
 
    protected body Task_Control is
 
@@ -56,7 +55,8 @@ package body Landing_Legs is
          Event_Triggered := True;
       end Trigger_Shutdown;
 
-      procedure Trigger_Timeout (Event : in out Timing_Events.Timing_Event)
+      procedure Trigger_Timeout
+        (Event : in out Ada.Real_Time.Timing_Events.Timing_Event)
       is
          pragma Unreferenced (Event);
       begin
@@ -122,9 +122,10 @@ package body Landing_Legs is
    begin
       Sensor_Glitch.Initialize;
 
-      Timing_Events.Set_Handler (Event   => Timed_Trigger,
-                                 At_Time => Global.Start_Time,
-                                 Handler => Task_Control.Trigger_Timeout'Access);
+      Ada.Real_Time.Timing_Events.Set_Handler
+        (Event   => Timed_Trigger,
+         At_Time => Global.Start_Time,
+         Handler => Task_Control.Trigger_Timeout'Access);
 
       while Current_State /= Terminated loop
          Task_Control.Wait_For_Event (Old_State => Previous_State,
@@ -149,5 +150,20 @@ package body Landing_Legs is
       when E : others =>
          Global.Log (Ada.Exceptions.Exception_Information (E));
    end Simulate_Landing_Legs;
+
+   protected body Leg_Iterator is
+
+      entry Next (The_Leg : out Legs_Index) when Legs_Available is
+      begin
+         The_Leg := Current_Leg;
+
+         if Current_Leg = Legs_Index'Last then
+            Legs_Available := False;
+         else
+            Current_Leg := Legs_Index'Succ (Current_Leg);
+         end if;
+      end Next;
+
+   end Leg_Iterator;
 
 end Landing_Legs;

@@ -8,6 +8,7 @@ with Thrusters;
 package body Altimeter is
 
    use type Ada.Real_Time.Time;
+   use type Thrusters.State;
 
    package Altimeter_Store is new
      Task_Safe_Store (Stored_Type   => Altitude,
@@ -23,8 +24,6 @@ package body Altimeter is
       Next_Cycle   : Ada.Real_Time.Time := Global.Start_Time;
       Altitude_Now : Altitude           := Altimeter_Store.Get;
       Velocity_Now : Velocity           := Velocity_Store.Get;
-
-      use type Thrusters.State;
    begin
       Global.Log ("Altitude control monitor started.");
 

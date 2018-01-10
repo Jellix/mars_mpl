@@ -5,7 +5,8 @@ with Thrusters;
 
 package body Touchdown_Monitor is
 
-   use type Ada.Real_Time.Time, Landing_Legs.Leg_State, Landing_Legs.Legs_Index;
+   use type Ada.Real_Time.Time;
+   use type Landing_Legs.Leg_State;
 
    type Leg_Indicator is
       record
@@ -21,30 +22,6 @@ package body Touchdown_Monitor is
    private
       State : Run_State := Not_Started;
    end Task_Control;
-
-   protected Retrieve_Controller is
-      procedure Get_Leg (L : out Landing_Legs.Legs_Index);
-   private
-      Current_Leg : Landing_Legs.Legs_Index := Landing_Legs.Legs_Index'First;
-      Out_Of_Legs : Boolean := False;
-   end Retrieve_Controller;
-
-   protected body Retrieve_Controller is
-      procedure Get_Leg (L : out Landing_Legs.Legs_Index) is
-      begin
-         if Out_Of_Legs then
-            raise Program_Error;
-         end if;
-
-         L := Current_Leg;
-
-         if Current_Leg /= Landing_Legs.Legs_Index'Last then
-            Current_Leg := Landing_Legs.Legs_Index'Succ (Current_Leg);
-         else
-            Out_Of_Legs := True;
-         end if;
-      end Get_Leg;
-   end Retrieve_Controller;
 
    protected body Task_Control is
       procedure TC_Enable is
@@ -70,6 +47,8 @@ package body Touchdown_Monitor is
    pragma Unreferenced (Legs_Task);
    Legs_Control : array (Landing_Legs.Legs_Index) of Task_Control;
 
+   Assign_Leg : Landing_Legs.Leg_Iterator;
+
    task body Touchdown_Monitor_Execute is
       Leg               : Landing_Legs.Legs_Index;
       Indicator         : Leg_Indicator;
@@ -90,7 +69,7 @@ package body Touchdown_Monitor is
       Current_Run_State := Not_Started;
       Next_Cycle        := Global.Start_Time;
 
-      Retrieve_Controller.Get_Leg (L => Leg);
+      Assign_Leg.Next (The_Leg => Leg);
 
       while Current_Run_State /= Terminated loop
          delay until Next_Cycle;
