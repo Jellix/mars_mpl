@@ -10,7 +10,7 @@ project Mars_Mpl is
    case Library_Type is
 
       when "static" =>
-         for Source_Dirs use (".", "source", "source/aicwl_3_15");
+         for Source_Dirs use (".", "source", "source/physics", "source/aicwl_3_15");
          for Object_Dir use "_build";
          for Exec_Dir use ".";
 

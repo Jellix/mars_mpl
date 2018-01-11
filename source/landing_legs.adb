@@ -105,8 +105,9 @@ package body Landing_Legs is
       subtype Glitch_Delay    is Integer range 100 .. 500;
       -- Number of milliseconds the glitch might be delayed since deploy.
 
-      subtype Glitch_Duration is Integer range 1 .. 37;
-      -- Number of milliseconds for sensor glitch.
+      subtype Glitch_Duration is Integer range 5 .. 33;
+      -- Number of milliseconds for sensor glitch
+      -- (Transient Signal During Deployment).
 
       procedure Initialize;
 

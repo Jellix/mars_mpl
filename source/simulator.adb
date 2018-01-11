@@ -42,6 +42,7 @@ procedure Simulator is
 
    use type Ada.Real_Time.Time;
    use type Altimeter.Altitude;
+   use type Altimeter.Velocity;
    use type Touchdown_Monitor.Run_State;
 begin
    Global.Log (Message => "Starting touchdown monitors...");
@@ -71,6 +72,17 @@ begin
          delay until Next_Cycle;
          Next_Cycle := Next_Cycle + Cycle;
       end loop;
+
+      declare
+         Touchdown_Velocity : constant Altimeter.Velocity :=
+                                Altimeter.Current_Velocity;
+      begin
+         if Touchdown_Velocity > Altimeter.Safe_Landing_Velocity then
+            Global.Log (Message => "MISSION FAILURE: MPL crashed on surface!");
+         else
+            Global.Log (Message => "MISSION SUCCESS: MPL touched down safely.");
+         end if;
+      end;
    end;
 
    Update_GUI;
@@ -91,7 +103,7 @@ begin
       end if;
    end loop;
 
-   Global.Log (Message => "Simulation terminated.");
+   Global.Log (Message => "Simulation finished.");
 
    declare
       Now : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
@@ -99,6 +111,8 @@ begin
       loop
          Update_GUI (Terminated => True,
                      Time_Stamp => Now);
+
+         exit when GUI.Aborted;
       end loop;
    end;
 end Simulator;

@@ -33,7 +33,7 @@ package body Altimeter is
                              Float (Ada.Real_Time.To_Duration (Cycle));
             Acceleration : constant Velocity :=
                              (if Thrusters.Current_State = Thrusters.Disabled
-                              or else Velocity_Now < Safe_Landing_Velocity
+                              or else Velocity_Now < Target_Landing_Velocity
                               then Velocity (Gravity * T)
                               else Velocity (Thruster_Acceleration * T));
             Distance     : constant Altitude :=

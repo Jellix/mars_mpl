@@ -8,6 +8,7 @@ with Cairo;
 with Glib;
 
 with Gtk.Box;
+with Gtk.Button;
 with Gtk.Enums.String_Lists;
 with Gtk.Frame;
 with Gtk.Gauge.Altimeter;
@@ -15,6 +16,7 @@ with Gtk.Gauge.Elliptic_180;
 with Gtk.Gauge.LED_Round;
 with Gtk.GEntry;
 with Gtk.Handlers;
+with Gtk.Hbutton_Box;
 with Gtk.Label;
 with Gtk.Layered.Label;
 with Gtk.Main;
@@ -82,15 +84,35 @@ package body GUI is
    package Windows_CB is
      new Gtk.Handlers.Callback (Widget_Type => Main_Window_Record);
 
+   package Buttons_CB is
+     new Gtk.Handlers.Callback (Widget_Type => Gtk.Button.Gtk_Button_Record);
+
+   protected State_Update is
+      procedure Set_State (New_State : State);
+      entry Wait_For_Update (New_State : out State);
+   private
+      State_Changed : Boolean := True;
+      Current_State : State;
+   end State_Update;
+
    task GUI_Task;
 
-   procedure Exit_Main (Win : access Main_Window_Record'Class);
-   procedure Exit_Main (Win : access Main_Window_Record'Class) is
+   procedure Exit_Main (Button : access Gtk.Button.Gtk_Button_Record'Class);
+   procedure Exit_Main (Win    : access Main_Window_Record'Class);
+   procedure Quit_GUI;
+
+   procedure Exit_Main (Button : access Gtk.Button.Gtk_Button_Record'Class)
+   is
+      pragma Unreferenced (Button);
    begin
-      Global.Log (Message => "Main window destroyed.");
-      abort GUI_Task;
-      Win.all.Destroy;
-      Gtk.Main.Main_Quit;
+      Quit_GUI;
+   end Exit_Main;
+
+   procedure Exit_Main (Win : access Main_Window_Record'Class)
+   is
+      pragma Unreferenced (Win);
+   begin
+      Quit_GUI;
    end Exit_Main;
 
    procedure Feed_Values (Win          : in Main_Window_Record;
@@ -443,16 +465,43 @@ package body GUI is
                                        As_Time => True);
             end;
          end;
+
+         declare
+            Button_Box   : Gtk.Hbutton_Box.Gtk_Hbutton_Box;
+            Start_Button : Gtk.Button.Gtk_Button;
+            Abort_Button : Gtk.Button.Gtk_Button;
+            Exit_Button  : Gtk.Button.Gtk_Button;
+         begin
+            Gtk.Hbutton_Box.Gtk_New (Widget => Button_Box);
+
+            Gtk.Button.Gtk_New (Button => Start_Button,
+                                Label  => "Start");
+            Button_Box.all.Add (Widget => Start_Button);
+
+            Gtk.Button.Gtk_New (Button => Abort_Button,
+                                Label  => "Abort");
+            Button_Box.all.Add (Widget => Abort_Button);
+
+            Gtk.Button.Gtk_New (Button => Exit_Button,
+                                Label  => "Exit");
+            Button_Box.all.Add (Widget => Exit_Button);
+
+            VBox.all.Pack_End (Child => Button_Box);
+            Buttons_CB.Connect
+              (Widget => Exit_Button,
+               Name   => "clicked",
+               Marsh  => Buttons_CB.To_Marshaller (Exit_Main'Access));
+         end;
       end;
    end Initialize;
 
-   protected State_Update is
-      procedure Set_State (New_State : State);
-      entry Wait_For_Update (New_State : out State);
-   private
-      State_Changed : Boolean := True;
-      Current_State : State;
-   end State_Update;
+   procedure Quit_GUI is
+   begin
+      if not Aborted then
+         Aborted := True;
+         Global.Log (Message => "Quitting GUI...");
+      end if;
+   end Quit_GUI;
 
    protected body State_Update is
       procedure Set_State (New_State : State) is
@@ -468,13 +517,21 @@ package body GUI is
       end Wait_For_Update;
    end State_Update;
 
+   procedure Update (New_State : State) is
+   begin
+      State_Update.Set_State (New_State);
+   end Update;
+
    task body GUI_Task is
       Win          : Main_Window;
       Update_State : State;
    begin
+      Aborted := False;
+
       Gtk.Main.Init;
       Win := new Main_Window_Record;
       Initialize (Window => Win.all);
+
       Windows_CB.Connect
         (Widget => Win,
          Name   => "destroy",
@@ -499,14 +556,12 @@ package body GUI is
                null;
             end if;
          end loop;
+
+         exit when Aborted;
       end loop;
    exception
       when E : others =>
          Global.Log (Ada.Exceptions.Exception_Information (E));
    end GUI_Task;
 
-   procedure Update (New_State : State) is
-   begin
-      State_Update.Set_State (New_State);
-   end Update;
 end GUI;

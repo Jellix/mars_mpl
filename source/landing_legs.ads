@@ -3,8 +3,12 @@
 
 package Landing_Legs is
 
-   type Legs_Index is (One, Two, Three);
+   type Legs_Index is (LL_000, LL_120, LL_240);
+   --  Three landing legs at 0, 120, and 240 degree.
+
    type Leg_State  is (In_Flight, Touched_Down);
+   --  Hall sensor reading from I/O card.
+
    type All_Legs_State is array (Legs_Index) of Leg_State;
 
    IO_Error : exception;
