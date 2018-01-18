@@ -87,6 +87,9 @@ package body Gtk.Layered.Needle is
 
    procedure Add_Adjustment
      (Layer      : in out Needle_Layer;
+      Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class);
+   procedure Add_Adjustment
+     (Layer      : in out Needle_Layer;
       Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class)
    is
    begin

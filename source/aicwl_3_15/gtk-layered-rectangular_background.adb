@@ -36,6 +36,8 @@ with Gtk.Layered.Stream_IO;
 
 package body Gtk.Layered.Rectangular_Background is
 
+   pragma Warnings (Off, "declaration hides ""Center""");
+
    type Rectangular_Background_Ptr is
       access all Rectangular_Background_Layer;
 
@@ -185,17 +187,17 @@ package body Gtk.Layered.Rectangular_Background is
       return Layer.Color;
    end Get_Color;
 
-   function Get_Height (Layer : Rectangular_Background_Layer)
-     return Gdouble is
-   begin
-      return Layer.Height;
-   end Get_Height;
-
    function Get_Corner_Radius (Layer : Rectangular_Background_Layer)
       return Gdouble is
    begin
       return Layer.Radius;
    end Get_Corner_Radius;
+
+   function Get_Height (Layer : Rectangular_Background_Layer)
+     return Gdouble is
+   begin
+      return Layer.Height;
+   end Get_Height;
 
    overriding function Get_Properties_Number
      (Layer : Rectangular_Background_Layer) return Natural is
@@ -471,6 +473,7 @@ package body Gtk.Layered.Rectangular_Background is
       Context : Cairo.Cairo_Context;
       Area    : Gdk.Rectangle.Gdk_Rectangle)
    is
+      pragma Unreferenced (Area);
       Half_Width  : Gdouble;
       Half_Height : Gdouble;
       Radius      : Gdouble;
@@ -619,5 +622,7 @@ package body Gtk.Layered.Rectangular_Background is
         (Stream,
          Gtk.Layered.Abstract_Bordered.Abstract_Bordered_Layer (Layer));
    end Store;
+
+   pragma Warnings (On, "declaration hides ""Center""");
 
 end Gtk.Layered.Rectangular_Background;

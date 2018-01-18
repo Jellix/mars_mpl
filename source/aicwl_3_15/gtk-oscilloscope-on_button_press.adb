@@ -25,6 +25,11 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
+pragma Warnings (Off, "declaration hides ""Box""");
+pragma Warnings (Off, "declaration hides ""Group""");
+pragma Warnings (Off, "declaration hides ""Menu""");
+pragma Warnings (Off, "declaration hides ""Oscilloscope""");
+
 separate (Gtk.Oscilloscope)
 function On_Button_Press (Object       : access GObject_Record'Class;
                           Event        : Gdk.Event.Gdk_Event;
@@ -310,3 +315,8 @@ exception
       return True;
 
 end On_Button_Press;
+
+pragma Warnings (On, "declaration hides ""Oscilloscope""");
+pragma Warnings (On, "declaration hides ""Menu""");
+pragma Warnings (On, "declaration hides ""Group""");
+pragma Warnings (On, "declaration hides ""Box""");

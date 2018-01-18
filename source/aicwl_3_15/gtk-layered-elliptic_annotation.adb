@@ -130,6 +130,21 @@ package body Gtk.Layered.Elliptic_Annotation is
       Face    : Pango.Cairo.Fonts.Pango_Cairo_Font;
       Mode    : Text_Transformation;
       Color   : Gdk.Color.Gdk_Color;
+      Scaled  : Boolean) return Annotation_Ptr;
+   function Add_Annotation_Implementation
+     (Under   : not null access Layer_Location'Class;
+      Texts   : Annotation_List_Ptr;
+      Height  : Gdouble;
+      Stretch : Gdouble;
+      Step    : Gdouble;
+      First   : Tick_Number;
+      Skipped : Tick_Number;
+      Ellipse : Cairo.Ellipses.Ellipse_Parameters;
+      From    : Gdouble;
+      Length  : Gdouble;
+      Face    : Pango.Cairo.Fonts.Pango_Cairo_Font;
+      Mode    : Text_Transformation;
+      Color   : Gdk.Color.Gdk_Color;
       Scaled  : Boolean) return Annotation_Ptr
    is
       Ptr   : Annotation_Ptr := new Elliptic_Annotation_Layer;

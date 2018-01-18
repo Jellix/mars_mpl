@@ -40,6 +40,8 @@ with Pango.Enums.Weight_Property;
 
 package body Gtk.Layered.Label is
 
+   pragma Warnings (Off, "declaration hides ""Center""");
+
    Eps : constant := 1.0E-6;
 
    type Layer_Property is
@@ -68,20 +70,20 @@ package body Gtk.Layered.Label is
       new Ada.Unchecked_Deallocation (String, String_Ptr);
 
    protected Text_Mutex is
-      function Get_Text (Layer : Label_Layer) return UTF8_String;
-      procedure Set_Text
+      function Get (Layer : Label_Layer) return UTF8_String;
+      procedure Set
         (Layer  : in out Label_Layer;
          Text   : UTF8_String;
          Markup : Boolean);
    end Text_Mutex;
 
    protected body Text_Mutex is
-      function Get_Text (Layer : Label_Layer) return UTF8_String is
+      function Get (Layer : Label_Layer) return UTF8_String is
       begin
          return Layer.Text.all;
-      end Get_Text;
+      end Get;
 
-      procedure Set_Text
+      procedure Set
         (Layer  : in out Label_Layer;
          Text   : UTF8_String;
          Markup : Boolean)
@@ -92,7 +94,7 @@ package body Gtk.Layered.Label is
          Layer.Text    := Ptr;
          Layer.Markup  := Markup;
          Layer.Updated := True;
-      end Set_Text;
+      end Set;
 
    end Text_Mutex;
 
@@ -203,7 +205,7 @@ package body Gtk.Layered.Label is
    is
       pragma Unreferenced (Area);
       Size    : constant Gdouble             := Layer.Widget.all.Get_Size;
-      Text    : constant UTF8_String         := Text_Mutex.Get_Text (Layer);
+      Text    : constant UTF8_String         := Text_Mutex.Get (Layer);
       Gain    : Gdouble                      := 1.0;
       State   : Cairo.Ellipses.Context_State := Cairo.Ellipses.Save (Context);
       pragma Unreferenced (State);
@@ -654,7 +656,7 @@ package body Gtk.Layered.Label is
 
    function Get_Text (Layer : Label_Layer) return UTF8_String is
    begin
-      return Text_Mutex.Get_Text (Layer);
+      return Text_Mutex.Get (Layer);
    end Get_Text;
 
    overriding function Is_Updated (Layer : Label_Layer) return Boolean is
@@ -846,7 +848,7 @@ package body Gtk.Layered.Label is
       Text   : UTF8_String;
       Markup : Boolean := False) is
    begin
-      Text_Mutex.Set_Text (Layer, Text, Markup);
+      Text_Mutex.Set (Layer, Text, Markup);
    end Set_Text;
 
    overriding procedure Store
@@ -865,5 +867,7 @@ package body Gtk.Layered.Label is
       Gtk.Layered.Stream_IO.Store (Stream, Layer.Scaled, Layer.Markup);
       Gtk.Layered.Stream_IO.Store (Stream, Layer.Get_Text);
    end Store;
+
+   pragma Warnings (On, "declaration hides ""Center""");
 
 end Gtk.Layered.Label;

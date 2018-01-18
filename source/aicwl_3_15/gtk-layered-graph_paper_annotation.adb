@@ -82,10 +82,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       end if;
    end "+";
 
-   function Where (Name : String) return String is
-   begin
-      return " in Gtk.Layered.Graph_Paper_Annotation." & Name;
-   end Where;
+   function Where (Name : String) return String;
 
    procedure Free is
       new Ada.Unchecked_Deallocation
@@ -155,6 +152,24 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       Overlap     : Gdouble;
       Opacity     : Fill_Opacity;
       Scaled      : Boolean;
+      Enlarged    : Boolean) return Graph_Paper_Annotation_Ptr;
+   function Add_Annotation_Implementation
+     (Under       : not null access Layer_Location'Class;
+      Paper       : access Gtk.Layered.Graph_Paper.Graph_Paper_Layer'Class;
+      Location    : Axis_Location;
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font;
+      Height      : Gdouble;
+      Stretch     : Gdouble;
+      Color       : Gdk.Color.Gdk_Color;
+      Text_Angle  : Gdouble;
+      Justify_X   : Ada.Strings.Alignment;
+      Justify_Y   : Vertical_Alignment;
+      Superscript : Boolean;
+      Background  : Gdk.Color.Gdk_Color;
+      Border      : Gdouble;
+      Overlap     : Gdouble;
+      Opacity     : Fill_Opacity;
+      Scaled      : Boolean;
       Enlarged    : Boolean) return Graph_Paper_Annotation_Ptr
    is
       Ptr   : Graph_Paper_Annotation_Ptr :=
@@ -190,6 +205,24 @@ package body Gtk.Layered.Graph_Paper_Annotation is
          raise;
    end Add_Annotation_Implementation;
 
+   function Add_Annotation_Implementation
+     (Under       : not null access Layer_Location'Class;
+      Paper       : access Gtk.Layered.Graph_Paper.Graph_Paper_Layer'Class;
+      Location    : Axis_Location;
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font;
+      Height      : Gdouble;
+      Stretch     : Gdouble;
+      Color       : Gdk.Color.Gdk_Color;
+      Text_Angle  : Gdouble;
+      Justify_X   : Ada.Strings.Alignment;
+      Justify_Y   : Vertical_Alignment;
+      Superscript : Boolean;
+      Background  : Gdk.Color.Gdk_Color;
+      Border      : Gdouble;
+      Overlap     : Gdouble;
+      Opacity     : Fill_Opacity;
+      Scaled      : Boolean;
+      Enlarged    : Boolean) return Graph_Paper_Time_Annotation_Ptr;
    function Add_Annotation_Implementation
      (Under       : not null access Layer_Location'Class;
       Paper       : access Gtk.Layered.Graph_Paper.Graph_Paper_Layer'Class;
@@ -440,12 +473,6 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       return Ptr.all'Unchecked_Access;
    end Add_Graph_Paper_Time_Annotation;
 
-   overriding procedure Detached
-     (Annotation : in out Graph_Paper_Annotation_Layer) is
-   begin
-      Annotation.Paper := null;
-   end Detached;
-
    overriding procedure Changed
      (Layer  : in out Graph_Paper_Annotation_Layer;
       Paper  : Gtk.Layered.Graph_Paper.Graph_Paper_Layer'Class;
@@ -497,6 +524,7 @@ package body Gtk.Layered.Graph_Paper_Annotation is
             & Where ("Changed"));
    end Changed;
 
+   procedure Delete (List : in out Annotation_List_Ptr);
    procedure Delete (List : in out Annotation_List_Ptr) is
    begin
       if List /= null then
@@ -506,6 +534,12 @@ package body Gtk.Layered.Graph_Paper_Annotation is
          Free (List);
       end if;
    end Delete;
+
+   overriding procedure Detached
+     (Annotation : in out Graph_Paper_Annotation_Layer) is
+   begin
+      Annotation.Paper := null;
+   end Detached;
 
    overriding procedure Draw
      (Layer   : in out Graph_Paper_Annotation_Layer;
@@ -520,22 +554,6 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       FX, FY : Interfaces.C.long_double;
       X0, Y0 : Interfaces.C.long_double;
 
-      function To_X (T : Gdouble) return Gdouble is
-         pragma Inline (To_X);
-         use type Interfaces.C.long_double;
-      begin
-         return
-            Gdouble (Interfaces.C.long_double'Rounding (FX * Interfaces.C.long_double (T)) + X0);
-      end To_X;
-
-      function To_Y (V : Gdouble) return Gdouble is
-         pragma Inline (To_Y);
-         use type Interfaces.C.long_double;
-      begin
-         return
-            Gdouble (Y0 - Interfaces.C.long_double'Rounding (FY * Interfaces.C.long_double (V)));
-      end To_Y;
-
       Cos_A   : constant Gdouble :=
                   abs Cairo.Elementary_Functions.Cos (Layer.Text_Angle);
       Sin_A   : constant Gdouble :=
@@ -547,8 +565,9 @@ package body Gtk.Layered.Graph_Paper_Annotation is
       From    : Gdouble; -- The first point of the annotation
       To      : Gdouble; -- The last point of the annotation
 
-      function Draw_Text (X, Y : Gdouble; Index : Positive)
-         return Boolean is
+      function Draw_Text (X, Y : Gdouble; Index : Positive) return Boolean;
+      function Draw_Text (X, Y : Gdouble; Index : Positive) return Boolean
+      is
          Extents : Cairo.Cairo_Text_Extents;
          Gain    : Gdouble;
          Box     : Cairo.Ellipses.Cairo_Tuple;
@@ -674,7 +693,15 @@ package body Gtk.Layered.Graph_Paper_Annotation is
                   Gdouble (Layer.Raster.Minor) *
                   Gdouble (Layer.Raster.Ticks - Layer.Raster.Low_Tick + 1));
 
-      procedure Draw_X is
+      function To_X (T : Gdouble) return Gdouble
+        with Inline;
+
+      function To_Y (V : Gdouble) return Gdouble
+        with Inline;
+
+      procedure Draw_X;
+      procedure Draw_X
+      is
          Start  : Integer;
          Box    : Cairo.Ellipses.Cairo_Box;
          Median : constant Gdouble := V0 + dT * 0.5;
@@ -720,7 +747,9 @@ package body Gtk.Layered.Graph_Paper_Annotation is
          end if;
       end Draw_X;
 
-      procedure Draw_Y is
+      procedure Draw_Y;
+      procedure Draw_Y
+      is
          Start  : Integer;
          Box    : Cairo.Ellipses.Cairo_Box;
          Median : constant Gdouble := V0 + dV * 0.5;
@@ -766,7 +795,9 @@ package body Gtk.Layered.Graph_Paper_Annotation is
          end if;
       end Draw_Y;
 
-      function Set_X return Boolean is
+      function Set_X return Boolean;
+      function Set_X return Boolean
+      is
          use type Interfaces.C.long_double;
       begin
          if dT <= 0.0 then
@@ -780,7 +811,9 @@ package body Gtk.Layered.Graph_Paper_Annotation is
          end if;
       end Set_X;
 
-      function Set_Y return Boolean is
+      function Set_Y return Boolean;
+      function Set_Y return Boolean
+      is
          use type Interfaces.C.long_double;
       begin
          if dV <= 0.0 then
@@ -793,6 +826,22 @@ package body Gtk.Layered.Graph_Paper_Annotation is
             return False;
          end if;
       end Set_Y;
+
+      function To_X (T : Gdouble) return Gdouble
+      is
+         use type Interfaces.C.long_double;
+      begin
+         return
+            Gdouble (Interfaces.C.long_double'Rounding (FX * Interfaces.C.long_double (T)) + X0);
+      end To_X;
+
+      function To_Y (V : Gdouble) return Gdouble
+      is
+         use type Interfaces.C.long_double;
+      begin
+         return
+            Gdouble (Y0 - Interfaces.C.long_double'Rounding (FY * Interfaces.C.long_double (V)));
+      end To_Y;
    begin
       if Layer.Scaled then
          declare
@@ -2254,5 +2303,10 @@ package body Gtk.Layered.Graph_Paper_Annotation is
          Layer.Location.Alignment   = Relative,
          Layer.Superscript);
    end Store;
+
+   function Where (Name : String) return String is
+   begin
+      return " in Gtk.Layered.Graph_Paper_Annotation." & Name;
+   end Where;
 
 end Gtk.Layered.Graph_Paper_Annotation;

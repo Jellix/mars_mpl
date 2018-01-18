@@ -30,4 +30,4 @@ with Gtk.Widget.Styles.Generic_Enumeration;
 
 package Gtk.Widget.Styles.Icon_Size is
   new Gtk.Widget.Styles.Generic_Enumeration
-    (GLib.Properties.Icon_Size.Property);
+    (Glib.Properties.Icon_Size.Property);

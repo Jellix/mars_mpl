@@ -30,4 +30,4 @@ with Gtk.Widget.Styles.Generic_Enumeration;
 
 package Gtk.Widget.Styles.Relief_Style is
   new Gtk.Widget.Styles.Generic_Enumeration
-    (GLib.Properties.Relief_Style.Property);
+    (Glib.Properties.Relief_Style.Property);

@@ -38,6 +38,12 @@
 --
 package Gdk.Color.IHLS is
 
+   pragma Warnings (Off, "declaration hides ""Blue""");
+   pragma Warnings (Off, "declaration hides ""Color""");
+   pragma Warnings (Off, "declaration hides ""Green""");
+   pragma Warnings (Off, "declaration hides ""Impurify""");
+   pragma Warnings (Off, "declaration hides ""Red""");
+
    --
    -- Gdk_Hue -- The type of hue
    --
@@ -303,5 +309,11 @@ package Gdk.Color.IHLS is
      (First : Gdk_IHLS_Color;
       Pos   : Natural;
       Cycle : Color_Cycle := 3) return Gdk_IHLS_Color;
+
+   pragma Warnings (On, "declaration hides ""Red""");
+   pragma Warnings (On, "declaration hides ""Impurify""");
+   pragma Warnings (On, "declaration hides ""Green""");
+   pragma Warnings (On, "declaration hides ""Color""");
+   pragma Warnings (On, "declaration hides ""Blue""");
 
 end Gdk.Color.IHLS;

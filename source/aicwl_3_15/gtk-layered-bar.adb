@@ -36,6 +36,11 @@ with Gtk.Layered.Stream_IO;
 
 package body Gtk.Layered.Bar is
 
+   pragma Warnings (Off, "declaration hides ""Adjustment""");
+   pragma Warnings (Off, "declaration hides ""Bar""");
+   pragma Warnings (Off, "declaration hides ""Center""");
+   pragma Warnings (Off, "declaration hides ""Handlers""");
+
    type Bar_Ptr is access all Bar_Layer;
 
    type Layer_Property is
@@ -64,6 +69,25 @@ package body Gtk.Layered.Bar is
      (Adjustment   : access GObject_Record'Class;
       Bar          : Bar_Ptr);
 
+   overriding function Add
+     (Under  : not null access Layer_Location'Class;
+      Stream : not null access Ada.Streams.Root_Stream_Type'Class)
+      return not null access Bar_Layer
+   is
+      Ptr : Bar_Ptr := new Bar_Layer;
+   begin
+      Restore (Stream.all, Ptr.all);
+      Add (Ptr, Under);
+      return Ptr;
+   exception
+      when others =>
+         Free (Ptr);
+         raise;
+   end Add;
+
+   procedure Add_Adjustment
+     (Layer      : in out Bar_Layer;
+      Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class);
    procedure Add_Adjustment
      (Layer      : in out Bar_Layer;
       Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class)
@@ -230,26 +254,12 @@ package body Gtk.Layered.Bar is
          raise;
    end Add_Bar;
 
-   overriding function Add
-     (Under  : not null access Layer_Location'Class;
-      Stream : not null access Ada.Streams.Root_Stream_Type'Class)
-      return not null access Bar_Layer
-   is
-      Ptr : Bar_Ptr := new Bar_Layer;
-   begin
-      Restore (Stream.all, Ptr.all);
-      Add (Ptr, Under);
-      return Ptr;
-   exception
-      when others =>
-         Free (Ptr);
-         raise;
-   end Add;
-
    procedure Changed
      (Adjustment : access GObject_Record'Class;
       Bar        : Bar_Ptr)
    is
+      pragma Unreferenced (Adjustment);
+
       Lower : constant Gdouble := Gtk.Adjustment.Get_Lower (Bar.all.Adjustment);
       Upper : constant Gdouble := Gtk.Adjustment.Get_Upper (Bar.all.Adjustment);
       Value : constant Gdouble := Gtk.Adjustment.Get_Value (Bar.all.Adjustment);
@@ -733,5 +743,10 @@ package body Gtk.Layered.Bar is
          Gtk.Layered.Stream_IO.Store (Stream, Layer.Adjustment);
       end if;
    end Store;
+
+   pragma Warnings (On, "declaration hides ""Handlers""");
+   pragma Warnings (On, "declaration hides ""Center""");
+   pragma Warnings (On, "declaration hides ""Bar""");
+   pragma Warnings (On, "declaration hides ""Adjustment""");
 
 end Gtk.Layered.Bar;

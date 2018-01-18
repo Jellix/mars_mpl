@@ -133,6 +133,22 @@ package body Gtk.Layered.Flat_Annotation is
       Color       : Gdk.Color.Gdk_Color;
       Text_Angle  : Gdouble;
       Justify     : Ada.Strings.Alignment;
+      Scaled      : Boolean) return Annotation_Ptr;
+   function Add_Annotation_Implementation
+     (Under       : not null access Layer_Location'Class;
+      Texts       : Annotation_List_Ptr;
+      Step        : Gdouble;
+      First       : Tick_Number;
+      Skipped     : Tick_Number;
+      From        : Cairo.Ellipses.Cairo_Tuple;
+      Length      : Gdouble;
+      Scale_Angle : Gdouble;
+      Face        : Pango.Cairo.Fonts.Pango_Cairo_Font;
+      Height      : Gdouble;
+      Stretch     : Gdouble;
+      Color       : Gdk.Color.Gdk_Color;
+      Text_Angle  : Gdouble;
+      Justify     : Ada.Strings.Alignment;
       Scaled      : Boolean) return Annotation_Ptr
    is
       Ptr   : Annotation_Ptr := new Flat_Annotation_Layer;
@@ -519,9 +535,9 @@ package body Gtk.Layered.Flat_Annotation is
                   Gain := Gain * Layer.Widget.all.Get_Size;
                end if;
                declare
-                  State : Cairo.Ellipses.Context_State :=
-                            Cairo.Ellipses.Save (Context);
-                  pragma Unreferenced (State);
+                  Dummy_State : Cairo.Ellipses.Context_State :=
+                                  Cairo.Ellipses.Save (Context);
+                  pragma Unreferenced (Dummy_State);
                begin
                   Cairo.Translate
                     (Cr => Context,

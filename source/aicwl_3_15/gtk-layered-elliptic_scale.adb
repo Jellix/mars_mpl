@@ -34,6 +34,9 @@ with Glib.Properties.Creation;
 with Gtk.Layered.Stream_IO;
 
 package body Gtk.Layered.Elliptic_Scale is
+
+   pragma Warnings (Off, "declaration hides ""Center""");
+
    type Scale_Ptr is access all Elliptic_Scale_Layer;
 
    type Layer_Property is
@@ -795,5 +798,7 @@ package body Gtk.Layered.Elliptic_Scale is
       Gtk.Layered.Stream_IO.Store (Stream, Layer.Length);
       Gtk.Layered.Stream_IO.Store (Stream, Layer.Scaled, Layer.Widened);
    end Store;
+
+   pragma Warnings (On, "declaration hides ""Center""");
 
 end Gtk.Layered.Elliptic_Scale;

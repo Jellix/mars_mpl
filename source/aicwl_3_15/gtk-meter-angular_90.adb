@@ -43,6 +43,9 @@ with Pango.Cairo.Fonts;
 
 package body Gtk.Meter.Angular_90 is
 
+   pragma Warnings (Off, "declaration hides ""Adjustment""");
+   pragma Warnings (Off, "declaration hides ""Widget""");
+
    Pi : constant := Ada.Numerics.Pi;
 
    Needle_Color      : constant Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 0.0, 0.0);
@@ -61,7 +64,11 @@ package body Gtk.Meter.Angular_90 is
    Pin    : constant Cairo.Ellipses.Cairo_Tuple := (0.35, 0.35);
 
    procedure Create_Background
-     (Widget : not null access Gtk_Meter_Angular_90_Record'Class;
+     (Widget  : not null access Gtk_Meter_Angular_90_Record'Class;
+      Sectors : Positive);
+
+   procedure Create_Background
+     (Widget  : not null access Gtk_Meter_Angular_90_Record'Class;
       Sectors : Positive) is
    begin
       G_New (Widget, Get_Type);
@@ -159,6 +166,10 @@ package body Gtk.Meter.Angular_90 is
 
    procedure Create_Foreground
      (Widget     : not null access Gtk_Meter_Angular_90_Record'Class;
+      Adjustment : Gtk.Adjustment.Gtk_Adjustment);
+
+   procedure Create_Foreground
+     (Widget     : not null access Gtk_Meter_Angular_90_Record'Class;
       Adjustment : Gtk.Adjustment.Gtk_Adjustment) is
    begin
       Widget.all.Needle :=
@@ -185,13 +196,6 @@ package body Gtk.Meter.Angular_90 is
       return Widget.all.Annotation;
    end Get_Annotation;
 
-   function Get_Needle
-     (Widget : not null access Gtk_Meter_Angular_90_Record)
-      return not null access Gtk.Layered.Needle.Needle_Layer is
-   begin
-      return Widget.all.Needle;
-   end Get_Needle;
-
    function Get_Background
      (Widget : not null access Gtk_Meter_Angular_90_Record)
       return not null access Gtk.Layered.Rectangular_Background.Rectangular_Background_Layer
@@ -206,6 +210,13 @@ package body Gtk.Meter.Angular_90 is
    begin
       return Widget.all.Cache;
    end Get_Cache;
+
+   function Get_Needle
+     (Widget : not null access Gtk_Meter_Angular_90_Record)
+      return not null access Gtk.Layered.Needle.Needle_Layer is
+   begin
+      return Widget.all.Needle;
+   end Get_Needle;
 
    function Get_Type return GType is
    begin
@@ -531,5 +542,8 @@ package body Gtk.Meter.Angular_90 is
          Color   =>
            Gtk.Widget.Styles.Style_Get (Widget, "text-color", Text_Color));
    end Style_Changed;
+
+   pragma Warnings (On, "declaration hides ""Widget""");
+   pragma Warnings (On, "declaration hides ""Adjustment""");
 
 end Gtk.Meter.Angular_90;

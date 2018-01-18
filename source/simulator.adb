@@ -3,6 +3,7 @@
 
 with Ada.Real_Time;
 with Altimeter;
+with Engine;
 with Global;
 with GUI;
 with Landing_Legs;
@@ -17,18 +18,15 @@ procedure Simulator is
                          Ada.Real_Time.Milliseconds (MS => 10);
    Next_Cycle        : Ada.Real_Time.Time;
 
-   procedure Update_GUI
-     (Terminated : in Boolean := False;
-      Time_Stamp : in Ada.Real_Time.Time := Global.Start_Time);
+   procedure Update_GUI (Terminated : in Boolean := False);
 
-   procedure Update_GUI
-     (Terminated : in Boolean := False;
-      Time_Stamp : in Ada.Real_Time.Time := Global.Start_Time)
+   procedure Update_GUI (Terminated : in Boolean := False)
    is
       All_Legs : Landing_Legs.All_Legs_State;
       Thruster : constant Thrusters.State    := Thrusters.Current_State;
       Altitude : constant Altimeter.Altitude := Altimeter.Current_Altitude;
       Velocity : constant Altimeter.Velocity := Altimeter.Current_Velocity;
+      Fuel     : constant Engine.Fuel_Mass   := Engine.Remaining_Fuel;
    begin
       Landing_Legs.Read_State (State => All_Legs);
 
@@ -36,8 +34,8 @@ procedure Simulator is
                                           Thruster   => Thruster,
                                           Altitude   => Altitude,
                                           Velocity   => Velocity,
-                                          Terminated => Terminated,
-                                          Time_Stamp => Time_Stamp));
+                                          Fuel       => Fuel,
+                                          Terminated => Terminated));
    end Update_GUI;
 
    use type Ada.Real_Time.Time;
@@ -100,19 +98,15 @@ begin
          Update_GUI;
          Touchdown_Monitor.Shutdown;
          Landing_Legs.Shutdown;
+         Engine.Shutdown;
       end if;
    end loop;
 
    Global.Log (Message => "Simulation finished.");
 
-   declare
-      Now : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
-   begin
-      loop
-         Update_GUI (Terminated => True,
-                     Time_Stamp => Now);
+   loop
+      Update_GUI (Terminated => True);
 
-         exit when GUI.Aborted;
-      end loop;
-   end;
+      exit when GUI.Aborted;
+   end loop;
 end Simulator;

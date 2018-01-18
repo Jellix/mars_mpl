@@ -26,23 +26,28 @@
 -- __________________________________________________________________ --
 
 package Strings_Edit.UTF8.Wildcards.Case_Insensitive is
---
--- Match_Insensitive -- An UTF-8 encoded string by a pattern
---
---    Text       - The string to match
---    Pattern    - The pattern
---    Wide_Space - Spaces handled as a pattern for blank sequences
---    Blanks     - The list of blank characters
---
--- Returns :
---
---    True if Pattern matches Text
---
+
+   pragma Warnings (Off, "declaration hides ""Blanks""");
+
+   --
+   -- Match_Insensitive -- An UTF-8 encoded string by a pattern
+   --
+   --    Text       - The string to match
+   --    Pattern    - The pattern
+   --    Wide_Space - Spaces handled as a pattern for blank sequences
+   --    Blanks     - The list of blank characters
+   --
+   -- Returns :
+   --
+   --    True if Pattern matches Text
+   --
    function Match_Insensitive
      (Text       : String;
       Pattern    : String;
       Wide_Space : Boolean                        := False;
       Blanks     : Ada.Strings.Maps.Character_Set := SpaceAndTab)
       return Boolean;
+
+   pragma Warnings (On, "declaration hides ""Blanks""");
 
 end Strings_Edit.UTF8.Wildcards.Case_Insensitive;

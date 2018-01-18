@@ -892,7 +892,7 @@ package body Gtk.Tree_Model.Columned_Store is
    pragma Convention (C, Index_Array);
 
    package Index_Array_Pointers is
-     new Interfaces.C.Pointers (Natural, GInt, Index_Array, 0);
+     new Interfaces.C.Pointers (Natural, Gint, Index_Array, 0);
 
    function To_Pointer is
      new Ada.Unchecked_Conversion

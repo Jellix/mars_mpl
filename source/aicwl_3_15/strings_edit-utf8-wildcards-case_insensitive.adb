@@ -29,6 +29,8 @@ with Strings_Edit.UTF8.Maps.Constants;
 
 package body Strings_Edit.UTF8.Wildcards.Case_Insensitive is
 
+   pragma Warnings (Off, "declaration hides ""Blanks""");
+
    function Match_Insensitive
      (Text       : String;
       Pattern    : String;
@@ -42,5 +44,7 @@ package body Strings_Edit.UTF8.Wildcards.Case_Insensitive is
                     Wide_Space,
                     Blanks);
    end Match_Insensitive;
+
+   pragma Warnings (On, "declaration hides ""Blanks""");
 
 end Strings_Edit.UTF8.Wildcards.Case_Insensitive;

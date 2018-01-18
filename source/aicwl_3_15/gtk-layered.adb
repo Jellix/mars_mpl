@@ -40,13 +40,13 @@ with Glib.Object.Checked_Destroy;
 
 package body Gtk.Layered is
 
+   pragma Warnings (Off, "declaration hides ""Bottom""");
    pragma Warnings (Off, "declaration hides ""Left""");
+   pragma Warnings (Off, "declaration hides ""Params""");
+   pragma Warnings (Off, "declaration hides ""Signal""");
    pragma Warnings (Off, "declaration hides ""Widget""");
 
-   function Where (Name : String) return String is
-   begin
-      return " in Gtk.Layered." & Name;
-   end Where;
+   function Where (Name : String) return String;
 
    Class : Ada_GObject_Class := Uninitialized_Class;
 
@@ -284,7 +284,7 @@ package body Gtk.Layered is
          Result : System.Address);
       pragma Import (C, EmitV, "g_signal_emitv");
       procedure Set_Object
-        (Value  : in out Glib.Values.GValue;
+        (Val    : in out Glib.Values.GValue;
          Object : System.Address);
       pragma Import (C, Set_Object, "g_value_set_object");
       Params : Glib.Values.GValue_Array (0 .. 1);
@@ -946,8 +946,8 @@ package body Gtk.Layered is
    end Style_Updated;
 
    ---------------------------------------------------------------------
-   File    : Ada.Text_IO.File_Type;
-   Figures : constant String := "0123456789ABCDEF";
+   Trace_File : Ada.Text_IO.File_Type;
+   Figures    : constant String := "0123456789ABCDEF";
 
    function Image (Location : System.Address) return String
    is
@@ -966,35 +966,38 @@ package body Gtk.Layered is
       return Buffer (Pointer + 1 .. Buffer'Last);
    end Image;
 
-   procedure Put (File  : Ada.Text_IO.File_Type;
-                  Where : System.Address) is
-   begin
-      Ada.Text_IO.Put (File, Image (Where));
-   end Put;
-
    procedure Trace (Data : System.Address; Text : String)
    is
       pragma Unreferenced (Data);
    begin
-      if not Ada.Text_IO.Is_Open (File) then
-         Ada.Text_IO.Create (File, Ada.Text_IO.Out_File, Trace_File);
+      if not Ada.Text_IO.Is_Open (Trace_File) then
+         Ada.Text_IO.Create (Trace_File, Ada.Text_IO.Out_File, Trace_File_Name);
       end if;
-      Ada.Text_IO.Put (File, Text);
+      Ada.Text_IO.Put (Trace_File, Text);
    end Trace;
 
-   procedure Trace_Line (Data : System.Address; Text : String) is
+   procedure Trace_Line (Data : System.Address;
+                         Text : String) is
    begin
-      if not Ada.Text_IO.Is_Open (File) then
-         Ada.Text_IO.Create (File, Ada.Text_IO.Out_File, Trace_File);
+      if not Ada.Text_IO.Is_Open (Trace_File) then
+         Ada.Text_IO.Create (Trace_File, Ada.Text_IO.Out_File, Trace_File_Name);
       end if;
-      Ada.Text_IO.New_Line (File);
-      Put (File, Data);
-      Ada.Text_IO.Put (File, "# ");
-      Ada.Text_IO.Put (File, Text);
+      Ada.Text_IO.New_Line (Trace_File);
+      Ada.Text_IO.Put (Trace_File, Image (Data));
+      Ada.Text_IO.Put (Trace_File, "# ");
+      Ada.Text_IO.Put (Trace_File, Text);
    end Trace_Line;
    ---------------------------------------------------------------------
 
+   function Where (Name : String) return String is
+   begin
+      return " in Gtk.Layered." & Name;
+   end Where;
+
    pragma Warnings (On, "declaration hides ""Widget""");
+   pragma Warnings (On, "declaration hides ""Signal""");
+   pragma Warnings (On, "declaration hides ""Params""");
    pragma Warnings (On, "declaration hides ""Left""");
+   pragma Warnings (On, "declaration hides ""Bottom""");
 
 end Gtk.Layered;

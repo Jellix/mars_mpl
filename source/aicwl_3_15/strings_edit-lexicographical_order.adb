@@ -23,14 +23,14 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 package body Strings_Edit.Lexicographical_Order is
 
    procedure Get_Numeral (Text : String; Pointer : in out Integer) is
    begin
       while Pointer < Text'Last loop
-         exit when Text (Pointer + 1) not in '0'..'9';
+         exit when Text (Pointer + 1) not in '0' .. '9';
          Pointer := Pointer + 1;
       end loop;
    end Get_Numeral;
@@ -81,13 +81,13 @@ package body Strings_Edit.Lexicographical_Order is
          return Greater;
       end if;
       loop
-         if Left (I) in '0'..'9' then
-            if Right (J) not in '0'..'9' then
+         if Left (I) in '0' .. '9' then
+            if Right (J) not in '0' .. '9' then
                return Greater;
             end if;
             Get_Numeral (Left, I);
             Get_Numeral (Right, J);
-         elsif Right (J) in '0'..'9' then
+         elsif Right (J) in '0' .. '9' then
             return Less;
          elsif Left (I) /= Right (J) then
             if Left (I) < Right (J) then
@@ -125,8 +125,8 @@ package body Strings_Edit.Lexicographical_Order is
          return Greater;
       end if;
       loop
-         if Left (I) in '0'..'9' then
-            if Right (J) not in '0'..'9' then
+         if Left (I) in '0' .. '9' then
+            if Right (J) not in '0' .. '9' then
                return Greater;
             end if;
             declare
@@ -135,7 +135,7 @@ package body Strings_Edit.Lexicographical_Order is
             begin
                Get_Numeral (Left, I);
                Get_Numeral (Right, J);
-               case Compare_Numerals (Left (I0..I), Right (J0..J)) is
+               case Compare_Numerals (Left (I0 .. I), Right (J0 .. J)) is
                   when Less =>
                      return Less;
                   when Greater =>
@@ -144,7 +144,7 @@ package body Strings_Edit.Lexicographical_Order is
                      null;
                end case;
             end;
-         elsif Right (J) in '0'..'9' then
+         elsif Right (J) in '0' .. '9' then
             return Less;
          elsif Left (I) /= Right (J) then
             if Left (I) < Right (J) then

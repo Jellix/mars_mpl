@@ -27,6 +27,8 @@
 
 package Gtk.Layered.Waveform.Sweeper is
 
+   pragma Warnings (Off, "declaration hides ""Sweeper""");
+
    --
    -- Gtk_Waveform_Sweeper_Record -- Waveform sweeper adjustment. This is a
    --                                specialized  adjustment object used to
@@ -260,5 +262,7 @@ private
    procedure Set_Time
      (Sweeper : not null access Gtk_Waveform_Sweeper_Record;
       Stamp   : Gdouble);
+
+   pragma Warnings (On, "declaration hides ""Sweeper""");
 
 end Gtk.Layered.Waveform.Sweeper;

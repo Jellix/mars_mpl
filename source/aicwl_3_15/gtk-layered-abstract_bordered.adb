@@ -36,6 +36,8 @@ with Gtk.Missed;
 
 package body Gtk.Layered.Abstract_Bordered is
 
+   pragma Warnings (Off, "declaration hides ""Widget""");
+
    type Drawing_Action is (Line, Region, Contents);
 
    use type Gdk.Color.IHLS.Gdk_Luminance;
@@ -104,77 +106,6 @@ package body Gtk.Layered.Abstract_Bordered is
       Background_Known : Boolean := False;
       Background_Color : Gdk.Color.Gdk_Color;
 
-      function Get_Background return Gdk.Color.Gdk_Color is
-      begin
-         if not Background_Known then
-            declare
-               Widget : Gtk.Widget.Gtk_Widget := Layer.Widget.all'Unchecked_Access;
-               Parent : Gtk.Widget.Gtk_Widget;
-               Color  : Gdk.RGBA.Gdk_RGBA;
-               use type Gtk.Widget.Gtk_Widget;
-            begin
-               loop
-                  Gtk.Style_Context.Get_Style_Context (Widget).all.
-                    Get_Background_Color
-                      (Gtk.Enums.Gtk_State_Flag_Normal,
-                       Color);
-                  exit when Color.Alpha > 0.0;
-                  Parent := Widget.all.Get_Parent;
-                  exit when Parent = null or else Parent = Widget;
-                  Widget := Parent;
-               end loop;
-               Background_Color := Gtk.Missed.From_RGBA (Color);
-               Background_Known := True;
-            end;
-         end if;
-         return Background_Color;
-      end Get_Background;
-
-      procedure Set_Dark is
-         Color : Gdk.Color.Gdk_Color;
-      begin
-         if Layer.Border_Color.Style_Color then
-            Color := Gdk.Color.IHLS.Darken (Get_Background, Darken_By);
-         else
-            Color := Gdk.Color.IHLS.Darken (Layer.Border_Color.Color, Darken_By);
-         end if;
-         Cairo.Set_Source_Rgb
-           (Context,
-            Gdouble (Gdk.Color.Red   (Color)) / Gdouble (Guint16'Last),
-            Gdouble (Gdk.Color.Green (Color)) / Gdouble (Guint16'Last),
-            Gdouble (Gdk.Color.Blue  (Color)) / Gdouble (Guint16'Last));
-      end Set_Dark;
-
-      procedure Set_Light is
-         Color : Gdk.Color.Gdk_Color;
-      begin
-         if Layer.Border_Color.Style_Color then
-            Color := Gdk.Color.IHLS.Lighten (Get_Background, Lighten_By);
-         else
-            Color := Gdk.Color.IHLS.Lighten (Layer.Border_Color.Color, Lighten_By);
-         end if;
-         Cairo.Set_Source_Rgb
-           (Context,
-            Gdouble (Gdk.Color.Red   (Color)) / Gdouble (Guint16'Last),
-            Gdouble (Gdk.Color.Green (Color)) / Gdouble (Guint16'Last),
-            Gdouble (Gdk.Color.Blue  (Color)) / Gdouble (Guint16'Last));
-      end Set_Light;
-
-      procedure Set_Normal is
-         Color : Gdk.Color.Gdk_Color;
-      begin
-         if Layer.Border_Color.Style_Color then
-            Color := Get_Background;
-         else
-            Color := Layer.Border_Color.Color;
-         end if;
-         Cairo.Set_Source_Rgb
-           (Context,
-            Gdouble (Gdk.Color.Red   (Color)) / Gdouble (Guint16'Last),
-            Gdouble (Gdk.Color.Green (Color)) / Gdouble (Guint16'Last),
-            Gdouble (Gdk.Color.Blue  (Color)) / Gdouble (Guint16'Last));
-      end Set_Normal;
-
       Shadow_Depth : Gdouble; -- The width of the visible shadow
       Border_Width : Gdouble;
       Extent       : Gdouble;
@@ -192,6 +123,9 @@ package body Gtk.Layered.Abstract_Bordered is
       --            Extent * FX + Width = Bound
       --            FX = (Bound - Width) / Extent
       --
+      procedure Draw
+        (Shift, Bound, Width : Gdouble;
+         Action              : Drawing_Action := Line);
       procedure Draw
         (Shift, Bound, Width : Gdouble;
          Action              : Drawing_Action := Line)
@@ -231,6 +165,81 @@ package body Gtk.Layered.Abstract_Bordered is
                   Area);
          end case;
       end Draw;
+
+      function Get_Background return Gdk.Color.Gdk_Color;
+      function Get_Background return Gdk.Color.Gdk_Color is
+      begin
+         if not Background_Known then
+            declare
+               Widget : Gtk.Widget.Gtk_Widget := Layer.Widget.all'Unchecked_Access;
+               Parent : Gtk.Widget.Gtk_Widget;
+               Color  : Gdk.RGBA.Gdk_RGBA;
+               use type Gtk.Widget.Gtk_Widget;
+            begin
+               loop
+                  Gtk.Style_Context.Get_Style_Context (Widget).all.
+                    Get_Background_Color
+                      (Gtk.Enums.Gtk_State_Flag_Normal,
+                       Color);
+                  exit when Color.Alpha > 0.0;
+                  Parent := Widget.all.Get_Parent;
+                  exit when Parent = null or else Parent = Widget;
+                  Widget := Parent;
+               end loop;
+               Background_Color := Gtk.Missed.From_RGBA (Color);
+               Background_Known := True;
+            end;
+         end if;
+         return Background_Color;
+      end Get_Background;
+
+      procedure Set_Dark;
+      procedure Set_Dark is
+         Color : Gdk.Color.Gdk_Color;
+      begin
+         if Layer.Border_Color.Style_Color then
+            Color := Gdk.Color.IHLS.Darken (Get_Background, Darken_By);
+         else
+            Color := Gdk.Color.IHLS.Darken (Layer.Border_Color.Color, Darken_By);
+         end if;
+         Cairo.Set_Source_Rgb
+           (Context,
+            Gdouble (Gdk.Color.Red   (Color)) / Gdouble (Guint16'Last),
+            Gdouble (Gdk.Color.Green (Color)) / Gdouble (Guint16'Last),
+            Gdouble (Gdk.Color.Blue  (Color)) / Gdouble (Guint16'Last));
+      end Set_Dark;
+
+      procedure Set_Light;
+      procedure Set_Light is
+         Color : Gdk.Color.Gdk_Color;
+      begin
+         if Layer.Border_Color.Style_Color then
+            Color := Gdk.Color.IHLS.Lighten (Get_Background, Lighten_By);
+         else
+            Color := Gdk.Color.IHLS.Lighten (Layer.Border_Color.Color, Lighten_By);
+         end if;
+         Cairo.Set_Source_Rgb
+           (Context,
+            Gdouble (Gdk.Color.Red   (Color)) / Gdouble (Guint16'Last),
+            Gdouble (Gdk.Color.Green (Color)) / Gdouble (Guint16'Last),
+            Gdouble (Gdk.Color.Blue  (Color)) / Gdouble (Guint16'Last));
+      end Set_Light;
+
+      procedure Set_Normal;
+      procedure Set_Normal is
+         Color : Gdk.Color.Gdk_Color;
+      begin
+         if Layer.Border_Color.Style_Color then
+            Color := Get_Background;
+         else
+            Color := Layer.Border_Color.Color;
+         end if;
+         Cairo.Set_Source_Rgb
+           (Context,
+            Gdouble (Gdk.Color.Red   (Color)) / Gdouble (Guint16'Last),
+            Gdouble (Gdk.Color.Green (Color)) / Gdouble (Guint16'Last),
+            Gdouble (Gdk.Color.Blue  (Color)) / Gdouble (Guint16'Last));
+      end Set_Normal;
 
       Outer_Size  : Gdouble;
       Middle_Size : Gdouble;
@@ -865,5 +874,7 @@ package body Gtk.Layered.Abstract_Bordered is
          Gtk.Layered.Stream_IO.Store (Stream, Layer.Border_Color.Color);
       end if;
    end Store;
+
+   pragma Warnings (On, "declaration hides ""Widget""");
 
 end Gtk.Layered.Abstract_Bordered;

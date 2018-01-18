@@ -29,6 +29,12 @@ with Ada.Numerics.Generic_Elementary_Functions;
 
 package body Gdk.Color.IHLS is
 
+   pragma Warnings (Off, "declaration hides ""Blue""");
+   pragma Warnings (Off, "declaration hides ""Color""");
+   pragma Warnings (Off, "declaration hides ""Green""");
+   pragma Warnings (Off, "declaration hides ""Impurify""");
+   pragma Warnings (Off, "declaration hides ""Red""");
+
    package Elementary_Functions is
      new Ada.Numerics.Generic_Elementary_Functions (Gdk_Stimulus);
 
@@ -42,87 +48,12 @@ package body Gdk.Color.IHLS is
    S_Factor    : constant Gdk_Stimulus := Elementary_Functions.Sqrt (3.0) / 2.0;
    S_Eps       : constant Gdk_Stimulus :=
                     1.0 / Gdk_Stimulus (Gdk_Saturation'Modulus);
---
--- Get_Hue -- Hue from R, G, B components
---
---    R, G, B - The arguments
---
--- The expression for Hue as specified in the paper is
---
---    if G >= B
---       H = arcos (y/x), where
---         y = R - G/2 - B/2
---         x = sqrt (RR + GG + BB - RG - RB - GB)
---    else
---       H = 2Pi - arcos(y/x)
---
--- This expression is replaced by a  simpler  expression  based  on  the
--- two-argument arctan:
---
---    arcos (y/x) = arctan (sqrt (xx-yy)/y)) =
---  = arctan (sqrt(xx-yy), y)
---
--- Substitution of x and y gives:
---
---    arctan (sqrt(RR + GG   + BB   - RG - RB - GB
---                -RR - GG/4 - BB/4 + RG + RB - GB/2), y) =
---  = arctan (sqrt(3/4 GG + 3/4 BB - 3/2 GB), y) =
---  = arctan (sqrt(3)/2 (G-B), y) =
---  = arctan (sqrt(3)/2 (G-B), R - (G+B)/2) =
---       (for G >= B)
---
---    2Pi + arctan (sqrt(3)/2 (G-B), R - (G+B)/2)
---       (for G < B)
---
--- Returns :
---
---    Hue [0..Hue_Range[
---
-   function Get_Hue (R, G, B : Gdk_Stimulus)
-      return Gdk_Stimulus is
-      pragma Inline (Get_Hue);
-      Hue : Gdk_Stimulus := R - (G + B) / 2.0;
-   begin
-      if abs Hue < Hue_Eps then
-         if G < B then
-            Hue := -Hue_Quarter;
-         else
-            Hue := Hue_Quarter;
-         end if;
-      else
-         Hue := Elementary_Functions.Arctan (S_Factor * (G - B), Hue, Hue_Range);
-      end if;
-      if Hue < 0.0 then
-         return Hue_Range + Hue;
-      else
-         return Hue;
-      end if;
-   end Get_Hue;
 
-   function To_Luminance (Luminance : Gdk_Stimulus)
-      return Gdk_Luminance is
-      pragma Inline (To_Luminance);
-   begin
-      if Luminance >= Gdk_Stimulus (Gdk_Luminance'Last) then
-         return Gdk_Luminance'Last;
-      elsif Luminance <= Gdk_Stimulus (Gdk_Luminance'First) then
-         return Gdk_Luminance'First;
-      else
-         return Gdk_Luminance (Luminance);
-      end if;
-   end To_Luminance;
+   function To_Hue (Hue : Gdk_Stimulus) return Gdk_Hue
+     with Inline;
 
-   function To_Hue (Hue : Gdk_Stimulus) return Gdk_Hue is
-      pragma Inline (To_Hue);
-   begin
-      if Hue >= Hue_Range then
-         return Gdk_Hue (Gdk_Stimulus'Floor (Hue - Hue_Range));
-      elsif Hue < 0.0 then
-         return Gdk_Hue (Gdk_Stimulus'Floor (Hue + Hue_Range));
-      else
-         return Gdk_Hue (Gdk_Stimulus'Floor (Hue));
-      end if;
-   end To_Hue;
+   function To_Luminance (Luminance : Gdk_Stimulus) return Gdk_Luminance
+     with Inline;
 
    function Average (List : Gdk_Color_Array) return Gdk_Color is
       R_Sum : Gdk_Stimulus := 0.0;
@@ -178,24 +109,62 @@ package body Gdk.Color.IHLS is
       return To_RGB (Darken (To_IHLS (Color), By));
    end Darken;
 
-   function Lighten
-     (Color : Gdk_IHLS_Color;
-      By    : Gdk_Luminance) return Gdk_IHLS_Color is
+   --
+   -- Get_Hue -- Hue from R, G, B components
+   --
+   --    R, G, B - The arguments
+   --
+   -- The expression for Hue as specified in the paper is
+   --
+   --    if G >= B
+   --       H = arcos (y/x), where
+   --         y = R - G/2 - B/2
+   --         x = sqrt (RR + GG + BB - RG - RB - GB)
+   --    else
+   --       H = 2Pi - arcos(y/x)
+   --
+   -- This expression is replaced by a  simpler  expression  based  on  the
+   -- two-argument arctan:
+   --
+   --    arcos (y/x) = arctan (sqrt (xx-yy)/y)) =
+   --  = arctan (sqrt(xx-yy), y)
+   --
+   -- Substitution of x and y gives:
+   --
+   --    arctan (sqrt(RR + GG   + BB   - RG - RB - GB
+   --                -RR - GG/4 - BB/4 + RG + RB - GB/2), y) =
+   --  = arctan (sqrt(3/4 GG + 3/4 BB - 3/2 GB), y) =
+   --  = arctan (sqrt(3)/2 (G-B), y) =
+   --  = arctan (sqrt(3)/2 (G-B), R - (G+B)/2) =
+   --       (for G >= B)
+   --
+   --    2Pi + arctan (sqrt(3)/2 (G-B), R - (G+B)/2)
+   --       (for G < B)
+   --
+   -- Returns :
+   --
+   --    Hue [0..Hue_Range[
+   --
+   function Get_Hue (R, G, B : Gdk_Stimulus)
+      return Gdk_Stimulus is
+      pragma Inline (Get_Hue);
+      Hue : Gdk_Stimulus := R - (G + B) / 2.0;
    begin
-      if Color.Luminance + By < Color.Luminance then
-         return (Color.Hue, Gdk_Luminance'Last, Color.Saturation);
+      if abs Hue < Hue_Eps then
+         if G < B then
+            Hue := -Hue_Quarter;
+         else
+            Hue := Hue_Quarter;
+         end if;
       else
-         return (Color.Hue, Color.Luminance + By, Color.Saturation);
+         Hue := Elementary_Functions.Arctan (S_Factor * (G - B), Hue, Hue_Range);
       end if;
-   end Lighten;
-
-   function Lighten
-     (Color    : Gdk_Color;
-      By       : Gdk_Luminance;
-      Impurify : Boolean := False) return Gdk_Color is
-   begin
-      return To_RGB (Lighten (To_IHLS (Color), By), Impurify);
-   end Lighten;
+      if Hue < 0.0 then
+         return Hue_Range + Hue;
+      else
+         return Hue;
+      end if;
+   end Get_Hue;
 
    function Impurify
      (Color : Gdk_IHLS_Color;
@@ -215,11 +184,30 @@ package body Gdk.Color.IHLS is
       return To_RGB (Impurify (To_IHLS (Color), By));
    end Impurify;
 
+   function Lighten
+     (Color : Gdk_IHLS_Color;
+      By    : Gdk_Luminance) return Gdk_IHLS_Color is
+   begin
+      if Color.Luminance + By < Color.Luminance then
+         return (Color.Hue, Gdk_Luminance'Last, Color.Saturation);
+      else
+         return (Color.Hue, Color.Luminance + By, Color.Saturation);
+      end if;
+   end Lighten;
+
+   function Lighten
+     (Color    : Gdk_Color;
+      By       : Gdk_Luminance;
+      Impurify : Boolean := False) return Gdk_Color is
+   begin
+      return To_RGB (Lighten (To_IHLS (Color), By), Impurify);
+   end Lighten;
+
    function Purify
      (Color : Gdk_IHLS_Color;
       By    : Gdk_Saturation) return Gdk_IHLS_Color is
    begin
-      if Color.Saturation + By > Gdk_Saturation'Last then
+      if Color.Saturation > Gdk_Saturation'Last - By then
          return (Color.Hue, Color.Luminance, Gdk_Saturation'Last);
       else
          return (Color.Hue, Color.Luminance, Color.Saturation + By);
@@ -232,6 +220,17 @@ package body Gdk.Color.IHLS is
    begin
       return To_RGB (Purify (To_IHLS (Color), By));
    end Purify;
+
+   function To_Hue (Hue : Gdk_Stimulus) return Gdk_Hue is
+   begin
+      if Hue >= Hue_Range then
+         return Gdk_Hue (Gdk_Stimulus'Floor (Hue - Hue_Range));
+      elsif Hue < 0.0 then
+         return Gdk_Hue (Gdk_Stimulus'Floor (Hue + Hue_Range));
+      else
+         return Gdk_Hue (Gdk_Stimulus'Floor (Hue));
+      end if;
+   end To_Hue;
 
    function To_IHLS (Color : Gdk_Color) return Gdk_IHLS_Color is
       G  : constant Guint16      := Green (Color);
@@ -254,6 +253,17 @@ package body Gdk.Color.IHLS is
       end if;
       return Result;
    end To_IHLS;
+
+   function To_Luminance (Luminance : Gdk_Stimulus) return Gdk_Luminance is
+   begin
+      if Luminance >= Gdk_Stimulus (Gdk_Luminance'Last) then
+         return Gdk_Luminance'Last;
+      elsif Luminance <= Gdk_Stimulus (Gdk_Luminance'First) then
+         return Gdk_Luminance'First;
+      else
+         return Gdk_Luminance (Luminance);
+      end if;
+   end To_Luminance;
 
    function To_RGB (Stimulus : Gdk_Stimulus) return Guint16 is
    begin
@@ -339,8 +349,27 @@ package body Gdk.Color.IHLS is
       return Color;
    end To_RGB;
 
-   function To_RGB_Saturating
-     (Color : Gdk_IHLS_Color) return Gdk_Color
+   function To_RGB_Saturating (Color : Gdk_IHLS_Color) return Gdk_Color;
+
+   function To_RGB
+     (Color    : Gdk_IHLS_Color;
+      Impurify : Boolean := False) return Gdk_Color is
+   begin
+      if Impurify then
+         return To_RGB_Saturating (Color);
+      else
+         declare
+            Red   : Gdk_Stimulus;
+            Green : Gdk_Stimulus;
+            Blue  : Gdk_Stimulus;
+         begin
+            To_RGB (Color, Red, Green, Blue);
+            return To_RGB (Red, Green, Blue);
+         end;
+      end if;
+   end To_RGB;
+
+   function To_RGB_Saturating (Color : Gdk_IHLS_Color) return Gdk_Color
    is
       Luminance : constant Gdk_Stimulus :=
                      Gdk_Stimulus (Color.Luminance);
@@ -393,24 +422,6 @@ package body Gdk.Color.IHLS is
       return To_RGB (Red, Green, Blue);
    end To_RGB_Saturating;
 
-   function To_RGB
-     (Color    : Gdk_IHLS_Color;
-      Impurify : Boolean := False) return Gdk_Color is
-   begin
-      if Impurify then
-         return To_RGB_Saturating (Color);
-      else
-         declare
-            Red   : Gdk_Stimulus;
-            Green : Gdk_Stimulus;
-            Blue  : Gdk_Stimulus;
-         begin
-            To_RGB (Color, Red, Green, Blue);
-            return To_RGB (Red, Green, Blue);
-         end;
-      end if;
-   end To_RGB;
-
    function Val
      (First : Gdk_IHLS_Color;
       Pos   : Natural;
@@ -431,5 +442,11 @@ package body Gdk.Color.IHLS is
          Saturation => First.Saturation,
          Luminance  => First.Luminance);
    end Val;
+
+   pragma Warnings (On, "declaration hides ""Red""");
+   pragma Warnings (On, "declaration hides ""Impurify""");
+   pragma Warnings (On, "declaration hides ""Green""");
+   pragma Warnings (On, "declaration hides ""Color""");
+   pragma Warnings (On, "declaration hides ""Blue""");
 
 end Gdk.Color.IHLS;

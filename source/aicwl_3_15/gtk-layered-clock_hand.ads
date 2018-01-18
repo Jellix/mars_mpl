@@ -31,6 +31,9 @@ with Gtk.Missed;
 
 package Gtk.Layered.Clock_Hand is
 
+   pragma Warnings (Off, "declaration hides ""Adjustment""");
+   pragma Warnings (Off, "declaration hides ""Center""");
+
    --
    -- Clock_Hand_Layer -- A clock hand
    --
@@ -338,5 +341,8 @@ private
          pragma Atomic (Value);
          pragma Atomic (Updated);
       end record;
+
+   pragma Warnings (On, "declaration hides ""Center""");
+   pragma Warnings (On, "declaration hides ""Adjustment""");
 
 end Gtk.Layered.Clock_Hand;

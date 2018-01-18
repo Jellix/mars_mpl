@@ -36,6 +36,8 @@ with Gtk.Layered.Rectangular_Background;
 
 package Gtk.Meter.Angular_90 is
 
+   pragma Warnings (Off, "declaration hides ""Adjustment""");
+
    --
    -- Class_Name - Of the widget
    --
@@ -208,5 +210,7 @@ private
          Annotation   : access Gtk.Layered.Elliptic_Annotation.Elliptic_Annotation_Layer;
          Needle       : access Gtk.Layered.Needle.Needle_Layer;
       end record;
+
+   pragma Warnings (On, "declaration hides ""Adjustment""");
 
 end Gtk.Meter.Angular_90;

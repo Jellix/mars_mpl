@@ -31,6 +31,8 @@ with Gtk.Missed;
 
 package Gtk.Layered.Rectangular_Background is
 
+   pragma Warnings (Off, "declaration hides ""Center""");
+
    --
    -- Rectangular_Background_Layer -- A filled rectangle
    --
@@ -267,5 +269,7 @@ private
          Radius : Gdouble;
          Color  : Gdk.Color.Gdk_Color;
       end record;
+
+   pragma Warnings (On, "declaration hides ""Center""");
 
 end Gtk.Layered.Rectangular_Background;

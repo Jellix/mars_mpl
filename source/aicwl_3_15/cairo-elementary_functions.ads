@@ -28,4 +28,4 @@
 with Ada.Numerics.Generic_Elementary_Functions;
 
 package Cairo.Elementary_Functions is
-   new Ada.Numerics.Generic_Elementary_Functions (GDouble);
+   new Ada.Numerics.Generic_Elementary_Functions (Gdouble);

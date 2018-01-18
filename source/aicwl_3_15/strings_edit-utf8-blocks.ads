@@ -23,13 +23,12 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 --
 --  This package defines the ranges of Unicide code points as defined in
 --  the  standard.  The  current  version  corresponds   to   the   file
 --  Blocks-5.0.0.txt Date: 2006-02-15, 15:40:00 [KW]
 --
-with Ada.Finalization;
 
 package Strings_Edit.UTF8.Blocks is
    Aegean_Numbers :

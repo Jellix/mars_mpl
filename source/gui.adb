@@ -1,4 +1,5 @@
 with Ada.Exceptions;
+with Ada.Real_Time;
 
 with Global;
 with Touchdown_Monitor;
@@ -20,6 +21,7 @@ with Gtk.Hbutton_Box;
 with Gtk.Label;
 with Gtk.Layered.Label;
 with Gtk.Main;
+with Gtk.Meter.Angular_90;
 with Gtk.Missed;
 with Gtk.Oscilloscope;
 with Gtk.Widget;
@@ -45,6 +47,7 @@ package body GUI is
          Thruster_Led : Gtk.Gauge.LED_Round.Gtk_Gauge_LED_Round;
          Altitude     : Gtk.GEntry.Gtk_Entry;
          Velocity     : Gtk.GEntry.Gtk_Entry;
+         Fuel         : Gtk.GEntry.Gtk_Entry;
       end record;
 
    type Legs_Channels is array (Landing_Legs.Legs_Index) of
@@ -60,6 +63,7 @@ package body GUI is
          Thruster_Channel  : Gtk.Oscilloscope.Channel_Number;
          Tachometer        : Gtk.Gauge.Elliptic_180.Gtk_Gauge_Elliptic_180;
          Altimeter         : Gtk.Gauge.Altimeter.Gtk_Gauge_Altimeter;
+         Fuel_Scale        : Gtk.Meter.Angular_90.Gtk_Meter_Angular_90;
       end record;
    type Main_Window is access all Main_Window_Record'Class;
 
@@ -74,6 +78,11 @@ package body GUI is
             new Gtk.Enums.String_Lists.Controlled_String_List'
            ("0" / "1" / "2" / "3" / "4" / "5" / "6" / "7" / "8" / "9"),
          Factor => 10000.0);
+   Fuel_Scale : constant Scaling
+     := (Texts  =>
+            new Gtk.Enums.String_Lists.Controlled_String_List'
+             ("0" / "1" / "2" / "3" / "4" / "5" / "6" / "7" / "8" / "9" / "10"),
+         Factor => 1000.0);
    Velocity_Scale : constant Scaling
      := (Texts  =>
             new Gtk.Enums.String_Lists.Controlled_String_List'
@@ -136,8 +145,7 @@ package body GUI is
         (Text => Altimeter.Image (Update_State.Altitude));
       Win.Altimeter.all.Set_Value
         (Value =>
-           Glib.Gdouble (abs Update_State.Altitude) /
-             Altitude_Scale.Factor);
+           Glib.Gdouble (abs Update_State.Altitude) / Altitude_Scale.Factor);
       Win.Altimeter.all.Queue_Draw;
 
       -- Velocity
@@ -145,9 +153,14 @@ package body GUI is
         (Text => Altimeter.Image (Update_State.Velocity));
       Win.Tachometer.all.Set_Value
         (Value =>
-           Glib.Gdouble (abs Update_State.Velocity) /
-             Velocity_Scale.Factor);
+           Glib.Gdouble (abs Update_State.Velocity) / Velocity_Scale.Factor);
       Win.Tachometer.all.Queue_Draw;
+
+      --  Fuel
+      DE.Fuel.all.Set_Text (Text => Engine.Image (Update_State.Fuel));
+      Win.Fuel_Scale.all.Set_Value
+        (Value => Glib.Gdouble (Update_State.Fuel) / Fuel_Scale.Factor);
+      Win.Fuel_Scale.all.Queue_Draw;
 
       --  Data plots
       declare
@@ -425,6 +438,61 @@ package body GUI is
                      end;
                   end;
                end;
+
+               declare
+                  Fuel_Frame : Gtk.Frame.Gtk_Frame;
+               begin
+                  Gtk.Frame.Gtk_New (Frame => Fuel_Frame,
+                                     Label => "Fuel");
+                  HBox.all.Pack_Start (Child => Fuel_Frame);
+                  Fuel_Frame.all.Set_Size_Request (Width  => 400,
+                                                   Height => 400);
+
+                  declare
+                     VBox2 : Gtk.Box.Gtk_Vbox;
+                  begin
+                     Gtk.Box.Gtk_New_Vbox (Box => VBox2);
+                     Fuel_Frame.all.Add (Widget => VBox2);
+
+                     declare
+                        Gauge : Gtk.Meter.Angular_90.Gtk_Meter_Angular_90;
+                     begin
+                        Gtk.Meter.Angular_90.Gtk_New
+                          (Widget  => Gauge,
+                           Texts   => Fuel_Scale.Texts.all,
+                           Sectors =>
+                             Positive
+                               (Gtk.Enums.String_List.Length
+                                    (+Fuel_Scale.Texts.all)) - 1);
+                        Gtk.Layered.Label.Add_Label
+                          (Under    => Gauge.all.Get_Cache,
+                           Text     => "x 100 kg",
+                           Location => (0.0175, 0.1),
+                           Face     => Label_Font_Italic,
+                           Height   => 0.03,
+                           Stretch  => 0.9,
+                           Mode     => Gtk.Layered.Moved_Centered,
+                           Color    => Gtk.Missed.RGB (0.0, 0.0, 0.0),
+                           Angle    => 0.0,
+                           Skew     => 0.0,
+                           Markup   => False,
+                           Scaled   => True);
+                        VBox2.all.Pack_Start (Child  => Gauge,
+                                              Expand => True);
+                        Window.Fuel_Scale := Gauge;
+                     end;
+
+                     declare
+                        Text : Gtk.GEntry.Gtk_Entry;
+                     begin
+                        Gtk.GEntry.Gtk_New (The_Entry => Text);
+                        VBox2.all.Pack_End (Child  => Text,
+                                            Expand => False);
+                        Window.Elements.Fuel := Text;
+                        Text.all.Set_Editable (Is_Editable => False);
+                     end;
+                  end;
+               end;
             end;
          end;
 
@@ -539,26 +607,31 @@ package body GUI is
 
       Win.all.Show_All;
 
-      loop
-         State_Update.Wait_For_Update (New_State => Update_State);
+      declare
+         Last_Update : Ada.Real_Time.Time := Global.Start_Time;
+      begin
+         loop
+            State_Update.Wait_For_Update (New_State => Update_State);
 
-         if not Update_State.Terminated then
-            Feed_Values (Win          => Main_Window_Record (Win.all),
-                         Update_State => Update_State);
-         else
-            Win.all.Oscilloscope.all.Set_Time
-              (Sweeper => Gtk.Oscilloscope.Lower,
-               Stamp   => Update_State.Time_Stamp);
-         end if;
-
-         while Gtk.Main.Events_Pending loop
-            if Gtk.Main.Main_Iteration_Do (Blocking => False) then
-               null;
+            if not Update_State.Terminated then
+               Feed_Values (Win          => Main_Window_Record (Win.all),
+                            Update_State => Update_State);
+               Last_Update := Ada.Real_Time.Clock;
+            else
+               Win.all.Oscilloscope.all.Set_Time
+                 (Sweeper => Gtk.Oscilloscope.Lower,
+                  Stamp   => Last_Update);
             end if;
-         end loop;
 
-         exit when Aborted;
-      end loop;
+            while Gtk.Main.Events_Pending loop
+               if Gtk.Main.Main_Iteration_Do (Blocking => False) then
+                  null;
+               end if;
+            end loop;
+
+            exit when Aborted;
+         end loop;
+      end;
    exception
       when E : others =>
          Global.Log (Ada.Exceptions.Exception_Information (E));

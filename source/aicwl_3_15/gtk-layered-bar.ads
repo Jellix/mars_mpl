@@ -30,6 +30,8 @@ with Gtk.Missed;
 
 package Gtk.Layered.Bar is
 
+   pragma Warnings (Off, "declaration hides ""Adjustment""");
+
    --
    -- Bar_Layer -- An line indicating a value
    --
@@ -286,5 +288,7 @@ private
          Updated       : Boolean := True;
          pragma Atomic (Value);
       end record;
+
+   pragma Warnings (On, "declaration hides ""Adjustment""");
 
 end Gtk.Layered.Bar;

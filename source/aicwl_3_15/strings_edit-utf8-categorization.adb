@@ -27,6 +27,8 @@
 
 package body Strings_Edit.UTF8.Categorization is
 
+   pragma Warnings (Off, "declaration hides ""Value""");
+
    type Points_Range is record
       From     : UTF8_Code_Point;
       To       : UTF8_Code_Point;
@@ -850,5 +852,7 @@ package body Strings_Edit.UTF8.Categorization is
    begin
       return Category (Value) = Lu;
    end Is_Upper;
+
+   pragma Warnings (On, "declaration hides ""Value""");
 
 end Strings_Edit.UTF8.Categorization;

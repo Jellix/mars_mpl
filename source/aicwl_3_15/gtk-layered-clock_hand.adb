@@ -36,6 +36,10 @@ with Gtk.Layered.Stream_IO;
 
 package body Gtk.Layered.Clock_Hand is
 
+   pragma Warnings (Off, "declaration hides ""Adjustment""");
+   pragma Warnings (Off, "declaration hides ""Center""");
+   pragma Warnings (Off, "declaration hides ""Handlers""");
+
    Sqrt_2 : constant Gdouble := Cairo.Elementary_Functions.Sqrt (2.0);
 
    type Clock_Hand_Ptr is access all Clock_Hand_Layer;
@@ -68,6 +72,25 @@ package body Gtk.Layered.Clock_Hand is
      (Adjustment : access GObject_Record'Class;
       Needle     : Clock_Hand_Ptr);
 
+   overriding function Add
+     (Under  : not null access Layer_Location'Class;
+      Stream : not null access Ada.Streams.Root_Stream_Type'Class)
+      return not null access Clock_Hand_Layer
+   is
+      Ptr : Clock_Hand_Ptr := new Clock_Hand_Layer;
+   begin
+      Restore (Stream.all, Ptr.all);
+      Add (Ptr, Under);
+      return Ptr;
+   exception
+      when others =>
+         Free (Ptr);
+         raise;
+   end Add;
+
+   procedure Add_Adjustment
+     (Layer      : in out Clock_Hand_Layer;
+      Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class);
    procedure Add_Adjustment
      (Layer      : in out Clock_Hand_Layer;
       Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class)
@@ -198,22 +221,6 @@ package body Gtk.Layered.Clock_Hand is
          raise;
    end Add_Clock_Hand;
 
-   overriding function Add
-     (Under  : not null access Layer_Location'Class;
-      Stream : not null access Ada.Streams.Root_Stream_Type'Class)
-      return not null access Clock_Hand_Layer
-   is
-      Ptr : Clock_Hand_Ptr := new Clock_Hand_Layer;
-   begin
-      Restore (Stream.all, Ptr.all);
-      Add (Ptr, Under);
-      return Ptr;
-   exception
-      when others =>
-         Free (Ptr);
-         raise;
-   end Add;
-
    procedure Changed
      (Adjustment : access GObject_Record'Class;
       Needle     : Clock_Hand_Ptr)
@@ -310,8 +317,8 @@ package body Gtk.Layered.Clock_Hand is
             Angle2 => 0.0);
          Cairo.Close_Path (Context);
          declare
-            State : Cairo.Ellipses.Context_State := Cairo.Ellipses.Save (Context);
-            pragma Unreferenced (State);
+            Dummy : Cairo.Ellipses.Context_State := Cairo.Ellipses.Save (Context);
+            pragma Unreferenced (Dummy);
          begin
             Cairo.Clip (Context);
             case Layer.Tip.Cap is
@@ -997,5 +1004,9 @@ package body Gtk.Layered.Clock_Hand is
          Gtk.Layered.Stream_IO.Store (Stream, Layer.Adjustment);
       end if;
    end Store;
+
+   pragma Warnings (On, "declaration hides ""Handlers""");
+   pragma Warnings (On, "declaration hides ""Center""");
+   pragma Warnings (On, "declaration hides ""Adjustment""");
 
 end Gtk.Layered.Clock_Hand;

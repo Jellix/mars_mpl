@@ -49,6 +49,7 @@ with System;
 
 package Gtk.Layered is
 
+   pragma Warnings (Off, "declaration hides ""Params""");
    pragma Warnings (Off, "declaration hides ""Widget""");
 
    --
@@ -1242,12 +1243,13 @@ private
    Trace_Amplifier : Tracing_Flags := 2 ** 0;
    Trace_Waveform  : Tracing_Flags := 2 ** 1;
    Tracing_Mode    : constant Tracing_Flags := 0;
-   Trace_File : constant String  := "c:/temp/aicwl.txt";
+   Trace_File_Name : constant String  := "c:/temp/aicwl.txt";
 
    procedure Trace (Data : System.Address; Text : String);
    procedure Trace_Line (Data : System.Address; Text : String);
    ---------------------------------------------------------------------
 
+   pragma Warnings (On, "declaration hides ""Params""");
    pragma Warnings (On, "declaration hides ""Widget""");
 
 end Gtk.Layered;

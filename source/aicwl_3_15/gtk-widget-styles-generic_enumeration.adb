@@ -27,6 +27,8 @@
 
 package body Gtk.Widget.Styles.Generic_Enumeration is
 
+   pragma Warnings (Off, "declaration hides ""Widget""");
+
    function Enum_Property_Parser
      (PSpec          : Param_Spec;
       RC_String      : GString;
@@ -67,5 +69,7 @@ package body Gtk.Widget.Styles.Generic_Enumeration is
    begin
       return Enumeration_Property.Enumeration'Val (Integer (Position));
    end Style_Get;
+
+   pragma Warnings (On, "declaration hides ""Widget""");
 
 end Gtk.Widget.Styles.Generic_Enumeration;

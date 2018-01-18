@@ -29,6 +29,9 @@
 --  UnicodeData file.
 --
 package Strings_Edit.UTF8.Categorization is
+
+   pragma Warnings (Off, "declaration hides ""Value""");
+
    pragma Elaborate_Body (Strings_Edit.UTF8.Categorization);
 
    --
@@ -135,5 +138,7 @@ private
       Is_Letter,       Is_Lower,   Is_Title, Is_Upper,
       Is_Subscript_Digit,  Is_Superscript_Digit,
       Is_Identifier_Start, Is_Identifier_Extend);
+
+   pragma Warnings (On, "declaration hides ""Value""");
 
 end Strings_Edit.UTF8.Categorization;

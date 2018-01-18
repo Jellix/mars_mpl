@@ -111,6 +111,9 @@ with Interfaces.C.Strings;
 
 package Gtk.Widget.Styles is
 
+   pragma Warnings (Off, "declaration hides ""Param_Spec_Array""");
+   pragma Warnings (Off, "declaration hides ""Widget""");
+
    --
    -- Param_Spec_Array -- Array of parameter specifications
    --
@@ -323,9 +326,11 @@ package Gtk.Widget.Styles is
    --    The value of the property
    --
    generic
+      pragma Warnings (Off, "declaration of ""GTK_Type"" hides");
       with function GTK_Type return GType;
       type Ada_Type (<>) is private;
       with function Get (Value : GValue) return Ada_Type;
+      pragma Warnings (On, "declaration of ""GTK_Type"" hides");
    function Generic_Style_Get
      (Widget        : not null access Gtk_Widget_Record'Class;
       Property_Name : String) return Ada_Type;
@@ -336,5 +341,8 @@ private
      (C,
       Class_Install_Style_Property_Parser,
       "gtk_widget_class_install_style_property_parser");
+
+   pragma Warnings (On, "declaration hides ""Widget""");
+   pragma Warnings (On, "declaration hides ""Param_Spec_Array""");
 
 end Gtk.Widget.Styles;

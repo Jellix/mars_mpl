@@ -246,7 +246,7 @@ private
        (GObject_Record,
         Gtk_Layered_Editor);
 
-   package Double_Edit is new Strings_Edit.Float_Edit (GDouble);
+   package Double_Edit is new Strings_Edit.Float_Edit (Gdouble);
 
    generic
       with package Enum_Property is

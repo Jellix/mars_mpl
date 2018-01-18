@@ -30,19 +30,19 @@ with System;
 procedure Glib.Object.Checked_Destroy
   (Object : not null access Gtk.Widget.Gtk_Widget_Record'Class)
 is
-   procedure Gtk_Widget_Destroy (Object : System.Address);
+   procedure Gtk_Widget_Destroy (Obj : System.Address);
    pragma Import (C, Gtk_Widget_Destroy, "gtk_widget_destroy");
 
-   procedure G_Object_Ref (Object : System.Address);
+   procedure G_Object_Ref (Obj : System.Address);
    pragma Import (C, G_Object_Ref, "g_object_ref");
 
-   procedure G_Object_Ref_Sink (Object : System.Address);
+   procedure G_Object_Ref_Sink (Obj : System.Address);
    pragma Import (C, G_Object_Ref_Sink, "g_object_ref_sink");
 
-   procedure G_Object_Unref (Object : System.Address);
+   procedure G_Object_Unref (Obj : System.Address);
    pragma Import (C, G_Object_Unref, "g_object_unref");
 
-   function G_Object_Is_Floating (Object : System.Address) return Gboolean;
+   function G_Object_Is_Floating (Obj : System.Address) return Gboolean;
    pragma Import (C, G_Object_Is_Floating, "g_object_is_floating");
 
    This : constant System.Address := Get_Object (Object);

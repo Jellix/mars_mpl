@@ -54,6 +54,8 @@ generic
      new Glib.Generic_Properties.Generic_Enumeration_Property (<>);
 package Gtk.Widget.Styles.Generic_Enumeration is
 
+   pragma Warnings (Off, "declaration hides ""Widget""");
+
    --
    -- Style_Get -- Get style enumeration property
    --
@@ -94,5 +96,7 @@ private
 
    Parser : constant Gtk_RC_Property_Parser :=
               Enum_Property_Parser'Access;
+
+   pragma Warnings (On, "declaration hides ""Widget""");
 
 end Gtk.Widget.Styles.Generic_Enumeration;
