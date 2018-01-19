@@ -30,4 +30,4 @@ with Glib.Generic_Properties;
 package Gtk.Enums.Shadow_Property is
   new GLib.Generic_Properties.Generic_Enumeration_Property
     ("shadow-type",
-     Gtk_Shadow_Type);
+     Gtk_Shadow_Type); -- FIXME: Wrong size for Unchecked_Conversion.

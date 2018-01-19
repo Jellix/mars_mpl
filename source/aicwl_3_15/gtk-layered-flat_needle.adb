@@ -37,6 +37,10 @@ with Gtk.Layered.Stream_IO;
 
 package body Gtk.Layered.Flat_Needle is
 
+   pragma Warnings (Off, "declaration hides ""Adjustment""");
+   pragma Warnings (Off, "declaration hides ""Center""");
+   pragma Warnings (Off, "declaration hides ""Handlers""");
+
    Sqrt_2 : constant Gdouble := Cairo.Elementary_Functions.Sqrt (2.0);
 
    type Flat_Needle_Ptr is access all Flat_Needle_Layer;
@@ -82,6 +86,9 @@ package body Gtk.Layered.Flat_Needle is
          raise;
    end Add;
 
+   procedure Add_Adjustment
+     (Layer      : in out Flat_Needle_Layer;
+      Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class);
    procedure Add_Adjustment
      (Layer      : in out Flat_Needle_Layer;
       Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class)
@@ -921,5 +928,9 @@ package body Gtk.Layered.Flat_Needle is
          Gtk.Layered.Stream_IO.Store (Stream, Layer.Adjustment);
       end if;
    end Store;
+
+   pragma Warnings (On, "declaration hides ""Handlers""");
+   pragma Warnings (On, "declaration hides ""Center""");
+   pragma Warnings (On, "declaration hides ""Adjustment""");
 
 end Gtk.Layered.Flat_Needle;

@@ -279,7 +279,7 @@ package Cairo.Ellipses is
    type Context_State (<>) is
      new Ada.Finalization.Limited_Controlled with private;
 
-   overriding procedure Finalize (Save : in out Context_State);
+   overriding procedure Finalize (Save_Context : in out Context_State);
 
    --
    -- Save -- Create a context save

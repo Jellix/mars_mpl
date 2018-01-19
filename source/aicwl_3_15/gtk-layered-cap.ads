@@ -31,6 +31,8 @@ with Gtk.Missed;
 
 package Gtk.Layered.Cap is
 
+   pragma Warnings (Off, "declaration hides ""Center""");
+
    --
    -- Cap_Layer -- A layer shaped as an round cap
    --
@@ -232,5 +234,7 @@ private
          Mask    : Cairo.Cairo_Pattern;
          Pattern : Cairo.Cairo_Pattern;
       end record;
+
+   pragma Warnings (On, "declaration hides ""Center""");
 
 end Gtk.Layered.Cap;

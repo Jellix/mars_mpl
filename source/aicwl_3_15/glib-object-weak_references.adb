@@ -67,18 +67,6 @@ package body Glib.Object.Weak_References is
       return Reference.Object /= null;
    end Is_Valid;
 
-   function Ref (Object : not null access Object_Type'Class)
-      return Weak_Reference is
-      Reference : Weak_Reference;
-   begin
-      Weak_Ref
-        (Object,
-         Notifier_Ptr,
-         Weak_Reference'Class (Reference)'Address);
-      Reference.Object := Object.all'Access;
-      return Reference;
-   end Ref;
-
    procedure Notifier
      (Data                 : System.Address;
       Where_The_Object_Was : System.Address)
@@ -94,6 +82,18 @@ package body Glib.Object.Weak_References is
          Ptr.all.Notify;
       end if;
    end Notifier;
+
+   function Ref (Object : not null access Object_Type'Class)
+      return Weak_Reference is
+      Reference : Weak_Reference;
+   begin
+      Weak_Ref
+        (Object,
+         Notifier_Ptr,
+         Weak_Reference'Class (Reference)'Address);
+      Reference.Object := Object.all'Access;
+      return Reference;
+   end Ref;
 
    procedure Set
      (Reference : in out Weak_Reference;

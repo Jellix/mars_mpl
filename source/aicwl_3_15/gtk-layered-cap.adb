@@ -37,6 +37,8 @@ with Gtk.Layered.Stream_IO;
 
 package body Gtk.Layered.Cap is
 
+   pragma Warnings (Off, "declaration hides ""Center""");
+
    type Cap_Ptr is access all Cap_Layer;
 
    Cos_45 : constant Gdouble := Cairo.Elementary_Functions.Sqrt (2.0) * 0.5;
@@ -423,7 +425,9 @@ package body Gtk.Layered.Cap is
    overriding procedure Set_Contents_Path
      (Layer   : in out Cap_Layer;
       Context : Cairo.Cairo_Context;
-      Area    : Gdk.Rectangle.Gdk_Rectangle) is
+      Area    : Gdk.Rectangle.Gdk_Rectangle)
+   is
+      pragma Unreferenced (Area);
    begin
       if Get_Scaled (Layer) then
          declare
@@ -499,5 +503,7 @@ package body Gtk.Layered.Cap is
         (Stream,
          Gtk.Layered.Abstract_Bordered.Abstract_Bordered_Layer (Layer));
    end Store;
+
+   pragma Warnings (On, "declaration hides ""Center""");
 
 end Gtk.Layered.Cap;

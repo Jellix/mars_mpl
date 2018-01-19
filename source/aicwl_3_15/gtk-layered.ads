@@ -91,7 +91,8 @@ package Gtk.Layered is
       Moved_Centered,
       Moved_Outside,
       Rotated,
-      Skewed);
+      Skewed)
+     with Convention => C, Size => Glib.Gint'Size;
 
    --
    -- Interpolation_Mode -- Interpolation mode
@@ -99,7 +100,8 @@ package Gtk.Layered is
    --    Left   - The value at the left point is used
    --    Linear - The value is interpolated between two points
    --
-   type Interpolation_Mode is (Left, Linear);
+   type Interpolation_Mode is (Left, Linear)
+     with Convention => C, Size => Glib.Gint'Size;
 
    --
    -- Line_Parameters -- Parameters of a line
@@ -135,7 +137,9 @@ package Gtk.Layered is
    --
    -- Elliptic_Shape_Type -- Types of shapes bound by an elliptic arc
    --
-   type Elliptic_Shape_Type is (Sector, Segment, Bagel);
+   type Elliptic_Shape_Type is (Sector, Segment, Bagel)
+     with Convention => C, Size => Glib.Gint'Size;
+
    --
    -- Elliptic_Arc_Closure -- Parameters of an elliptic closure
    --
@@ -158,7 +162,8 @@ package Gtk.Layered is
    --
    -- Vertical alignment -- Alignment along the vertical axis
    --
-   type Vertical_Alignment is (Top, Center, Bottom);
+   type Vertical_Alignment is (Top, Center, Bottom)
+     with Convention => C, Size => Glib.Gint'Size;
 
    --
    -- Waveform_Drawing_Method -- The method of the waveform
@@ -171,7 +176,8 @@ package Gtk.Layered is
    --
    type Waveform_Drawing_Method is
      (Resample_New_And_Stroke,
-      Resample_All_And_Stroke);
+      Resample_All_And_Stroke)
+     with Convention => C, Size => Glib.Gint'Size;
 
    --
    -- Layer_Object -- The layer object's interface

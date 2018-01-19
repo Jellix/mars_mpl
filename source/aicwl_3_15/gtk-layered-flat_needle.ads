@@ -30,6 +30,8 @@ with Gtk.Missed;
 
 package Gtk.Layered.Flat_Needle is
 
+   pragma Warnings (Off, "declaration hides ""Adjustment""");
+
    --
    -- Flat_Needle_Layer -- A needle  both ends of  which  are moving  along
    --                      parallel lines
@@ -323,5 +325,7 @@ private
          pragma Atomic (Value);
          pragma Atomic (Updated);
       end record;
+
+   pragma Warnings (On, "declaration hides ""Adjustment""");
 
 end Gtk.Layered.Flat_Needle;

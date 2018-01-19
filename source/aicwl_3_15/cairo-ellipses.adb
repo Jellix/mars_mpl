@@ -255,11 +255,11 @@ package body Cairo.Ellipses is
       Elliptic_Arc (Context, Ellipse, Start, Angle);
    end Elliptic_Arc_Abs;
 
-   overriding procedure Finalize (Save : in out Context_State) is
+   overriding procedure Finalize (Save_Context : in out Context_State) is
    begin
-      if Save.Context /= Null_Context then
-         Restore (Save.Context);
-         Save.Context := Null_Context;
+      if Save_Context.Context /= Null_Context then
+         Restore (Save_Context.Context);
+         Save_Context.Context := Null_Context;
       end if;
    end Finalize;
 

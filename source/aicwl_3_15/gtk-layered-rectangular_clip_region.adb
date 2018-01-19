@@ -34,6 +34,8 @@ with Gtk.Layered.Stream_IO;
 
 package body Gtk.Layered.Rectangular_Clip_Region is
 
+   pragma Warnings (Off, "declaration hides ""Center""");
+
    type Layer_Property is
      (Property_Height,
       Property_Width,
@@ -283,17 +285,17 @@ package body Gtk.Layered.Rectangular_Clip_Region is
       return Layer.Center;
    end Get_Center;
 
-   function Get_Height (Layer : Rectangular_Clip_Region_On_Layer)
-                        return Gdouble is
-   begin
-      return Layer.Height;
-   end Get_Height;
-
    function Get_Corner_Radius
      (Layer : Rectangular_Clip_Region_On_Layer) return Gdouble is
    begin
       return Layer.Radius;
    end Get_Corner_Radius;
+
+   function Get_Height (Layer : Rectangular_Clip_Region_On_Layer)
+                        return Gdouble is
+   begin
+      return Layer.Height;
+   end Get_Height;
 
    overriding function Get_Properties_Number
      (Layer : Rectangular_Clip_Region_On_Layer) return Natural
@@ -655,5 +657,7 @@ package body Gtk.Layered.Rectangular_Clip_Region is
       Gtk.Layered.Stream_IO.Store (Stream, Layer.Radius);
       Gtk.Layered.Stream_IO.Store (Stream, Layer.Drawn, Layer.Scaled);
    end Store;
+
+   pragma Warnings (On, "declaration hides ""Center""");
 
 end Gtk.Layered.Rectangular_Clip_Region;

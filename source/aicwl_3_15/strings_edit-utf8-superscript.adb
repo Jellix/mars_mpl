@@ -31,33 +31,6 @@ package body Strings_Edit.UTF8.Superscript is
    Page_32 : constant String :=
                 Character'Val (226) & Character'Val (129);
 
-   procedure Get_Sign
-     (Source  : String;
-      Pointer : in out Integer;
-      Sign_Of : out Sign) is
-   begin
-      Sign_Of := None;
-      if
-        Pointer < Source'Last and then
-        Source (Pointer) = Character'Val (226) and then
-        Source (Pointer + 1) = Character'Val (129) and then
-        Pointer + 1 < Source'Last
-      then
-         case Source (Pointer + 2) is
-            when Character'Val (186) =>
-               Sign_Of := Plus;
-               Pointer := Pointer + 3;
-               Get (Source, Pointer);
-            when Character'Val (187) =>
-               Sign_Of := Minus;
-               Pointer := Pointer + 3;
-               Get (Source, Pointer);
-            when others =>
-               null;
-         end case;
-      end if;
-   end Get_Sign;
-
    procedure Get_Digit
      (Source  : String;
       Pointer : in out Integer;
@@ -109,6 +82,33 @@ package body Strings_Edit.UTF8.Superscript is
       end case;
       Pointer := Index + 2;
    end Get_Digit;
+
+   procedure Get_Sign
+     (Source  : String;
+      Pointer : in out Integer;
+      Sign_Of : out Sign) is
+   begin
+      Sign_Of := None;
+      if
+        Pointer < Source'Last and then
+        Source (Pointer) = Character'Val (226) and then
+        Source (Pointer + 1) = Character'Val (129) and then
+        Pointer + 1 < Source'Last
+      then
+         case Source (Pointer + 2) is
+            when Character'Val (186) =>
+               Sign_Of := Plus;
+               Pointer := Pointer + 3;
+               Get (Source, Pointer);
+            when Character'Val (187) =>
+               Sign_Of := Minus;
+               Pointer := Pointer + 3;
+               Get (Source, Pointer);
+            when others =>
+               null;
+         end case;
+      end if;
+   end Get_Sign;
 
    procedure Put_Digit
      (Destination : in out String;

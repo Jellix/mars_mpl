@@ -18,5 +18,6 @@ package GUI is
    procedure Update (New_State : State);
 
    Aborted : Boolean := False;
+   pragma Atomic (Aborted);
 
 end GUI;

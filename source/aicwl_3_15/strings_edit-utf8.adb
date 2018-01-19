@@ -29,6 +29,8 @@ with Ada.IO_Exceptions;
 
 package body Strings_Edit.UTF8 is
 
+   pragma Warnings (Off, "declaration hides ""Value""");
+
    procedure Get
      (Source  : String;
       Pointer : in out Integer;
@@ -286,5 +288,7 @@ package body Strings_Edit.UTF8 is
       end if;
       return Result;
    end Value;
+
+   pragma Warnings (On, "declaration hides ""Value""");
 
 end Strings_Edit.UTF8;

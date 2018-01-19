@@ -29,4 +29,5 @@ with Glib.Generic_Properties;
 
 package Cairo.Line_Cap_Property is
    new GLib.Generic_Properties.Generic_Enumeration_Property
-    ("cairo-line-cap", Cairo_Line_Cap);
+    ("cairo-line-cap",
+     Cairo_Line_Cap); -- FIXME: Wrong size for Unchecked_Conversion

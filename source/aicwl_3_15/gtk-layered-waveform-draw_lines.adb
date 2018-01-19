@@ -33,17 +33,17 @@ procedure Draw_Lines
 is
    pragma Warnings (Off, "declaration hides ""Point""");
 
-   procedure Move_To (Point : Cairo.Ellipses.Cairo_Tuple) is
-      pragma Inline (Move_To);
-   begin
-      Cairo.Move_To (Context, Point.X, Point.Y);
-   end Move_To;
-
    procedure Line_To (Point : Cairo.Ellipses.Cairo_Tuple) is
       pragma Inline (Line_To);
    begin
       Cairo.Line_To (Context, Point.X, Point.Y);
    end Line_To;
+
+   procedure Move_To (Point : Cairo.Ellipses.Cairo_Tuple) is
+      pragma Inline (Move_To);
+   begin
+      Cairo.Move_To (Context, Point.X, Point.Y);
+   end Move_To;
 
    Antialias : constant Cairo.Cairo_Antialias := Cairo.Get_Antialias (Context);
    X1, X2    : Gdouble;
@@ -87,18 +87,6 @@ begin
          declare
             Points : Points_Array renames Data.Points.all;
 
-            function Point
-              (Offset : Natural) return Cairo.Ellipses.Cairo_Tuple
-            is
-               pragma Inline (Point);
-               Result : constant  Point_Data :=
-                  Points ((Data.First + Offset) mod Points'Length);
-            begin
-               return
-                 (Gdouble (Result.X),
-                  Layer.Y0 - Layer.YY * Gdouble (Result.Y));
-            end Point;
-
             function Line_Point
               (Offset : Natural) return Cairo.Ellipses.Cairo_Tuple
             is
@@ -110,6 +98,18 @@ begin
                  (Gdouble (Result.X) + 0.5,
                   Layer.Y0 - Layer.YY * Gdouble (Result.Y) + 0.5);
             end Line_Point;
+
+            function Point
+              (Offset : Natural) return Cairo.Ellipses.Cairo_Tuple
+            is
+               pragma Inline (Point);
+               Result : constant  Point_Data :=
+                  Points ((Data.First + Offset) mod Points'Length);
+            begin
+               return
+                 (Gdouble (Result.X),
+                  Layer.Y0 - Layer.YY * Gdouble (Result.Y));
+            end Point;
          begin
             Move_To (Line_Point (0));
             for Index in 1 .. Data.Count - 1 loop

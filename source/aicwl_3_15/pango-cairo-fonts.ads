@@ -43,7 +43,8 @@ package Pango.Cairo.Fonts is
    --
    -- Font_Type -- Supported font back-ends
    --
-   type Font_Type is (Null_Font, Toy_Font, Pango_Font);
+   type Font_Type is (Null_Font, Toy_Font, Pango_Font)
+     with Convention => C, Size => Glib.Gint'Size;
 
    --
    -- Pango_Cairo_Font -- A font object (font family)

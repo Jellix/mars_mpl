@@ -30,4 +30,4 @@ with Glib.Generic_Properties;
 package Cairo.Font_Slant_Property is
   new GLib.Generic_Properties.Generic_Enumeration_Property
     ("cairo-font-slant",
-     Cairo_Font_Slant);
+     Cairo_Font_Slant); -- FIXME: Wrong size for Unchecked_Conversion

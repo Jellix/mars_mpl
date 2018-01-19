@@ -23,7 +23,7 @@
 --  executable to be covered by the GNU General Public License. This  --
 --  exception  does not however invalidate any other reasons why the  --
 --  executable file might be covered by the GNU Public License.       --
---____________________________________________________________________--
+-- __________________________________________________________________ --
 
 package body Strings_Edit.Generic_Scale is
 
@@ -71,12 +71,11 @@ package body Strings_Edit.Generic_Scale is
       Result.Low_Value := Major * Result.Minor;
       declare
          No : constant Integer :=
-                 Integer
-                 (  Value'Rounding
-                    (  Value'Remainder
-                       (  Major,
-                          Value'Base (Result.Ticks + 1)
-                 )  )  );
+                Integer
+                  (Value'Rounding
+                     (Value'Remainder
+                        (Major,
+                         Value'Base (Result.Ticks + 1))));
       begin
          if No < 0 then
             Result.Low_Tick := Result.Ticks + 1 + No;

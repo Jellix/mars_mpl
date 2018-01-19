@@ -27,6 +27,8 @@
 
 package Gtk.Layered.Rectangular_Clip_Region is
 
+   pragma Warnings (Off, "declaration hides ""Center""");
+
    --
    -- Rectangular_Clip_On_Layer -- A clipping rectangle activated
    --
@@ -303,5 +305,7 @@ private
       record
          On : Rectangular_Clip_Region_On_Layer_Ptr;
       end record;
+
+   pragma Warnings (On, "declaration hides ""Center""");
 
 end Gtk.Layered.Rectangular_Clip_Region;

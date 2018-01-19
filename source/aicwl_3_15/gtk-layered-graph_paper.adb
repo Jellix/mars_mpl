@@ -65,39 +65,18 @@ package body Gtk.Layered.Graph_Paper is
        (GObject_Record,
         Graph_Paper_Ptr);
 
-   overriding procedure Finalize (Layer : in out Graph_Paper_Layer)
-   is
-      use type Gtk.Adjustment.Gtk_Adjustment;
-   begin
-      while Layer.Annotations /= null loop
-         Detach (Layer, Layer.Annotations.all.Annotation.all);
-      end loop;
-      if Layer.X_Axis /= null then
-         Layer.X_Axis.all.Unref;
-      end if;
-      if Layer.Y_Axis /= null then
-         Layer.Y_Axis.all.Unref;
-      end if;
-      Finalize (Abstract_Layer (Layer));
-   end Finalize;
-
-   overriding procedure Set_Widened
-     (Layer   : in out Graph_Paper_Layer;
-      Widened : Boolean) is
-   begin
-      Layer.Widened := Widened;
-      Layer.Updated := True;
-   end Set_Widened;
-
-   function Where (Name : String) return String is
-   begin
-      return " in Gtk.Layered.Graph_Paper." & Name;
-   end Where;
-
    procedure Free is
       new Ada.Unchecked_Deallocation
        (Graph_Paper_Layer,
         Graph_Paper_Ptr);
+
+   procedure Add_X_Adjustment
+     (Layer      : in out Graph_Paper_Layer;
+      Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class);
+
+   procedure Add_Y_Adjustment
+     (Layer      : in out Graph_Paper_Layer;
+      Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class);
 
    procedure Changed_X
      (Adjustment : access GObject_Record'Class;
@@ -106,6 +85,8 @@ package body Gtk.Layered.Graph_Paper is
    procedure Changed_Y
      (Adjustment : access GObject_Record'Class;
       Layer      : Graph_Paper_Ptr);
+
+   function Where (Name : String) return String;
 
    overriding function Add
      (Under  : not null access Layer_Location'Class;
@@ -122,62 +103,6 @@ package body Gtk.Layered.Graph_Paper is
          Free (Ptr);
          raise;
    end Add;
-
-   procedure Add_X_Adjustment
-     (Layer      : in out Graph_Paper_Layer;
-      Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class)
-   is
-   begin
-      Adjustment.all.Ref;
-      Layer.X_Axis := Adjustment.all'Unchecked_Access;
-      if Adjustment.all in Gtk.Layered.Waveform.Waveform_Sweeper'Class then
-         Layer.X_Sweeper :=
-           Gtk.Layered.Waveform.Waveform_Sweeper'Class
-             (Adjustment.all)'Unchecked_Access;
-      end if;
-      Gtk.Handlers.References.Set
-        (Layer.Handlers (1),
-         Handlers.Connect
-           (Adjustment,
-            "changed",
-            Handlers.To_Marshaller (Changed_X'Access),
-            Layer'Unchecked_Access));
-      Gtk.Handlers.References.Set
-        (Layer.Handlers (2),
-         Handlers.Connect
-           (Adjustment,
-            "value_changed",
-            Handlers.To_Marshaller (Changed_X'Access),
-            Layer'Unchecked_Access));
-   end Add_X_Adjustment;
-
-   procedure Add_Y_Adjustment
-     (Layer      : in out Graph_Paper_Layer;
-      Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class)
-   is
-   begin
-      Adjustment.all.Ref;
-      Layer.Y_Axis := Adjustment.all'Unchecked_Access;
-      if Adjustment.all in Gtk.Layered.Waveform.Waveform_Sweeper'Class then
-         Layer.Y_Sweeper :=
-           Gtk.Layered.Waveform.Waveform_Sweeper'Class
-             (Adjustment.all)'Unchecked_Access;
-      end if;
-      Gtk.Handlers.References.Set
-        (Layer.Handlers (3),
-         Handlers.Connect
-           (Adjustment,
-            "changed",
-            Handlers.To_Marshaller (Changed_Y'Access),
-            Layer'Unchecked_Access));
-      Gtk.Handlers.References.Set
-        (Layer.Handlers (4),
-         Handlers.Connect
-           (Adjustment,
-            "value_changed",
-            Handlers.To_Marshaller (Changed_Y'Access),
-            Layer'Unchecked_Access));
-   end Add_Y_Adjustment;
 
    procedure Add_Graph_Paper
      (Under          : not null access Layer_Location'Class;
@@ -262,6 +187,62 @@ package body Gtk.Layered.Graph_Paper is
          Free (Ptr);
          raise;
    end Add_Graph_Paper;
+
+   procedure Add_X_Adjustment
+     (Layer      : in out Graph_Paper_Layer;
+      Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class)
+   is
+   begin
+      Adjustment.all.Ref;
+      Layer.X_Axis := Adjustment.all'Unchecked_Access;
+      if Adjustment.all in Gtk.Layered.Waveform.Waveform_Sweeper'Class then
+         Layer.X_Sweeper :=
+           Gtk.Layered.Waveform.Waveform_Sweeper'Class
+             (Adjustment.all)'Unchecked_Access;
+      end if;
+      Gtk.Handlers.References.Set
+        (Layer.Handlers (1),
+         Handlers.Connect
+           (Adjustment,
+            "changed",
+            Handlers.To_Marshaller (Changed_X'Access),
+            Layer'Unchecked_Access));
+      Gtk.Handlers.References.Set
+        (Layer.Handlers (2),
+         Handlers.Connect
+           (Adjustment,
+            "value_changed",
+            Handlers.To_Marshaller (Changed_X'Access),
+            Layer'Unchecked_Access));
+   end Add_X_Adjustment;
+
+   procedure Add_Y_Adjustment
+     (Layer      : in out Graph_Paper_Layer;
+      Adjustment : not null access Gtk.Adjustment.Gtk_Adjustment_Record'Class)
+   is
+   begin
+      Adjustment.all.Ref;
+      Layer.Y_Axis := Adjustment.all'Unchecked_Access;
+      if Adjustment.all in Gtk.Layered.Waveform.Waveform_Sweeper'Class then
+         Layer.Y_Sweeper :=
+           Gtk.Layered.Waveform.Waveform_Sweeper'Class
+             (Adjustment.all)'Unchecked_Access;
+      end if;
+      Gtk.Handlers.References.Set
+        (Layer.Handlers (3),
+         Handlers.Connect
+           (Adjustment,
+            "changed",
+            Handlers.To_Marshaller (Changed_Y'Access),
+            Layer'Unchecked_Access));
+      Gtk.Handlers.References.Set
+        (Layer.Handlers (4),
+         Handlers.Connect
+           (Adjustment,
+            "value_changed",
+            Handlers.To_Marshaller (Changed_Y'Access),
+            Layer'Unchecked_Access));
+   end Add_Y_Adjustment;
 
    procedure Attach
      (Layer      : in out Graph_Paper_Layer;
@@ -371,7 +352,9 @@ package body Gtk.Layered.Graph_Paper is
       V1, V2 : Gdouble := 0.0;
       FX, FY : Interfaces.C.long_double;
 
-      procedure Draw_X (Major : Boolean) is
+      procedure Draw_X (Major : Boolean);
+      procedure Draw_X (Major : Boolean)
+      is
          use type Interfaces.C.long_double;
          function Abs_X (T : Gdouble) return Interfaces.C.long_double is
             pragma Inline (Abs_X);
@@ -408,7 +391,9 @@ package body Gtk.Layered.Graph_Paper is
          end loop;
       end Draw_X;
 
-      procedure Draw_Y (Major : Boolean) is
+      procedure Draw_Y (Major : Boolean);
+      procedure Draw_Y (Major : Boolean)
+      is
          use type Interfaces.C.long_double;
          function Abs_Y (V : Gdouble) return Interfaces.C.long_double is
             pragma Inline (Abs_Y);
@@ -585,6 +570,22 @@ package body Gtk.Layered.Graph_Paper is
       end if;
       Layer.Updated := False;
    end Draw;
+
+   overriding procedure Finalize (Layer : in out Graph_Paper_Layer)
+   is
+      use type Gtk.Adjustment.Gtk_Adjustment;
+   begin
+      while Layer.Annotations /= null loop
+         Detach (Layer, Layer.Annotations.all.Annotation.all);
+      end loop;
+      if Layer.X_Axis /= null then
+         Layer.X_Axis.all.Unref;
+      end if;
+      if Layer.Y_Axis /= null then
+         Layer.Y_Axis.all.Unref;
+      end if;
+      Finalize (Abstract_Layer (Layer));
+   end Finalize;
 
    function Find
      (Layer      : Graph_Paper_Layer;
@@ -1198,10 +1199,19 @@ package body Gtk.Layered.Graph_Paper is
       Layer.Updated := True;
    end Set_Scaled;
 
+   overriding procedure Set_Widened
+     (Layer   : in out Graph_Paper_Layer;
+      Widened : Boolean) is
+   begin
+      Layer.Widened := Widened;
+      Layer.Updated := True;
+   end Set_Widened;
+
    procedure Set_X_Axis
      (Layer      : not null access Graph_Paper_Layer;
       Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class)
    is
+      procedure Reset_Axis;
       procedure Reset_Axis is
       begin
          Gtk.Handlers.References.Set (Layer.all.Handlers (1));
@@ -1247,6 +1257,7 @@ package body Gtk.Layered.Graph_Paper is
      (Layer      : not null access Graph_Paper_Layer;
       Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class)
    is
+      procedure Reset_Axis;
       procedure Reset_Axis is
       begin
          Gtk.Handlers.References.Set (Layer.all.Handlers (3));
@@ -1315,6 +1326,11 @@ package body Gtk.Layered.Graph_Paper is
          Gtk.Layered.Stream_IO.Store (Stream, Layer.Y_Axis);
       end if;
    end Store;
+
+   function Where (Name : String) return String is
+   begin
+      return " in Gtk.Layered.Graph_Paper." & Name;
+   end Where;
 
    pragma Warnings (On, "declaration hides ""Handlers""");
    pragma Warnings (On, "declaration hides ""Adjustment""");

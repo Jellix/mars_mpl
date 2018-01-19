@@ -29,4 +29,5 @@ with Glib.Generic_Properties;
 
 package Pango.Enums.Weight_Property is
   new GLib.Generic_Properties.Generic_Enumeration_Property
-    ("pango-weight", Weight);
+    ("pango-weight",
+     Weight); --  FIXME: Wrong size for Unchecked_Conversion.
