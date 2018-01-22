@@ -42,8 +42,11 @@ procedure Simulator is
    use type Altimeter.Velocity;
    use type Thrusters.State;
    use type Touchdown_Monitor.Run_State;
+
+   Module : constant String := "SIMULATOR";
 begin
-   Global.Log (Message => "Starting touchdown monitors...");
+   Global.Log (Module  => Module,
+               Message => "Starting touchdown monitors...");
    Touchdown_Monitor.Start;
 
    Next_Cycle := Global.Start_Time + Cycle;
@@ -67,19 +70,23 @@ begin
          if not Powered_Descent and then Current_Altitude <= 1000.0 then
             Thrusters.Enable;
             Powered_Descent := True;
-            Global.Log (Message => "Entered powered descent flight mode.");
+            Global.Log (Module  => Module,
+                        Message => "Entered powered descent flight mode.");
          end if;
 
          if Powered_Descent then
-            if Current_Velocity < Altimeter.Safe_Landing_Velocity * 0.6 then
+            if Current_Velocity < Altimeter.Safe_Landing_Velocity * 0.8 then
                Thrusters.Disable;
-            elsif Current_Velocity > Altimeter.Safe_Landing_Velocity * 0.8 then
+            elsif
+              Current_Velocity > Altimeter.Velocity (Current_Altitude * 0.2)
+            then
                Thrusters.Enable;
             end if;
          end if;
 
          if not Monitor_Enabled and then Current_Altitude <= 40.0 then
-            Global.Log (Message => "Enabling touchdown monitors...");
+            Global.Log (Module  => Module,
+                        Message => "Enabling touchdown monitors...");
             Touchdown_Monitor.Enable;
             Monitor_Enabled := True;
          end if;
@@ -96,9 +103,11 @@ begin
                              Altimeter.Current_Velocity;
    begin
       if Touchdown_Velocity > Altimeter.Safe_Landing_Velocity then
-         Global.Log (Message => "MISSION FAILURE: MPL crashed on surface!");
+         Global.Log (Module  => Module,
+                     Message => "MISSION FAILURE: MPL crashed on surface!");
       else
-         Global.Log (Message => "MISSION SUCCESS: MPL touched down safely.");
+         Global.Log (Module  => Module,
+                     Message => "MISSION SUCCESS: MPL touched down safely.");
       end if;
    end;
 
@@ -113,7 +122,8 @@ begin
              Touchdown_Monitor.Terminated);
 
       if All_Monitors_Dead then
-         Global.Log (Message => "All touchdown monitors finished.");
+         Global.Log (Module  => Module,
+                     Message => "All touchdown monitors finished.");
          Update_GUI;
          Touchdown_Monitor.Shutdown;
          Landing_Legs.Shutdown;
@@ -121,7 +131,8 @@ begin
       end if;
    end loop;
 
-   Global.Log (Message => "Simulation finished.");
+   Global.Log (Module  => Module,
+               Message => "Simulation finished.");
 
    loop
       Update_GUI (Terminated => True);

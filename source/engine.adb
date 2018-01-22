@@ -7,8 +7,8 @@ package body Engine is
    use type Ada.Real_Time.Time;
    use type Thrusters.State;
 
-   package Fuel_Store is new Task_Safe_Store (Stored_Type => Fuel_Mass,
-                                              Initial_Value => 700.0);
+   package Fuel_Store is new Task_Safe_Store (Stored_Type   => Fuel_Mass,
+                                              Initial_Value => 200.0);
 
    function Image (Value : in Fuel_Mass) return String is
    begin
@@ -38,10 +38,10 @@ package body Engine is
             else
                Current_Fuel := 0.0;
             end if;
-         end if;
 
-         if Current_Fuel = 0.0 then
-            Thrusters.Out_Of_Fuel;
+            if Current_Fuel = 0.0 then
+               Thrusters.Out_Of_Fuel;
+            end if;
          end if;
 
          Fuel_Store.Set (New_Value => Current_Fuel);

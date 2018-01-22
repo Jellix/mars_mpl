@@ -5,6 +5,8 @@ with Global;
 
 package body Landing_Legs is
 
+   Module : constant String := "LEG_MONITOR";
+
    use type Ada.Real_Time.Time;
 
    type Task_State is (Running, Deployed, Touched_Down, Terminated);
@@ -136,7 +138,8 @@ package body Landing_Legs is
             case Current_State is
 
                when Deployed             =>
-                  Global.Log (Message => "Landing legs deployed.");
+                  Global.Log (Module  => Module,
+                              Message => "Landing legs deployed.");
                   Sensor_Glitch.Activate_Glitch;
 
                when Touched_Down         =>
@@ -149,7 +152,8 @@ package body Landing_Legs is
       end loop;
    exception
       when E : others =>
-         Global.Log (Ada.Exceptions.Exception_Information (E));
+         Global.Log (Module  => Module,
+                     Message => Ada.Exceptions.Exception_Information (E));
    end Simulate_Landing_Legs;
 
    protected body Leg_Iterator is

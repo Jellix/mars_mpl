@@ -29,6 +29,12 @@ with Ada.Unchecked_Deallocation;
 
 package body Gtk.Handlers.Generic_Callback is
 
+   pragma Warnings (Off, "declaration hides ""Callback""");
+   pragma Warnings (Off, "declaration hides ""ID""");
+   pragma Warnings (Off, "declaration hides ""Params""");
+   pragma Warnings (Off, "declaration hides ""User_Data""");
+   pragma Warnings (Off, "declaration hides ""Values""");
+
    --
    -- Closure_Data -- The data passed with the closure
    --
@@ -111,68 +117,6 @@ package body Gtk.Handlers.Generic_Callback is
       null;
    end Closure_Callback;
 
-   procedure Marshaller
-     (Closure         : GClosure;
-      Return_Value    : GValue_Ptr;
-      N_Params        : Guint;
-      Params          : Glib.Values.C_GValues;
-      Invocation_Hint : System.Address;
-      User_Data       : Closure_Data_Ptr)
-   is
-      pragma Unreferenced (Closure);
-
-      Stub      : Object_Type;
-      Values    : constant Glib.Values.GValues :=
-                    Glib.Values.Make_Values (N_Params, Params);
-      Arguments : Glib.Values.GValue_Array (1 .. Gint (N_Params) - 1);
-   begin
-      for Index in Arguments'Range loop
-         Arguments (Index) := Glib.Values.Nth (Values, Guint (Index));
-      end loop;
-      if Return_Value = null then
-         declare
-            Result : Glib.Values.GValue;
-         begin
-            Glib.Values.Init (Result, User_Data.all.Result_Type);
-            User_Data.all.Callback
-              (Object_Type'Class
-                 (Get_User_Data
-                      (Glib.Values.Get_Address (Glib.Values.Nth (Values, 0)),
-                       Stub).all)'Unchecked_Access,
-               Arguments,
-               Result,
-               User_Data.all.Data);
-            Glib.Values.Unset (Result);
-         end;
-      else
-         Glib.Values.Init (Return_Value.all, User_Data.all.Result_Type);
-         User_Data.all.Callback
-           (Object_Type'Class
-              (Get_User_Data
-                   (Glib.Values.Get_Address (Glib.Values.Nth (Values, 0)),
-                    Stub).all)'Unchecked_Access,
-            Arguments,
-            Return_Value.all,
-            User_Data.all.Data);
-      end if;
-   end Marshaller;
-
-   procedure Notify
-     (Data    : Closure_Data_Ptr;
-      Closure : GClosure)
-   is
-      pragma Unreferenced (Closure);
-
-      procedure Free is
-        new Ada.Unchecked_Deallocation
-          (Closure_Data,
-           Closure_Data_Ptr);
-      Ptr : Closure_Data_Ptr := Data;
-   begin
-      Free (Ptr);
-      pragma Unreferenced (Ptr);
-   end Notify;
-
    procedure Connect
      (Object   : not null access Object_Type'Class;
       Name     : Glib.Signal_Name;
@@ -238,5 +182,74 @@ package body Gtk.Handlers.Generic_Callback is
            After    => Boolean'Pos (After));
       return ID;
    end Connect;
+
+   procedure Marshaller
+     (Closure         : GClosure;
+      Return_Value    : GValue_Ptr;
+      N_Params        : Guint;
+      Params          : Glib.Values.C_GValues;
+      Invocation_Hint : System.Address;
+      User_Data       : Closure_Data_Ptr)
+   is
+      pragma Unreferenced (Closure);
+      pragma Unreferenced (Invocation_Hint);
+
+      Stub      : Object_Type;
+      Values    : constant Glib.Values.GValues :=
+                    Glib.Values.Make_Values (N_Params, Params);
+      Arguments : Glib.Values.GValue_Array (1 .. Gint (N_Params) - 1);
+   begin
+      for Index in Arguments'Range loop
+         Arguments (Index) := Glib.Values.Nth (Values, Guint (Index));
+      end loop;
+      if Return_Value = null then
+         declare
+            Result : Glib.Values.GValue;
+         begin
+            Glib.Values.Init (Result, User_Data.all.Result_Type);
+            User_Data.all.Callback
+              (Object_Type'Class
+                 (Get_User_Data
+                      (Glib.Values.Get_Address (Glib.Values.Nth (Values, 0)),
+                       Stub).all)'Unchecked_Access,
+               Arguments,
+               Result,
+               User_Data.all.Data);
+            Glib.Values.Unset (Result);
+         end;
+      else
+         Glib.Values.Init (Return_Value.all, User_Data.all.Result_Type);
+         User_Data.all.Callback
+           (Object_Type'Class
+              (Get_User_Data
+                   (Glib.Values.Get_Address (Glib.Values.Nth (Values, 0)),
+                    Stub).all)'Unchecked_Access,
+            Arguments,
+            Return_Value.all,
+            User_Data.all.Data);
+      end if;
+   end Marshaller;
+
+   procedure Notify
+     (Data    : Closure_Data_Ptr;
+      Closure : GClosure)
+   is
+      pragma Unreferenced (Closure);
+
+      procedure Free is
+        new Ada.Unchecked_Deallocation
+          (Closure_Data,
+           Closure_Data_Ptr);
+      Ptr : Closure_Data_Ptr := Data;
+   begin
+      Free (Ptr);
+      pragma Unreferenced (Ptr);
+   end Notify;
+
+   pragma Warnings (On, "declaration hides ""Values""");
+   pragma Warnings (On, "declaration hides ""User_Data""");
+   pragma Warnings (On, "declaration hides ""Params""");
+   pragma Warnings (On, "declaration hides ""ID""");
+   pragma Warnings (On, "declaration hides ""Callback""");
 
 end Gtk.Handlers.Generic_Callback;

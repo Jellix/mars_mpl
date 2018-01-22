@@ -7,6 +7,8 @@ with Thrusters;
 
 package body Altimeter is
 
+   Module : constant String := "ALTIMETER";
+
    use type Ada.Real_Time.Time;
    use type Thrusters.State;
 
@@ -25,7 +27,8 @@ package body Altimeter is
       Altitude_Now : Altitude           := Altimeter_Store.Get;
       Velocity_Now : Velocity           := Velocity_Store.Get;
    begin
-      Global.Log ("Altitude control monitor started.");
+      Global.Log (Module  => Module,
+                  Message => "Altitude control monitor started.");
 
       while Altitude_Now > 0.0 loop
          declare
@@ -33,7 +36,6 @@ package body Altimeter is
                              Float (Ada.Real_Time.To_Duration (Cycle));
             Acceleration : constant Velocity :=
                              (if Thrusters.Current_State = Thrusters.Disabled
-                              or else Velocity_Now < Target_Landing_Velocity
                               then Velocity (Gravity * T)
                               else Velocity (Thrusters.Acceleration * T));
             Distance     : constant Altitude :=
@@ -54,10 +56,12 @@ package body Altimeter is
       end loop;
 
       Landing_Legs.Touchdown;
-      Global.Log ("Altitude control monitor finished.");
+      Global.Log (Module  => Module,
+                  Message => "Altitude control monitor finished.");
    exception
       when E : others =>
-         Global.Log (Ada.Exceptions.Exception_Information (E));
+         Global.Log (Module  => Module,
+                     Message => Ada.Exceptions.Exception_Information (E));
    end Radar_Simulator;
 
    function Current_Altitude return Altitude renames Altimeter_Store.Get;

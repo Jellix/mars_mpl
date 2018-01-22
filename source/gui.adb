@@ -31,6 +31,8 @@ with Pango.Cairo.Fonts;
 
 package body GUI is
 
+   Module : constant String := "GUI";
+
    use type Ada.Real_Time.Time;
    use type Altimeter.Altitude;
    use type Altimeter.Velocity;
@@ -82,8 +84,8 @@ package body GUI is
    Fuel_Scale : constant Scaling
      := (Texts  =>
             new Gtk.Enums.String_Lists.Controlled_String_List'
-             ("0" / "1" / "2" / "3" / "4" / "5" / "6" / "7" / "8" / "9" / "10"),
-         Factor => 1000.0);
+           ("0" / "5" / "10" / "15" / "20" / "25"),
+         Factor => 250.0);
    Velocity_Scale : constant Scaling
      := (Texts  =>
             new Gtk.Enums.String_Lists.Controlled_String_List'
@@ -357,7 +359,7 @@ package body GUI is
                            (+Fuel_Scale.Texts.all)) - 1);
                Gtk.Layered.Label.Add_Label
                  (Under    => Gauge.all.Get_Cache,
-                  Text     => "x 100 kg",
+                  Text     => "x 10 kg",
                   Location => (0.0175, 0.1),
                   Face     => Label_Font_Italic,
                   Height   => 0.03,
@@ -493,9 +495,9 @@ package body GUI is
                VBox2.all.Pack_Start (Child => Create_LEDs);
             end;
 
-            HBox.all.Pack_Start (Child => Create_Altitude_Frame);
-            HBox.all.Pack_Start (Child => Create_Velocity_Frame);
             HBox.all.Pack_Start (Child => Create_Fuel_Frame);
+            HBox.all.Pack_Start (Child => Create_Velocity_Frame);
+            HBox.all.Pack_Start (Child => Create_Altitude_Frame);
          end;
 
          return Frame;
@@ -620,7 +622,8 @@ package body GUI is
    procedure Quit_GUI is
    begin
       if not Aborted then
-         Global.Log (Message => "Quitting GUI...");
+         Global.Log (Module  => Module,
+                     Message => "Quitting GUI...");
          Aborted := True;
       end if;
    end Quit_GUI;
@@ -713,7 +716,8 @@ package body GUI is
       abort Trigger_Task;
    exception
       when E : others =>
-         Global.Log (Ada.Exceptions.Exception_Information (E));
+         Global.Log (Module  => Module,
+                     Message => Ada.Exceptions.Exception_Information (E));
    end GUI_Task;
 
 end GUI;

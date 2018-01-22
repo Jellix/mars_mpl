@@ -38,9 +38,11 @@ package body Global is
                                           Mapping => Space_To_Zero);
    end Clock_Image;
 
-   procedure Log (Message : String) is
+   procedure Log (Module  : in String;
+                  Message : in String) is
    begin
-      Logger.Write (Msg => "[" & Clock_Image & "] " & Message);
+      Logger.Write
+        (Msg => "[" & Clock_Image & "] " & "[" & Module & "] " & Message);
    end Log;
 
 end Global;

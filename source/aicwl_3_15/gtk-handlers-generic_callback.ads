@@ -37,6 +37,8 @@ generic
    type User_Type is private;
 package Gtk.Handlers.Generic_Callback is
 
+   pragma Warnings (Off, "declaration hides ""Callback""");
+
    --
    -- Handler -- The signal handler
    --
@@ -84,5 +86,7 @@ package Gtk.Handlers.Generic_Callback is
       Callback : Handler;
       Data     : User_Type;
       After    : Boolean := False) return Handler_Id;
+
+   pragma Warnings (On, "declaration hides ""Callback""");
 
 end Gtk.Handlers.Generic_Callback;

@@ -2,6 +2,8 @@ with Global;
 
 package body Thrusters is
 
+   Module : constant String := "THRUSTERS";
+
    protected Thruster is
       function Get return State;
       procedure Set (New_State : in     State;
@@ -43,24 +45,6 @@ package body Thrusters is
       pragma Unreferenced (Old_State);
    end Disable;
 
-   procedure Disable (Source : in Landing_Legs.Legs_Index) is
-      Old_State : State;
-   begin
-      Thruster.Set (New_State => Disabled,
-                    Old_State => Old_State);
-
-      if Old_State = Disabled then
-         Global.Log (Message =>
-                       "Signal from leg " &
-                       Landing_Legs.Legs_Index'Image (Source) & ".");
-      else
-         Global.Log
-           (Message =>
-              "Thrusters have been disabled due to signal from leg " &
-              Landing_Legs.Legs_Index'Image (Source) & ".");
-      end if;
-   end Disable;
-
    procedure Enable is
       Old_State : State;
    begin
@@ -70,14 +54,22 @@ package body Thrusters is
    end Enable;
 
    procedure Out_Of_Fuel is
-      Old_State : constant State := Thruster.Get;
    begin
       Thruster.No_More_Fuel;
 
-      if Old_State = Thrusters.Enabled then
-         Global.Log (Message => "Thrusters ran out of fuel!");
-      end if;
+      Global.Log (Module  => Module,
+                  Message => "Thrusters ran out of fuel!");
    end Out_Of_Fuel;
+
+   procedure Shutdown (Source : in Landing_Legs.Legs_Index) is
+   begin
+      Thruster.No_More_Fuel;
+      Global.Log
+        (Module  => Module,
+         Message =>
+           "Thrusters have been disabled due to signal from leg " &
+           Landing_Legs.Legs_Index'Image (Source) & ".");
+   end Shutdown;
 
    function Current_State return State is (Thruster.Get);
 

@@ -5,6 +5,8 @@ with Thrusters;
 
 package body Touchdown_Monitor is
 
+   Module : constant String := "TOUCHDOWN_MONITOR";
+
    use type Ada.Real_Time.Time;
    use type Landing_Legs.Leg_State;
 
@@ -81,7 +83,8 @@ package body Touchdown_Monitor is
          if Old_Run_State /= Current_Run_State then
             case Current_Run_State is
                when Started =>
-                  Global.Log (Message =>
+                  Global.Log (Module  => Module,
+                              Message =>
                                  "Monitoring for leg " &
                                  Landing_Legs.Legs_Index'Image (Leg) &
                                  " started.");
@@ -89,7 +92,8 @@ package body Touchdown_Monitor is
                     Leg_Indicator'(State  => Landing_Legs.In_Flight,
                                    Health => Good);
                when Enabled =>
-                  Global.Log (Message =>
+                  Global.Log (Module  => Module,
+                              Message =>
                                  "Monitoring for leg " &
                                  Landing_Legs.Legs_Index'Image (Leg) &
                                  " enabled.");
@@ -135,7 +139,7 @@ package body Touchdown_Monitor is
               Indicator = (State  => Landing_Legs.Touched_Down,
                            Health => Good)
             then
-               Thrusters.Disable (Source => Leg);
+               Thrusters.Shutdown (Source => Leg);
                Legs_Control (Leg).TC_Shutdown;
                Event_Enabled := False;
             end if;
@@ -143,7 +147,8 @@ package body Touchdown_Monitor is
       end loop;
    exception
       when E : others =>
-         Global.Log (Ada.Exceptions.Exception_Information (E));
+         Global.Log (Module  => Module,
+                     Message => Ada.Exceptions.Exception_Information (E));
    end Touchdown_Monitor_Execute;
 
    function Current_State (Leg : Landing_Legs.Legs_Index) return Run_State is

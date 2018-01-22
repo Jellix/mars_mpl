@@ -8,10 +8,11 @@ package Global is
 
    Start_Time : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
 
-   procedure Log (Message : String);
+   procedure Log (Module  : in String;
+                  Message : in String);
 
    function Clock_Image
-     (Time : Ada.Real_Time.Time := Ada.Real_Time.Clock) return String;
+     (Time : in Ada.Real_Time.Time := Ada.Real_Time.Clock) return String;
    --  Returns a time stamp relative to the Start_Time, i.e. Time - Start_Time.
 
 end Global;
