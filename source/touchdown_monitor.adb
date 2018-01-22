@@ -1,11 +1,14 @@
-with Ada.Exceptions;
+with GNATCOLL.Traces;
 
 with Global;
 with Thrusters;
 
 package body Touchdown_Monitor is
 
-   Module : constant String := "TOUCHDOWN_MONITOR";
+   Logger : constant GNATCOLL.Traces.Trace_Handle
+     := GNATCOLL.Traces.Create (Unit_Name => "TDM",
+                                Default   => GNATCOLL.Traces.On,
+                                Stream    => Global.Standard_Error);
 
    use type Ada.Real_Time.Time;
    use type Landing_Legs.Leg_State;
@@ -83,20 +86,22 @@ package body Touchdown_Monitor is
          if Old_Run_State /= Current_Run_State then
             case Current_Run_State is
                when Started =>
-                  Global.Log (Module  => Module,
-                              Message =>
-                                 "Monitoring for leg " &
-                                 Landing_Legs.Legs_Index'Image (Leg) &
-                                 " started.");
+                  Logger.all.Trace
+                    (Message =>
+                        "[" & Global.Clock_Image
+                     & "] Monitoring for leg "
+                     &  Landing_Legs.Legs_Index'Image (Leg)
+                     & " started.");
                   Indicator     :=
                     Leg_Indicator'(State  => Landing_Legs.In_Flight,
                                    Health => Good);
                when Enabled =>
-                  Global.Log (Module  => Module,
-                              Message =>
-                                 "Monitoring for leg " &
-                                 Landing_Legs.Legs_Index'Image (Leg) &
-                                 " enabled.");
+                  Logger.all.Trace
+                    (Message =>
+                        "[" & Global.Clock_Image
+                     & "] Monitoring for leg "
+                     & Landing_Legs.Legs_Index'Image (Leg)
+                     & " enabled.");
                   if
                     Last_Indicator    = Landing_Legs.Touched_Down and then
                     Current_Indicator = Landing_Legs.Touched_Down
@@ -147,8 +152,7 @@ package body Touchdown_Monitor is
       end loop;
    exception
       when E : others =>
-         Global.Log (Module  => Module,
-                     Message => Ada.Exceptions.Exception_Information (E));
+         Logger.all.Trace (E => E);
    end Touchdown_Monitor_Execute;
 
    function Current_State (Leg : Landing_Legs.Legs_Index) return Run_State is

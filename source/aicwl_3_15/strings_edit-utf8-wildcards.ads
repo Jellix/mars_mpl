@@ -29,6 +29,8 @@ with Strings_Edit.UTF8.Maps;
 
 package Strings_Edit.UTF8.Wildcards is
 
+   pragma Warnings (Off, "declaration hides ""Blanks""");
+
    --
    -- Match -- An UTF-8 encoded string by a pattern
    --
@@ -70,5 +72,7 @@ package Strings_Edit.UTF8.Wildcards is
                    Wide_Space : Boolean                        := False;
                    Blanks     : Ada.Strings.Maps.Character_Set := SpaceAndTab)
                    return Boolean;
+
+   pragma Warnings (On, "declaration hides ""Blanks""");
 
 end Strings_Edit.UTF8.Wildcards;

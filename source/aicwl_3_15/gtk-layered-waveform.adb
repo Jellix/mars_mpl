@@ -1039,7 +1039,7 @@ package body Gtk.Layered.Waveform is
       pragma Unreferenced (Area);
       pragma Unreferenced (Context);
       X1, X2 : Gdouble;
-      Y1, Y2 : Gdouble;
+      --  Y1, Y2 : Gdouble;
    begin
       if Layer.Sweeper_Object /= null then
          Layer.Sweeper_Object.all.Set_Current_Time
@@ -1051,19 +1051,19 @@ package body Gtk.Layered.Waveform is
          declare
             X_Size : constant Gdouble :=
                        Gdouble (Layer.Widget.all.Get_Allocated_Width);
-            Y_Size : constant Gdouble :=
-                       Gdouble (Layer.Widget.all.Get_Allocated_Height);
+            --  Y_Size : constant Gdouble :=
+            --             Gdouble (Layer.Widget.all.Get_Allocated_Height);
          begin
             X1 := Layer.Box.X1 * X_Size + Layer.Widget.all.Get_Center.X;
             X2 := Layer.Box.X2 * X_Size + Layer.Widget.all.Get_Center.X;
-            Y1 := Layer.Box.Y1 * Y_Size + Layer.Widget.all.Get_Center.Y;
-            Y2 := Layer.Box.Y2 * Y_Size + Layer.Widget.all.Get_Center.Y;
+            --  Y1 := Layer.Box.Y1 * Y_Size + Layer.Widget.all.Get_Center.Y;
+            --  Y2 := Layer.Box.Y2 * Y_Size + Layer.Widget.all.Get_Center.Y;
          end;
       else
          X1 := Layer.Box.X1;
          X2 := Layer.Box.X2;
-         Y1 := Layer.Box.Y1;
-         Y2 := Layer.Box.Y2;
+         --  Y1 := Layer.Box.Y1;
+         --  Y2 := Layer.Box.Y2;
       end if;
       if X1 >= X2 or else Layer.T1 >= Layer.T2 then
          Layer.Sampled := True;

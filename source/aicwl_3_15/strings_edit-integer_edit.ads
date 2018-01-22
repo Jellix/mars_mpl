@@ -33,6 +33,8 @@ generic
    type Number is range <>;
 package Strings_Edit.Integer_Edit is
 
+   pragma Warnings (Off, "declaration hides ""Value""");
+
    subtype Number_Of is Number;
 
    --
@@ -163,5 +165,7 @@ package Strings_Edit.Integer_Edit is
      (Value   : in Number'Base;
       Base    : in NumberBase := 10;
       PutPlus : in Boolean    := False) return String;
+
+   pragma Warnings (On, "declaration hides ""Value""");
 
 end Strings_Edit.Integer_Edit;

@@ -12,18 +12,6 @@ package body Global is
                      Ada.Strings.Maps.To_Mapping (From => " ",
                                                   To   => "0");
 
-   protected Logger is
-      procedure Write (Msg : in String);
-   end Logger;
-
-   protected body Logger is
-      procedure Write (Msg : in String) is
-      begin
-         Ada.Text_IO.Put_Line (Msg);
-         --  FIXME: Using a potentially blocking operation within a protected procedure is a bounded error.
-      end Write;
-   end Logger;
-
    function Clock_Image
      (Time : in Ada.Real_Time.Time := Ada.Real_Time.Clock) return String
    is
@@ -37,12 +25,5 @@ package body Global is
       return Ada.Strings.Fixed.Translate (Source  => Duration_Image,
                                           Mapping => Space_To_Zero);
    end Clock_Image;
-
-   procedure Log (Module  : in String;
-                  Message : in String) is
-   begin
-      Logger.Write
-        (Msg => "[" & Clock_Image & "] " & "[" & Module & "] " & Message);
-   end Log;
 
 end Global;

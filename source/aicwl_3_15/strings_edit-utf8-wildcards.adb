@@ -27,6 +27,8 @@
 
 package body Strings_Edit.UTF8.Wildcards is
 
+   pragma Warnings (Off, "declaration hides ""Blanks""");
+
    type Outcome is (Success, Mismatch, Failure);
    subtype Tail is Character range
      Character'Val (2#1000_0000#) .. Character'Val (2#1011_1111#);
@@ -267,5 +269,7 @@ package body Strings_Edit.UTF8.Wildcards is
       end loop;
       Pointer := Index;
    end Unchecked_Skip;
+
+   pragma Warnings (On, "declaration hides ""Blanks""");
 
 end Strings_Edit.UTF8.Wildcards;

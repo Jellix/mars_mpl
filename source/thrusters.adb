@@ -1,8 +1,13 @@
+with GNATCOLL.Traces;
+
 with Global;
 
 package body Thrusters is
 
-   Module : constant String := "THRUSTERS";
+   Logger : constant GNATCOLL.Traces.Trace_Handle
+     := GNATCOLL.Traces.Create (Unit_Name => "THR",
+                                Default   => GNATCOLL.Traces.On,
+                                Stream    => Global.Standard_Error);
 
    protected Thruster is
       function Get return State;
@@ -57,18 +62,18 @@ package body Thrusters is
    begin
       Thruster.No_More_Fuel;
 
-      Global.Log (Module  => Module,
-                  Message => "Thrusters ran out of fuel!");
+      Logger.all.Trace
+        (Message => "[" & Global.Clock_Image & "] Thrusters ran out of fuel!");
    end Out_Of_Fuel;
 
    procedure Shutdown (Source : in Landing_Legs.Legs_Index) is
    begin
       Thruster.No_More_Fuel;
-      Global.Log
-        (Module  => Module,
-         Message =>
-           "Thrusters have been disabled due to signal from leg " &
-           Landing_Legs.Legs_Index'Image (Source) & ".");
+      Logger.all.Trace
+        (Message =>
+           "[" & Global.Clock_Image
+         & "] Thrusters have been disabled due to signal from leg "
+         & Landing_Legs.Legs_Index'Image (Source) & ".");
    end Shutdown;
 
    function Current_State return State is (Thruster.Get);

@@ -30,43 +30,15 @@ with Interfaces.C.Strings;
 
 package body Gtk.Layered.Waveform.Amplifier is
 
+   pragma Warnings (Off, "declaration hides ""Amplifier""");
+   pragma Warnings (Off, "declaration hides ""Params""");
+
    Class_Record           : Ada_GObject_Class := Uninitialized_Class;
    Signal_Names           : constant Gtkada.Types.Chars_Ptr_Array
      := (0 => Interfaces.C.Strings.New_String ("autoscaling-changed"),
          1 => Interfaces.C.Strings.New_String ("raster-mode-changed"));
    Autoscaling_Changed_ID : Signal_Id := Invalid_Signal_Id;
    Raster_Mode_Changed_ID : Signal_Id := Invalid_Signal_Id;
-
-   procedure EmitV
-     (Params : System.Address;
-      Signal : Signal_Id;
-      Quark  : GQuark;
-      Result : System.Address);
-   pragma Import (C, EmitV, "g_signal_emitv");
-
-   procedure Emit
-     (Amplifier : not null access Gtk_Waveform_Amplifier_Record'Class;
-      Signal    : Signal_Id)
-   is
-      procedure Set_Object
-        (Value  : in out Glib.Values.GValue;
-         Object : System.Address);
-
-      pragma Import (C, Set_Object, "g_value_set_object");
-      Params : Glib.Values.GValue_Array (0 .. 0);
-      Result : Glib.Values.GValue;
-   begin
-      if Class_Record /= Uninitialized_Class then
-         declare
-            This : constant GType := Get_Type;
-         begin
-            Glib.Values.Init (Params (0), This);
-            Glib.Values.Set_Object (Params (0), Amplifier);
-            EmitV (Params (0)'Address, Signal, 0, Result'Address);
-            Glib.Values.Unset (Params (0));
-         end;
-      end if;
-   end Emit;
 
    overriding procedure Add_Range
      (Amplifier    : not null access Gtk_Waveform_Amplifier_Record;
@@ -111,6 +83,40 @@ package body Gtk.Layered.Waveform.Amplifier is
          Amplifier.all.Width := Layer.Box.Y2 - Layer.Box.Y1;
       end if;
    end Add_Range;
+
+   procedure EmitV
+     (Params : System.Address;
+      Signal : Signal_Id;
+      Quark  : GQuark;
+      Result : System.Address);
+   pragma Import (C, EmitV, "g_signal_emitv");
+
+   procedure Emit
+     (Amplifier : not null access Gtk_Waveform_Amplifier_Record'Class;
+      Signal    : Signal_Id);
+   procedure Emit
+     (Amplifier : not null access Gtk_Waveform_Amplifier_Record'Class;
+      Signal    : Signal_Id)
+   is
+--        procedure Set_Object
+--          (Value  : in out Glib.Values.GValue;
+--           Object : System.Address);
+--
+--        pragma Import (C, Set_Object, "g_value_set_object");
+      Params : Glib.Values.GValue_Array (0 .. 0);
+      Result : Glib.Values.GValue;
+   begin
+      if Class_Record /= Uninitialized_Class then
+         declare
+            This : constant GType := Get_Type;
+         begin
+            Glib.Values.Init (Params (0), This);
+            Glib.Values.Set_Object (Params (0), Amplifier);
+            EmitV (Params (0)'Address, Signal, 0, Result'Address);
+            Glib.Values.Unset (Params (0));
+         end;
+      end if;
+   end Emit;
 
    function Get_Auto_Scaling
      (Amplifier : not null access constant Gtk_Waveform_Amplifier_Record)
@@ -242,6 +248,7 @@ package body Gtk.Layered.Waveform.Amplifier is
    procedure Set_Range
      (Amplifier : in out Gtk_Waveform_Amplifier_Record)
    is
+      function Get_Count return Positive;
       function Get_Count return Positive is
          Length : Gdouble := Amplifier.Width;
       begin
@@ -496,5 +503,8 @@ package body Gtk.Layered.Waveform.Amplifier is
    begin
       Amplifier.all.Tick := Length;
    end Set_Tick_Length;
+
+   pragma Warnings (On, "declaration hides ""Params""");
+   pragma Warnings (On, "declaration hides ""Amplifier""");
 
 end Gtk.Layered.Waveform.Amplifier;

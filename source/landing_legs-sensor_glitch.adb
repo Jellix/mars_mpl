@@ -64,17 +64,17 @@ package body Sensor_Glitch is
 
       delay until Activate_At;
       Legs_State (The_Leg) := Touched_Down;
-      Global.Log
-        (Module  => Module,
-         Message =>
-           "Landing leg " & Legs_Index'Image (The_Leg) & " triggered.");
+      Logger.all.Trace
+        (Message =>
+           "[" & Global.Clock_Image
+         & "] Landing leg " & Legs_Index'Image (The_Leg) & " triggered.");
 
       delay until Activate_At + Activate_For;
       Legs_State (The_Leg) := In_Flight;
-      Global.Log
-        (Module  => Module,
-         Message =>
-           "Landing leg "
+      Logger.all.Trace
+        (Message =>
+           "[" & Global.Clock_Image
+         & "] Landing leg "
          & Legs_Index'Image (The_Leg)
          & " triggered for"
          & Integer'Image (Activate_For / Ada.Real_Time.Milliseconds (1))
@@ -101,10 +101,10 @@ package body Sensor_Glitch is
             Control_Object (The_Leg).Trigger_Glitch
               (At_Time      => Now + Ada.Real_Time.Milliseconds (Trigger_Offset),
                For_Duration => Ada.Real_Time.Milliseconds (Trigger_Length));
-            Global.Log
-              (Module  => Module,
-               Message =>
-                 "Landing leg "
+            Logger.all.Trace
+              (Message =>
+                 "[" & Global.Clock_Image
+               & "] Landing leg "
                & Legs_Index'Image (The_Leg)
                & " scheduled to trigger in"
                & Glitch_Duration'Image (Trigger_Offset)

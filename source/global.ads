@@ -8,8 +8,8 @@ package Global is
 
    Start_Time : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
 
-   procedure Log (Module  : in String;
-                  Message : in String);
+   Standard_Error : constant String := "&2";
+   --  Stream for GNATColl.Traces (activity log).
 
    function Clock_Image
      (Time : in Ada.Real_Time.Time := Ada.Real_Time.Clock) return String;

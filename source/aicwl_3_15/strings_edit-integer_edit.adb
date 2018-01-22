@@ -28,6 +28,9 @@
 with Ada.IO_Exceptions;
 
 package body Strings_Edit.Integer_Edit is
+
+   pragma Warnings (Off, "declaration hides ""Value""");
+
    procedure Get
      (Source   : in String;
       Pointer  : in out Integer;
@@ -244,5 +247,7 @@ package body Strings_Edit.Integer_Edit is
       end if;
       return Result;
    end Value;
+
+   pragma Warnings (On, "declaration hides ""Value""");
 
 end Strings_Edit.Integer_Edit;

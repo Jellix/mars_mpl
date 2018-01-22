@@ -31,53 +31,12 @@ procedure Sample_Lines
    Data   : in out Line_Method_Data;
    X1, X2 : Horizontal_Offset)
 is
-   function To_X (T : X_Axis) return Horizontal_Offset is
-      pragma Inline (To_X);
-   begin
-      return Horizontal_Offset ((T - Layer.T1) / Layer.dT) +  X1;
-   end To_X;
 
-   procedure Set_Interval_Bounds
-     (T     : X_Axis;
-      X     : out Horizontal_Offset;
-      Right : out X_Axis)
-   is
-      pragma Inline (Set_Interval_Bounds);
-      Offset : constant X_Axis :=
-                 X_Axis'Floor ((T - Layer.T1) / Layer.dT);
-   begin
-      Right := (Offset + 1.0) * Layer.dT + Layer.T1;
-      X := Horizontal_Offset (Offset) + X1;
-   end Set_Interval_Bounds;
+   Total_Min : Y_Axis := Y_Axis'Last;
+   Total_Max : Y_Axis := Y_Axis'First;
 
-   procedure Add_Point (X : Horizontal_Offset; Y : Y_Axis) is
-      pragma Inline (Add_Point);
-      Index : constant Natural :=
-                (Data.First + Data.Count) mod Data.Points'Length;
-   begin
-      Data.Points.all (Index) := (X, Y);
-      if Data.Count + 1 < Data.Points'Length then
-         Data.Count := Data.Count + 1;
-         if 0 /= (Tracing_Mode and Trace_Waveform) then ----------------
-            Dump (Layer, Data.Points.all, Index);
-         end if; -------------------------------------------------------
-      else
-         Data.First := Data.First + 1;
-         if 0 /= (Tracing_Mode and Trace_Waveform) then ----------------
-            Trace_Line
-              (Layer'Address,
-               (" Buffer overflow"
-                &  Integer'Image (Data.Points'Length)
-                &  ", width"
-                &  Horizontal_Offset'Image (X2 - X1 + 1)
-                &  ", @"
-                &  Horizontal_Offset'Image (X)
-                &  ", count"
-                &  Integer'Image (Data.Count)));
-            Dump (Layer, Data.Points.all, Index);
-         end if; -------------------------------------------------------
-      end if;
-   end Add_Point;
+   procedure Add_Point (X : Horizontal_Offset; Y : Y_Axis);
+   function To_X (T : X_Axis) return Horizontal_Offset;
 
    procedure Add
      (X           : Horizontal_Offset;
@@ -111,18 +70,34 @@ is
       end if;
    end Add;
 
-   Total_Min : Y_Axis := Y_Axis'Last;
-   Total_Max : Y_Axis := Y_Axis'First;
-
-   T : X_Axis := X_Axis'Succ (Layer.T1);
-   V : Y_Axis;
-
-   Left  : Point;
-   Right : Point;
-   First : Point;
-   Last  : Point;
-
-   Empty : Boolean := True;
+   procedure Add_Point (X : Horizontal_Offset; Y : Y_Axis) is
+      pragma Inline (Add_Point);
+      Index : constant Natural :=
+                (Data.First + Data.Count) mod Data.Points'Length;
+   begin
+      Data.Points.all (Index) := (X, Y);
+      if Data.Count + 1 < Data.Points'Length then
+         Data.Count := Data.Count + 1;
+         if 0 /= (Tracing_Mode and Trace_Waveform) then ----------------
+            Dump (Layer, Data.Points.all, Index);
+         end if; -------------------------------------------------------
+      else
+         Data.First := Data.First + 1;
+         if 0 /= (Tracing_Mode and Trace_Waveform) then ----------------
+            Trace_Line
+              (Layer'Address,
+               (" Buffer overflow"
+                &  Integer'Image (Data.Points'Length)
+                &  ", width"
+                &  Horizontal_Offset'Image (X2 - X1 + 1)
+                &  ", @"
+                &  Horizontal_Offset'Image (X)
+                &  ", count"
+                &  Integer'Image (Data.Count)));
+            Dump (Layer, Data.Points.all, Index);
+         end if; -------------------------------------------------------
+      end if;
+   end Add_Point;
 
    procedure Done is
       pragma Inline (Done);
@@ -163,6 +138,35 @@ is
             Upper => Total_Max);
       end if;
    end Done;
+
+   procedure Set_Interval_Bounds
+     (T     : X_Axis;
+      X     : out Horizontal_Offset;
+      Right : out X_Axis)
+   is
+      pragma Inline (Set_Interval_Bounds);
+      Offset : constant X_Axis :=
+                 X_Axis'Floor ((T - Layer.T1) / Layer.dT);
+   begin
+      Right := (Offset + 1.0) * Layer.dT + Layer.T1;
+      X := Horizontal_Offset (Offset) + X1;
+   end Set_Interval_Bounds;
+
+   function To_X (T : X_Axis) return Horizontal_Offset is
+      pragma Inline (To_X);
+   begin
+      return Horizontal_Offset ((T - Layer.T1) / Layer.dT) +  X1;
+   end To_X;
+
+   T : X_Axis := X_Axis'Succ (Layer.T1);
+   V : Y_Axis;
+
+   Left  : Point;
+   Right : Point;
+   First : Point;
+   Last  : Point;
+
+   Empty : Boolean := True;
 
    Got_It : Boolean;
 begin

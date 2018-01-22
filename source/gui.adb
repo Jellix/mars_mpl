@@ -1,5 +1,6 @@
-with Ada.Exceptions;
 with Ada.Real_Time;
+
+with GNATCOLL.Traces;
 
 with Global;
 with Touchdown_Monitor;
@@ -31,7 +32,10 @@ with Pango.Cairo.Fonts;
 
 package body GUI is
 
-   Module : constant String := "GUI";
+   Logger : constant GNATCOLL.Traces.Trace_Handle
+     := GNATCOLL.Traces.Create (Unit_Name => "GUI",
+                                Default   => GNATCOLL.Traces.On,
+                                Stream    => Global.Standard_Error);
 
    use type Ada.Real_Time.Time;
    use type Altimeter.Altitude;
@@ -622,8 +626,8 @@ package body GUI is
    procedure Quit_GUI is
    begin
       if not Aborted then
-         Global.Log (Module  => Module,
-                     Message => "Quitting GUI...");
+         Logger.all.Trace
+           (Message => "[" & Global.Clock_Image & "] Quitting GUI...");
          Aborted := True;
       end if;
    end Quit_GUI;
@@ -716,8 +720,7 @@ package body GUI is
       abort Trigger_Task;
    exception
       when E : others =>
-         Global.Log (Module  => Module,
-                     Message => Ada.Exceptions.Exception_Information (E));
+         Logger.all.Trace (E => E);
    end GUI_Task;
 
 end GUI;

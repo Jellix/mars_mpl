@@ -27,6 +27,9 @@
 
 package Gtk.Layered.Waveform.Amplifier is
 
+   pragma Warnings (Off, "declaration hides ""Amplifier""");
+   pragma Warnings (Off, "declaration of ""Get_Type"" hides one at");
+
    --
    -- Gtk_Waveform_Amplifier_Record -- Waveform amplifier adjustment.  This
    --                                  is  a specialized  adjustment object
@@ -39,6 +42,7 @@ package Gtk.Layered.Waveform.Amplifier is
      and Waveform_Amplifier with private;
    type Gtk_Waveform_Amplifier is
      access all Gtk_Waveform_Amplifier_Record'Class;
+
    --
    -- Get_Auto_Scaling -- Get scaling mode
    --
@@ -242,5 +246,8 @@ private
 
    procedure Set_Range
      (Amplifier : in out Gtk_Waveform_Amplifier_Record) with Inline;
+
+   pragma Warnings (On, "declaration of ""Get_Type"" hides one at");
+   pragma Warnings (On, "declaration hides ""Amplifier""");
 
 end Gtk.Layered.Waveform.Amplifier;

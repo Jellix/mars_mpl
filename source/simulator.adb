@@ -2,6 +2,9 @@
 --  pragma Partition_Elaboration_Policy (Sequential);
 
 with Ada.Real_Time;
+
+with GNATCOLL.Traces;
+
 with Altimeter;
 with Engine;
 with Global;
@@ -11,6 +14,12 @@ with Thrusters;
 with Touchdown_Monitor;
 
 procedure Simulator is
+
+   Logger : constant GNATCOLL.Traces.Trace_Handle
+     := GNATCOLL.Traces.Create (Unit_Name => "SIM",
+                                Default   => GNATCOLL.Traces.On,
+                                Stream    => Global.Standard_Error);
+
    All_Monitors_Dead : Boolean := False;
    Monitor_Enabled   : Boolean := False;
    Cycle             : constant Ada.Real_Time.Time_Span :=
@@ -42,11 +51,9 @@ procedure Simulator is
    use type Altimeter.Velocity;
    use type Thrusters.State;
    use type Touchdown_Monitor.Run_State;
-
-   Module : constant String := "SIMULATOR";
 begin
-   Global.Log (Module  => Module,
-               Message => "Starting touchdown monitors...");
+   Logger.all.Trace
+     (Message => "[" & Global.Clock_Image & "] Starting touchdown monitors...");
    Touchdown_Monitor.Start;
 
    Next_Cycle := Global.Start_Time + Cycle;
@@ -70,8 +77,10 @@ begin
          if not Powered_Descent and then Current_Altitude <= 1000.0 then
             Thrusters.Enable;
             Powered_Descent := True;
-            Global.Log (Module  => Module,
-                        Message => "Entered powered descent flight mode.");
+            Logger.all.Trace
+              (Message =>
+                 "[" & Global.Clock_Image
+               & "] Entered powered descent flight mode.");
          end if;
 
          if Powered_Descent then
@@ -85,8 +94,9 @@ begin
          end if;
 
          if not Monitor_Enabled and then Current_Altitude <= 40.0 then
-            Global.Log (Module  => Module,
-                        Message => "Enabling touchdown monitors...");
+            Logger.all.Trace
+              (Message =>
+                 "[" & Global.Clock_Image & "] Enabling touchdown monitors...");
             Touchdown_Monitor.Enable;
             Monitor_Enabled := True;
          end if;
@@ -103,11 +113,17 @@ begin
                              Altimeter.Current_Velocity;
    begin
       if Touchdown_Velocity > Altimeter.Safe_Landing_Velocity then
-         Global.Log (Module  => Module,
-                     Message => "MISSION FAILURE: MPL crashed on surface!");
+         Logger.all.Trace
+           (Message =>
+              "[" & Global.Clock_Image
+            & "] MISSION FAILURE: MPL crashed on surface!",
+            Color   => GNATCOLL.Traces.Red_Fg);
       else
-         Global.Log (Module  => Module,
-                     Message => "MISSION SUCCESS: MPL touched down safely.");
+         Logger.all.Trace
+           (Message =>
+              "[" & Global.Clock_Image
+            & "] MISSION SUCCESS: MPL touched down safely.",
+            Color   => GNATCOLL.Traces.Green_Fg);
       end if;
    end;
 
@@ -122,8 +138,9 @@ begin
              Touchdown_Monitor.Terminated);
 
       if All_Monitors_Dead then
-         Global.Log (Module  => Module,
-                     Message => "All touchdown monitors finished.");
+         Logger.all.Trace
+           (Message =>
+              "[" & Global.Clock_Image & "] All touchdown monitors finished.");
          Update_GUI;
          Touchdown_Monitor.Shutdown;
          Landing_Legs.Shutdown;
@@ -131,8 +148,8 @@ begin
       end if;
    end loop;
 
-   Global.Log (Module  => Module,
-               Message => "Simulation finished.");
+   Logger.all.Trace
+     (Message => "[" & Global.Clock_Image & "] Simulation finished.");
 
    loop
       Update_GUI (Terminated => True);

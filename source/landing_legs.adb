@@ -1,11 +1,15 @@
-with Ada.Exceptions;
 with Ada.Real_Time.Timing_Events;
+
+with GNATCOLL.Traces;
 
 with Global;
 
 package body Landing_Legs is
 
-   Module : constant String := "LEG_MONITOR";
+   Logger : constant GNATCOLL.Traces.Trace_Handle
+     := GNATCOLL.Traces.Create (Unit_Name => "LLC",
+                                Default   => GNATCOLL.Traces.On,
+                                Stream    => Global.Standard_Error);
 
    use type Ada.Real_Time.Time;
 
@@ -138,8 +142,9 @@ package body Landing_Legs is
             case Current_State is
 
                when Deployed             =>
-                  Global.Log (Module  => Module,
-                              Message => "Landing legs deployed.");
+                  Logger.all.Trace
+                    (Message =>
+                        "[" & Global.Clock_Image & "] Landing legs deployed.");
                   Sensor_Glitch.Activate_Glitch;
 
                when Touched_Down         =>
@@ -152,8 +157,7 @@ package body Landing_Legs is
       end loop;
    exception
       when E : others =>
-         Global.Log (Module  => Module,
-                     Message => Ada.Exceptions.Exception_Information (E));
+         Logger.all.Trace (E => E);
    end Simulate_Landing_Legs;
 
    protected body Leg_Iterator is
