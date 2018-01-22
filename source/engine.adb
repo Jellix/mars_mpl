@@ -40,6 +40,10 @@ package body Engine is
             end if;
          end if;
 
+         if Current_Fuel = 0.0 then
+            Thrusters.Out_Of_Fuel;
+         end if;
+
          Fuel_Store.Set (New_Value => Current_Fuel);
       end loop;
    end Engine_Task;

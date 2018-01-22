@@ -35,7 +35,7 @@ package body Altimeter is
                              (if Thrusters.Current_State = Thrusters.Disabled
                               or else Velocity_Now < Target_Landing_Velocity
                               then Velocity (Gravity * T)
-                              else Velocity (Thruster_Acceleration * T));
+                              else Velocity (Thrusters.Acceleration * T));
             Distance     : constant Altitude :=
                              Altitude (Float (Velocity_Now) * T);
          begin
