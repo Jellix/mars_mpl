@@ -93,9 +93,8 @@ package body GUI is
    Velocity_Scale : constant Scaling
      := (Texts  =>
             new Gtk.Enums.String_Lists.Controlled_String_List'
-             ("0" / "20" / "40" / "60" / "80" / "100" /
-              "120" / "140" / "160" / "180" / "200"),
-         Factor => 200.0);
+             ("0" / "20" / "40" / "60" / "80" / "100" / "120" / "140" / "160"),
+         Factor => 160.0);
 
    package Windows_CB is
      new Gtk.Handlers.Callback (Widget_Type => Main_Window_Record);

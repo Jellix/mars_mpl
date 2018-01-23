@@ -1,3 +1,24 @@
+--
+--  EDL sequence: https://mars.jpl.nasa.gov/msp98/lander/edl.html
+--  Data is a bit different from the actual investigation report, though.
+--
+--  Sequence overview:
+--
+--  | Time    | Height  | Speed      | Action
+--  +---------+---------+------------+------------------------------------------
+--  | -15 min | 4600 km | 5700   m/s | Guidance system initialization
+--  | -12 min | 3000 km | 5900   m/s | Turn to entry attitude
+--  | -10 min | 2300 km | 6200   m/s | Cruise ring separation
+--  |  -5 min |  125 km | 6900   m/s | Atmospheric entry
+--  |  -2 min | 8800  m |  490   m/s | Parachute deployment
+--  | -110  s | 7500  m |  250   m/s | Heatshield jettison
+--  |  -50  s | 2500  m |   85   m/s | Radar ground acquisition (altitude mode)
+--  |  -36  s | 1400  m |   80   m/s | Radar ground acquisition (doppler/speed
+--  |         |         |            | and direction mode)
+--  |  -35  s | 1300  m |   80   m/s | Lander separation/powered descent
+--  |    0  s |    0  m |    2.5 m/s | Touchdown
+--
+
 --  pragma Profile (Ravenscar);
 --  pragma Partition_Elaboration_Policy (Sequential);
 
@@ -68,13 +89,24 @@ begin
          Current_Altitude := Altimeter.Current_Altitude;
          Current_Velocity := Altimeter.Current_Velocity;
 
-         if not Legs_Deployed and then Current_Altitude <= 1500.0 then
+         --  EDL sequence:
+         --    [...] the lander legs will be deployed; 1.5 seconds after that,
+         --    the landing radar will be activated. The radar will be able to
+         --    gauge the spacecraft's altitude about 44 seconds after it is
+         --    turned on, at an altitude of about 2.5 kilometers [...] above the
+         --    surface.
+         if not Legs_Deployed and then Current_Altitude <= 2500.0 then
             Landing_Legs.Deploy;
             Legs_Deployed := True;
          end if;
 
          --  Entering powered descent.
-         if not Powered_Descent and then Current_Altitude <= 1000.0 then
+         --
+         --  EDL sequence:
+         --    [...] when the spacecraft is traveling at about 80 m/s [...] some
+         --    1.4 kilometers [...] above the surface, the [...] descent engines
+         --    will be turned on one-half second later [...]
+         if not Powered_Descent and then Current_Altitude <= 1300.0 then
             Thrusters.Enable;
             Powered_Descent := True;
             Logger.all.Trace
@@ -83,8 +115,14 @@ begin
                & "] Entered powered descent flight mode.");
          end if;
 
+         --  EDL sequence:
+         --    Once the spacecraft reaches either an altitude of 12 meters [...]
+         --    or a velocity of 2.4 meters per second [...], the lander will
+         --    drop straight down at a constant speed. The descent engines will
+         --    be turned off when touchdown is detected by sensors in the
+         --    footpads.
          if Powered_Descent then
-            if Current_Velocity < Altimeter.Safe_Landing_Velocity * 0.8 then
+            if Current_Velocity < Altimeter.Safe_Landing_Velocity then
                Thrusters.Disable;
             elsif
               Current_Velocity > Altimeter.Velocity (Current_Altitude * 0.2)

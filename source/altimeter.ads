@@ -14,10 +14,10 @@ package Altimeter is
                      Ada.Real_Time.Milliseconds (10);
 
    Gravity                 : constant Float    := Planets.Parameters.Gravity (Of_Planet => Planets.Mars); -- m/s**2
-   Initial_Velocity        : constant Velocity :=   150.000; -- m/s
-   Safe_Landing_Velocity   : constant Velocity :=     2.500; -- m/s
+   Initial_Velocity        : constant Velocity :=    80.000; -- m/s
+   Safe_Landing_Velocity   : constant Velocity :=     2.400; -- m/s
    Target_Landing_Velocity : constant Velocity := Safe_Landing_Velocity - 1.0; -- m/s
-   Initial_Altitude        : constant Altitude := 2_500.000; -- m
+   Initial_Altitude        : constant Altitude := 3_500.000; -- m
 
    function Current_Altitude return Altitude
      with Volatile_Function;
