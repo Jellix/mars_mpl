@@ -43,6 +43,9 @@ with Pango.Cairo.Fonts;
 
 package body Gtk.Gauge.Round_270 is
 
+   pragma Warnings (Off, "declaration hides ""Adjustment""");
+   pragma Warnings (Off, "declaration hides ""Widget""");
+
    Pi : constant := Ada.Numerics.Pi;
 
    Arrow_Color       : constant Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 0.0, 0.0);
@@ -56,6 +59,9 @@ package body Gtk.Gauge.Round_270 is
 
    Class_Record : aliased Ada_GObject_Class := Uninitialized_Class;
 
+   procedure Create_Background
+     (Widget  : not null access Gtk_Gauge_Round_270_Record'Class;
+      Sectors : Positive);
    procedure Create_Background
      (Widget  : not null access Gtk_Gauge_Round_270_Record'Class;
       Sectors : Positive) is
@@ -136,6 +142,9 @@ package body Gtk.Gauge.Round_270 is
 
    procedure Create_Needle
      (Widget     : not null access Gtk_Gauge_Round_270_Record'Class;
+      Adjustment : Gtk.Adjustment.Gtk_Adjustment);
+   procedure Create_Needle
+     (Widget     : not null access Gtk_Gauge_Round_270_Record'Class;
       Adjustment : Gtk.Adjustment.Gtk_Adjustment) is
    begin
       Widget.all.Needle :=
@@ -160,13 +169,6 @@ package body Gtk.Gauge.Round_270 is
       return Widget.all.Annotation;
    end Get_Annotation;
 
-   function Get_Needle
-     (Widget : not null access Gtk_Gauge_Round_270_Record)
-      return not null access Gtk.Layered.Needle.Needle_Layer is
-   begin
-      return Widget.all.Needle;
-   end Get_Needle;
-
    function Get_Background
      (Widget : not null access Gtk_Gauge_Round_270_Record)
       return not null access Gtk.Layered.Elliptic_Background.Elliptic_Background_Layer
@@ -181,6 +183,13 @@ package body Gtk.Gauge.Round_270 is
    begin
       return Widget.all.Cache;
    end Get_Cache;
+
+   function Get_Needle
+     (Widget : not null access Gtk_Gauge_Round_270_Record)
+      return not null access Gtk.Layered.Needle.Needle_Layer is
+   begin
+      return Widget.all.Needle;
+   end Get_Needle;
 
    function Get_Type return GType is
    begin
@@ -504,5 +513,8 @@ package body Gtk.Gauge.Round_270 is
          Color   =>
            Gtk.Widget.Styles.Style_Get (Widget, "text-color", Text_Color));
    end Style_Changed;
+
+   pragma Warnings (On, "declaration hides ""Adjustment""");
+   pragma Warnings (On, "declaration hides ""Widget""");
 
 end Gtk.Gauge.Round_270;

@@ -15,8 +15,8 @@ with Gtk.Button_Box;
 with Gtk.Enums.String_Lists;
 with Gtk.Frame;
 with Gtk.Gauge.Altimeter;
-with Gtk.Gauge.Elliptic_180;
 with Gtk.Gauge.LED_Round;
+with Gtk.Gauge.Round_270;
 with Gtk.GEntry;
 with Gtk.Handlers;
 with Gtk.Label;
@@ -68,7 +68,7 @@ package body GUI is
          Velocity_Channel  : Gtk.Oscilloscope.Channel_Number;
          Touchdown_Channel : Legs_Channels;
          Thruster_Channel  : Gtk.Oscilloscope.Channel_Number;
-         Tachometer        : Gtk.Gauge.Elliptic_180.Gtk_Gauge_Elliptic_180;
+         Tachometer        : Gtk.Gauge.Round_270.Gtk_Gauge_Round_270;
          Altimeter         : Gtk.Gauge.Altimeter.Gtk_Gauge_Altimeter;
          Fuel_Scale        : Gtk.Meter.Angular_90.Gtk_Meter_Angular_90;
       end record;
@@ -88,8 +88,8 @@ package body GUI is
    Fuel_Scale : constant Scaling
      := (Texts  =>
             new Gtk.Enums.String_Lists.Controlled_String_List'
-           ("0" / "5" / "10" / "15" / "20" / "25"),
-         Factor => 250.0);
+           ("0" / "20" / "40" / "60" / "80"),
+         Factor => 80.0);
    Velocity_Scale : constant Scaling
      := (Texts  =>
             new Gtk.Enums.String_Lists.Controlled_String_List'
@@ -362,7 +362,7 @@ package body GUI is
                            (+Fuel_Scale.Texts.all)) - 1);
                Gtk.Layered.Label.Add_Label
                  (Under    => Gauge.all.Get_Cache,
-                  Text     => "x 10 kg",
+                  Text     => "kg",
                   Location => (0.0175, 0.1),
                   Face     => Label_Font_Italic,
                   Height   => 0.03,
@@ -565,9 +565,9 @@ package body GUI is
             Frame.all.Add (Widget => Box);
 
             declare
-               Gauge : Gtk.Gauge.Elliptic_180.Gtk_Gauge_Elliptic_180;
+               Gauge : Gtk.Gauge.Round_270.Gtk_Gauge_Round_270;
             begin
-               Gtk.Gauge.Elliptic_180.Gtk_New
+               Gtk.Gauge.Round_270.Gtk_New
                  (Widget  => Gauge,
                   Texts   => Velocity_Scale.Texts.all,
                   Sectors =>
@@ -577,12 +577,12 @@ package body GUI is
                Gtk.Layered.Label.Add_Label
                  (Under    => Gauge.all.Get_Cache,
                   Text     => "m/s",
-                  Location => (0.0175, 0.1),
-                  Face     => Label_Font_Italic,
+                  Location => (0.01, 0.15),
+                  Face     => Label_Font,
                   Height   => 0.03,
                   Stretch  => 0.9,
                   Mode     => Gtk.Layered.Moved_Centered,
-                  Color    => Gtk.Missed.RGB (1.0, 0.6, 0.0),
+                  Color    => Gtk.Missed.RGB (1.0, 1.0, 1.0),
                   Angle    => 0.0,
                   Skew     => 0.0,
                   Markup   => False,

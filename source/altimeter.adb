@@ -1,3 +1,5 @@
+with Ada.Strings.Fixed;
+with Ada.Text_IO;
 with GNATCOLL.Traces;
 
 with Global;
@@ -72,10 +74,38 @@ package body Altimeter is
 
    function Current_Velocity return Velocity renames Velocity_Store.Get;
 
+   package Altitude_IO is new Ada.Text_IO.Fixed_IO (Num => Altitude);
+   package Velocity_IO is new Ada.Text_IO.Fixed_IO (Num => Velocity);
+
    function Image (A : Altitude) return String is
-     (Altitude'Image (A) & " m");
+      Result : String := "XXXXXXX.XXX";
+   begin
+      Altitude_IO.Put (To   => Result,
+                       Item => A,
+                       Aft  => 3,
+                       Exp  => 0);
+      return Ada.Strings.Fixed.Trim (Source => Result,
+                                     Side   => Ada.Strings.Left) & " m";
+   end Image;
 
    function Image (V : Velocity) return String is
-     (Velocity'Image (V) & " m/s (" & Velocity'Image (V * 3.6) & " km/h)");
+      Result     : String := "-XXXX.XXX";
+      Result_KMH : String := "-XXXX.XXX";
+   begin
+      Velocity_IO.Put (To   => Result,
+                       Item => V,
+                       Aft  => 3,
+                       Exp  => 0);
+      Velocity_IO.Put (To   => Result_KMH,
+                       Item => V * 3.6,
+                       Aft  => 3,
+                       Exp  => 0);
+      return Ada.Strings.Fixed.Trim (Source => Result,
+                                     Side   => Ada.Strings.Left)
+        & " m/s ("
+        & Ada.Strings.Fixed.Trim (Source => Result_KMH,
+                                  Side   => Ada.Strings.Left)
+        & " km/h)";
+   end Image;
 
 end Altimeter;

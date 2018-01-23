@@ -6,6 +6,7 @@
 --
 --  | Time    | Height  | Speed      | Action
 --  +---------+---------+------------+------------------------------------------
+--  |         |         | 6800   m/s | Start of EDL sequence
 --  | -15 min | 4600 km | 5700   m/s | Guidance system initialization
 --  | -12 min | 3000 km | 5900   m/s | Turn to entry attitude
 --  | -10 min | 2300 km | 6200   m/s | Cruise ring separation
@@ -18,7 +19,8 @@
 --  |  -35  s | 1300  m |   80   m/s | Lander separation/powered descent
 --  |    0  s |    0  m |    2.5 m/s | Touchdown
 --
-
+--  https://mars.nasa.gov/msp98/lander/fact.html
+--
 --  pragma Profile (Ravenscar);
 --  pragma Partition_Elaboration_Policy (Sequential);
 

@@ -36,6 +36,8 @@ with Gtk.Layered.Needle;
 
 package Gtk.Gauge.Round_270 is
 
+   pragma Warnings (Off, "declaration hides ""Adjustment""");
+
    --
    -- Class_Name - Of the widget
    --
@@ -209,4 +211,7 @@ private
          Annotation   : access Gtk.Layered.Elliptic_Annotation.Elliptic_Annotation_Layer;
          Needle       : access Gtk.Layered.Needle.Needle_Layer;
       end record;
+
+   pragma Warnings (On, "declaration hides ""Adjustment""");
+
 end Gtk.Gauge.Round_270;
