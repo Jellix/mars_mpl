@@ -11,10 +11,17 @@ is
          Altitude   : Shared_Types.Altitude;
          Velocity   : Shared_Types.Velocity;
          Fuel       : Shared_Types.Fuel_Mass;
+         Time_Stamp : Duration;
          Terminated : Boolean;
       end record;
 
-   Data        : State;
+   protected Current_State is
+      procedure Set (Data : in State);
+      function  Get return State;
+   private
+      The_Blob : State;
+   end Current_State;
+
    Bug_Enabled : Boolean := False;
 
 end Shared_Sensor_Data;

@@ -69,7 +69,7 @@ procedure GUI is
          Factor => 160.0);
 
    Update_Interval : constant Ada.Real_Time.Time_Span :=
-                       Ada.Real_Time.Milliseconds (10);
+                       Ada.Real_Time.Milliseconds (1);
    -- GUI update frequency if no events happen.
 
    type Leg_Switches is
@@ -145,29 +145,37 @@ procedure GUI is
          Plotter : Gtk.Oscilloscope.Gtk_Oscilloscope_Record renames
                      Gtk.Oscilloscope.Gtk_Oscilloscope_Record
                        (Win.Oscilloscope.all);
+         Time_Stamp : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
       begin
          -- Data plot
          Plotter.Feed
            (Channel => Win.Altitude_Channel,
-            V       => Glib.Gdouble (Update_State.Altitude));
+            V       => Glib.Gdouble (Update_State.Altitude),
+            T       => Time_Stamp);
          Plotter.Feed
            (Channel => Win.Velocity_Channel,
-            V       => Glib.Gdouble (Update_State.Velocity));
+            V       => Glib.Gdouble (Update_State.Velocity),
+            T       => Time_Stamp);
 
          for Leg in Shared_Types.Legs_Index loop
-            Plotter.Feed
-              (Channel => Win.Touchdown_Channel (Leg),
-               V       =>
-                 Glib.Gdouble
-                   (Shared_Types.Legs_Index'Pos (Leg) *
-                    Boolean'Pos
-                      (Update_State.Legs (Leg) = Shared_Types.Touched_Down)));
+            declare
+               Offset : constant Glib.Gdouble :=
+                          0.3 * Glib.Gdouble (Shared_Types.Legs_Index'Pos (Leg));
+               Active : constant Glib.Gdouble :=
+                          0.2 * Glib.Gdouble (Boolean'Pos (Update_State.Legs (Leg) = Shared_Types.Touched_Down));
+            begin
+               Plotter.Feed
+                 (Channel => Win.Touchdown_Channel (Leg),
+                  V       => Offset + Active,
+                  T       => Time_Stamp);
+            end;
          end loop;
 
          Plotter.Feed
            (Channel => Win.Thruster_Channel,
             V       =>
-              Glib.Gdouble (Shared_Types.State'Pos (Update_State.Thruster)));
+              Glib.Gdouble (Shared_Types.State'Pos (Update_State.Thruster)),
+            T       => Time_Stamp);
       end;
    end Feed_Values;
 
@@ -473,7 +481,7 @@ procedure GUI is
          Frame : constant Gtk.Frame.Gtk_Frame :=
                    Gtk.Frame.Gtk_Frame_New (Label => "Timeline");
       begin
-         Frame.all.Set_Size_Request (Width => 800,
+         Frame.all.Set_Size_Request (Width  => 800,
                                      Height => 200);
 
          declare
@@ -484,8 +492,12 @@ procedure GUI is
 
             Window.Oscilloscope := Plot;
 
-            Window.Altitude_Channel := Plot.all.Add_Channel;
-            Window.Velocity_Channel := Plot.all.Add_Channel;
+            Window.Altitude_Channel :=
+              Plot.all.Add_Channel (Color => Gtk.Missed.RGB (1.0, 0.0, 0.0),
+                                    Name  => "Altitude");
+            Window.Velocity_Channel :=
+              Plot.all.Add_Channel (Color => Gtk.Missed.RGB (1.0, 0.5, 0.5),
+                                    Name  => "Velocity");
 
             declare
                G : Gtk.Oscilloscope.Group_Number;
@@ -493,11 +505,22 @@ procedure GUI is
                G := Plot.all.Add_Group (Name => "Signals");
 
                for Leg in Shared_Types.Legs_Index loop
-                  Window.Touchdown_Channel (Leg) :=
-                    Plot.all.Add_Channel (Group => G);
+                  declare
+                     Color_Offset : constant Glib.Gdouble :=
+                                      0.2 * Glib.Gdouble (Shared_Types.Legs_Index'Pos (Leg));
+                  begin
+                     Window.Touchdown_Channel (Leg) :=
+                       Plot.all.Add_Channel
+                         (Group => G,
+                          Color => Gtk.Missed.RGB (Color_Offset, 1.0, Color_Offset),
+                          Name  => "Touchdown" & Shared_Types.Legs_Index'Image (Leg));
+                  end;
                end loop;
 
-               Window.Thruster_Channel  := Plot.all.Add_Channel (Group => G);
+               Window.Thruster_Channel :=
+                 Plot.all.Add_Channel (Group => G,
+                                       Color => Gtk.Missed.RGB (0.0, 0.0, 1.0),
+                                       Name  => "Thruster");
             end;
 
             Plot.all.Set_Manual_Sweep (False);
@@ -607,7 +630,7 @@ begin
       loop
          delay until Next_Update;
          Next_Update := Next_Update + Update_Interval;
-         Update_State := Shared_Sensor_Data.Data;
+         Update_State := Shared_Sensor_Data.Current_State.Get;
 
          if not Update_State.Terminated then
             Feed_Values (Win          => Win.all,
