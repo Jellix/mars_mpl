@@ -105,8 +105,9 @@ package body Gtk.Layered.Waveform is
      new Ada.Unchecked_Deallocation
        (Waveform_Data_Scanner'Class,
         Waveform_Data_Scanner_Ptr);
-   function Interpolate (T : X_Axis; L, R : Point) return Y_Axis;
-   pragma Inline (Interpolate);
+
+   function Interpolate (T : X_Axis; L, R : Point) return Y_Axis
+     with Inline => True;
 
    overriding function Add
      (Under  : not null access Layer_Location'Class;

@@ -31,8 +31,9 @@ with GNATCOLL.Traces;
 with Altimeter;
 with Engine;
 with Global;
-with GUI;
 with Landing_Legs;
+with Shared_Sensor_Data;
+with Shared_Types;
 with Thrusters;
 with Touchdown_Monitor;
 
@@ -49,30 +50,31 @@ procedure Simulator is
                          Ada.Real_Time.Milliseconds (MS => 10);
    Next_Cycle        : Ada.Real_Time.Time;
 
-   procedure Update_GUI (Terminated : in Boolean := False);
+   procedure Update_Shared_Data (Terminated : in Boolean := False);
 
-   procedure Update_GUI (Terminated : in Boolean := False)
+   procedure Update_Shared_Data (Terminated : in Boolean := False)
    is
-      All_Legs : Landing_Legs.All_Legs_State;
-      Thruster : constant Thrusters.State    := Thrusters.Current_State;
-      Altitude : constant Altimeter.Altitude := Altimeter.Current_Altitude;
-      Velocity : constant Altimeter.Velocity := Altimeter.Current_Velocity;
-      Fuel     : constant Engine.Fuel_Mass   := Engine.Remaining_Fuel;
+      All_Legs : Shared_Types.All_Legs_State;
+      Thruster : constant Shared_Types.State     := Thrusters.Current_State;
+      Altitude : constant Shared_Types.Altitude  := Altimeter.Current_Altitude;
+      Velocity : constant Shared_Types.Velocity  := Altimeter.Current_Velocity;
+      Fuel     : constant Shared_Types.Fuel_Mass := Engine.Remaining_Fuel;
+      Full_State : Shared_Sensor_Data.State;
    begin
       Landing_Legs.Read_State (State => All_Legs);
-
-      GUI.Update (New_State => GUI.State'(Legs       => All_Legs,
-                                          Thruster   => Thruster,
-                                          Altitude   => Altitude,
-                                          Velocity   => Velocity,
-                                          Fuel       => Fuel,
-                                          Terminated => Terminated));
-   end Update_GUI;
+      Full_State := Shared_Sensor_Data.State'(Legs       => All_Legs,
+                                              Thruster   => Thruster,
+                                              Altitude   => Altitude,
+                                              Velocity   => Velocity,
+                                              Fuel       => Fuel,
+                                              Terminated => Terminated);
+      Shared_Sensor_Data.Data := Full_State;
+   end Update_Shared_Data;
 
    use type Ada.Real_Time.Time;
-   use type Altimeter.Altitude;
-   use type Altimeter.Velocity;
-   use type Thrusters.State;
+   use type Shared_Types.Altitude;
+   use type Shared_Types.Velocity;
+   use type Shared_Types.State;
    use type Touchdown_Monitor.Run_State;
 begin
    Logger.all.Trace
@@ -82,10 +84,10 @@ begin
    Next_Cycle := Global.Start_Time + Cycle;
 
    declare
-      Current_Altitude : Altimeter.Altitude := Altimeter.Current_Altitude;
-      Current_Velocity : Altimeter.Velocity := Altimeter.Current_Velocity;
-      Legs_Deployed    : Boolean := False;
-      Powered_Descent  : Boolean := False;
+      Current_Altitude : Shared_Types.Altitude := Altimeter.Current_Altitude;
+      Current_Velocity : Shared_Types.Velocity := Altimeter.Current_Velocity;
+      Legs_Deployed    : Boolean               := False;
+      Powered_Descent  : Boolean               := False;
    begin
       while Current_Altitude > 0.0 loop
          Current_Altitude := Altimeter.Current_Altitude;
@@ -127,7 +129,7 @@ begin
             if Current_Velocity < Altimeter.Safe_Landing_Velocity then
                Thrusters.Disable;
             elsif
-              Current_Velocity > Altimeter.Velocity (Current_Altitude * 0.2)
+              Current_Velocity > Shared_Types.Velocity (Current_Altitude * 0.2)
             then
                Thrusters.Enable;
             end if;
@@ -141,7 +143,7 @@ begin
             Monitor_Enabled := True;
          end if;
 
-         Update_GUI;
+         Update_Shared_Data;
 
          delay until Next_Cycle;
          Next_Cycle := Next_Cycle + Cycle;
@@ -149,7 +151,7 @@ begin
    end;
 
    declare
-      Touchdown_Velocity : constant Altimeter.Velocity :=
+      Touchdown_Velocity : constant Shared_Types.Velocity :=
                              Altimeter.Current_Velocity;
    begin
       if Touchdown_Velocity > Altimeter.Safe_Landing_Velocity then
@@ -167,13 +169,13 @@ begin
       end if;
    end;
 
-   Update_GUI;
+   Update_Shared_Data;
 
    All_Monitors_Dead := False;
 
    while not All_Monitors_Dead loop
       All_Monitors_Dead :=
-        (for all Leg in Landing_Legs.Legs_Index'Range =>
+        (for all Leg in Shared_Types.Legs_Index'Range =>
            Touchdown_Monitor.Current_State (Leg => Leg) =
              Touchdown_Monitor.Terminated);
 
@@ -181,7 +183,7 @@ begin
          Logger.all.Trace
            (Message =>
               "[" & Global.Clock_Image & "] All touchdown monitors finished.");
-         Update_GUI;
+         Update_Shared_Data;
          Touchdown_Monitor.Shutdown;
          Landing_Legs.Shutdown;
          Engine.Shutdown;
@@ -191,9 +193,5 @@ begin
    Logger.all.Trace
      (Message => "[" & Global.Clock_Image & "] Simulation finished.");
 
-   loop
-      Update_GUI (Terminated => True);
-
-      exit when GUI.Aborted;
-   end loop;
+   Update_Shared_Data (Terminated => True);
 end Simulator;

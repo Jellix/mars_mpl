@@ -33,14 +33,16 @@ procedure Draw_Lines
 is
    pragma Warnings (Off, "declaration hides ""Point""");
 
-   procedure Line_To (Point : Cairo.Ellipses.Cairo_Tuple) is
-      pragma Inline (Line_To);
+   procedure Line_To (Point : Cairo.Ellipses.Cairo_Tuple)
+     with Inline => True
+   is
    begin
       Cairo.Line_To (Context, Point.X, Point.Y);
    end Line_To;
 
-   procedure Move_To (Point : Cairo.Ellipses.Cairo_Tuple) is
-      pragma Inline (Move_To);
+   procedure Move_To (Point : Cairo.Ellipses.Cairo_Tuple)
+     with Inline => True
+   is
    begin
       Cairo.Move_To (Context, Point.X, Point.Y);
    end Move_To;
@@ -89,8 +91,8 @@ begin
 
             function Line_Point
               (Offset : Natural) return Cairo.Ellipses.Cairo_Tuple
+              with Inline => True
             is
-               pragma Inline (Line_Point);
                Result : constant Point_Data :=
                   Points ((Data.First + Offset) mod Points'Length);
             begin
@@ -101,8 +103,10 @@ begin
 
             function Point
               (Offset : Natural) return Cairo.Ellipses.Cairo_Tuple
+              with Inline => True;
+            function Point
+              (Offset : Natural) return Cairo.Ellipses.Cairo_Tuple
             is
-               pragma Inline (Point);
                Result : constant  Point_Data :=
                   Points ((Data.First + Offset) mod Points'Length);
             begin

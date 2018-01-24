@@ -12,6 +12,7 @@ package body Landing_Legs is
                                 Stream    => Global.Standard_Error);
 
    use type Ada.Real_Time.Time;
+   use type Shared_Types.Legs_Index;
 
    type Task_State is (Running, Deployed, Touched_Down, Terminated);
 
@@ -30,7 +31,8 @@ package body Landing_Legs is
       State           : Task_State := Running;
    end Task_Control;
 
-   type All_Legs_State_Atomic is array (Legs_Index) of Leg_State
+   type All_Legs_State_Atomic is
+     array (Shared_Types.Legs_Index) of Shared_Types.Leg_State
      with Atomic_Components;
 
    Legs_State : All_Legs_State_Atomic;
@@ -81,15 +83,15 @@ package body Landing_Legs is
       Task_Control.Trigger_Deploy;
    end Deploy;
 
-   procedure Read_State (Index : in     Legs_Index;
-                         State :    out Leg_State) is
+   procedure Read_State (Index : in     Shared_Types.Legs_Index;
+                         State :    out Shared_Types.Leg_State) is
    begin
       State := Legs_State (Index);
    end Read_State;
 
-   procedure Read_State (State : out All_Legs_State) is
+   procedure Read_State (State : out Shared_Types.All_Legs_State) is
    begin
-      for The_Leg in Legs_Index'Range loop
+      for The_Leg in Shared_Types.Legs_Index'Range loop
          State (The_Leg) := Legs_State (The_Leg);
       end loop;
    end Read_State;
@@ -148,7 +150,8 @@ package body Landing_Legs is
                   Sensor_Glitch.Activate_Glitch;
 
                when Touched_Down         =>
-                  Legs_State (Legs_Index'Range) := (others => Touched_Down);
+                  Legs_State (Shared_Types.Legs_Index'Range) :=
+                    (others => Shared_Types.Touched_Down);
 
                when Running | Terminated =>
                   null;
@@ -162,14 +165,14 @@ package body Landing_Legs is
 
    protected body Leg_Iterator is
 
-      entry Next (The_Leg : out Legs_Index) when Legs_Available is
+      entry Next (The_Leg : out Shared_Types.Legs_Index) when Legs_Available is
       begin
          The_Leg := Current_Leg;
 
-         if Current_Leg = Legs_Index'Last then
+         if Current_Leg = Shared_Types.Legs_Index'Last then
             Legs_Available := False;
          else
-            Current_Leg := Legs_Index'Succ (Current_Leg);
+            Current_Leg := Shared_Types.Legs_Index'Succ (Current_Leg);
          end if;
       end Next;
 

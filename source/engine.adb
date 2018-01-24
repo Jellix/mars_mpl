@@ -1,6 +1,3 @@
-with Ada.Strings.Fixed;
-with Ada.Text_IO;
-
 with Global;
 with Thrusters;
 with Task_Safe_Store;
@@ -8,25 +5,14 @@ with Task_Safe_Store;
 package body Engine is
 
    use type Ada.Real_Time.Time;
-   use type Thrusters.State;
+   use type Shared_Types.Fuel_Mass;
+   use type Shared_Types.State;
 
-   package Fuel_Store is new Task_Safe_Store (Stored_Type   => Fuel_Mass,
-                                              Initial_Value => 64.0);
+   package Fuel_Store is
+     new Task_Safe_Store (Stored_Type   => Shared_Types.Fuel_Mass,
+                          Initial_Value => 64.0);
 
-   package Fuel_IO is new Ada.Text_IO.Fixed_IO (Num => Fuel_Mass);
-
-   function Image (Value : in Fuel_Mass) return String is
-      Result : String := "XXX.XXX";
-   begin
-      Fuel_IO.Put (To   => Result,
-                   Item => Value,
-                   Aft  => 3,
-                   Exp  => 0);
-      return Ada.Strings.Fixed.Trim (Source => Result,
-                                     Side   => Ada.Strings.Left) & " kg";
-   end Image;
-
-   function Remaining_Fuel return Fuel_Mass is
+   function Remaining_Fuel return Shared_Types.Fuel_Mass is
    begin
       return Fuel_Store.Get;
    end Remaining_Fuel;
@@ -35,7 +21,7 @@ package body Engine is
 
    task body Engine_Task is
       Next_Cycle   : Ada.Real_Time.Time := Global.Start_Time;
-      Current_Fuel : Fuel_Mass;
+      Current_Fuel : Shared_Types.Fuel_Mass;
    begin
       loop
          delay until Next_Cycle;
@@ -43,7 +29,7 @@ package body Engine is
 
          Current_Fuel := Fuel_Store.Get;
 
-         if Thrusters.Current_State = Thrusters.Enabled then
+         if Thrusters.Current_State = Shared_Types.Enabled then
             if Current_Fuel > Flow_Rate then
                Current_Fuel := Current_Fuel - Flow_Rate;
             else

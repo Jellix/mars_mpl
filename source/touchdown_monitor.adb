@@ -1,6 +1,8 @@
 with GNATCOLL.Traces;
 
 with Global;
+with Landing_Legs;
+with Shared_Sensor_Data;
 with Thrusters;
 
 package body Touchdown_Monitor is
@@ -11,11 +13,11 @@ package body Touchdown_Monitor is
                                 Stream    => Global.Standard_Error);
 
    use type Ada.Real_Time.Time;
-   use type Landing_Legs.Leg_State;
+   use type Shared_Types.Leg_State;
 
    type Leg_Indicator is
       record
-         State  : Landing_Legs.Leg_State;
+         State  : Shared_Types.Leg_State;
          Health : Health_State;
       end record;
 
@@ -48,28 +50,28 @@ package body Touchdown_Monitor is
    end Task_Control;
 
    task type Touchdown_Monitor_Execute;
-   Legs_Task    : array (Landing_Legs.Legs_Index) of Touchdown_Monitor_Execute;
+   Legs_Task    : array (Shared_Types.Legs_Index) of Touchdown_Monitor_Execute;
    pragma Unreferenced (Legs_Task);
-   Legs_Control : array (Landing_Legs.Legs_Index) of Task_Control;
+   Legs_Control : array (Shared_Types.Legs_Index) of Task_Control;
 
    Assign_Leg : Landing_Legs.Leg_Iterator;
 
    task body Touchdown_Monitor_Execute is
-      Leg               : Landing_Legs.Legs_Index;
+      Leg               : Shared_Types.Legs_Index;
       Indicator         : Leg_Indicator;
       Event_Enabled     : Boolean;
-      Last_Indicator    : Landing_Legs.Leg_State;
-      Current_Indicator : Landing_Legs.Leg_State;
+      Last_Indicator    : Shared_Types.Leg_State;
+      Current_Indicator : Shared_Types.Leg_State;
       Old_Run_State     : Run_State;
       Current_Run_State : Run_State;
       Next_Cycle        : Ada.Real_Time.Time;
    begin
       --  Initialize local state.
-      Indicator         := Leg_Indicator'(State  => Landing_Legs.In_Flight,
+      Indicator         := Leg_Indicator'(State  => Shared_Types.In_Flight,
                                           Health => Unknown);
       Event_Enabled     := False;
-      Last_Indicator    := Landing_Legs.In_Flight;
-      Current_Indicator := Landing_Legs.In_Flight;
+      Last_Indicator    := Shared_Types.In_Flight;
+      Current_Indicator := Shared_Types.In_Flight;
       Old_Run_State     := Not_Started;
       Current_Run_State := Not_Started;
       Next_Cycle        := Global.Start_Time;
@@ -90,21 +92,21 @@ package body Touchdown_Monitor is
                     (Message =>
                         "[" & Global.Clock_Image
                      & "] Monitoring for leg "
-                     &  Landing_Legs.Legs_Index'Image (Leg)
+                     &  Shared_Types.Legs_Index'Image (Leg)
                      & " started.");
                   Indicator     :=
-                    Leg_Indicator'(State  => Landing_Legs.In_Flight,
+                    Leg_Indicator'(State  => Shared_Types.In_Flight,
                                    Health => Good);
                when Enabled =>
                   Logger.all.Trace
                     (Message =>
                         "[" & Global.Clock_Image
                      & "] Monitoring for leg "
-                     & Landing_Legs.Legs_Index'Image (Leg)
+                     & Shared_Types.Legs_Index'Image (Leg)
                      & " enabled.");
                   if
-                    Last_Indicator    = Landing_Legs.Touched_Down and then
-                    Current_Indicator = Landing_Legs.Touched_Down
+                    Last_Indicator    = Shared_Types.Touched_Down and then
+                    Current_Indicator = Shared_Types.Touched_Down
                   then
                      Indicator.Health := Bad;
                   else
@@ -132,16 +134,17 @@ package body Touchdown_Monitor is
             -- the actual result.
             -- Set indicator state only once.
             if
-              (Bug_Enabled or else Event_Enabled) and then -- Bug is here.
-              Last_Indicator    = Landing_Legs.Touched_Down and then
-              Current_Indicator = Landing_Legs.Touched_Down
+              (Shared_Sensor_Data.Bug_Enabled or else Event_Enabled) and then
+            -- Bug is here.
+              Last_Indicator    = Shared_Types.Touched_Down and then
+              Current_Indicator = Shared_Types.Touched_Down
             then
-               Indicator.State := Landing_Legs.Touched_Down;
+               Indicator.State := Shared_Types.Touched_Down;
             end if;
 
             if
               Event_Enabled and then
-              Indicator = (State  => Landing_Legs.Touched_Down,
+              Indicator = (State  => Shared_Types.Touched_Down,
                            Health => Good)
             then
                Thrusters.Shutdown (Source => Leg);
@@ -155,7 +158,7 @@ package body Touchdown_Monitor is
          Logger.all.Trace (E => E);
    end Touchdown_Monitor_Execute;
 
-   function Current_State (Leg : Landing_Legs.Legs_Index) return Run_State is
+   function Current_State (Leg : Shared_Types.Legs_Index) return Run_State is
       New_State : Run_State;
    begin
       New_State := Legs_Control (Leg).TC_State;

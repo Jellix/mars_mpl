@@ -1,5 +1,3 @@
-with Ada.Strings.Fixed;
-with Ada.Text_IO;
 with GNATCOLL.Traces;
 
 with Global;
@@ -15,22 +13,24 @@ package body Altimeter is
                                       Stream    => Global.Standard_Error);
 
    use type Ada.Real_Time.Time;
-   use type Thrusters.State;
+   use type Shared_Types.Altitude;
+   use type Shared_Types.State;
+   use type Shared_Types.Velocity;
 
    package Altimeter_Store is new
-     Task_Safe_Store (Stored_Type   => Altitude,
+     Task_Safe_Store (Stored_Type   => Shared_Types.Altitude,
                       Initial_Value => Initial_Altitude);
 
    package Velocity_Store  is new
-     Task_Safe_Store (Stored_Type   => Velocity,
+     Task_Safe_Store (Stored_Type   => Shared_Types.Velocity,
                       Initial_Value => Initial_Velocity);
 
    task Radar_Simulator;
 
    task body Radar_Simulator is
-      Next_Cycle   : Ada.Real_Time.Time := Global.Start_Time;
-      Altitude_Now : Altitude           := Altimeter_Store.Get;
-      Velocity_Now : Velocity           := Velocity_Store.Get;
+      Next_Cycle   : Ada.Real_Time.Time    := Global.Start_Time;
+      Altitude_Now : Shared_Types.Altitude := Altimeter_Store.Get;
+      Velocity_Now : Shared_Types.Velocity := Velocity_Store.Get;
    begin
       Logger.all.Trace
         (Message =>
@@ -40,18 +40,20 @@ package body Altimeter is
          declare
             T            : constant Float :=
                              Float (Ada.Real_Time.To_Duration (Cycle));
-            Acceleration : constant Velocity :=
-                             (if Thrusters.Current_State = Thrusters.Disabled
-                              then Velocity (Gravity * T)
-                              else Velocity (Thrusters.Acceleration * T));
-            Distance     : constant Altitude :=
-                             Altitude (Float (Velocity_Now) * T);
+            Acceleration : constant Shared_Types.Velocity
+              := (if Thrusters.Current_State = Shared_Types.Disabled
+                  then Shared_Types.Velocity (Gravity * T)
+                  else Shared_Types.Velocity (Thrusters.Acceleration * T));
+            Distance     : constant Shared_Types.Altitude :=
+                             Shared_Types.Altitude (Float (Velocity_Now) * T);
          begin
             Altimeter_Store.Set
               (New_Value =>
-                 Altitude_Now - Altitude'Min (Altitude_Now, Distance));
+                 Altitude_Now
+               - Shared_Types.Altitude'Min (Altitude_Now, Distance));
             Velocity_Store.Set
-              (New_Value => Velocity'Max (0.0, Velocity_Now + Acceleration));
+              (New_Value =>
+                 Shared_Types.Velocity'Max (0.0, Velocity_Now + Acceleration));
 
             Altitude_Now := Altimeter_Store.Get;
             Velocity_Now := Velocity_Store.Get;
@@ -70,42 +72,10 @@ package body Altimeter is
          Logger.all.Trace (E => E);
    end Radar_Simulator;
 
-   function Current_Altitude return Altitude renames Altimeter_Store.Get;
+   function Current_Altitude return Shared_Types.Altitude
+     renames Altimeter_Store.Get;
 
-   function Current_Velocity return Velocity renames Velocity_Store.Get;
-
-   package Altitude_IO is new Ada.Text_IO.Fixed_IO (Num => Altitude);
-   package Velocity_IO is new Ada.Text_IO.Fixed_IO (Num => Velocity);
-
-   function Image (A : Altitude) return String is
-      Result : String := "XXXXXXX.XXX";
-   begin
-      Altitude_IO.Put (To   => Result,
-                       Item => A,
-                       Aft  => 3,
-                       Exp  => 0);
-      return Ada.Strings.Fixed.Trim (Source => Result,
-                                     Side   => Ada.Strings.Left) & " m";
-   end Image;
-
-   function Image (V : Velocity) return String is
-      Result     : String := "-XXXX.XXX";
-      Result_KMH : String := "-XXXX.XXX";
-   begin
-      Velocity_IO.Put (To   => Result,
-                       Item => V,
-                       Aft  => 3,
-                       Exp  => 0);
-      Velocity_IO.Put (To   => Result_KMH,
-                       Item => V * 3.6,
-                       Aft  => 3,
-                       Exp  => 0);
-      return Ada.Strings.Fixed.Trim (Source => Result,
-                                     Side   => Ada.Strings.Left)
-        & " m/s ("
-        & Ada.Strings.Fixed.Trim (Source => Result_KMH,
-                                  Side   => Ada.Strings.Left)
-        & " km/h)";
-   end Image;
+   function Current_Velocity return Shared_Types.Velocity
+     renames Velocity_Store.Get;
 
 end Altimeter;

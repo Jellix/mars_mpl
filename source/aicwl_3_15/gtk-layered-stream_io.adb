@@ -53,6 +53,9 @@ with Interfaces.C.Strings;
 
 package body Gtk.Layered.Stream_IO is
 
+   pragma Warnings (Off, "declaration hides ""Adjustment""");
+   pragma Warnings (Off, "declaration hides ""Widget""");
+
    package body Generic_Modular_IO is
 
       procedure Restore
@@ -91,7 +94,12 @@ package body Gtk.Layered.Stream_IO is
 
    end Generic_Modular_IO;
 
+   pragma Warnings (Off, "declaration of ""Restore"" hides one");
+   pragma Warnings (Off, "declaration of ""Store"" hides one");
    package GUInt_IO       is new Generic_Modular_IO (Guint);
+   pragma Warnings (On, "declaration of ""Store"" hides one");
+   pragma Warnings (On, "declaration of ""Restore"" hides one");
+
    package GUInt16_IO     is new Generic_Modular_IO (Guint16);
    package Unsigned_32_IO is new Generic_Modular_IO (Interfaces.Unsigned_32);
    package Unsigned_64_IO is new Generic_Modular_IO (Interfaces.Unsigned_64);
@@ -184,12 +192,12 @@ package body Gtk.Layered.Stream_IO is
                    Add (Under, Stream'Access).all.Above;
             when Rectangular_Clip_Region_On_Layer =>
                declare
-                  This : Gtk.Layered.Rectangular_Clip_Region.
+                  Region : Gtk.Layered.Rectangular_Clip_Region.
                     Rectangular_Clip_Region_On_Layer renames
                       Gtk.Layered.Rectangular_Clip_Region.
                         Add (Under, Stream'Access).all;
                begin
-                  Under := This.Above;
+                  Under := Region.Above;
                end;
             when Sector_Needle_Layer =>
                Under :=
@@ -460,10 +468,10 @@ package body Gtk.Layered.Stream_IO is
             end;
          when Bagel =>
             declare
-               Arc : Cairo.Ellipses.Ellipse_Parameters;
+               The_Arc : Cairo.Ellipses.Ellipse_Parameters;
             begin
-               Restore (Stream, Arc);
-               Value := (Bagel, Arc);
+               Restore (Stream, The_Arc);
+               Value := (Bagel, The_Arc);
             end;
          when Segment =>
             Value := (Shape => Segment);
@@ -1152,5 +1160,8 @@ package body Gtk.Layered.Stream_IO is
    begin
       Store (Stream, Guint16'(Waveform_Drawing_Method'Pos (Value)));
    end Store;
+
+   pragma Warnings (On, "declaration hides ""Widget""");
+   pragma Warnings (On, "declaration hides ""Adjustment""");
 
 end Gtk.Layered.Stream_IO;

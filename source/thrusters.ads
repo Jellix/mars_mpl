@@ -1,8 +1,8 @@
 -- pragma Profile (Ravenscar);
 -- pragma Partition_Elaboration_Policy (Sequential);
 
-with Landing_Legs;
 with Planets.Parameters;
+with Shared_Types;
 
 package Thrusters is
 
@@ -10,15 +10,13 @@ package Thrusters is
      := -6.0 * Planets.Parameters.Gravity (Of_Planet => Planets.Mars); -- m/s**2
    --  Acceleration of space craft when thrusters are enabled.
 
-   type State is (Disabled, Enabled);
-
    procedure Enable;
    procedure Disable;     --  Disable thrusters due to safe landing velocity.
    procedure Out_Of_Fuel; --  Disabled thrusters as they ran out of fuel.
 
-   procedure Shutdown (Source : Landing_Legs.Legs_Index);
+   procedure Shutdown (Source : Shared_Types.Legs_Index);
 
-   function Current_State return State
+   function Current_State return Shared_Types.State
      with Volatile_Function;
 
 end Thrusters;

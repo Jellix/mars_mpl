@@ -3,19 +3,40 @@ with "GNATColl";
 
 project Mars_Mpl is
 
-   for Main use ("simulator.adb");
    type Build_Kind is
       ("static", "relocatable");
    Library_Type : Build_Kind := external ("LIBRARY_TYPE");
+   type Build_Kind1 is
+      ("static", "relocatable", "static-pic");
+   Xmlada_Build : Build_Kind1 := external ("XMLADA_BUILD");
 
    case Library_Type is
 
       when "static" =>
-         for Source_Dirs use (".", "source", "source/physics", "source/aicwl_3_15");
-         for Object_Dir use "_build";
-         for Exec_Dir use ".";
+
+         case Xmlada_Build is
+
+            when "static" =>
+               for Main use ("gui.adb", "simulator.adb");
+               for Source_Dirs use (".", "source", "source/physics", "source/sim", "source/ui", "source/aicwl_3_15");
+               for Object_Dir use "_build";
+               for Exec_Dir use ".";
+
+            when "relocatable" =>
+               for Main use ("simulator.adb");
+               for Source_Dirs use (".", "source", "source/physics", "source/aicwl_3_15");
+               for Object_Dir use "_build";
+               for Exec_Dir use ".";
+
+            when "static-pic" =>
+               for Main use ("simulator.adb");
+               for Source_Dirs use (".", "source", "source/physics", "source/aicwl_3_15");
+               for Object_Dir use "_build";
+               for Exec_Dir use ".";
+         end case;
 
       when "relocatable" =>
+         for Main use ("simulator.adb");
          for Source_Dirs use (".", "source");
    end case;
 

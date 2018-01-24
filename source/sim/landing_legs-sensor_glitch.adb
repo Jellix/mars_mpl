@@ -46,7 +46,7 @@ package body Sensor_Glitch is
 
    end Task_Control;
 
-   type Control_Objects is array (Legs_Index) of Task_Control;
+   type Control_Objects is array (Shared_Types.Legs_Index) of Task_Control;
    Control_Object : Control_Objects;
 
    task type Spurious_Trigger;
@@ -54,7 +54,7 @@ package body Sensor_Glitch is
    Assign_Leg : Leg_Iterator;
 
    task body Spurious_Trigger is
-      The_Leg      : Legs_Index;
+      The_Leg      : Shared_Types.Legs_Index;
       Activate_At  : Ada.Real_Time.Time;
       Activate_For : Ada.Real_Time.Time_Span;
    begin
@@ -63,25 +63,26 @@ package body Sensor_Glitch is
                                                For_Duration => Activate_For);
 
       delay until Activate_At;
-      Legs_State (The_Leg) := Touched_Down;
+      Legs_State (The_Leg) := Shared_Types.Touched_Down;
       Logger.all.Trace
         (Message =>
            "[" & Global.Clock_Image
-         & "] Landing leg " & Legs_Index'Image (The_Leg) & " triggered.");
+         & "] Landing leg " & Shared_Types.Legs_Index'Image (The_Leg)
+         & " triggered.");
 
       delay until Activate_At + Activate_For;
-      Legs_State (The_Leg) := In_Flight;
+      Legs_State (The_Leg) := Shared_Types.In_Flight;
       Logger.all.Trace
         (Message =>
            "[" & Global.Clock_Image
          & "] Landing leg "
-         & Legs_Index'Image (The_Leg)
+         & Shared_Types.Legs_Index'Image (The_Leg)
          & " triggered for"
          & Integer'Image (Activate_For / Ada.Real_Time.Milliseconds (1))
          & " ms.");
    end Spurious_Trigger;
 
-   type Glitch_Tasks is array (Legs_Index) of Spurious_Trigger;
+   type Glitch_Tasks is array (Shared_Types.Legs_Index) of Spurious_Trigger;
 
    Delay_G        : Random_Delay.Generator;
    Duration_G     : Random_Duration.Generator;
@@ -91,7 +92,7 @@ package body Sensor_Glitch is
    procedure Activate_Glitch is
       Now : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
    begin
-      for The_Leg in Legs_Index'Range loop
+      for The_Leg in Shared_Types.Legs_Index'Range loop
          declare
             Trigger_Offset : constant Glitch_Delay    :=
                                Random_Delay.Random (Gen => Delay_G);
@@ -105,7 +106,7 @@ package body Sensor_Glitch is
               (Message =>
                  "[" & Global.Clock_Image
                & "] Landing leg "
-               & Legs_Index'Image (The_Leg)
+               & Shared_Types.Legs_Index'Image (The_Leg)
                & " scheduled to trigger in"
                & Glitch_Duration'Image (Trigger_Offset)
                & " ms (@"
