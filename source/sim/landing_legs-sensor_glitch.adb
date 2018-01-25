@@ -80,6 +80,9 @@ package body Sensor_Glitch is
          & " triggered for"
          & Integer'Image (Activate_For / Ada.Real_Time.Milliseconds (1))
          & " ms.");
+   exception
+      when E : others =>
+         Logger.all.Trace (E => E);
    end Spurious_Trigger;
 
    type Glitch_Tasks is array (Shared_Types.Legs_Index) of Spurious_Trigger;

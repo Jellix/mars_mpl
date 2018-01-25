@@ -201,4 +201,7 @@ begin
    --  Give the data generating task time to terminate.
    delay until Ada.Real_Time.Clock + Ada.Real_Time.Milliseconds (100);
    Update_Shared_Data (Terminated => True);
+exception
+   when E : others =>
+      Logger.all.Trace (E => E);
 end Simulator;

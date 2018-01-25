@@ -1,8 +1,15 @@
+with GNATCOLL.Traces;
+
 with Global;
 with Thrusters;
 with Task_Safe_Store;
 
 package body Engine is
+
+   Logger : constant GNATCOLL.Traces.Trace_Handle :=
+              GNATCOLL.Traces.Create (Unit_Name => "ENG",
+                                      Default   => GNATCOLL.Traces.On,
+                                      Stream    => Global.Standard_Error);
 
    use type Ada.Real_Time.Time;
    use type Shared_Types.Fuel_Mass;
@@ -43,6 +50,9 @@ package body Engine is
 
          Fuel_Store.Set (New_Value => Current_Fuel);
       end loop;
+   exception
+      when E : others =>
+         Logger.all.Trace (E => E);
    end Engine_Task;
 
    procedure Shutdown is
