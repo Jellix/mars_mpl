@@ -1,3 +1,6 @@
+--  pragma Profile (Ravenscar);
+--  pragma Partition_Elaboration_Policy (Sequential);
+
 package Shared_Types
   with Pure => True
 is

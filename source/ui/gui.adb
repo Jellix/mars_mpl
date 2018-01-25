@@ -274,10 +274,9 @@ procedure GUI is
                                        Spacing     => 0);
       begin
          Window.Add (Widget => Box);
-         Box.all.Pack_Start (Child =>
-                               Create_Sensor_Signals_Frame (Window => Window));
-         Box.all.Pack_Start (Child => Create_Timeline_Frame (Window => Window));
-         Box.all.Pack_Start (Child => Create_Button_Frame (Window => Window));
+         Box.all.Pack_Start (Child => Window.Create_Sensor_Signals_Frame);
+         Box.all.Pack_Start (Child => Window.Create_Timeline_Frame);
+         Box.all.Pack_Start (Child => Window.Create_Button_Frame);
       end;
    end Initialize;
 
@@ -308,8 +307,7 @@ begin
          Update_State := Shared_Sensor_Data.Current_State.Get;
 
          if not Update_State.Terminated then
-            Feed_Values (Win          => Win.all,
-                         Update_State => Update_State);
+            Win.all.Feed_Values (Update_State => Update_State);
             Last_Update := Ada.Real_Time.Clock;
          else
             Win.all.Oscilloscope.all.Set_Time
@@ -317,9 +315,8 @@ begin
                Stamp   => Last_Update);
          end if;
 
-         Gtk.Widget.Set_Sensitive
-           (Widget    => Win.all.Start_Button,
-            Sensitive => GUI_Callbacks.SIM_Pid = GNAT.OS_Lib.Invalid_Pid);
+         Win.all.Start_Button.all.Set_Sensitive
+           (Sensitive => GUI_Callbacks.SIM_Pid = GNAT.OS_Lib.Invalid_Pid);
 
          while Gtk.Main.Events_Pending loop
             if Gtk.Main.Main_Iteration_Do (Blocking => False) then

@@ -1,6 +1,3 @@
--- pragma Profile (Ravenscar);
--- pragma Partition_Elaboration_Policy (Sequential);
-
 with Ada.Real_Time;
 pragma Elaborate_All (Ada.Real_Time);
 

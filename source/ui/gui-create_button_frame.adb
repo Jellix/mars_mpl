@@ -26,20 +26,12 @@ begin
    Button_Box.all.Add (Widget => Abort_Button);
    Button_Box.all.Add (Widget => Exit_Button);
 
-   GUI_Callbacks.Buttons_CB.Connect
-     (Widget => Start_Button.all'Unrestricted_Access,
-      Name   => "clicked",
-      Cb     => GUI_Callbacks.SIM_Start'Access);
-
-   GUI_Callbacks.Buttons_CB.Connect
-     (Widget => Abort_Button.all'Unrestricted_Access,
-      Name   => "clicked",
-      Cb     => GUI_Callbacks.SIM_Abort'Access);
-
-   GUI_Callbacks.Buttons_CB.Connect
-     (Widget => Exit_Button.all'Unrestricted_Access,
-      Name   => "clicked",
-      Cb     => GUI_Callbacks.Exit_Main'Access);
+   Start_Button.all.On_Clicked (Call  => GUI_Callbacks.SIM_Start'Access,
+                                After => True);
+   Abort_Button.all.On_Clicked (Call  => GUI_Callbacks.SIM_Abort'Access,
+                                After => True);
+   Exit_Button.all.On_Clicked (Call  => GUI_Callbacks.Exit_Main'Access,
+                               After => True);
 
    return Button_Box;
 end Create_Button_Frame;

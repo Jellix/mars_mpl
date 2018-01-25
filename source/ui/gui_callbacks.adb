@@ -1,6 +1,7 @@
 with GNATCOLL.Traces;
 
 with Global;
+with Shared_Sensor_Data;
 
 package body GUI_Callbacks is
 
@@ -74,5 +75,18 @@ package body GUI_Callbacks is
 
       SIM_Pid := Pid;
    end SIM_Start;
+
+   function Switch_Bug (Self  : access Gtk.Switch.Gtk_Switch_Record'Class;
+                        State : Boolean) return Boolean
+   is
+      pragma Unreferenced (Self);
+   begin
+      Shared_Sensor_Data.Bug_Enabled := State;
+      Logger.all.Trace
+        (Message =>
+           "[" & Global.Clock_Image & "] TDM bug "
+         & (if State then "en" else "dis") & "abled.");
+      return False;
+   end Switch_Bug;
 
 end GUI_Callbacks;

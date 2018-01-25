@@ -1,5 +1,6 @@
 with Gtk.Frame;
 with Gtk.Label;
+with Gtk.Switch;
 
 separate (GUI)
 function Create_Sensor_Signals_Frame
@@ -16,27 +17,27 @@ is
               Gtk.Box.Gtk_Vbox_New (Homogeneous => False,
                                     Spacing     => 0);
 
-      function Labeled_LED
-        (The_LED     : not null access Gtk.Widget.Gtk_Widget_Record'Class;
+      function Labeled_Widget
+        (Widget      : not null access Gtk.Widget.Gtk_Widget_Record'Class;
          Description : String) return not null access
         Gtk.Widget.Gtk_Widget_Record'Class;
 
-      function Labeled_LED
-        (The_LED     : not null access Gtk.Widget.Gtk_Widget_Record'Class;
+      function Labeled_Widget
+        (Widget      : not null access Gtk.Widget.Gtk_Widget_Record'Class;
          Description : String) return not null access
         Gtk.Widget.Gtk_Widget_Record'Class
       is
-         LED_Box : constant Gtk.Box.Gtk_Box :=
-                     Gtk.Box.Gtk_Hbox_New (Homogeneous => True,
-                                           Spacing     => 0);
-         Label   : constant Gtk.Label.Gtk_Label :=
-                     Gtk.Label.Gtk_Label_New (Str => Description);
+         Widget_Box : constant Gtk.Box.Gtk_Box :=
+                        Gtk.Box.Gtk_Hbox_New (Homogeneous => True,
+                                              Spacing     => 0);
+         Label      : constant Gtk.Label.Gtk_Label :=
+                        Gtk.Label.Gtk_Label_New (Str => Description);
       begin
-         LED_Box.all.Pack_Start (Label);
-         LED_Box.all.Pack_Start (The_LED);
+         Box.all.Pack_Start (Label);
+         Box.all.Pack_Start (Widget);
 
-         return LED_Box;
-      end Labeled_LED;
+         return Widget_Box;
+      end Labeled_Widget;
    begin
       Box.all.Set_Size_Request (Width  => 100,
                                 Height => 100);
@@ -52,8 +53,8 @@ is
                Border_Shadow => Gtk.Enums.Shadow_Etched_Out);
             Box.all.Pack_Start
               (Child =>
-                 Labeled_LED
-                   (The_LED     => Led,
+                 Labeled_Widget
+                   (Widget      => Led,
                     Description =>
                       "Landing Leg"
                     & Natural'Image
@@ -71,23 +72,21 @@ is
             Off_Color     => Colors.Grey,
             Border_Shadow => Gtk.Enums.Shadow_Etched_Out);
          Box.all.Pack_Start
-           (Child => Labeled_LED (The_LED     => Led,
-                                  Description => "Thruster"));
+           (Child => Labeled_Widget (Widget     => Led,
+                                     Description => "Thruster"));
          Window.Elements.Thruster_Led := Led;
       end;
 
       declare
-         Led : Gtk.Gauge.LED_Round.Gtk_Gauge_LED_Round;
+         Bug_Switch : Gtk.Switch.Gtk_Switch;
       begin
-         Gtk.Gauge.LED_Round.Gtk_New
-           (Widget        => Led,
-            On_Color      => Colors.Red,
-            Off_Color     => Colors.Green,
-            Border_Shadow => Gtk.Enums.Shadow_Etched_Out);
+         Gtk.Switch.Gtk_New (Self => Bug_Switch);
          Box.all.Pack_Start
-           (Child => Labeled_LED (The_LED     => Led,
-                                  Description => "Bug"));
-         Led.all.Set_State (Shared_Sensor_Data.Bug_Enabled);
+           (Child => Labeled_Widget (Widget      => Bug_Switch,
+                                     Description => "Bug"));
+         Bug_Switch.all.Set_State (State => Shared_Sensor_Data.Bug_Enabled);
+         Bug_Switch.all.On_State_Set (Call  => GUI_Callbacks.Switch_Bug'Access,
+                                      After => False);
       end;
 
       return Box;
@@ -111,10 +110,9 @@ begin
          VBox2.all.Pack_Start (Child => Create_LEDs);
       end;
 
-      HBox.all.Pack_Start (Child => Create_Fuel_Frame (Window => Window));
-      HBox.all.Pack_Start (Child => Create_Velocity_Frame (Window => Window));
-      HBox.all.Pack_Start
-        (Child => Create_Altitude_Frame (Window => Window));
+      HBox.all.Pack_Start (Child => Window.Create_Fuel_Frame);
+      HBox.all.Pack_Start (Child => Window.Create_Velocity_Frame);
+      HBox.all.Pack_Start (Child => Window.Create_Altitude_Frame);
    end;
 
    return Frame;

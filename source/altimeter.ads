@@ -1,5 +1,5 @@
--- pragma Profile (Ravenscar);
--- pragma Partition_Elaboration_Policy (Sequential);
+--  pragma Profile (Ravenscar);
+--  pragma Partition_Elaboration_Policy (Sequential);
 
 with Ada.Real_Time;
 with Planets.Parameters;

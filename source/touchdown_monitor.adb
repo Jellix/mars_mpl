@@ -134,8 +134,9 @@ package body Touchdown_Monitor is
             -- the actual result.
             -- Set indicator state only once.
             if
-              (Shared_Sensor_Data.Bug_Enabled or else Event_Enabled) and then
-            -- Bug is here.
+              (Shared_Sensor_Data.Bug_Enabled or else Event_Enabled)
+              -- Bug is here.
+              and then
               Last_Indicator    = Shared_Types.Touched_Down and then
               Current_Indicator = Shared_Types.Touched_Down
             then

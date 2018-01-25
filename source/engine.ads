@@ -1,3 +1,6 @@
+--  pragma Profile (Ravenscar);
+--  pragma Partition_Elaboration_Policy (Sequential);
+
 with Ada.Real_Time;
 
 with Shared_Types;
