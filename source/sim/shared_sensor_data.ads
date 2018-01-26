@@ -19,7 +19,14 @@ is
       procedure Set (Data : in State);
       function  Get return State;
    private
-      The_Blob : State;
+      The_Blob : State :=
+                   State'(Legs       => (others => Shared_Types.In_Flight),
+                          Thruster   => Shared_Types.Disabled,
+                          Altitude   => 0.0,
+                          Velocity   => 0.0,
+                          Fuel       => 0.0,
+                          Time_Stamp => 0.0,
+                          Terminated => False);
    end Current_State;
 
    Bug_Enabled : Boolean := False;

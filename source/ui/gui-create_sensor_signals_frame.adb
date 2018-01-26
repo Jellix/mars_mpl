@@ -33,8 +33,8 @@ is
          Label      : constant Gtk.Label.Gtk_Label :=
                         Gtk.Label.Gtk_Label_New (Str => Description);
       begin
-         Box.all.Pack_Start (Label);
-         Box.all.Pack_Start (Widget);
+         Widget_Box.all.Pack_Start (Label);
+         Widget_Box.all.Pack_Start (Widget);
 
          return Widget_Box;
       end Labeled_Widget;

@@ -99,7 +99,7 @@ procedure GUI is
 
    Update_Interval : constant Ada.Real_Time.Time_Span :=
                        Ada.Real_Time.Milliseconds (1);
-   -- GUI update frequency if no events happen.
+   -- GUI update frequency.
 
    type Leg_Switches is
      array (Shared_Types.Legs_Index) of Gtk.Gauge.LED_Round.Gtk_Gauge_LED_Round;
@@ -288,11 +288,8 @@ begin
    Gtk.Main.Init;
    Win := new Main_Window_Record;
    Initialize (Window => Win.all);
-
-   GUI_Callbacks.Windows_CB.Connect
-     (Widget => Win.all'Unrestricted_Access,
-      Name   => "destroy",
-      Cb     => GUI_Callbacks.Exit_Main'Access);
+   Win.all.On_Delete_Event (Call  => GUI_Callbacks.Exit_Main'Access,
+                            After => True);
 
    Win.all.Show_All;
 
@@ -315,8 +312,19 @@ begin
                Stamp   => Last_Update);
          end if;
 
-         Win.all.Start_Button.all.Set_Sensitive
-           (Sensitive => GUI_Callbacks.SIM_Pid = GNAT.OS_Lib.Invalid_Pid);
+         declare
+            Child_Process_Running : constant Boolean
+              := GUI_Callbacks.SIM_Pid /= GNAT.OS_Lib.Invalid_Pid;
+         begin
+            Win.all.Start_Button.all.Set_Sensitive
+              (Sensitive => not Child_Process_Running);
+
+            --  There might be a simulator running, but as we don't know its
+            --  Process_Id at this point, we can't send it a kill signal anyway,
+            --  thus there's no point in enabling the Abort button.
+            Win.all.Abort_Button.all.Set_Sensitive
+              (Sensitive => Child_Process_Running);
+         end;
 
          while Gtk.Main.Events_Pending loop
             if Gtk.Main.Main_Iteration_Do (Blocking => False) then

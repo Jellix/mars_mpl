@@ -21,11 +21,14 @@ package body GUI_Callbacks is
       Quit_GUI;
    end Exit_Main;
 
-   procedure Exit_Main (Win : access Gtk.Window.Gtk_Window_Record'Class)
+   function Exit_Main (Widget : access Gtk.Widget.Gtk_Widget_Record'Class;
+                       Event  : in     Gdk.Event.Gdk_Event) return Boolean
    is
-      pragma Unreferenced (Win);
+      pragma Unreferenced (Event);
+      pragma Unreferenced (Widget);
    begin
       Quit_GUI;
+      return False; --  continue event processing chain
    end Exit_Main;
 
    procedure Quit_GUI is
