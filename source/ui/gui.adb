@@ -137,15 +137,15 @@ procedure GUI is
      (Window : in out Main_Window_Record'Class) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class;
 
-   function Create_Button_Frame
-     (Window : in out Main_Window_Record'Class) return not null access
-     Gtk.Widget.Gtk_Widget_Record'Class;
-
    function Create_Fuel_Frame
      (Window : in out Main_Window_Record'Class) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class;
 
    function Create_Sensor_Signals_Frame
+     (Window : in out Main_Window_Record'Class) return not null access
+     Gtk.Widget.Gtk_Widget_Record'Class;
+
+   function Create_Simulation_Frame
      (Window : in out Main_Window_Record'Class) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class;
 
@@ -162,15 +162,15 @@ procedure GUI is
      (Window : in out Main_Window_Record'Class) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class is separate;
 
-   function Create_Button_Frame
-     (Window : in out Main_Window_Record'Class) return not null access
-     Gtk.Widget.Gtk_Widget_Record'Class is separate;
-
    function Create_Fuel_Frame
      (Window : in out Main_Window_Record'Class) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class is separate;
 
    function Create_Sensor_Signals_Frame
+     (Window : in out Main_Window_Record'Class) return not null access
+     Gtk.Widget.Gtk_Widget_Record'Class is separate;
+
+   function Create_Simulation_Frame
      (Window : in out Main_Window_Record'Class) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class is separate;
 
@@ -276,7 +276,7 @@ procedure GUI is
          Window.Add (Widget => Box);
          Box.all.Pack_Start (Child => Window.Create_Sensor_Signals_Frame);
          Box.all.Pack_Start (Child => Window.Create_Timeline_Frame);
-         Box.all.Pack_Start (Child => Window.Create_Button_Frame);
+         Box.all.Pack_Start (Child => Window.Create_Simulation_Frame);
       end;
    end Initialize;
 

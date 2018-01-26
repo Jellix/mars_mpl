@@ -77,18 +77,6 @@ is
          Window.Elements.Thruster_Led := Led;
       end;
 
-      declare
-         Bug_Switch : Gtk.Switch.Gtk_Switch;
-      begin
-         Gtk.Switch.Gtk_New (Self => Bug_Switch);
-         Box.all.Pack_Start
-           (Child => Labeled_Widget (Widget      => Bug_Switch,
-                                     Description => "Bug"));
-         Bug_Switch.all.Set_State (State => Shared_Sensor_Data.Bug_Enabled);
-         Bug_Switch.all.On_State_Set (Call  => GUI_Callbacks.Switch_Bug'Access,
-                                      After => False);
-      end;
-
       return Box;
    end Create_LEDs;
 

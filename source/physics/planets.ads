@@ -1,4 +1,6 @@
-package Planets with Pure => True is
+package Planets
+  with Pure => True
+is
 
    type Planet_Name is
      (Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune, Pluto);

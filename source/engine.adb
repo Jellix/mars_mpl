@@ -1,6 +1,7 @@
 with GNATCOLL.Traces;
 
 with Global;
+with Parametrization;
 with Thrusters;
 with Task_Safe_Store;
 
@@ -17,7 +18,7 @@ package body Engine is
 
    package Fuel_Store is
      new Task_Safe_Store (Stored_Type   => Shared_Types.Fuel_Mass,
-                          Initial_Value => 64.0);
+                          Initial_Value => Parametrization.Initial_Fuel_Mass);
 
    function Remaining_Fuel return Shared_Types.Fuel_Mass is
    begin
@@ -37,8 +38,8 @@ package body Engine is
          Current_Fuel := Fuel_Store.Get;
 
          if Thrusters.Current_State = Shared_Types.Enabled then
-            if Current_Fuel > Flow_Rate then
-               Current_Fuel := Current_Fuel - Flow_Rate;
+            if Current_Fuel > Parametrization.Fuel_Flow_Rate then
+               Current_Fuel := Current_Fuel - Parametrization.Fuel_Flow_Rate;
             else
                Current_Fuel := 0.0;
             end if;

@@ -2,7 +2,8 @@
 --  pragma Partition_Elaboration_Policy (Sequential);
 
 package Shared_Types
-  with Pure => True
+  with Pure         => True,
+       Remote_Types => True
 is
 
    --  Altimeter

@@ -32,6 +32,7 @@ with Altimeter;
 with Engine;
 with Global;
 with Landing_Legs;
+with Parametrization;
 with Shared_Sensor_Data;
 with Shared_Types;
 with Thrusters;
@@ -131,7 +132,7 @@ begin
          --    be turned off when touchdown is detected by sensors in the
          --    footpads.
          if Powered_Descent then
-            if Current_Velocity < Altimeter.Safe_Landing_Velocity then
+            if Current_Velocity < Parametrization.Safe_Landing_Velocity then
                Thrusters.Disable;
             elsif
               Current_Velocity > Shared_Types.Velocity (Current_Altitude * 0.2)
@@ -159,7 +160,7 @@ begin
       Touchdown_Velocity : constant Shared_Types.Velocity :=
                              Altimeter.Current_Velocity;
    begin
-      if Touchdown_Velocity > Altimeter.Safe_Landing_Velocity then
+      if Touchdown_Velocity > Parametrization.Safe_Landing_Velocity then
          Logger.all.Trace
            (Message =>
               "[" & Global.Clock_Image

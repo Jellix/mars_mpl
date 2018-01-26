@@ -2,6 +2,7 @@ with GNATCOLL.Traces;
 
 with Global;
 with Landing_Legs;
+with Parametrization;
 with Task_Safe_Store;
 with Thrusters;
 
@@ -19,11 +20,11 @@ package body Altimeter is
 
    package Altimeter_Store is new
      Task_Safe_Store (Stored_Type   => Shared_Types.Altitude,
-                      Initial_Value => Initial_Altitude);
+                      Initial_Value => Parametrization.Initial_Altitude);
 
    package Velocity_Store  is new
      Task_Safe_Store (Stored_Type   => Shared_Types.Velocity,
-                      Initial_Value => Initial_Velocity);
+                      Initial_Value => Parametrization.Initial_Velocity);
 
    task Radar_Simulator;
 
@@ -42,8 +43,9 @@ package body Altimeter is
                              Float (Ada.Real_Time.To_Duration (Cycle));
             Acceleration : constant Shared_Types.Velocity
               := (if Thrusters.Current_State = Shared_Types.Disabled
-                  then Shared_Types.Velocity (Gravity * T)
-                  else Shared_Types.Velocity (Thrusters.Acceleration * T));
+                  then Shared_Types.Velocity (Parametrization.Gravity * T)
+                  else Shared_Types.Velocity
+                         (Parametrization.Thruster_Acceleration * T));
             Distance     : constant Shared_Types.Altitude :=
                              Shared_Types.Altitude (Float (Velocity_Now) * T);
          begin
