@@ -1,4 +1,4 @@
-with Ada.Real_Time.Timing_Events;
+with Ada.Real_Time;
 
 with GNATCOLL.Traces;
 
@@ -20,8 +20,6 @@ package body Landing_Legs is
       procedure Trigger_Deploy;
       procedure Trigger_Touchdown;
       procedure Trigger_Shutdown;
-      procedure Trigger_Timeout
-        (Event : in out Ada.Real_Time.Timing_Events.Timing_Event);
 
       entry Wait_For_Event (Old_State : out Task_State;
                             New_State : out Task_State);
@@ -37,7 +35,7 @@ package body Landing_Legs is
 
    Legs_State : All_Legs_State_Atomic;
 
-   Timed_Trigger : Ada.Real_Time.Timing_Events.Timing_Event;
+--     Timed_Trigger : Ada.Real_Time.Timing_Events.Timing_Event;
 
    protected body Task_Control is
 
@@ -62,14 +60,6 @@ package body Landing_Legs is
          State           := Terminated;
          Event_Triggered := True;
       end Trigger_Shutdown;
-
-      procedure Trigger_Timeout
-        (Event : in out Ada.Real_Time.Timing_Events.Timing_Event)
-      is
-         pragma Unreferenced (Event);
-      begin
-         Event_Triggered := True;
-      end Trigger_Timeout;
 
       procedure Trigger_Touchdown is
       begin
@@ -130,11 +120,6 @@ package body Landing_Legs is
       Current_State  : Task_State := Running;
    begin
       Sensor_Glitch.Initialize;
-
-      Ada.Real_Time.Timing_Events.Set_Handler
-        (Event   => Timed_Trigger,
-         At_Time => Global.Start_Time,
-         Handler => Task_Control.Trigger_Timeout'Access);
 
       while Current_State /= Terminated loop
          Task_Control.Wait_For_Event (Old_State => Previous_State,
