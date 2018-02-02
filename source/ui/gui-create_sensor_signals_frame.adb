@@ -16,28 +16,6 @@ is
       Box : constant Gtk.Box.Gtk_Box :=
               Gtk.Box.Gtk_Vbox_New (Homogeneous => False,
                                     Spacing     => 0);
-
-      function Labeled_Widget
-        (Widget      : not null access Gtk.Widget.Gtk_Widget_Record'Class;
-         Description : String) return not null access
-        Gtk.Widget.Gtk_Widget_Record'Class;
-
-      function Labeled_Widget
-        (Widget      : not null access Gtk.Widget.Gtk_Widget_Record'Class;
-         Description : String) return not null access
-        Gtk.Widget.Gtk_Widget_Record'Class
-      is
-         Widget_Box : constant Gtk.Box.Gtk_Box :=
-                        Gtk.Box.Gtk_Hbox_New (Homogeneous => True,
-                                              Spacing     => 0);
-         Label      : constant Gtk.Label.Gtk_Label :=
-                        Gtk.Label.Gtk_Label_New (Str => Description);
-      begin
-         Widget_Box.all.Pack_Start (Label);
-         Widget_Box.all.Pack_Start (Widget);
-
-         return Widget_Box;
-      end Labeled_Widget;
    begin
       Box.all.Set_Size_Request (Width  => 100,
                                 Height => 100);

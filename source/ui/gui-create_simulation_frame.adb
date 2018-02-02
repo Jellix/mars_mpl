@@ -3,6 +3,7 @@ with Gtk.Button_Box;
 with Gtk.Frame;
 with Gtk.Label;
 with Gtk.Switch;
+with Parametrization;
 
 separate (GUI)
 function Create_Simulation_Frame
@@ -20,24 +21,80 @@ begin
       Frame.all.Add (Widget => Container);
 
       declare
-         Bug_Switch : constant Gtk.Switch.Gtk_Switch :=
-                        Gtk.Switch.Gtk_Switch_New;
+         Bug_Switch     : constant Gtk.Switch.Gtk_Switch :=
+                            Gtk.Switch.Gtk_Switch_New;
+         V_Initial      : constant Gtk.GEntry.Gtk_Entry :=
+                            Gtk.GEntry.Gtk_Entry_New;
+         V_Safe_Landing : constant Gtk.GEntry.Gtk_Entry :=
+                            Gtk.GEntry.Gtk_Entry_New;
+         A_Initial      : constant Gtk.GEntry.Gtk_Entry :=
+                            Gtk.GEntry.Gtk_Entry_New;
+         F_Initial      : constant Gtk.GEntry.Gtk_Entry :=
+                            Gtk.GEntry.Gtk_Entry_New;
+         F_Rate         : constant Gtk.GEntry.Gtk_Entry :=
+                            Gtk.GEntry.Gtk_Entry_New;
+         A_Thruster     : constant Gtk.GEntry.Gtk_Entry :=
+                            Gtk.GEntry.Gtk_Entry_New;
       begin
          Bug_Switch.all.Set_State (State => Shared_Sensor_Data.Bug_Enabled);
          Bug_Switch.all.On_State_Set (Call  => GUI_Callbacks.Switch_Bug'Access,
                                       After => False);
+         V_Initial.all.Set_Text
+           (Text =>
+              Shared_Types.IO.Image
+                (Value => Parametrization.Initial_Velocity));
+         V_Safe_Landing.all.Set_Text
+           (Text =>
+              Shared_Types.IO.Image
+                (Value => Parametrization.Safe_Landing_Velocity));
+         A_Initial.all.Set_Text
+           (Text =>
+              Shared_Types.IO.Image
+                (Value => Parametrization.Initial_Altitude));
+         F_Initial.all.Set_Text
+           (Text =>
+              Shared_Types.IO.Image
+                (Value => Parametrization.Initial_Fuel_Mass));
+         F_Rate.all.Set_Text
+           (Text =>
+              Shared_Types.IO.Image
+                (Value => Parametrization.Fuel_Flow_Rate));
+         A_Thruster.all.Set_Text
+           (Text =>
+              Shared_Types.IO.Image
+                (Value => Parametrization.Thruster_Acceleration));
 
          declare
-            Widget_Box : constant Gtk.Box.Gtk_Box :=
-                           Gtk.Box.Gtk_Hbox_New (Homogeneous => False,
-                                                 Spacing     => 0);
-            Label      : constant Gtk.Label.Gtk_Label :=
-                           Gtk.Label.Gtk_Label_New (Str => "TDM Bug");
+            Widget_Box     : constant Gtk.Box.Gtk_Box :=
+                               Gtk.Box.Gtk_Vbox_New (Homogeneous => False,
+                                                     Spacing     => 0);
          begin
-            Widget_Box.all.Pack_Start (Child  => Label,
-                                       Expand => True);
-            Widget_Box.all.Pack_End (Child  => Bug_Switch,
-                                     Expand => False);
+            Widget_Box.all.Pack_Start
+              (Child => Labeled_Widget (Widget      => Bug_Switch,
+                                        Description => "TDM Bug"));
+            Widget_Box.all.Pack_Start
+              (Child => Labeled_Widget (Widget      => V_Initial,
+                                        Description => "Initial Velocity"));
+            Widget_Box.all.Pack_Start
+              (Child =>
+                 Labeled_Widget (Widget      => V_Safe_Landing,
+                                 Description => "Safe Landing Velocity"));
+            Widget_Box.all.Pack_Start
+              (Child =>
+                 Labeled_Widget (Widget      => A_Initial,
+                                 Description => "Initial Altitude"));
+            Widget_Box.all.Pack_Start
+              (Child =>
+                 Labeled_Widget (Widget      => F_Initial,
+                                 Description => "Initial Fuel Mass"));
+            Widget_Box.all.Pack_Start
+              (Child =>
+                 Labeled_Widget (Widget      => F_Rate,
+                                 Description => "Fuel Flow Rate"));
+            Widget_Box.all.Pack_Start
+              (Child =>
+                 Labeled_Widget (Widget      => A_Thruster,
+                                 Description => "Thruster Acceleration"));
 
             Container.all.Pack_Start (Child  => Widget_Box,
                                       Expand => False);

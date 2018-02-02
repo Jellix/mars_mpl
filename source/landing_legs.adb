@@ -35,8 +35,6 @@ package body Landing_Legs is
 
    Legs_State : All_Legs_State_Atomic;
 
---     Timed_Trigger : Ada.Real_Time.Timing_Events.Timing_Event;
-
    protected body Task_Control is
 
       entry Wait_For_Event (Old_State : out Task_State;

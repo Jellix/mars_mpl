@@ -19,6 +19,7 @@ with Gtk.Gauge.Altimeter;
 with Gtk.Gauge.LED_Round;
 with Gtk.Gauge.Round_270;
 with Gtk.GEntry;
+with Gtk.Label;
 with Gtk.Main;
 with Gtk.Meter.Angular_90;
 with Gtk.Missed;
@@ -131,6 +132,11 @@ procedure GUI is
          Fuel_Scale        : Gtk.Meter.Angular_90.Gtk_Meter_Angular_90;
       end record;
    type Main_Window is access all Main_Window_Record'Class;
+
+   function Labeled_Widget
+     (Widget      : not null access Gtk.Widget.Gtk_Widget_Record'Class;
+      Description : String) return not null access
+     Gtk.Widget.Gtk_Widget_Record'Class;
 
    --  Prototypes
    function Create_Altitude_Frame
@@ -279,6 +285,23 @@ procedure GUI is
          Box.all.Pack_Start (Child => Window.Create_Simulation_Frame);
       end;
    end Initialize;
+
+   function Labeled_Widget
+     (Widget      : not null access Gtk.Widget.Gtk_Widget_Record'Class;
+      Description : String) return not null access
+     Gtk.Widget.Gtk_Widget_Record'Class
+   is
+      Widget_Box : constant Gtk.Box.Gtk_Box :=
+                     Gtk.Box.Gtk_Hbox_New (Homogeneous => True,
+                                              Spacing     => 0);
+      Label      : constant Gtk.Label.Gtk_Label :=
+                     Gtk.Label.Gtk_Label_New (Str => Description);
+   begin
+      Widget_Box.all.Pack_Start (Label);
+      Widget_Box.all.Pack_Start (Widget);
+
+      return Widget_Box;
+   end Labeled_Widget;
 
    Win          : Main_Window;
    Update_State : Shared_Sensor_Data.State;
