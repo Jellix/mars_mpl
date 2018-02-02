@@ -18,6 +18,8 @@ package body Altimeter is
    use type Shared_Types.State;
    use type Shared_Types.Velocity;
 
+   pragma Warnings (Off, "instance does not use primitive operation ""*""");
+
    package Altimeter_Store is new
      Task_Safe_Store (Stored_Type   => Shared_Types.Altitude,
                       Initial_Value => Parametrization.Initial_Altitude);
@@ -25,6 +27,8 @@ package body Altimeter is
    package Velocity_Store  is new
      Task_Safe_Store (Stored_Type   => Shared_Types.Velocity,
                       Initial_Value => Parametrization.Initial_Velocity);
+
+   pragma Warnings (On, "instance does not use primitive operation ""*""");
 
    task Radar_Simulator;
 
@@ -39,25 +43,20 @@ package body Altimeter is
 
       while Altitude_Now > 0.0 loop
          declare
-            T        : constant Float :=
-                         Float (Ada.Real_Time.To_Duration (Cycle));
-            Delta_V  : constant Shared_Types.Velocity :=
-                         (if Thrusters.Current_State = Shared_Types.Disabled
-                          then Shared_Types.Velocity (Parametrization.Gravity * T)
-                          else Shared_Types.Velocity (Float (Parametrization.Thruster_Acceleration) * T));
-            Distance : constant Shared_Types.Altitude :=
-                         Shared_Types.Altitude (Float (Velocity_Now) * T);
+            T       : constant Duration := Ada.Real_Time.To_Duration (Cycle);
+            Delta_V : constant Shared_Types.Velocity :=
+                        (if Thrusters.Current_State = Shared_Types.Disabled
+                         then Shared_Types.Velocity (Parametrization.Gravity * Float (T))
+                         else Parametrization.Thruster_Acceleration * T);
+            Delta_A : constant Shared_Types.Altitude := Velocity_Now * T;
          begin
-            Altimeter_Store.Set
-              (New_Value =>
-                 Altitude_Now
-               - Shared_Types.Altitude'Min (Altitude_Now, Distance));
-            Velocity_Store.Set
-              (New_Value =>
-                 Shared_Types.Velocity'Max (0.0, Velocity_Now + Delta_V));
+            Altitude_Now :=
+              Altitude_Now - Shared_Types.Altitude'Min (Altitude_Now, Delta_A);
+            Altimeter_Store.Set (New_Value => Altitude_Now);
 
-            Altitude_Now := Altimeter_Store.Get;
-            Velocity_Now := Velocity_Store.Get;
+            Velocity_Now :=
+              Shared_Types.Velocity'Max (0.0, Velocity_Now + Delta_V);
+            Velocity_Store.Set (New_Value => Velocity_Now);
          end;
 
          delay until Next_Cycle;

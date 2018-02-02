@@ -32,6 +32,18 @@ is
      -2.0 ** 10 .. 2.0 ** 10 - Acceleration_Resolution
        with Size => 32;
 
+   function "*" (A : in Acceleration;
+                 T : in Duration) return Velocity
+     with Inline => True;
+
+   function "*" (V : in Velocity;
+                 T : in Duration) return Altitude
+     with Inline => True;
+
+   function "*" (V     : in Velocity;
+                 Scale : in Float) return Velocity
+     with Inline => True;
+
    type State is (Disabled, Enabled);
 
    --  Engine
@@ -39,5 +51,19 @@ is
    type Fuel_Mass is delta Fuel_Resolution range
      0.0 .. 2.0 ** 7 - Fuel_Resolution
        with Size => 32;
+
+private
+
+   function "*" (A : in Acceleration;
+                 T : in Duration) return Velocity is
+     (Velocity (A * Acceleration (T)));
+
+   function "*" (V : in Velocity;
+                 T : in Duration) return Altitude is
+     (Altitude (V * Velocity (T)));
+
+   function "*" (V     : in Velocity;
+                 Scale : in Float) return Velocity is
+     (Velocity (Float (V) * Scale));
 
 end Shared_Types;

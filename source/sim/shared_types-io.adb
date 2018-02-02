@@ -3,10 +3,14 @@ with Ada.Text_IO;
 
 package body Shared_Types.IO is
 
+   pragma Warnings (Off, "instance does not use primitive operation ""*""");
+
    package Acceleration_IO is new Ada.Text_IO.Fixed_IO (Num => Acceleration);
    package Altitude_IO     is new Ada.Text_IO.Fixed_IO (Num => Altitude);
    package Fuel_IO         is new Ada.Text_IO.Fixed_IO (Num => Fuel_Mass);
    package Velocity_IO     is new Ada.Text_IO.Fixed_IO (Num => Velocity);
+
+   pragma Warnings (On, "instance does not use primitive operation ""*""");
 
    function Image (Value : in Acceleration) return String is
       Result : String := "XXXXXX.XXX";
@@ -50,7 +54,7 @@ package body Shared_Types.IO is
                        Aft  => 3,
                        Exp  => 0);
       Velocity_IO.Put (To   => Result_KMH,
-                       Item => Value * 3.6,
+                       Item => Value * Float'(3.6),
                        Aft  => 3,
                        Exp  => 0);
       return Ada.Strings.Fixed.Trim (Source => Result,

@@ -22,20 +22,22 @@ begin
       Frame.all.Add (Widget => Container);
 
       declare
-         Bug_Switch     : constant Gtk.Switch.Gtk_Switch :=
-                            Gtk.Switch.Gtk_Switch_New;
-         V_Initial      : constant Gtk.GEntry.Gtk_Entry :=
-                            Gtk.GEntry.Gtk_Entry_New;
-         V_Safe_Landing : constant Gtk.GEntry.Gtk_Entry :=
-                            Gtk.GEntry.Gtk_Entry_New;
-         A_Initial      : constant Gtk.GEntry.Gtk_Entry :=
-                            Gtk.GEntry.Gtk_Entry_New;
-         F_Initial      : constant Gtk.GEntry.Gtk_Entry :=
-                            Gtk.GEntry.Gtk_Entry_New;
-         F_Rate         : constant Gtk.GEntry.Gtk_Entry :=
-                            Gtk.GEntry.Gtk_Entry_New;
-         A_Thruster     : constant Gtk.GEntry.Gtk_Entry :=
-                            Gtk.GEntry.Gtk_Entry_New;
+         Bug_Switch       : constant Gtk.Switch.Gtk_Switch :=
+                              Gtk.Switch.Gtk_Switch_New;
+         V_Initial        : constant Gtk.GEntry.Gtk_Entry :=
+                              Gtk.GEntry.Gtk_Entry_New;
+         V_Safe_Landing   : constant Gtk.GEntry.Gtk_Entry :=
+                              Gtk.GEntry.Gtk_Entry_New;
+         V_Target_Landing :  constant Gtk.GEntry.Gtk_Entry :=
+                              Gtk.GEntry.Gtk_Entry_New;
+         A_Initial        : constant Gtk.GEntry.Gtk_Entry :=
+                              Gtk.GEntry.Gtk_Entry_New;
+         F_Initial        : constant Gtk.GEntry.Gtk_Entry :=
+                              Gtk.GEntry.Gtk_Entry_New;
+         F_Rate           : constant Gtk.GEntry.Gtk_Entry :=
+                              Gtk.GEntry.Gtk_Entry_New;
+         A_Thruster       : constant Gtk.GEntry.Gtk_Entry :=
+                              Gtk.GEntry.Gtk_Entry_New;
       begin
          Bug_Switch.all.Set_State (State => Shared_Sensor_Data.Bug_Enabled);
          Bug_Switch.all.On_State_Set (Call  => GUI_Callbacks.Switch_Bug'Access,
@@ -48,6 +50,10 @@ begin
            (Text =>
               Shared_Types.IO.Image
                 (Value => Parametrization.Safe_Landing_Velocity));
+         V_Target_Landing.all.Set_Text
+           (Text =>
+              Shared_Types.IO.Image
+                (Value => Parametrization.Target_Landing_Velocity));
          A_Initial.all.Set_Text
            (Text =>
               Shared_Types.IO.Image
@@ -80,6 +86,10 @@ begin
               (Child =>
                  Labeled_Widget (Widget      => V_Safe_Landing,
                                  Description => "Safe Landing Velocity"));
+            Widget_Box.all.Pack_Start
+              (Child =>
+                 Labeled_Widget (Widget      => V_Target_Landing,
+                                 Description => "Target Landing Velocity"));
             Widget_Box.all.Pack_Start
               (Child =>
                  Labeled_Widget (Widget      => A_Initial,
