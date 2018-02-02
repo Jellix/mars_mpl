@@ -39,15 +39,14 @@ package body Altimeter is
 
       while Altitude_Now > 0.0 loop
          declare
-            T            : constant Float :=
-                             Float (Ada.Real_Time.To_Duration (Cycle));
-            Acceleration : constant Shared_Types.Velocity
-              := (if Thrusters.Current_State = Shared_Types.Disabled
-                  then Shared_Types.Velocity (Parametrization.Gravity * T)
-                  else Shared_Types.Velocity
-                         (Parametrization.Thruster_Acceleration * T));
-            Distance     : constant Shared_Types.Altitude :=
-                             Shared_Types.Altitude (Float (Velocity_Now) * T);
+            T        : constant Float :=
+                         Float (Ada.Real_Time.To_Duration (Cycle));
+            Delta_V  : constant Shared_Types.Velocity :=
+                         (if Thrusters.Current_State = Shared_Types.Disabled
+                          then Shared_Types.Velocity (Parametrization.Gravity * T)
+                          else Shared_Types.Velocity (Float (Parametrization.Thruster_Acceleration) * T));
+            Distance : constant Shared_Types.Altitude :=
+                         Shared_Types.Altitude (Float (Velocity_Now) * T);
          begin
             Altimeter_Store.Set
               (New_Value =>
@@ -55,7 +54,7 @@ package body Altimeter is
                - Shared_Types.Altitude'Min (Altitude_Now, Distance));
             Velocity_Store.Set
               (New_Value =>
-                 Shared_Types.Velocity'Max (0.0, Velocity_Now + Acceleration));
+                 Shared_Types.Velocity'Max (0.0, Velocity_Now + Delta_V));
 
             Altitude_Now := Altimeter_Store.Get;
             Velocity_Now := Velocity_Store.Get;

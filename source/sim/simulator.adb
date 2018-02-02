@@ -160,18 +160,16 @@ begin
       Touchdown_Velocity : constant Shared_Types.Velocity :=
                              Altimeter.Current_Velocity;
    begin
-      if Touchdown_Velocity > Parametrization.Safe_Landing_Velocity then
+      if Touchdown_Velocity > Parametrization.Safe_Landing_Velocity * 1.04 then
          Logger.all.Trace
            (Message =>
               "[" & Global.Clock_Image
-            & "] MISSION FAILURE: MPL crashed on surface!",
-            Color   => GNATCOLL.Traces.Red_Fg);
+            & "] MISSION FAILURE: MPL crashed on surface!");
       else
          Logger.all.Trace
            (Message =>
               "[" & Global.Clock_Image
-            & "] MISSION SUCCESS: MPL touched down safely.",
-            Color   => GNATCOLL.Traces.Green_Fg);
+            & "] MISSION SUCCESS: MPL touched down safely.");
       end if;
    end;
 

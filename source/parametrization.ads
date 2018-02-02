@@ -15,8 +15,11 @@ package Parametrization is
    Fuel_Flow_Rate        : constant Shared_Types.Fuel_Mass
      := 0.044_999_986_886_978_149_414_062_500; -- equals ~4.5 kg/s
 
-   Thruster_Acceleration : constant Float
-     := -6.0 * Planets.Parameters.Gravity (Of_Planet => Planets.Mars); -- m/s**2
+   Thruster_Acceleration : constant Shared_Types.Acceleration :=
+                             Shared_Types.Acceleration
+                               (-6.0 *
+                                Planets.Parameters.Gravity
+                                  (Of_Planet => Planets.Mars)); -- m/s**2
    --  Acceleration of space craft when thrusters are enabled.
 
 end Parametrization;

@@ -3,6 +3,7 @@ with Gtk.Button_Box;
 with Gtk.Frame;
 with Gtk.Label;
 with Gtk.Switch;
+
 with Parametrization;
 
 separate (GUI)
@@ -65,9 +66,9 @@ begin
                 (Value => Parametrization.Thruster_Acceleration));
 
          declare
-            Widget_Box     : constant Gtk.Box.Gtk_Box :=
-                               Gtk.Box.Gtk_Vbox_New (Homogeneous => False,
-                                                     Spacing     => 0);
+            Widget_Box : constant Gtk.Box.Gtk_Box :=
+                           Gtk.Box.Gtk_Vbox_New (Homogeneous => False,
+                                                 Spacing     => 0);
          begin
             Widget_Box.all.Pack_Start
               (Child => Labeled_Widget (Widget      => Bug_Switch,
