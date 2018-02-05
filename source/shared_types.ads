@@ -6,17 +6,6 @@ package Shared_Types
        Remote_Types => True
 is
 
-   --  Altimeter
-   Altitude_Resolution : constant := 1.0 / 2.0 ** 9;
-   type Altitude is delta Altitude_Resolution range
-     0.0 .. 2.0 ** 23 - Altitude_Resolution
-       with Size => 32;
-
-   Velocity_Resolution : constant := 1.0 / 2.0 ** 18;
-   type Velocity is delta Velocity_Resolution range
-     -2.0 ** 10 .. 2.0 ** 13 - Velocity_Resolution
-       with Size => 32;
-
    --  Landing Legs
    type Legs_Index is (LL_000, LL_120, LL_240);
    --  Three landing legs at 0, 120, and 240 degree.
@@ -26,11 +15,40 @@ is
 
    type All_Legs_State is array (Legs_Index) of Leg_State;
 
+   package Meter is
+      F : constant := -2.0 ** 10;
+      L : constant := 2.0 ** 25;
+      R : constant := 1.0 / 2.0 ** 20;
+      S : constant := 64;
+
+      type T is delta R range F .. L - R with Size => S;
+   end Meter;
+
+   --  Altimeter
+   type Altitude is new Meter.T;
+
+   package Meter_Per_Second is
+      F : constant := -2.0 ** 10;
+      L : constant := 2.0 ** 15;
+      R : constant := 1.0 / 2.0 ** 20;
+      S : constant := 64;
+
+      type T is delta R range F .. L - R with Size => S;
+   end Meter_Per_Second;
+
+   type Velocity is new Meter_Per_Second.T;
+
+   package Meter_Per_Square_Second is
+      F : constant := -2.0 ** 10;
+      L : constant := 2.0 ** 10;
+      R : constant := 1.0 / 2.0 ** 20;
+      S : constant := 32;
+
+      type T is delta R range F .. L - R with Size => S;
+   end Meter_Per_Square_Second;
+
    --  Thrusters
-   Acceleration_Resolution : constant := 1.0 / 2 ** 12;
-   type Acceleration is delta Acceleration_Resolution range
-     -2.0 ** 10 .. 2.0 ** 10 - Acceleration_Resolution
-       with Size => 32;
+   type Acceleration is new Meter_Per_Square_Second.T;
 
    function "*" (A : in Acceleration;
                  T : in Duration) return Velocity
@@ -47,10 +65,17 @@ is
    type State is (Disabled, Enabled);
 
    --  Engine
-   Fuel_Resolution : constant := 1.0 / 2.0 ** 25;
-   type Fuel_Mass is delta Fuel_Resolution range
-     0.0 .. 2.0 ** 7 - Fuel_Resolution
-       with Size => 32;
+   package Kilogram is
+      F : constant := 0.0;
+      L : constant := 2.0 ** 7;
+      R : constant := 1.0 / 2.0 ** 25;
+      S : constant := 32;
+
+      type T is delta R range F .. L - R with Size => S;
+   end Kilogram;
+
+   --  Engine
+   type Fuel_Mass is new Kilogram.T;
 
 private
 
