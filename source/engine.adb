@@ -1,7 +1,7 @@
 with GNATCOLL.Traces;
 
 with Global;
-with Parametrization;
+with Shared_Parameters;
 with Thrusters;
 with Task_Safe_Store;
 
@@ -18,7 +18,7 @@ package body Engine is
 
    package Fuel_Store is
      new Task_Safe_Store (Stored_Type   => Shared_Types.Fuel_Mass,
-                          Initial_Value => Parametrization.Initial_Fuel_Mass);
+                          Initial_Value => Shared_Parameters.Initial_Fuel_Mass);
 
    function Remaining_Fuel return Shared_Types.Fuel_Mass is
    begin
@@ -30,6 +30,8 @@ package body Engine is
    task body Engine_Task is
       Next_Cycle   : Ada.Real_Time.Time := Global.Start_Time;
       Current_Fuel : Shared_Types.Fuel_Mass;
+      Fuel_Flow_Rate : constant Shared_Types.Fuel_Mass :=
+                         Shared_Parameters.Fuel_Flow_Rate;
    begin
       loop
          delay until Next_Cycle;
@@ -38,8 +40,8 @@ package body Engine is
          Current_Fuel := Fuel_Store.Get;
 
          if Thrusters.Current_State = Shared_Types.Enabled then
-            if Current_Fuel > Parametrization.Fuel_Flow_Rate then
-               Current_Fuel := Current_Fuel - Parametrization.Fuel_Flow_Rate;
+            if Current_Fuel > Fuel_Flow_Rate then
+               Current_Fuel := Current_Fuel - Fuel_Flow_Rate;
             else
                Current_Fuel := 0.0;
             end if;

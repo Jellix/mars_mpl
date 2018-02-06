@@ -44,7 +44,7 @@ package body GUI_Callbacks is
       end if;
    end Quit_GUI;
 
-   function Set_A_Initial
+   function Set_Initial_Altitude
      (Self  : access Gtk.Widget.Gtk_Widget_Record'Class;
       Event : in Gdk.Event.Gdk_Event_Focus) return Boolean
    is
@@ -80,9 +80,47 @@ package body GUI_Callbacks is
             Include_Unit => False));
 
       return False;
-   end Set_A_Initial;
+   end Set_Initial_Altitude;
 
-   function Set_V_Initial
+   function Set_Initial_Fuel_Mass
+     (Self  : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Event : in Gdk.Event.Gdk_Event_Focus) return Boolean
+   is
+      pragma Unreferenced (Event);
+      GEntry : constant Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry (Self);
+   begin
+      declare
+         function Range_Image return String;
+         function Range_Image return String is
+         begin
+            return
+              Shared_Types.IO.Image
+                (Value        => Shared_Types.Fuel_Mass'First,
+                 Include_Unit => False)
+              & " .. "
+              & Shared_Types.IO.Image
+                  (Value        => Shared_Types.Fuel_Mass'Last,
+                   Include_Unit => False);
+         end Range_Image;
+      begin
+         Shared_Parameters.Initial_Fuel_Mass :=
+           Shared_Types.Fuel_Mass'Value (GEntry.all.Get_Text);
+      exception
+         when Constraint_Error =>
+            Logger.all.Trace
+              (Message => "Bad input for initial altitude. Must be in range "
+               & Range_Image & ".");
+      end;
+
+      GEntry.all.Set_Text
+        (Shared_Types.IO.Image
+           (Value        => Shared_Parameters.Initial_Fuel_Mass,
+            Include_Unit => False));
+
+      return False;
+   end Set_Initial_Fuel_Mass;
+
+   function Set_Initial_Velocity
      (Self  : access Gtk.Widget.Gtk_Widget_Record'Class;
       Event : in Gdk.Event.Gdk_Event_Focus) return Boolean
    is
@@ -116,7 +154,7 @@ package body GUI_Callbacks is
             Include_Unit => False));
 
       return False;
-   end Set_V_Initial;
+   end Set_Initial_Velocity;
 
    procedure SIM_Abort (Button : access Gtk.Button.Gtk_Button_Record'Class)
    is

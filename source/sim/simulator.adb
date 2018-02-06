@@ -32,7 +32,7 @@ with Altimeter;
 with Engine;
 with Global;
 with Landing_Legs;
-with Parametrization;
+with Shared_Parameters;
 with Shared_Sensor_Data;
 with Shared_Types;
 with Thrusters;
@@ -82,6 +82,10 @@ procedure Simulator is
                                      Terminated => Terminated));
    end Update_Shared_Data;
 
+   Target_Landing_Velocity : constant Shared_Types.Velocity :=
+                               Shared_Parameters.Target_Landing_Velocity;
+   Safe_Landing_Velocity   : constant Shared_Types.Velocity :=
+                               Shared_Parameters.Safe_Landing_Velocity;
 begin
    Logger.all.Trace
      (Message => "[" & Global.Clock_Image & "] Starting touchdown monitors...");
@@ -132,7 +136,7 @@ begin
          --    be turned off when touchdown is detected by sensors in the
          --    footpads.
          if Powered_Descent then
-            if Current_Velocity < Parametrization.Target_Landing_Velocity then
+            if Current_Velocity < Target_Landing_Velocity then
                Thrusters.Disable;
             elsif
               Current_Velocity > Shared_Types.Velocity (Current_Altitude * 0.2)
@@ -160,7 +164,7 @@ begin
       Touchdown_Velocity : constant Shared_Types.Velocity :=
                              Altimeter.Current_Velocity;
    begin
-      if Touchdown_Velocity > Parametrization.Safe_Landing_Velocity then
+      if Touchdown_Velocity > Safe_Landing_Velocity then
          Logger.all.Trace
            (Message =>
               "[" & Global.Clock_Image

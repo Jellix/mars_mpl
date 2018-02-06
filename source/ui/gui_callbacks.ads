@@ -23,10 +23,16 @@ package GUI_Callbacks is
    function Switch_Bug (Self  : access Gtk.Switch.Gtk_Switch_Record'Class;
                         State : in Boolean) return Boolean;
 
-   function Set_A_Initial (Self  : access Gtk.Widget.Gtk_Widget_Record'Class;
-                           Event : in Gdk.Event.Gdk_Event_Focus) return Boolean;
+   function Set_Initial_Altitude
+     (Self  : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Event : in Gdk.Event.Gdk_Event_Focus) return Boolean;
 
-   function Set_V_Initial (Self  : access Gtk.Widget.Gtk_Widget_Record'Class;
-                           Event : in Gdk.Event.Gdk_Event_Focus) return Boolean;
+   function Set_Initial_Fuel_Mass
+     (Self  : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Event : in Gdk.Event.Gdk_Event_Focus) return Boolean;
+
+   function Set_Initial_Velocity
+     (Self  : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Event : in Gdk.Event.Gdk_Event_Focus) return Boolean;
 
 end GUI_Callbacks;

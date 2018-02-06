@@ -15,10 +15,6 @@ is
    Frame : constant Gtk.Frame.Gtk_Frame :=
              Gtk.Frame.Gtk_Frame_New (Label => "Simulation control");
 begin
-   --  Initialize the parametrization.
-   Shared_Parameters.Initial_Altitude := Parametrization.Initial_Altitude;
-   Shared_Parameters.Initial_Velocity := Parametrization.Initial_Velocity;
-
    declare
       Container : constant Gtk.Box.Gtk_Box :=
                     Gtk.Box.Gtk_Hbox_New (Homogeneous => False,
@@ -53,42 +49,54 @@ begin
                 (Value        => Shared_Parameters.Initial_Velocity,
                  Include_Unit => False));
          V_Initial.all.On_Focus_Out_Event
-           (Call  => GUI_Callbacks.Set_V_Initial'Access,
+           (Call  => GUI_Callbacks.Set_Initial_Velocity'Access,
             After => True);
 
          V_Safe_Landing.all.Set_Text
            (Text =>
               Shared_Types.IO.Image
-                (Value        => Parametrization.Safe_Landing_Velocity,
+                (Value        => Shared_Parameters.Safe_Landing_Velocity,
                  Include_Unit => False));
+         V_Safe_Landing.all.Set_Editable (Is_Editable => False);
+
          V_Target_Landing.all.Set_Text
            (Text =>
               Shared_Types.IO.Image
-                (Value        => Parametrization.Target_Landing_Velocity,
+                (Value        => Shared_Parameters.Target_Landing_Velocity,
                  Include_Unit => False));
+         V_Target_Landing.all.Set_Editable (Is_Editable => False);
+
          A_Initial.all.Set_Text
            (Text =>
               Shared_Types.IO.Image
                 (Value        => Shared_Parameters.Initial_Altitude,
                  Include_Unit => False));
          A_Initial.all.On_Focus_Out_Event
-           (Call  => GUI_Callbacks.Set_A_Initial'Access,
+           (Call  => GUI_Callbacks.Set_Initial_Altitude'Access,
             After => True);
+
          F_Initial.all.Set_Text
            (Text =>
               Shared_Types.IO.Image
-                (Value        => Parametrization.Initial_Fuel_Mass,
+                (Value        => Shared_Parameters.Initial_Fuel_Mass,
                  Include_Unit => False));
+         F_Initial.all.On_Focus_Out_Event
+           (Call  => GUI_Callbacks.Set_Initial_Fuel_Mass'Access,
+            After => True);
+
          F_Rate.all.Set_Text
            (Text =>
               Shared_Types.IO.Image
-                (Value        => Parametrization.Fuel_Flow_Rate,
+                (Value        => Shared_Parameters.Fuel_Flow_Rate,
                  Include_Unit => False));
+         F_Rate.all.Set_Editable (Is_Editable => False);
+
          A_Thruster.all.Set_Text
            (Text =>
               Shared_Types.IO.Image
                 (Value        => Parametrization.Thruster_Acceleration,
                  Include_Unit => False));
+         A_Thruster.all.Set_Editable (Is_Editable => False);
 
          declare
             Widget_Box : constant Gtk.Box.Gtk_Box :=
