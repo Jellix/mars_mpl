@@ -1,7 +1,11 @@
 with GNATCOLL.Traces;
 
+with Gtk.GEntry;
+
 with Global;
+with Shared_Parameters;
 with Shared_Sensor_Data;
+with Shared_Types.IO;
 
 package body GUI_Callbacks is
 
@@ -39,6 +43,80 @@ package body GUI_Callbacks is
          Aborted := True;
       end if;
    end Quit_GUI;
+
+   function Set_A_Initial
+     (Self  : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Event : in Gdk.Event.Gdk_Event_Focus) return Boolean
+   is
+      pragma Unreferenced (Event);
+      GEntry : constant Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry (Self);
+   begin
+      declare
+         function Range_Image return String;
+         function Range_Image return String is
+         begin
+            return
+              Shared_Types.IO.Image
+                (Value        => Shared_Types.Altitude'First,
+                 Include_Unit => False)
+              & " .. "
+              & Shared_Types.IO.Image
+                  (Value        => Shared_Types.Altitude'Last,
+                   Include_Unit => False);
+         end Range_Image;
+      begin
+         Shared_Parameters.Initial_Altitude :=
+           Shared_Types.Altitude'Value (GEntry.all.Get_Text);
+      exception
+         when Constraint_Error =>
+            Logger.all.Trace
+              (Message => "Bad input for initial altitude. Must be in range "
+               & Range_Image & ".");
+      end;
+
+      GEntry.all.Set_Text
+        (Shared_Types.IO.Image
+           (Value        => Shared_Parameters.Initial_Altitude,
+            Include_Unit => False));
+
+      return False;
+   end Set_A_Initial;
+
+   function Set_V_Initial
+     (Self  : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Event : in Gdk.Event.Gdk_Event_Focus) return Boolean
+   is
+      pragma Unreferenced (Event);
+      GEntry : constant Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry (Self);
+   begin
+      declare
+         function Range_Image return String;
+         function Range_Image return String is
+         begin
+            return
+              Shared_Types.IO.Image (Value        => Shared_Types.Velocity'First,
+                                     Include_Unit => False)
+              & " .. "
+              & Shared_Types.IO.Image (Value        => Shared_Types.Velocity'Last,
+                                       Include_Unit => False);
+         end Range_Image;
+      begin
+         Shared_Parameters.Initial_Velocity :=
+           Shared_Types.Velocity'Value (GEntry.all.Get_Text);
+      exception
+         when Constraint_Error =>
+            Logger.all.Trace
+              (Message => "Bad input for initial velocity. Must be in range "
+               & Range_Image & ".");
+      end;
+
+      GEntry.all.Set_Text
+        (Shared_Types.IO.Image
+           (Value        => Shared_Parameters.Initial_Velocity,
+            Include_Unit => False));
+
+      return False;
+   end Set_V_Initial;
 
    procedure SIM_Abort (Button : access Gtk.Button.Gtk_Button_Record'Class)
    is

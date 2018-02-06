@@ -12,7 +12,8 @@ package body Shared_Types.IO is
 
    pragma Warnings (On, "instance does not use primitive operation ""*""");
 
-   function Image (Value : in Acceleration) return String is
+   function Image (Value        : in Acceleration;
+                   Include_Unit : in Boolean := True) return String is
       Result : String := "XXXXXX.XXX";
    begin
       Acceleration_IO.Put (To   => Result,
@@ -20,21 +21,25 @@ package body Shared_Types.IO is
                            Aft  => 3,
                            Exp  => 0);
       return Ada.Strings.Fixed.Trim (Source => Result,
-                                     Side   => Ada.Strings.Left) & " m/s²";
+                                     Side   => Ada.Strings.Left)
+        & (if Include_Unit then " m/s²" else "");
    end Image;
 
-   function Image (Value : in Altitude) return String is
-      Result : String := "XXXXXXX.XXX";
+   function Image (Value        : in Altitude;
+                   Include_Unit : in Boolean := True) return String is
+      Result : String := "XXXXXXXX.XXX";
    begin
       Altitude_IO.Put (To   => Result,
                        Item => Value,
                        Aft  => 3,
                        Exp  => 0);
       return Ada.Strings.Fixed.Trim (Source => Result,
-                                     Side   => Ada.Strings.Left) & " m";
+                                     Side   => Ada.Strings.Left)
+        & (if Include_Unit then " m" else "");
    end Image;
 
-   function Image (Value : in Fuel_Mass) return String is
+   function Image (Value        : in Fuel_Mass;
+                   Include_Unit : in Boolean := True) return String is
       Result : String := "XXX.XXX";
    begin
       Fuel_IO.Put (To   => Result,
@@ -42,27 +47,22 @@ package body Shared_Types.IO is
                    Aft  => 3,
                    Exp  => 0);
       return Ada.Strings.Fixed.Trim (Source => Result,
-                                     Side   => Ada.Strings.Left) & " kg";
+                                     Side   => Ada.Strings.Left)
+        & (if Include_Unit then " kg" else "");
    end Image;
 
-   function Image (Value : in Velocity) return String is
-      Result     : String := "-XXXX.XXX";
-      Result_KMH : String := "-XXXX.XXX";
+   function Image (Value        : in Velocity;
+                   Include_Unit : in Boolean := True) return String
+   is
+      Result : String := "-XXXX.XXX";
    begin
       Velocity_IO.Put (To   => Result,
                        Item => Value,
                        Aft  => 3,
                        Exp  => 0);
-      Velocity_IO.Put (To   => Result_KMH,
-                       Item => Value * Float'(3.6),
-                       Aft  => 3,
-                       Exp  => 0);
       return Ada.Strings.Fixed.Trim (Source => Result,
                                      Side   => Ada.Strings.Left)
-        & " m/s ("
-        & Ada.Strings.Fixed.Trim (Source => Result_KMH,
-                                  Side   => Ada.Strings.Left)
-        & " km/h)";
+        & (if Include_Unit then " m/s" else "");
    end Image;
 
 end Shared_Types.IO;

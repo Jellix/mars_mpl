@@ -3,6 +3,7 @@ with GNATCOLL.Traces;
 with Global;
 with Landing_Legs;
 with Parametrization;
+with Shared_Parameters;
 with Task_Safe_Store;
 with Thrusters;
 
@@ -22,11 +23,11 @@ package body Altimeter is
 
    package Altimeter_Store is new
      Task_Safe_Store (Stored_Type   => Shared_Types.Altitude,
-                      Initial_Value => Parametrization.Initial_Altitude);
+                      Initial_Value => Shared_Parameters.Initial_Altitude);
 
    package Velocity_Store  is new
      Task_Safe_Store (Stored_Type   => Shared_Types.Velocity,
-                      Initial_Value => Parametrization.Initial_Velocity);
+                      Initial_Value => Shared_Parameters.Initial_Velocity);
 
    pragma Warnings (On, "instance does not use primitive operation ""*""");
 
