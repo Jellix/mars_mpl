@@ -1,40 +1,20 @@
+with Ada.Exceptions;
 with Ada.Real_Time;
-
-with GNAT.OS_Lib;
-with GNATCOLL.Traces;
-
+with Cairo;
+with Gdk.Color;
+with Glib;
 with Global;
-with GUI_Callbacks;
+with Gtk.Box;
+with Gtk.Enums.String_Lists;
+with Gtk.Label;
+with Gtk.Main;
+with Gtk.Missed;
+with GUI.Callbacks;
+with Pango.Cairo.Fonts;
 with Shared_Sensor_Data;
 with Shared_Types.IO;
 
-with Cairo;
-
-with Gdk.Color;
-with Glib;
-
-with Gtk.Box;
-with Gtk.Enums.String_Lists;
-with Gtk.Gauge.Altimeter;
-with Gtk.Gauge.LED_Round;
-with Gtk.Gauge.Round_270;
-with Gtk.GEntry;
-with Gtk.Label;
-with Gtk.Main;
-with Gtk.Meter.Angular_90;
-with Gtk.Missed;
-with Gtk.Oscilloscope;
-with Gtk.Widget;
-with Gtk.Window;
-
-with Pango.Cairo.Fonts;
-
-procedure GUI is
-
-   Logger : constant GNATCOLL.Traces.Trace_Handle
-     := GNATCOLL.Traces.Create (Unit_Name => "GUI",
-                                Default   => GNATCOLL.Traces.On,
-                                Stream    => Global.Standard_Error);
+package body GUI is
 
    use type Ada.Real_Time.Time;
    use type GNAT.OS_Lib.Process_Id;
@@ -87,7 +67,7 @@ procedure GUI is
             new Gtk.Enums.String_Lists.Controlled_String_List'
            ("0" / "1" / "2" / "3" / "4" / "5" / "6" / "7" / "8" / "9"),
          Factor => 10000.0);
-   Fuel_Scale : constant Scaling
+   Fuel_Scale     : constant Scaling
      := (Texts  =>
             new Gtk.Enums.String_Lists.Controlled_String_List'
            ("0" / "20" / "40" / "60" / "80"),
@@ -95,43 +75,12 @@ procedure GUI is
    Velocity_Scale : constant Scaling
      := (Texts  =>
             new Gtk.Enums.String_Lists.Controlled_String_List'
-             ("0" / "20" / "40" / "60" / "80" / "100" / "120" / "140" / "160"),
+           ("0" / "20" / "40" / "60" / "80" / "100" / "120" / "140" / "160"),
          Factor => 160.0);
 
    Update_Interval : constant Ada.Real_Time.Time_Span :=
                        Ada.Real_Time.Milliseconds (1);
    -- GUI update frequency.
-
-   type Leg_Switches is
-     array (Shared_Types.Legs_Index) of Gtk.Gauge.LED_Round.Gtk_Gauge_LED_Round;
-
-   type Dynamic_Elements is
-      record
-         Leg_Led      : Leg_Switches;
-         Thruster_Led : Gtk.Gauge.LED_Round.Gtk_Gauge_LED_Round;
-         Altitude     : Gtk.GEntry.Gtk_Entry;
-         Velocity     : Gtk.GEntry.Gtk_Entry;
-         Fuel         : Gtk.GEntry.Gtk_Entry;
-      end record;
-
-   type Legs_Channels is array (Shared_Types.Legs_Index) of
-     Gtk.Oscilloscope.Channel_Number;
-
-   type Main_Window_Record is new Gtk.Window.Gtk_Window_Record with
-      record
-         Start_Button      : access Gtk.Widget.Gtk_Widget_Record'Class;
-         Abort_Button      : access Gtk.Widget.Gtk_Widget_Record'Class;
-         Elements          : Dynamic_Elements;
-         Oscilloscope      : Gtk.Oscilloscope.Gtk_Oscilloscope;
-         Altitude_Channel  : Gtk.Oscilloscope.Channel_Number;
-         Velocity_Channel  : Gtk.Oscilloscope.Channel_Number;
-         Touchdown_Channel : Legs_Channels;
-         Thruster_Channel  : Gtk.Oscilloscope.Channel_Number;
-         Tachometer        : Gtk.Gauge.Round_270.Gtk_Gauge_Round_270;
-         Altimeter         : Gtk.Gauge.Altimeter.Gtk_Gauge_Altimeter;
-         Fuel_Scale        : Gtk.Meter.Angular_90.Gtk_Meter_Angular_90;
-      end record;
-   type Main_Window is access all Main_Window_Record'Class;
 
    function Labeled_Widget
      (Widget      : not null access Gtk.Widget.Gtk_Widget_Record'Class;
@@ -230,20 +179,18 @@ procedure GUI is
 
       --  Data plots
       declare
-         Plotter : Gtk.Oscilloscope.Gtk_Oscilloscope_Record renames
-                     Gtk.Oscilloscope.Gtk_Oscilloscope_Record
-                       (Win.Oscilloscope.all);
+         Plotter    : Gtk.Oscilloscope.Gtk_Oscilloscope_Record renames
+                        Gtk.Oscilloscope.Gtk_Oscilloscope_Record
+                          (Win.Oscilloscope.all);
          Time_Stamp : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
       begin
          -- Data plot
-         Plotter.Feed
-           (Channel => Win.Altitude_Channel,
-            V       => Glib.Gdouble (Update_State.Altitude),
-            T       => Time_Stamp);
-         Plotter.Feed
-           (Channel => Win.Velocity_Channel,
-            V       => Glib.Gdouble (Update_State.Velocity),
-            T       => Time_Stamp);
+         Plotter.Feed (Channel => Win.Altitude_Channel,
+                       V       => Glib.Gdouble (Update_State.Altitude),
+                       T       => Time_Stamp);
+         Plotter.Feed (Channel => Win.Velocity_Channel,
+                       V       => Glib.Gdouble (Update_State.Velocity),
+                       T       => Time_Stamp);
 
          for Leg in Shared_Types.Legs_Index loop
             declare
@@ -252,10 +199,9 @@ procedure GUI is
                Active : constant Glib.Gdouble :=
                           0.2 * Glib.Gdouble (Boolean'Pos (Update_State.Legs (Leg) = Shared_Types.Touched_Down));
             begin
-               Plotter.Feed
-                 (Channel => Win.Touchdown_Channel (Leg),
-                  V       => Offset + Active,
-                  T       => Time_Stamp);
+               Plotter.Feed (Channel => Win.Touchdown_Channel (Leg),
+                             V       => Offset + Active,
+                             T       => Time_Stamp);
             end;
          end loop;
 
@@ -293,7 +239,7 @@ procedure GUI is
    is
       Widget_Box : constant Gtk.Box.Gtk_Box :=
                      Gtk.Box.Gtk_Hbox_New (Homogeneous => True,
-                                              Spacing     => 0);
+                                           Spacing     => 0);
       Label      : constant Gtk.Label.Gtk_Label :=
                      Gtk.Label.Gtk_Label_New (Str => Description);
    begin
@@ -303,62 +249,61 @@ procedure GUI is
       return Widget_Box;
    end Labeled_Widget;
 
-   Win          : Main_Window;
-   Update_State : Shared_Sensor_Data.State;
-begin
-   GUI_Callbacks.Aborted := False;
-
-   Gtk.Main.Init;
-   Win := new Main_Window_Record;
-   Initialize (Window => Win.all);
-   Win.all.On_Delete_Event (Call  => GUI_Callbacks.Exit_Main'Access,
-                            After => True);
-
-   Win.all.Show_All;
-
-   declare
-      Next_Update : Ada.Real_Time.Time := Global.Start_Time;
-      Last_Update : Ada.Real_Time.Time := Global.Start_Time;
+   procedure Run is
+      Win          : Main_Window;
+      Update_State : Shared_Sensor_Data.State;
    begin
-      Main_Loop :
-      loop
-         delay until Next_Update;
-         Next_Update := Next_Update + Update_Interval;
-         Update_State := Shared_Sensor_Data.Current_State.Get;
+      Aborted := False;
 
-         if not Update_State.Terminated then
-            Win.all.Feed_Values (Update_State => Update_State);
-            Last_Update := Ada.Real_Time.Clock;
-         else
+      Gtk.Main.Init;
+      Win := new Main_Window_Record;
+      Initialize (Window => Win.all);
+      Win.all.On_Delete_Event (Call  => Callbacks.Exit_Main'Access,
+                               After => True);
+
+      Win.all.Show_All;
+
+      declare
+         Next_Update : Ada.Real_Time.Time := Global.Start_Time;
+         Last_Update : Ada.Real_Time.Time := Global.Start_Time;
+      begin
+         Main_Loop :
+         loop
+            delay until Next_Update;
+            Next_Update := Next_Update + Update_Interval;
+            Update_State := Shared_Sensor_Data.Current_State.Get;
+
+            if not Update_State.Terminated then
+               Win.all.Feed_Values (Update_State => Update_State);
+               Last_Update := Ada.Real_Time.Clock;
+            end if;
+
             Win.all.Oscilloscope.all.Set_Time
               (Sweeper => Gtk.Oscilloscope.Lower,
                Stamp   => Last_Update);
-         end if;
 
-         declare
-            Child_Process_Running : constant Boolean
-              := GUI_Callbacks.SIM_Pid /= GNAT.OS_Lib.Invalid_Pid;
-         begin
             Win.all.Start_Button.all.Set_Sensitive
-              (Sensitive => not Child_Process_Running);
+              (Sensitive => not Simulator_Running);
 
             --  There might be a simulator running, but as we don't know its
             --  Process_Id at this point, we can't send it a kill signal anyway,
             --  thus there's no point in enabling the Abort button.
             Win.all.Abort_Button.all.Set_Sensitive
-              (Sensitive => Child_Process_Running);
-         end;
+              (Sensitive => Simulator_Running);
 
-         while Gtk.Main.Events_Pending loop
-            if Gtk.Main.Main_Iteration_Do (Blocking => False) then
-               null;
-            end if;
-         end loop;
+            while Gtk.Main.Events_Pending loop
+               if Gtk.Main.Main_Iteration_Do (Blocking => False) then
+                  null;
+               end if;
+            end loop;
 
-         exit Main_Loop when GUI_Callbacks.Aborted;
-      end loop Main_Loop;
-   end;
-exception
-   when E : others =>
-      Logger.all.Trace (E => E);
+            exit Main_Loop when Aborted;
+         end loop Main_Loop;
+      end;
+   exception
+      when E : others =>
+         Global.Trace (Unit_Name => "GUI",
+                       Message   => Ada.Exceptions.Exception_Message (E));
+   end Run;
+
 end GUI;

@@ -1,20 +1,10 @@
-with GNATCOLL.Traces;
-
-with Gtk.GEntry;
-
 with Global;
+with Gtk.GEntry;
 with Shared_Parameters;
 with Shared_Sensor_Data;
 with Shared_Types.IO;
 
-package body GUI_Callbacks is
-
-   Logger : constant GNATCOLL.Traces.Trace_Handle
-     := GNATCOLL.Traces.Create (Unit_Name => "GUI",
-                                Default   => GNATCOLL.Traces.On,
-                                Stream    => Global.Standard_Error);
-
-   use type GNAT.OS_Lib.Process_Id;
+package body GUI.Callbacks is
 
    procedure Quit_GUI;
 
@@ -38,8 +28,8 @@ package body GUI_Callbacks is
    procedure Quit_GUI is
    begin
       if not Aborted then
-         Logger.all.Trace
-           (Message => "[" & Global.Clock_Image & "] Quitting GUI...");
+         Global.Trace (Unit_Name => "GUI",
+                       Message   => "Quitting GUI...");
          Aborted := True;
       end if;
    end Quit_GUI;
@@ -69,8 +59,9 @@ package body GUI_Callbacks is
            Shared_Types.Altitude'Value (GEntry.all.Get_Text);
       exception
          when Constraint_Error =>
-            Logger.all.Trace
-              (Message => "Bad input for initial altitude. Must be in range "
+            Global.Trace
+              (Unit_Name => "GUI",
+               Message   => "Bad input for initial altitude. Must be in range "
                & Range_Image & ".");
       end;
 
@@ -107,8 +98,9 @@ package body GUI_Callbacks is
            Shared_Types.Fuel_Mass'Value (GEntry.all.Get_Text);
       exception
          when Constraint_Error =>
-            Logger.all.Trace
-              (Message => "Bad input for initial altitude. Must be in range "
+            Global.Trace
+              (Unit_Name => "GUI",
+               Message   => "Bad input for initial altitude. Must be in range "
                & Range_Image & ".");
       end;
 
@@ -143,8 +135,9 @@ package body GUI_Callbacks is
            Shared_Types.Velocity'Value (GEntry.all.Get_Text);
       exception
          when Constraint_Error =>
-            Logger.all.Trace
-              (Message => "Bad input for initial velocity. Must be in range "
+            Global.Trace
+              (Unit_Name => "GUI",
+               Message   => "Bad input for initial velocity. Must be in range "
                & Range_Image & ".");
       end;
 
@@ -161,9 +154,9 @@ package body GUI_Callbacks is
       pragma Unreferenced (Button);
    begin
       if SIM_Pid /= GNAT.OS_Lib.Invalid_Pid then
-         Logger.all.Trace
-           (Message =>
-              "[" & Global.Clock_Image & "] Aborting simulator.exe... (PID ="
+         Global.Trace
+           (Unit_Name => "GUI",
+            Message   => "Aborting simulator.exe... (PID ="
             & Integer'Image (GNAT.OS_Lib.Pid_To_Integer (Pid => SIM_Pid))
             & ")");
       end if;
@@ -182,13 +175,12 @@ package body GUI_Callbacks is
                                              Output_File  => "CON");
 
       if Pid = GNAT.OS_Lib.Invalid_Pid then
-         Logger.all.Trace
-           (Message =>
-              "[" & Global.Clock_Image & "] Failed to start simulator.exe!");
+         Global.Trace (Unit_Name => "GUI",
+                       Message   => "Failed to start simulator.exe!");
       else
-         Logger.all.Trace
-           (Message =>
-              "[" & Global.Clock_Image & "] Simulator.exe started (PID ="
+         Global.Trace
+           (Unit_Name => "GUI",
+            Message   => "Simulator.exe started (PID ="
             & Integer'Image (GNAT.OS_Lib.Pid_To_Integer (Pid => Pid)) & ")");
       end if;
 
@@ -201,11 +193,10 @@ package body GUI_Callbacks is
       pragma Unreferenced (Self);
    begin
       Shared_Sensor_Data.Bug_Enabled := State;
-      Logger.all.Trace
-        (Message =>
-           "[" & Global.Clock_Image & "] TDM bug "
-         & (if State then "en" else "dis") & "abled.");
+      Global.Trace
+        (Unit_Name => "GUI",
+         Message   => "TDM bug " & (if State then "en" else "dis") & "abled.");
       return False;
    end Switch_Bug;
 
-end GUI_Callbacks;
+end GUI.Callbacks;

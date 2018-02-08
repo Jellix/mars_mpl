@@ -24,10 +24,8 @@
 --  pragma Profile (Ravenscar);
 --  pragma Partition_Elaboration_Policy (Sequential);
 
+with Ada.Exceptions;
 with Ada.Real_Time;
-
-with GNATCOLL.Traces;
-
 with Altimeter;
 with Engine;
 with Global;
@@ -39,11 +37,6 @@ with Thrusters;
 with Touchdown_Monitor;
 
 procedure Simulator is
-
-   Logger : constant GNATCOLL.Traces.Trace_Handle
-     := GNATCOLL.Traces.Create (Unit_Name => "SIM",
-                                Default   => GNATCOLL.Traces.On,
-                                Stream    => Global.Standard_Error);
 
    use type Ada.Real_Time.Time;
    use type Shared_Types.Altitude;
@@ -87,8 +80,8 @@ procedure Simulator is
    Safe_Landing_Velocity   : constant Shared_Types.Velocity :=
                                Shared_Parameters.Safe_Landing_Velocity;
 begin
-   Logger.all.Trace
-     (Message => "[" & Global.Clock_Image & "] Starting touchdown monitors...");
+   Global.Trace (Unit_Name => "SIM",
+                 Message   => "Starting touchdown monitors...");
    Touchdown_Monitor.Start;
 
    Next_Cycle := Global.Start_Time + Cycle;
@@ -123,10 +116,8 @@ begin
          if not Powered_Descent and then Current_Altitude <= 1300.0 then
             Thrusters.Enable;
             Powered_Descent := True;
-            Logger.all.Trace
-              (Message =>
-                 "[" & Global.Clock_Image
-               & "] Entered powered descent flight mode.");
+            Global.Trace (Unit_Name => "SIM",
+                          Message   => "Entered powered descent flight mode.");
          end if;
 
          --  EDL sequence:
@@ -146,9 +137,8 @@ begin
          end if;
 
          if not Monitor_Enabled and then Current_Altitude <= 40.0 then
-            Logger.all.Trace
-              (Message =>
-                 "[" & Global.Clock_Image & "] Enabling touchdown monitors...");
+            Global.Trace (Unit_Name => "SIM",
+                          Message   => "Enabling touchdown monitors...");
             Touchdown_Monitor.Enable;
             Monitor_Enabled := True;
          end if;
@@ -165,15 +155,12 @@ begin
                              Altimeter.Current_Velocity;
    begin
       if Touchdown_Velocity > Safe_Landing_Velocity then
-         Logger.all.Trace
-           (Message =>
-              "[" & Global.Clock_Image
-            & "] MISSION FAILURE: MPL crashed on surface!");
+         Global.Trace (Unit_Name => "SIM",
+                       Message   => "MISSION FAILURE: MPL crashed on surface!");
       else
-         Logger.all.Trace
-           (Message =>
-              "[" & Global.Clock_Image
-            & "] MISSION SUCCESS: MPL touched down safely.");
+         Global.Trace
+           (Unit_Name => "SIM",
+            Message   => "MISSION SUCCESS: MPL touched down safely.");
       end if;
    end;
 
@@ -188,9 +175,8 @@ begin
              Touchdown_Monitor.Terminated);
 
       if All_Monitors_Dead then
-         Logger.all.Trace
-           (Message =>
-              "[" & Global.Clock_Image & "] All touchdown monitors finished.");
+         Global.Trace (Unit_Name => "SIM",
+                       Message   => "All touchdown monitors finished.");
          Update_Shared_Data;
          Touchdown_Monitor.Shutdown;
          Landing_Legs.Shutdown;
@@ -198,13 +184,14 @@ begin
       end if;
    end loop;
 
-   Logger.all.Trace
-     (Message => "[" & Global.Clock_Image & "] Simulation finished.");
+   Global.Trace (Unit_Name => "SIM",
+                 Message   => "Simulation finished.");
 
    --  Give the data generating task time to terminate.
    delay until Ada.Real_Time.Clock + Ada.Real_Time.Milliseconds (100);
    Update_Shared_Data (Terminated => True);
 exception
    when E : others =>
-      Logger.all.Trace (E => E);
+      Global.Trace (Unit_Name => "SIM",
+                    Message   => Ada.Exceptions.Exception_Message (E));
 end Simulator;

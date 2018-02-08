@@ -3,7 +3,6 @@ with Gtk.Button_Box;
 with Gtk.Frame;
 with Gtk.Label;
 with Gtk.Switch;
-
 with Parametrization;
 with Shared_Parameters;
 
@@ -41,7 +40,7 @@ begin
                               Gtk.GEntry.Gtk_Entry_New;
       begin
          Bug_Switch.all.Set_State (State => Shared_Sensor_Data.Bug_Enabled);
-         Bug_Switch.all.On_State_Set (Call  => GUI_Callbacks.Switch_Bug'Access,
+         Bug_Switch.all.On_State_Set (Call  => Callbacks.Switch_Bug'Access,
                                       After => False);
          V_Initial.all.Set_Text
            (Text =>
@@ -49,7 +48,7 @@ begin
                 (Value        => Shared_Parameters.Initial_Velocity,
                  Include_Unit => False));
          V_Initial.all.On_Focus_Out_Event
-           (Call  => GUI_Callbacks.Set_Initial_Velocity'Access,
+           (Call  => Callbacks.Set_Initial_Velocity'Access,
             After => True);
 
          V_Safe_Landing.all.Set_Text
@@ -72,7 +71,7 @@ begin
                 (Value        => Shared_Parameters.Initial_Altitude,
                  Include_Unit => False));
          A_Initial.all.On_Focus_Out_Event
-           (Call  => GUI_Callbacks.Set_Initial_Altitude'Access,
+           (Call  => Callbacks.Set_Initial_Altitude'Access,
             After => True);
 
          F_Initial.all.Set_Text
@@ -81,7 +80,7 @@ begin
                 (Value        => Shared_Parameters.Initial_Fuel_Mass,
                  Include_Unit => False));
          F_Initial.all.On_Focus_Out_Event
-           (Call  => GUI_Callbacks.Set_Initial_Fuel_Mass'Access,
+           (Call  => Callbacks.Set_Initial_Fuel_Mass'Access,
             After => True);
 
          F_Rate.all.Set_Text
@@ -153,11 +152,11 @@ begin
          Window.Start_Button := Start_Button;
          Window.Abort_Button := Abort_Button;
 
-         Start_Button.all.On_Clicked (Call  => GUI_Callbacks.SIM_Start'Access,
+         Start_Button.all.On_Clicked (Call  => Callbacks.SIM_Start'Access,
                                       After => True);
-         Abort_Button.all.On_Clicked (Call  => GUI_Callbacks.SIM_Abort'Access,
+         Abort_Button.all.On_Clicked (Call  => Callbacks.SIM_Abort'Access,
                                       After => True);
-         Exit_Button.all.On_Clicked (Call  => GUI_Callbacks.Exit_Main'Access,
+         Exit_Button.all.On_Clicked (Call  => Callbacks.Exit_Main'Access,
                                      After => True);
 
          declare

@@ -1,16 +1,10 @@
-with GNATCOLL.Traces;
-
+with Ada.Exceptions;
 with Global;
 with Landing_Legs;
 with Shared_Sensor_Data;
 with Thrusters;
 
 package body Touchdown_Monitor is
-
-   Logger : constant GNATCOLL.Traces.Trace_Handle
-     := GNATCOLL.Traces.Create (Unit_Name => "TDM",
-                                Default   => GNATCOLL.Traces.On,
-                                Stream    => Global.Standard_Error);
 
    use type Ada.Real_Time.Time;
    use type Shared_Types.Leg_State;
@@ -88,20 +82,18 @@ package body Touchdown_Monitor is
          if Old_Run_State /= Current_Run_State then
             case Current_Run_State is
                when Started =>
-                  Logger.all.Trace
-                    (Message =>
-                        "[" & Global.Clock_Image
-                     & "] Monitoring for leg "
-                     &  Shared_Types.Legs_Index'Image (Leg)
+                  Global.Trace
+                    (Unit_Name => "TDM",
+                     Message   => "Monitoring for leg "
+                     & Shared_Types.Legs_Index'Image (Leg)
                      & " started.");
                   Indicator     :=
                     Leg_Indicator'(State  => Shared_Types.In_Flight,
                                    Health => Good);
                when Enabled =>
-                  Logger.all.Trace
-                    (Message =>
-                        "[" & Global.Clock_Image
-                     & "] Monitoring for leg "
+                  Global.Trace
+                    (Unit_Name => "TDM",
+                     Message   => "Monitoring for leg "
                      & Shared_Types.Legs_Index'Image (Leg)
                      & " enabled.");
                   if
@@ -156,7 +148,8 @@ package body Touchdown_Monitor is
       end loop;
    exception
       when E : others =>
-         Logger.all.Trace (E => E);
+         Global.Trace (Unit_Name => "TDM",
+                       Message   => Ada.Exceptions.Exception_Message (E));
    end Touchdown_Monitor_Execute;
 
    function Current_State (Leg : Shared_Types.Legs_Index) return Run_State is

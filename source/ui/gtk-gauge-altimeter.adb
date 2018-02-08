@@ -26,19 +26,14 @@
 -- __________________________________________________________________ --
 
 with Ada.Numerics;
-
 with Cairo.Ellipses;
 with Cairo.Line_Cap_Property;
-
 with Gdk.Color;
-
 with Glib.Object.Checked_Destroy;
 with Glib.Properties.Creation;
 with Glib.Types;
-
 with Gtk.Missed;
 with Gtk.Widget.Styles.Line_Cap_Property;
-
 with Pango.Cairo.Fonts;
 
 package body Gtk.Gauge.Altimeter is

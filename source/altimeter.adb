@@ -1,5 +1,4 @@
-with GNATCOLL.Traces;
-
+with Ada.Exceptions;
 with Global;
 with Landing_Legs;
 with Parametrization;
@@ -8,11 +7,6 @@ with Task_Safe_Store;
 with Thrusters;
 
 package body Altimeter is
-
-   Logger : constant GNATCOLL.Traces.Trace_Handle :=
-              GNATCOLL.Traces.Create (Unit_Name => "ATM",
-                                      Default   => GNATCOLL.Traces.On,
-                                      Stream    => Global.Standard_Error);
 
    use type Ada.Real_Time.Time;
    use type Shared_Types.Altitude;
@@ -38,9 +32,8 @@ package body Altimeter is
       Altitude_Now : Shared_Types.Altitude := Altimeter_Store.Get;
       Velocity_Now : Shared_Types.Velocity := Velocity_Store.Get;
    begin
-      Logger.all.Trace
-        (Message =>
-           "[" & Global.Clock_Image & "] Altitude control monitor started.");
+      Global.Trace (Unit_Name => "ATM",
+                    Message   => "Altitude control monitor started.");
 
       while Altitude_Now > 0.0 loop
          declare
@@ -65,12 +58,12 @@ package body Altimeter is
       end loop;
 
       Landing_Legs.Touchdown;
-      Logger.all.Trace
-        (Message =>
-           "[" & Global.Clock_Image & "] Altitude control monitor finished.");
+      Global.Trace (Unit_Name => "ATM",
+                    Message   => "Altitude control monitor finished.");
    exception
       when E : others =>
-         Logger.all.Trace (E => E);
+         Global.Trace (Unit_Name => "ATM",
+                       Message   => Ada.Exceptions.Exception_Message (E));
    end Radar_Simulator;
 
    function Current_Altitude return Shared_Types.Altitude

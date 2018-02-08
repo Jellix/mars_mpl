@@ -1,5 +1,4 @@
 with "GtkAda";
-with "GNATColl";
 
 project Mars_Mpl is
 
@@ -17,7 +16,7 @@ project Mars_Mpl is
          case Xmlada_Build is
 
             when "static" =>
-               for Main use ("gui.adb", "simulator.adb");
+               for Main use ("mars_mpl.adb", "simulator.adb");
                for Source_Dirs use (".", "source", "source/physics", "source/sim", "source/ui", "source/aicwl_3_15");
                for Object_Dir use "_build";
                for Exec_Dir use ".";
@@ -79,3 +78,4 @@ project Mars_Mpl is
    end Pretty_Printer;
 
 end Mars_Mpl;
+

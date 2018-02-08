@@ -1,16 +1,8 @@
-with GNAT.OS_Lib;
-
 with Gdk.Event;
-
 with Gtk.Button;
 with Gtk.Switch;
-with Gtk.Widget;
 
-package GUI_Callbacks is
-
-   Aborted : Boolean := False;
-
-   SIM_Pid : GNAT.OS_Lib.Process_Id := GNAT.OS_Lib.Invalid_Pid;
+private package GUI.Callbacks is
 
    procedure Exit_Main (Button : access Gtk.Button.Gtk_Button_Record'Class);
 
@@ -35,4 +27,4 @@ package GUI_Callbacks is
      (Self  : access Gtk.Widget.Gtk_Widget_Record'Class;
       Event : in Gdk.Event.Gdk_Event_Focus) return Boolean;
 
-end GUI_Callbacks;
+end GUI.Callbacks;

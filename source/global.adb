@@ -17,13 +17,31 @@ package body Global is
    is
       Duration_Image : String := "XXXX.XXX";
    begin
-      Duration_IO.Put (Item => Ada.Real_Time.To_Duration (TS => Time - Start_Time),
-                       To   => Duration_Image,
-                       Aft  => 3,
-                       Exp  => 0);
+      Duration_IO.Put
+        (Item => Ada.Real_Time.To_Duration (TS => Time - Start_Time),
+         To   => Duration_Image,
+         Aft  => 3,
+         Exp  => 0);
 
       return Ada.Strings.Fixed.Translate (Source  => Duration_Image,
                                           Mapping => Space_To_Zero);
    end Clock_Image;
+
+   protected Logger is
+      procedure Write (Msg : String);
+   end Logger;
+
+   protected body Logger is
+      procedure Write (Msg : in String) is
+      begin
+         Ada.Text_IO.Put_Line (Ada.Text_IO.Standard_Output, Msg);
+      end Write;
+   end Logger;
+
+   procedure Trace (Unit_Name : in String;
+                    Message   : in String) is
+   begin
+      Logger.Write ("[" & Unit_Name & "] [" & Clock_Image & "] " & Message);
+   end Trace;
 
 end Global;

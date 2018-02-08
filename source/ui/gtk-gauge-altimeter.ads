@@ -27,13 +27,11 @@
 
 with Gtk.Adjustment;
 with Gtk.Enums.String_Lists;
-with Gtk.Layered.Needle;
 with Gtk.Layered.Cache;
-
-with Gtk.Enums;
 with Gtk.Layered.Elliptic_Scale;
 with Gtk.Layered.Elliptic_Annotation;
 with Gtk.Layered.Elliptic_Background;
+with Gtk.Layered.Needle;
 
 package Gtk.Gauge.Altimeter is
 
