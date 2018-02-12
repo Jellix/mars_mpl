@@ -2,6 +2,7 @@
 --  pragma Partition_Elaboration_Policy (Sequential);
 
 with Ada.Real_Time;
+with Global;
 with Shared_Types;
 
 package Engine is
@@ -12,5 +13,9 @@ package Engine is
    function Remaining_Fuel return Shared_Types.Fuel_Mass;
 
    procedure Shutdown;
+
+private
+
+   procedure Trace is new Global.Trace (Unit_Name => "ENG");
 
 end Engine;

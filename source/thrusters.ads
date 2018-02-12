@@ -1,6 +1,7 @@
 --  pragma Profile (Ravenscar);
 --  pragma Partition_Elaboration_Policy (Sequential);
 
+with Global;
 with Shared_Types;
 
 package Thrusters is
@@ -13,5 +14,9 @@ package Thrusters is
 
    function Current_State return Shared_Types.State
      with Volatile_Function;
+
+private
+
+   procedure Trace is new Global.Trace (Unit_Name => "THR");
 
 end Thrusters;

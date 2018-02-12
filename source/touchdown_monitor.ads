@@ -2,6 +2,7 @@
 --  pragma Partition_Elaboration_Policy (Sequential);
 
 with Ada.Real_Time;
+with Global;
 with Shared_Types;
 
 package Touchdown_Monitor is
@@ -16,5 +17,9 @@ package Touchdown_Monitor is
    procedure Enable;
    procedure Shutdown;
    function Current_State (Leg : Shared_Types.Legs_Index) return Run_State;
+
+private
+
+   procedure Trace is new Global.Trace (Unit_Name => "TDM");
 
 end Touchdown_Monitor;

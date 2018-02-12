@@ -1,3 +1,4 @@
+with Global;
 with GNAT.OS_Lib;
 with Gtk.Gauge.Altimeter;
 with Gtk.Gauge.LED_Round;
@@ -7,7 +8,7 @@ with Gtk.Meter.Angular_90;
 with Gtk.Oscilloscope;
 with Gtk.Widget;
 with Gtk.Window;
-with Shared_Types;
+with Shared_Types.IO;
 
 package GUI is
 
@@ -19,10 +20,6 @@ private
 
    Aborted : Boolean                := False;
    SIM_Pid : GNAT.OS_Lib.Process_Id := GNAT.OS_Lib.Invalid_Pid;
-
-   function Simulator_Running return Boolean;
-   function Simulator_Running return Boolean is
-     (SIM_Pid /= GNAT.OS_Lib.Invalid_Pid);
 
    type Leg_Switches is
      array (Shared_Types.Legs_Index) of Gtk.Gauge.LED_Round.Gtk_Gauge_LED_Round;
@@ -54,5 +51,31 @@ private
          Fuel_Scale        : Gtk.Meter.Angular_90.Gtk_Meter_Angular_90;
       end record;
    type Main_Window is access all Main_Window_Record'Class;
+
+   function Simulator_Running return Boolean;
+   function Simulator_Running return Boolean is
+     (SIM_Pid /= GNAT.OS_Lib.Invalid_Pid);
+
+   procedure Trace is new Global.Trace (Unit_Name => "GUI");
+
+   pragma Warnings (Off, "instance does not use primitive operation ""*""");
+
+   function Image is new
+     Shared_Types.IO.Generic_Image (T    => Shared_Types.Acceleration,
+                                    Unit => "m/s²");
+
+   function Image is new
+     Shared_Types.IO.Generic_Image (T    => Shared_Types.Altitude,
+                                    Unit => "m");
+
+   function Image is new
+     Shared_Types.IO.Generic_Image (T    => Shared_Types.Fuel_Mass,
+                                    Unit => "kg");
+
+   function Image is new
+     Shared_Types.IO.Generic_Image (T    => Shared_Types.Velocity,
+                                    Unit => "m/s");
+
+   pragma Warnings (On, "instance does not use primitive operation ""*""");
 
 end GUI;

@@ -2,6 +2,7 @@
 --  pragma Partition_Elaboration_Policy (Sequential);
 
 with Ada.Real_Time;
+with Global;
 with Shared_Types;
 
 package Altimeter is
@@ -15,5 +16,9 @@ package Altimeter is
 
    function Current_Velocity return Shared_Types.Velocity
      with Volatile_Function;
+
+private
+
+   procedure Trace is new Global.Trace (Unit_Name => "ATM");
 
 end Altimeter;

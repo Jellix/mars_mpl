@@ -3,7 +3,6 @@ with Ada.Real_Time;
 with Cairo;
 with Gdk.Color;
 with Glib;
-with Global;
 with Gtk.Box;
 with Gtk.Enums.String_Lists;
 with Gtk.Label;
@@ -12,7 +11,6 @@ with Gtk.Missed;
 with GUI.Callbacks;
 with Pango.Cairo.Fonts;
 with Shared_Sensor_Data;
-with Shared_Types.IO;
 
 package body GUI is
 
@@ -155,24 +153,21 @@ package body GUI is
       DE.Thruster_Led.all.Queue_Draw;
 
       -- Altitude
-      DE.Altitude.all.Set_Text
-        (Text => Shared_Types.IO.Image (Value => Update_State.Altitude));
+      DE.Altitude.all.Set_Text (Text => Image (Value => Update_State.Altitude));
       Win.Altimeter.all.Set_Value
         (Value =>
            Glib.Gdouble (abs Update_State.Altitude) / Altitude_Scale.Factor);
       Win.Altimeter.all.Queue_Draw;
 
       -- Velocity
-      DE.Velocity.all.Set_Text
-        (Text => Shared_Types.IO.Image (Value => Update_State.Velocity));
+      DE.Velocity.all.Set_Text (Text => Image (Value => Update_State.Velocity));
       Win.Tachometer.all.Set_Value
         (Value =>
            Glib.Gdouble (abs Update_State.Velocity) / Velocity_Scale.Factor);
       Win.Tachometer.all.Queue_Draw;
 
       --  Fuel
-      DE.Fuel.all.Set_Text
-        (Text => Shared_Types.IO.Image (Value => Update_State.Fuel));
+      DE.Fuel.all.Set_Text (Text => Image (Value => Update_State.Fuel));
       Win.Fuel_Scale.all.Set_Value
         (Value => Glib.Gdouble (Update_State.Fuel) / Fuel_Scale.Factor);
       Win.Fuel_Scale.all.Queue_Draw;
@@ -251,7 +246,8 @@ package body GUI is
 
    procedure Run is
       Win          : Main_Window;
-      Update_State : Shared_Sensor_Data.State;
+      Update_State : Shared_Sensor_Data.State :=
+                       Shared_Sensor_Data.Current_State.Get;
    begin
       Aborted := False;
 
@@ -260,7 +256,8 @@ package body GUI is
       Initialize (Window => Win.all);
       Win.all.On_Delete_Event (Call  => Callbacks.Exit_Main'Access,
                                After => True);
-
+      Feed_Values (Win          => Win.all,
+                   Update_State => Update_State);
       Win.all.Show_All;
 
       declare
@@ -302,8 +299,7 @@ package body GUI is
       end;
    exception
       when E : others =>
-         Global.Trace (Unit_Name => "GUI",
-                       Message   => Ada.Exceptions.Exception_Message (E));
+         Trace (Message => Ada.Exceptions.Exception_Message (E));
    end Run;
 
 end GUI;

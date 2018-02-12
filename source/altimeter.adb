@@ -1,5 +1,4 @@
 with Ada.Exceptions;
-with Global;
 with Landing_Legs;
 with Parametrization;
 with Shared_Parameters;
@@ -12,6 +11,9 @@ package body Altimeter is
    use type Shared_Types.Altitude;
    use type Shared_Types.State;
    use type Shared_Types.Velocity;
+
+   Thruster_Acceleration : constant Shared_Types.Acceleration :=
+                             Shared_Parameters.Thruster_Acceleration;
 
    pragma Warnings (Off, "instance does not use primitive operation ""*""");
 
@@ -32,8 +34,7 @@ package body Altimeter is
       Altitude_Now : Shared_Types.Altitude := Altimeter_Store.Get;
       Velocity_Now : Shared_Types.Velocity := Velocity_Store.Get;
    begin
-      Global.Trace (Unit_Name => "ATM",
-                    Message   => "Altitude control monitor started.");
+      Trace (Message => "Altitude control monitor started.");
 
       while Altitude_Now > 0.0 loop
          declare
@@ -41,7 +42,7 @@ package body Altimeter is
             Delta_V : constant Shared_Types.Velocity :=
                         (if Thrusters.Current_State = Shared_Types.Disabled
                          then Shared_Types.Velocity (Parametrization.Gravity * Float (T))
-                         else Parametrization.Thruster_Acceleration * T);
+                         else Thruster_Acceleration * T);
             Delta_A : constant Shared_Types.Altitude := Velocity_Now * T;
          begin
             Altitude_Now :=
@@ -58,12 +59,10 @@ package body Altimeter is
       end loop;
 
       Landing_Legs.Touchdown;
-      Global.Trace (Unit_Name => "ATM",
-                    Message   => "Altitude control monitor finished.");
+      Trace (Message => "Altitude control monitor finished.");
    exception
       when E : others =>
-         Global.Trace (Unit_Name => "ATM",
-                       Message   => Ada.Exceptions.Exception_Message (E));
+         Trace (Message => Ada.Exceptions.Exception_Message (E));
    end Radar_Simulator;
 
    function Current_Altitude return Shared_Types.Altitude

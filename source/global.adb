@@ -38,8 +38,7 @@ package body Global is
       end Write;
    end Logger;
 
-   procedure Trace (Unit_Name : in String;
-                    Message   : in String) is
+   procedure Trace (Message : in String) is
    begin
       Logger.Write ("[" & Unit_Name & "] [" & Clock_Image & "] " & Message);
    end Trace;

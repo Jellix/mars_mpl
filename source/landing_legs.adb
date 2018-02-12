@@ -1,6 +1,5 @@
 with Ada.Exceptions;
 with Ada.Real_Time;
-with Global;
 
 package body Landing_Legs is
 
@@ -120,8 +119,7 @@ package body Landing_Legs is
             case Current_State is
 
                when Deployed             =>
-                  Global.Trace (Unit_Name => "LLC",
-                                Message   => "Landing legs deployed.");
+                  Trace (Message => "Landing legs deployed.");
                   Sensor_Glitch.Activate_Glitch;
 
                when Touched_Down         =>
@@ -135,8 +133,7 @@ package body Landing_Legs is
       end loop;
    exception
       when E : others =>
-         Global.Trace (Unit_Name => "LLC",
-                       Message   => Ada.Exceptions.Exception_Message (E));
+         Trace (Message => Ada.Exceptions.Exception_Message (E));
    end Simulate_Landing_Legs;
 
    protected body Leg_Iterator is

@@ -1,6 +1,7 @@
 --  pragma Profile (Ravenscar);
 --  pragma Partition_Elaboration_Policy (Sequential);
 
+with Global;
 with Shared_Types;
 
 package Landing_Legs is
@@ -20,5 +21,9 @@ package Landing_Legs is
       Current_Leg    : Shared_Types.Legs_Index := Shared_Types.Legs_Index'First;
       Legs_Available : Boolean                 := True;
    end Leg_Iterator;
+
+private
+
+   procedure Trace is new Global.Trace (Unit_Name => "LLC");
 
 end Landing_Legs;

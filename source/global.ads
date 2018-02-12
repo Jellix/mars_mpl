@@ -9,7 +9,8 @@ package Global is
      (Time : in Ada.Real_Time.Time := Ada.Real_Time.Clock) return String;
    --  Returns a time stamp relative to the Start_Time, i.e. Time - Start_Time.
 
-   procedure Trace (Unit_Name : String;
-                    Message   : String);
+   generic
+      Unit_Name : String;
+   procedure Trace (Message : String);
 
 end Global;

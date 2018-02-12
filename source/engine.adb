@@ -1,5 +1,4 @@
 with Ada.Exceptions;
-with Global;
 with Shared_Parameters;
 with Task_Safe_Store;
 with Thrusters;
@@ -49,8 +48,7 @@ package body Engine is
       end loop;
    exception
       when E : others =>
-         Global.Trace (Unit_Name => "ENG",
-                       Message   => Ada.Exceptions.Exception_Message (E));
+         Trace (Message => Ada.Exceptions.Exception_Message (E));
    end Engine_Task;
 
    procedure Shutdown is

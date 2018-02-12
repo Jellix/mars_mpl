@@ -15,6 +15,10 @@ private package GUI.Callbacks is
    function Switch_Bug (Self  : access Gtk.Switch.Gtk_Switch_Record'Class;
                         State : in Boolean) return Boolean;
 
+   function Set_Fuel_Flow_Rate
+     (Self  : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Event : in Gdk.Event.Gdk_Event_Focus) return Boolean;
+
    function Set_Initial_Altitude
      (Self  : access Gtk.Widget.Gtk_Widget_Record'Class;
       Event : in Gdk.Event.Gdk_Event_Focus) return Boolean;
@@ -24,6 +28,10 @@ private package GUI.Callbacks is
       Event : in Gdk.Event.Gdk_Event_Focus) return Boolean;
 
    function Set_Initial_Velocity
+     (Self  : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Event : in Gdk.Event.Gdk_Event_Focus) return Boolean;
+
+   function Set_Thruster_Acceleration
      (Self  : access Gtk.Widget.Gtk_Widget_Record'Class;
       Event : in Gdk.Event.Gdk_Event_Focus) return Boolean;
 

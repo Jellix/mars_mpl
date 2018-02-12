@@ -1,5 +1,3 @@
-with Global;
-
 package body Thrusters is
 
    use type Shared_Types.State;
@@ -56,18 +54,15 @@ package body Thrusters is
    procedure Out_Of_Fuel is
    begin
       Thruster.No_More_Fuel;
-
-      Global.Trace (Unit_Name => "THR",
-                    Message   => "Thrusters ran out of fuel!");
+      Trace (Message => "Thrusters ran out of fuel!");
    end Out_Of_Fuel;
 
    procedure Shutdown (Source : in Shared_Types.Legs_Index) is
    begin
       Thruster.No_More_Fuel;
-      Global.Trace
-        (Unit_Name => "THR",
-         Message   => "Thrusters have been disabled due to signal from leg "
-         & Shared_Types.Legs_Index'Image (Source) & ".");
+      Trace (Message =>
+               "Thrusters have been disabled due to signal from leg "
+             & Shared_Types.Legs_Index'Image (Source) & ".");
    end Shutdown;
 
    function Current_State return Shared_Types.State is

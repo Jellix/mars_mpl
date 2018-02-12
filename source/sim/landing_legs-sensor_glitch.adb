@@ -60,29 +60,27 @@ package body Sensor_Glitch is
       Activate_For : Ada.Real_Time.Time_Span;
    begin
       Assign_Leg.Next (The_Leg => The_Leg);
-      Control_Object (The_Leg).Wait_For_Event (At_Time      => Activate_At,
-                                               For_Duration => Activate_For);
+      declare
+         Leg_String : constant String
+           := "Landing leg " & Shared_Types.Legs_Index'Image (The_Leg);
+      begin
+         Control_Object (The_Leg).Wait_For_Event (At_Time      => Activate_At,
+                                                  For_Duration => Activate_For);
 
-      delay until Activate_At;
-      Legs_State (The_Leg) := Shared_Types.Touched_Down;
-      Global.Trace
-        (Unit_Name => "LLC",
-         Message   => "Landing leg " & Shared_Types.Legs_Index'Image (The_Leg)
-         & " triggered.");
+         delay until Activate_At;
+         Legs_State (The_Leg) := Shared_Types.Touched_Down;
+         Trace (Message => Leg_String & " triggered.");
 
-      delay until Activate_At + Activate_For;
-      Legs_State (The_Leg) := Shared_Types.In_Flight;
-      Global.Trace
-        (Unit_Name => "LLC",
-         Message   => "Landing leg "
-         & Shared_Types.Legs_Index'Image (The_Leg)
-         & " triggered for"
-         & Integer'Image (Activate_For / Ada.Real_Time.Milliseconds (1))
-         & " ms.");
+         delay until Activate_At + Activate_For;
+         Legs_State (The_Leg) := Shared_Types.In_Flight;
+         Trace (Message =>
+                  Leg_String & " triggered for"
+                & Integer'Image (Activate_For / Ada.Real_Time.Milliseconds (1))
+                & " ms.");
+      end;
    exception
       when E : others =>
-         Global.Trace (Unit_Name => "LLC",
-                       Message   => Ada.Exceptions.Exception_Message (E));
+         Trace (Message => Ada.Exceptions.Exception_Message (E));
    end Spurious_Trigger;
 
    type Glitch_Tasks is array (Shared_Types.Legs_Index) of Spurious_Trigger;
@@ -105,9 +103,9 @@ package body Sensor_Glitch is
             Control_Object (The_Leg).Trigger_Glitch
               (At_Time      => Now + Ada.Real_Time.Milliseconds (Trigger_Offset),
                For_Duration => Ada.Real_Time.Milliseconds (Trigger_Length));
-            Global.Trace
-              (Unit_Name => "LLC",
-               Message   => "Landing leg "
+            Trace
+              (Message =>
+                 "Landing leg "
                & Shared_Types.Legs_Index'Image (The_Leg)
                & " scheduled to trigger in"
                & Glitch_Duration'Image (Trigger_Offset)
