@@ -20,12 +20,12 @@ begin
 
       Window.Oscilloscope := Plot;
 
-      Window.Altitude_Channel :=
-        Plot.all.Add_Channel (Color => Colors.Red,
-                              Name  => "Altitude");
-      Window.Velocity_Channel :=
-        Plot.all.Add_Channel (Color => Colors.Purple,
-                              Name  => "Velocity");
+      Window.Altitude_Channel := Plot.all.Add_Channel (Color => Colors.Red,
+                                                       Name  => "Altitude");
+      Window.Fuel_Channel     := Plot.all.Add_Channel (Color => Colors.Blue,
+                                                       Name  => "Fuel");
+      Window.Velocity_Channel := Plot.all.Add_Channel (Color => Colors.Purple,
+                                                       Name  => "Velocity");
 
       declare
          G : Gtk.Oscilloscope.Group_Number;

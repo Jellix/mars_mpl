@@ -46,6 +46,7 @@ private
          Velocity_Channel  : Gtk.Oscilloscope.Channel_Number;
          Touchdown_Channel : Legs_Channels;
          Thruster_Channel  : Gtk.Oscilloscope.Channel_Number;
+         Fuel_Channel      : Gtk.Oscilloscope.Channel_Number;
          Tachometer        : Gtk.Gauge.Round_270.Gtk_Gauge_Round_270;
          Altimeter         : Gtk.Gauge.Altimeter.Gtk_Gauge_Altimeter;
          Fuel_Scale        : Gtk.Meter.Angular_90.Gtk_Meter_Angular_90;

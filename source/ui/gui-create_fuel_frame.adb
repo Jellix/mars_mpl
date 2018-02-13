@@ -22,26 +22,24 @@ begin
       declare
          Gauge : Gtk.Meter.Angular_90.Gtk_Meter_Angular_90;
       begin
-         Gtk.Meter.Angular_90.Gtk_New
-           (Widget  => Gauge,
-            Texts   => Fuel_Scale.Texts.all,
-            Sectors =>
-              Positive
-                (Gtk.Enums.String_List.Length
-                     (+Fuel_Scale.Texts.all)) - 1);
-         Gtk.Layered.Label.Add_Label
-           (Under    => Gauge.all.Get_Cache,
-            Text     => "kg",
-            Location => (0.0175, 0.1),
-            Face     => Label_Font_Italic,
-            Height   => 0.03,
-            Stretch  => 0.9,
-            Mode     => Gtk.Layered.Moved_Centered,
-            Color    => Colors.Black,
-            Angle    => 0.0,
-            Skew     => 0.0,
-            Markup   => False,
-            Scaled   => True);
+         Gtk.Meter.Angular_90.Gtk_New (Widget  => Gauge,
+                                       Texts   => Fuel_Scale.Texts.all,
+                                       Sectors =>
+                                         Positive
+                                           (Gtk.Enums.String_List.Length
+                                              (+Fuel_Scale.Texts.all)) - 1);
+         Gtk.Layered.Label.Add_Label (Under    => Gauge.all.Get_Cache,
+                                      Text     => "kg",
+                                      Location => (0.0175, 0.1),
+                                      Face     => Label_Font_Italic,
+                                      Height   => 0.03,
+                                      Stretch  => 0.9,
+                                      Mode     => Gtk.Layered.Moved_Centered,
+                                      Color    => Colors.Black,
+                                      Angle    => 0.0,
+                                      Skew     => 0.0,
+                                      Markup   => False,
+                                      Scaled   => True);
          Box.all.Pack_Start (Child  => Gauge,
                              Expand => True);
          Window.Fuel_Scale := Gauge;

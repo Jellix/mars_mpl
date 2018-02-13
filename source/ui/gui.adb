@@ -183,6 +183,9 @@ package body GUI is
          Plotter.Feed (Channel => Win.Altitude_Channel,
                        V       => Glib.Gdouble (Update_State.Altitude),
                        T       => Time_Stamp);
+         Plotter.Feed (Channel => Win.Fuel_Channel,
+                       V       => Glib.Gdouble (Update_State.Fuel),
+                       T       => Time_Stamp);
          Plotter.Feed (Channel => Win.Velocity_Channel,
                        V       => Glib.Gdouble (Update_State.Velocity),
                        T       => Time_Stamp);
