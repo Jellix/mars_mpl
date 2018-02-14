@@ -1,0 +1,7 @@
+*.ali
+*.cswi
+*.db
+*.o
+*.stderr
+*.stdout
+*.xml
