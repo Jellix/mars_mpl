@@ -20,6 +20,6 @@ package Touchdown_Monitor is
 
 private
 
-   procedure Trace is new Global.Trace (Unit_Name => "TDM");
+   package Log is new Global.Log (Unit_Name => "TDM");
 
 end Touchdown_Monitor;

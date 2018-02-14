@@ -57,7 +57,7 @@ private
    function Simulator_Running return Boolean is
      (SIM_Pid /= GNAT.OS_Lib.Invalid_Pid);
 
-   procedure Trace is new Global.Trace (Unit_Name => "GUI");
+   package Log is new Global.Log (Unit_Name => "GUI");
 
    pragma Warnings (Off, "instance does not use primitive operation ""*""");
 

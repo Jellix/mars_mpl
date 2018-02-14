@@ -45,9 +45,8 @@ begin
            (Text =>
               Image (Value        => Shared_Parameters.Initial_Velocity,
                      Include_Unit => False));
-         V_Initial.all.On_Focus_Out_Event
-           (Call  => Callbacks.Set_Initial_Velocity'Access,
-            After => True);
+         V_Initial.all.On_Focus_Out_Event (Call  => Set_Initial_Velocity'Access,
+                                           After => True);
 
          V_Safe_Landing.all.Set_Text
            (Text =>
@@ -65,32 +64,30 @@ begin
            (Text =>
               Image (Value        => Shared_Parameters.Initial_Altitude,
                      Include_Unit => False));
-         A_Initial.all.On_Focus_Out_Event
-           (Call  => Callbacks.Set_Initial_Altitude'Access,
-            After => True);
+         A_Initial.all.On_Focus_Out_Event (Call  => Set_Initial_Altitude'Access,
+                                           After => True);
 
          F_Initial.all.Set_Text
            (Text =>
               Image (Value        => Shared_Parameters.Initial_Fuel_Mass,
                      Include_Unit => False));
          F_Initial.all.On_Focus_Out_Event
-           (Call  => Callbacks.Set_Initial_Fuel_Mass'Access,
+           (Call  => Set_Initial_Fuel_Mass'Access,
             After => True);
 
          F_Rate.all.Set_Text
            (Text =>
               Image (Value        => Shared_Parameters.Fuel_Flow_Rate,
                      Include_Unit => False));
-         F_Rate.all.On_Focus_Out_Event
-           (Call  => Callbacks.Set_Fuel_Flow_Rate'Access,
-            After => True);
+         F_Rate.all.On_Focus_Out_Event (Call  => Set_Fuel_Flow_Rate'Access,
+                                        After => True);
 
          A_Thruster.all.Set_Text
            (Text =>
               Image (Value        => Shared_Parameters.Thruster_Acceleration,
                      Include_Unit => False));
          A_Thruster.all.On_Focus_Out_Event
-           (Call  => Callbacks.Set_Thruster_Acceleration'Access,
+           (Call  => Set_Thruster_Acceleration'Access,
             After => True);
 
          declare

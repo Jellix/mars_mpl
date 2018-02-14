@@ -24,6 +24,6 @@ package Landing_Legs is
 
 private
 
-   procedure Trace is new Global.Trace (Unit_Name => "LLC");
+   package Log is new Global.Log (Unit_Name => "LLC");
 
 end Landing_Legs;

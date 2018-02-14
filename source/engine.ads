@@ -16,6 +16,6 @@ package Engine is
 
 private
 
-   procedure Trace is new Global.Trace (Unit_Name => "ENG");
+   package Log is new Global.Log (Unit_Name => "ENG");
 
 end Engine;

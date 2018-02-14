@@ -54,15 +54,15 @@ package body Thrusters is
    procedure Out_Of_Fuel is
    begin
       Thruster.No_More_Fuel;
-      Trace (Message => "Thrusters ran out of fuel!");
+      Log.Trace (Message => "Thrusters ran out of fuel!");
    end Out_Of_Fuel;
 
    procedure Shutdown (Source : in Shared_Types.Legs_Index) is
    begin
       Thruster.No_More_Fuel;
-      Trace (Message =>
-               "Thrusters have been disabled due to signal from leg "
-             & Shared_Types.Legs_Index'Image (Source) & ".");
+      Log.Trace (Message =>
+                   "Thrusters have been disabled due to signal from leg "
+                 & Shared_Types.Legs_Index'Image (Source) & ".");
    end Shutdown;
 
    function Current_State return Shared_Types.State is

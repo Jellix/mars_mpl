@@ -17,6 +17,6 @@ package Thrusters is
 
 private
 
-   procedure Trace is new Global.Trace (Unit_Name => "THR");
+   package Log is new Global.Log (Unit_Name => "THR");
 
 end Thrusters;

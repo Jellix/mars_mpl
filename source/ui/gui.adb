@@ -1,4 +1,3 @@
-with Ada.Exceptions;
 with Ada.Real_Time;
 with Cairo;
 with Gdk.Color;
@@ -10,6 +9,7 @@ with Gtk.Main;
 with Gtk.Missed;
 with GUI.Callbacks;
 with Pango.Cairo.Fonts;
+with Shared_Parameters;
 with Shared_Sensor_Data;
 
 package body GUI is
@@ -79,6 +79,41 @@ package body GUI is
    Update_Interval : constant Ada.Real_Time.Time_Span :=
                        Ada.Real_Time.Milliseconds (1);
    -- GUI update frequency.
+
+   --  Callbacks for entry fields
+   pragma Warnings (Off, "instance does not use primitive operation ""*""");
+
+   function Set_Fuel_Flow_Rate is
+     new Callbacks.Set_GEntry_Value
+       (T      => Shared_Types.Fuel_Mass,
+        Target => Shared_Parameters.Fuel_Flow_Rate,
+        Name   => "fuel flow rate");
+
+   function Set_Initial_Altitude is
+     new Callbacks.Set_GEntry_Value
+       (T      => Shared_Types.Altitude,
+        Target => Shared_Parameters.Initial_Altitude,
+        Name   => "initial altitude");
+
+   function Set_Initial_Fuel_Mass is
+     new Callbacks.Set_GEntry_Value
+       (T      => Shared_Types.Fuel_Mass,
+        Target => Shared_Parameters.Initial_Fuel_Mass,
+        Name   => "initial fuel mass");
+
+   function Set_Initial_Velocity is
+     new Callbacks.Set_GEntry_Value
+       (T      => Shared_Types.Velocity,
+        Target => Shared_Parameters.Initial_Velocity,
+        Name   => "initial velocity");
+
+   function Set_Thruster_Acceleration is
+     new Callbacks.Set_GEntry_Value
+       (T      => Shared_Types.Acceleration,
+        Target => Shared_Parameters.Thruster_Acceleration,
+        Name   => "thruster acceleration");
+
+   pragma Warnings (On, "instance does not use primitive operation ""*""");
 
    function Labeled_Widget
      (Widget      : not null access Gtk.Widget.Gtk_Widget_Record'Class;
@@ -302,7 +337,7 @@ package body GUI is
       end;
    exception
       when E : others =>
-         Trace (Message => Ada.Exceptions.Exception_Message (E));
+         Log.Trace (E => E);
    end Run;
 
 end GUI;

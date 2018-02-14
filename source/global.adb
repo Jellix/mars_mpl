@@ -38,9 +38,19 @@ package body Global is
       end Write;
    end Logger;
 
-   procedure Trace (Message : in String) is
-   begin
-      Logger.Write ("[" & Unit_Name & "] [" & Clock_Image & "] " & Message);
-   end Trace;
+   package body Log is
+
+      procedure Trace (Message : in String) is
+      begin
+         Logger.Write ("[" & Unit_Name & "] [" & Clock_Image & "] " & Message);
+      end Trace;
+
+      procedure Trace (E : in Ada.Exceptions.Exception_Occurrence) is
+      begin
+         Logger.Write ("[" & Unit_Name & "] [" & Clock_Image & "] "
+                       & Ada.Exceptions.Exception_Information (E));
+      end Trace;
+
+   end Log;
 
 end Global;

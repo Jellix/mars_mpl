@@ -19,6 +19,6 @@ package Altimeter is
 
 private
 
-   procedure Trace is new Global.Trace (Unit_Name => "ATM");
+   package Log is new Global.Log (Unit_Name => "ATM");
 
 end Altimeter;

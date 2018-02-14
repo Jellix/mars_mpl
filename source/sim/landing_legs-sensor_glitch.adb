@@ -1,4 +1,3 @@
-with Ada.Exceptions;
 with Ada.Numerics.Discrete_Random;
 
 separate (Landing_Legs)
@@ -69,18 +68,19 @@ package body Sensor_Glitch is
 
          delay until Activate_At;
          Legs_State (The_Leg) := Shared_Types.Touched_Down;
-         Trace (Message => Leg_String & " triggered.");
+         Log.Trace (Message => Leg_String & " triggered.");
 
          delay until Activate_At + Activate_For;
          Legs_State (The_Leg) := Shared_Types.In_Flight;
-         Trace (Message =>
-                  Leg_String & " triggered for"
-                & Integer'Image (Activate_For / Ada.Real_Time.Milliseconds (1))
-                & " ms.");
+         Log.Trace
+           (Message =>
+              Leg_String & " triggered for"
+            & Integer'Image (Activate_For / Ada.Real_Time.Milliseconds (1))
+            & " ms.");
       end;
    exception
       when E : others =>
-         Trace (Message => Ada.Exceptions.Exception_Message (E));
+         Log.Trace (E => E);
    end Spurious_Trigger;
 
    type Glitch_Tasks is array (Shared_Types.Legs_Index) of Spurious_Trigger;
@@ -103,7 +103,7 @@ package body Sensor_Glitch is
             Control_Object (The_Leg).Trigger_Glitch
               (At_Time      => Now + Ada.Real_Time.Milliseconds (Trigger_Offset),
                For_Duration => Ada.Real_Time.Milliseconds (Trigger_Length));
-            Trace
+            Log.Trace
               (Message =>
                  "Landing leg "
                & Shared_Types.Legs_Index'Image (The_Leg)

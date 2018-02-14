@@ -1,4 +1,3 @@
-with Ada.Exceptions;
 with Landing_Legs;
 with Parametrization;
 with Shared_Parameters;
@@ -34,7 +33,7 @@ package body Altimeter is
       Altitude_Now : Shared_Types.Altitude := Altimeter_Store.Get;
       Velocity_Now : Shared_Types.Velocity := Velocity_Store.Get;
    begin
-      Trace (Message => "Altitude control monitor started.");
+      Log.Trace (Message => "Altitude control monitor started.");
 
       while Altitude_Now > 0.0 loop
          declare
@@ -59,10 +58,10 @@ package body Altimeter is
       end loop;
 
       Landing_Legs.Touchdown;
-      Trace (Message => "Altitude control monitor finished.");
+      Log.Trace (Message => "Altitude control monitor finished.");
    exception
       when E : others =>
-         Trace (Message => Ada.Exceptions.Exception_Message (E));
+         Log.Trace (E => E);
    end Radar_Simulator;
 
    function Current_Altitude return Shared_Types.Altitude

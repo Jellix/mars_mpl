@@ -1,3 +1,4 @@
+with Ada.Exceptions;
 with Ada.Real_Time;
 pragma Elaborate_All (Ada.Real_Time);
 
@@ -11,6 +12,9 @@ package Global is
 
    generic
       Unit_Name : String;
-   procedure Trace (Message : String);
+   package Log is
+      procedure Trace (Message : in String);
+      procedure Trace (E       : in Ada.Exceptions.Exception_Occurrence);
+   end Log;
 
 end Global;

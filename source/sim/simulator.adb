@@ -24,7 +24,6 @@
 --  pragma Profile (Ravenscar);
 --  pragma Partition_Elaboration_Policy (Sequential);
 
-with Ada.Exceptions;
 with Ada.Real_Time;
 with Altimeter;
 with Engine;
@@ -80,9 +79,9 @@ procedure Simulator is
    Safe_Landing_Velocity   : constant Shared_Types.Velocity :=
                                Shared_Parameters.Safe_Landing_Velocity;
 
-   procedure Trace is new Global.Trace (Unit_Name => "SIM");
+   package Log is new Global.Log (Unit_Name => "SIM");
 begin
-   Trace (Message => "Starting touchdown monitors...");
+   Log.Trace (Message => "Starting touchdown monitors...");
    Touchdown_Monitor.Start;
 
    Next_Cycle := Global.Start_Time + Cycle;
@@ -117,7 +116,7 @@ begin
          if not Powered_Descent and then Current_Altitude <= 1300.0 then
             Thrusters.Enable;
             Powered_Descent := True;
-            Trace (Message => "Entered powered descent flight mode.");
+            Log.Trace (Message => "Entered powered descent flight mode.");
          end if;
 
          --  EDL sequence:
@@ -137,7 +136,7 @@ begin
          end if;
 
          if not Monitor_Enabled and then Current_Altitude <= 40.0 then
-            Trace (Message => "Enabling touchdown monitors...");
+            Log.Trace (Message => "Enabling touchdown monitors...");
             Touchdown_Monitor.Enable;
             Monitor_Enabled := True;
          end if;
@@ -154,9 +153,9 @@ begin
                              Altimeter.Current_Velocity;
    begin
       if Touchdown_Velocity > Safe_Landing_Velocity then
-         Trace (Message => "MISSION FAILURE: MPL crashed on surface!");
+         Log.Trace (Message => "MISSION FAILURE: MPL crashed on surface!");
       else
-         Trace (Message => "MISSION SUCCESS: MPL touched down safely.");
+         Log.Trace (Message => "MISSION SUCCESS: MPL touched down safely.");
       end if;
    end;
 
@@ -171,7 +170,7 @@ begin
              Touchdown_Monitor.Terminated);
 
       if All_Monitors_Dead then
-         Trace (Message => "All touchdown monitors finished.");
+         Log.Trace (Message => "All touchdown monitors finished.");
          Update_Shared_Data;
          Touchdown_Monitor.Shutdown;
          Landing_Legs.Shutdown;
@@ -179,12 +178,12 @@ begin
       end if;
    end loop;
 
-   Trace (Message => "Simulation finished.");
+   Log.Trace (Message => "Simulation finished.");
 
    --  Give the data generating task time to terminate.
    delay until Ada.Real_Time.Clock + Ada.Real_Time.Milliseconds (100);
    Update_Shared_Data (Terminated => True);
 exception
    when E : others =>
-      Trace (Message => Ada.Exceptions.Exception_Message (E));
+      Log.Trace (E => E);
 end Simulator;

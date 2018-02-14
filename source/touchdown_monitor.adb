@@ -1,4 +1,3 @@
-with Ada.Exceptions;
 with Landing_Legs;
 with Shared_Sensor_Data;
 with Thrusters;
@@ -85,14 +84,14 @@ package body Touchdown_Monitor is
             if Old_Run_State /= Current_Run_State then
                case Current_Run_State is
                   when Started =>
-                     Trace (Message => Legs_Monitoring & " started.");
+                     Log.Trace (Message => Legs_Monitoring & " started.");
 
                      Indicator :=
                        Leg_Indicator'(State  => Shared_Types.In_Flight,
                                       Health => Good);
 
                   when Enabled =>
-                     Trace (Message => Legs_Monitoring & " enabled.");
+                     Log.Trace (Message => Legs_Monitoring & " enabled.");
 
                      if
                        Last_Indicator    = Shared_Types.Touched_Down and then
@@ -148,7 +147,7 @@ package body Touchdown_Monitor is
       end;
    exception
       when E : others =>
-         Trace (Message => Ada.Exceptions.Exception_Message (E));
+         Log.Trace (E => E);
    end Touchdown_Monitor_Execute;
 
    function Current_State (Leg : Shared_Types.Legs_Index) return Run_State is
