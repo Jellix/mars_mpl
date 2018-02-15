@@ -94,37 +94,73 @@ begin
             Widget_Box : constant Gtk.Box.Gtk_Box :=
                            Gtk.Box.Gtk_Vbox_New (Homogeneous => False,
                                                  Spacing     => 0);
+
+            function Labeled_Widget_With_Unit
+              (Widget      : not null access Gtk.Widget.Gtk_Widget_Record'Class;
+               Description : in String;
+               Unit        : in String) return not null access
+              Gtk.Widget.Gtk_Widget_Record'Class;
+
+            function Labeled_Widget_With_Unit
+              (Widget      : not null access Gtk.Widget.Gtk_Widget_Record'Class;
+               Description : in String;
+               Unit        : in String) return not null access
+              Gtk.Widget.Gtk_Widget_Record'Class
+            is
+               Box : constant Gtk.Box.Gtk_Box :=
+                       Gtk.Box.Gtk_Box
+                         (Labeled_Widget (Widget      => Widget,
+                                          Description => Description));
+            begin
+               Box.all.Pack_Start
+                 (Child => Gtk.Label.Gtk_Label_New (Str => Unit));
+
+               return Box;
+            end Labeled_Widget_With_Unit;
+
          begin
             Widget_Box.all.Pack_Start
               (Child => Labeled_Widget (Widget      => Bug_Switch,
                                         Description => "TDM Bug"));
-            Widget_Box.all.Pack_Start
-              (Child => Labeled_Widget (Widget      => V_Initial,
-                                        Description => "Initial Velocity"));
+
             Widget_Box.all.Pack_Start
               (Child =>
-                 Labeled_Widget (Widget      => V_Safe_Landing,
-                                 Description => "Safe Landing Velocity"));
+                 Labeled_Widget_With_Unit (Widget      => V_Initial,
+                                           Description => "Initial Velocity",
+                                           Unit        => "m/s"));
+
             Widget_Box.all.Pack_Start
               (Child =>
-                 Labeled_Widget (Widget      => V_Target_Landing,
-                                 Description => "Target Landing Velocity"));
+                 Labeled_Widget_With_Unit
+                   (Widget      => V_Safe_Landing,
+                    Description => "Safe Landing Velocity",
+                    Unit        => "m/s"));
             Widget_Box.all.Pack_Start
               (Child =>
-                 Labeled_Widget (Widget      => A_Initial,
-                                 Description => "Initial Altitude"));
+                 Labeled_Widget_With_Unit
+                   (Widget      => V_Target_Landing,
+                    Description => "Target Landing Velocity",
+                    Unit        => "m/s"));
             Widget_Box.all.Pack_Start
               (Child =>
-                 Labeled_Widget (Widget      => F_Initial,
-                                 Description => "Initial Fuel Mass"));
+                 Labeled_Widget_With_Unit (Widget      => A_Initial,
+                                           Description => "Initial Altitude",
+                                           Unit        => "m"));
             Widget_Box.all.Pack_Start
               (Child =>
-                 Labeled_Widget (Widget      => F_Rate,
-                                 Description => "Fuel Flow Rate"));
+                 Labeled_Widget_With_Unit (Widget      => F_Initial,
+                                           Description => "Initial Fuel Mass",
+                                           Unit        => "kg"));
             Widget_Box.all.Pack_Start
               (Child =>
-                 Labeled_Widget (Widget      => A_Thruster,
-                                 Description => "Thruster Acceleration"));
+                 Labeled_Widget_With_Unit (Widget      => F_Rate,
+                                           Description => "Fuel Flow Rate",
+                                           Unit        => "kg/s"));
+            Widget_Box.all.Pack_Start
+              (Child =>
+                 Labeled_Widget_With_Unit (Widget      => A_Thruster,
+                                           Description => "Thruster Acceleration",
+                                           Unit        => "m/s²"));
 
             Container.all.Pack_Start (Child  => Widget_Box,
                                       Expand => False);
