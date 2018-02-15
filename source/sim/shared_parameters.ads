@@ -24,8 +24,7 @@ is
    Initial_Fuel_Mass       : Shared_Types.Fuel_Mass :=    64.000; -- kg
 
    --  Fuel flow rate when Thrusters are (fully) enabled.
-   Fuel_Flow_Rate          : Shared_Types.Fuel_Mass
-     := 0.044_999_986_886_978_149_414_062_500; -- equals ~4.5 kg/s
+   Fuel_Flow_Rate          : Shared_Types.Fuel_Mass :=     4.500; -- kg/s
 
    --  Acceleration of space craft when thrusters are enabled.
    Thruster_Acceleration   : Shared_Types.Acceleration
