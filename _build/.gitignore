@@ -1,7 +1,9 @@
-*.ali
-*.cswi
-*.db
-*.o
-*.stderr
-*.stdout
-*.xml
+*ali
+*bexch
+*cswi
+*db
+*o
+*stderr
+*stdout
+*xml
+b__*
