@@ -9,7 +9,8 @@ with Gtk.Main;
 with Gtk.Missed;
 with GUI.Callbacks;
 with Pango.Cairo.Fonts;
-with Shared_Parameters;
+with Shared_Parameters.Read;
+with Shared_Parameters.Write;
 with Shared_Sensor_Data;
 
 package body GUI is
@@ -83,40 +84,35 @@ package body GUI is
    --  Callbacks for entry fields
    pragma Warnings (Off, "instance does not use primitive operation ""*""");
 
-   function Set_Fuel_Flow_Rate is
-     new Callbacks.Set_GEntry_Value
-       (T     => Shared_Types.Fuel_Mass,
-        Read  => Shared_Parameters.Read_Fuel_Flow_Rate,
-        Write => Shared_Parameters.Write_Fuel_Flow_Rate,
-        Name  => "fuel flow rate");
+   function Set_Fuel_Flow_Rate is new Callbacks.Set_GEntry_Value
+     (T     => Shared_Types.Fuel_Mass,
+      Read  => Shared_Parameters.Read.Fuel_Flow_Rate,
+      Write => Shared_Parameters.Write.Fuel_Flow_Rate,
+      Name  => "fuel flow rate");
 
-   function Set_Initial_Altitude is
-     new Callbacks.Set_GEntry_Value
-       (T     => Shared_Types.Altitude,
-        Read  => Shared_Parameters.Read_Initial_Altitude,
-        Write => Shared_Parameters.Write_Initial_Altitude,
-        Name  => "initial altitude");
+   function Set_Initial_Altitude is new Callbacks.Set_GEntry_Value
+     (T     => Shared_Types.Altitude,
+      Read  => Shared_Parameters.Read.Initial_Altitude,
+      Write => Shared_Parameters.Write.Initial_Altitude,
+      Name  => "initial altitude");
 
-   function Set_Initial_Fuel_Mass is
-     new Callbacks.Set_GEntry_Value
-       (T     => Shared_Types.Fuel_Mass,
-        Read  => Shared_Parameters.Read_Initial_Fuel_Mass,
-        Write => Shared_Parameters.Write_Initial_Fuel_Mass,
-        Name  => "initial fuel mass");
+   function Set_Initial_Fuel_Mass is new Callbacks.Set_GEntry_Value
+     (T     => Shared_Types.Fuel_Mass,
+      Read  => Shared_Parameters.Read.Initial_Fuel_Mass,
+      Write => Shared_Parameters.Write.Initial_Fuel_Mass,
+      Name  => "initial fuel mass");
 
-   function Set_Initial_Velocity is
-     new Callbacks.Set_GEntry_Value
-       (T     => Shared_Types.Velocity,
-        Read  => Shared_Parameters.Read_Initial_Velocity,
-        Write => Shared_Parameters.Write_Initial_Velocity,
-        Name  => "initial velocity");
+   function Set_Initial_Velocity is new Callbacks.Set_GEntry_Value
+     (T     => Shared_Types.Velocity,
+      Read  => Shared_Parameters.Read.Initial_Velocity,
+      Write => Shared_Parameters.Write.Initial_Velocity,
+      Name  => "initial velocity");
 
-   function Set_Thruster_Acceleration is
-     new Callbacks.Set_GEntry_Value
-       (T     => Shared_Types.Acceleration,
-        Read  => Shared_Parameters.Read_Thruster_Acceleration,
-        Write => Shared_Parameters.Write_Thruster_Acceleration,
-        Name  => "thruster acceleration");
+   function Set_Thruster_Acceleration is new Callbacks.Set_GEntry_Value
+     (T     => Shared_Types.Acceleration,
+      Read  => Shared_Parameters.Read.Thruster_Acceleration,
+      Write => Shared_Parameters.Write.Thruster_Acceleration,
+      Name  => "thruster acceleration");
 
    pragma Warnings (On, "instance does not use primitive operation ""*""");
 

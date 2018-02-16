@@ -29,7 +29,7 @@ with Altimeter;
 with Engine;
 with Global;
 with Landing_Legs;
-with Shared_Parameters;
+with Shared_Parameters.Read;
 with Shared_Sensor_Data;
 with Shared_Types;
 with Thrusters;
@@ -75,9 +75,9 @@ procedure Simulator is
    end Update_Shared_Data;
 
    Target_Landing_Velocity : constant Shared_Types.Velocity :=
-                               Shared_Parameters.Target_Landing_Velocity;
+                               Shared_Parameters.Read.Target_Landing_Velocity;
    Safe_Landing_Velocity   : constant Shared_Types.Velocity :=
-                               Shared_Parameters.Safe_Landing_Velocity;
+                               Shared_Parameters.Read.Safe_Landing_Velocity;
 
    package Log is new Global.Log (Unit_Name => "SIM");
 begin

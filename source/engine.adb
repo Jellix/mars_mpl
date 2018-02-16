@@ -1,4 +1,4 @@
-with Shared_Parameters;
+with Shared_Parameters.Read;
 with Task_Safe_Store;
 with Thrusters;
 
@@ -8,9 +8,9 @@ package body Engine is
    use type Shared_Types.Fuel_Mass;
    use type Shared_Types.State;
 
-   package Fuel_Store is
-     new Task_Safe_Store (Stored_Type   => Shared_Types.Fuel_Mass,
-                          Initial_Value => Shared_Parameters.Initial_Fuel_Mass);
+   package Fuel_Store is new Task_Safe_Store
+     (Stored_Type   => Shared_Types.Fuel_Mass,
+      Initial_Value => Shared_Parameters.Read.Initial_Fuel_Mass);
 
    function Remaining_Fuel return Shared_Types.Fuel_Mass is
    begin
@@ -23,7 +23,7 @@ package body Engine is
       Next_Cycle   : Ada.Real_Time.Time := Global.Start_Time;
       Current_Fuel : Shared_Types.Fuel_Mass;
       Fuel_Flow_Rate : constant Shared_Types.Fuel_Mass :=
-                         Shared_Parameters.Fuel_Flow_Rate / Duration'(1.0 / Ada.Real_Time.To_Duration (Cycle));
+                         Shared_Parameters.Read.Fuel_Flow_Rate / Duration'(1.0 / Ada.Real_Time.To_Duration (Cycle));
    begin
       loop
          delay until Next_Cycle;

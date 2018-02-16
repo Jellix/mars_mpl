@@ -1,6 +1,6 @@
 with Landing_Legs;
 with Parametrization;
-with Shared_Parameters;
+with Shared_Parameters.Read;
 with Task_Safe_Store;
 with Thrusters;
 
@@ -11,18 +11,18 @@ package body Altimeter is
    use type Shared_Types.State;
    use type Shared_Types.Velocity;
 
-   Thruster_Acceleration : constant Shared_Types.Acceleration :=
-                             Shared_Parameters.Thruster_Acceleration;
+   Thruster_Acceleration : constant Shared_Types.Acceleration
+     := Shared_Parameters.Read.Thruster_Acceleration;
 
    pragma Warnings (Off, "instance does not use primitive operation ""*""");
 
    package Altimeter_Store is new
      Task_Safe_Store (Stored_Type   => Shared_Types.Altitude,
-                      Initial_Value => Shared_Parameters.Initial_Altitude);
+                      Initial_Value => Shared_Parameters.Read.Initial_Altitude);
 
    package Velocity_Store  is new
      Task_Safe_Store (Stored_Type   => Shared_Types.Velocity,
-                      Initial_Value => Shared_Parameters.Initial_Velocity);
+                      Initial_Value => Shared_Parameters.Read.Initial_Velocity);
 
    pragma Warnings (On, "instance does not use primitive operation ""*""");
 
