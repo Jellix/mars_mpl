@@ -49,7 +49,7 @@ package body GUI.Callbacks is
                        Include_Unit => False);
          end Range_Image;
       begin
-         Target := T'Value (GEntry.all.Get_Text);
+         Write (Value => T'Value (GEntry.all.Get_Text));
       exception
          when Constraint_Error =>
             Log.Trace (Message =>
@@ -57,7 +57,7 @@ package body GUI.Callbacks is
                        & Range_Image & ".");
       end;
 
-      GEntry.all.Set_Text (Image (Value        => Target,
+      GEntry.all.Set_Text (Image (Value        => Read,
                                   Include_Unit => False));
 
       return False;

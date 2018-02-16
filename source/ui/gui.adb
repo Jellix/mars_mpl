@@ -85,33 +85,38 @@ package body GUI is
 
    function Set_Fuel_Flow_Rate is
      new Callbacks.Set_GEntry_Value
-       (T      => Shared_Types.Fuel_Mass,
-        Target => Shared_Parameters.Fuel_Flow_Rate,
-        Name   => "fuel flow rate");
+       (T     => Shared_Types.Fuel_Mass,
+        Read  => Shared_Parameters.Read_Fuel_Flow_Rate,
+        Write => Shared_Parameters.Write_Fuel_Flow_Rate,
+        Name  => "fuel flow rate");
 
    function Set_Initial_Altitude is
      new Callbacks.Set_GEntry_Value
-       (T      => Shared_Types.Altitude,
-        Target => Shared_Parameters.Initial_Altitude,
-        Name   => "initial altitude");
+       (T     => Shared_Types.Altitude,
+        Read  => Shared_Parameters.Read_Initial_Altitude,
+        Write => Shared_Parameters.Write_Initial_Altitude,
+        Name  => "initial altitude");
 
    function Set_Initial_Fuel_Mass is
      new Callbacks.Set_GEntry_Value
-       (T      => Shared_Types.Fuel_Mass,
-        Target => Shared_Parameters.Initial_Fuel_Mass,
-        Name   => "initial fuel mass");
+       (T     => Shared_Types.Fuel_Mass,
+        Read  => Shared_Parameters.Read_Initial_Fuel_Mass,
+        Write => Shared_Parameters.Write_Initial_Fuel_Mass,
+        Name  => "initial fuel mass");
 
    function Set_Initial_Velocity is
      new Callbacks.Set_GEntry_Value
-       (T      => Shared_Types.Velocity,
-        Target => Shared_Parameters.Initial_Velocity,
-        Name   => "initial velocity");
+       (T     => Shared_Types.Velocity,
+        Read  => Shared_Parameters.Read_Initial_Velocity,
+        Write => Shared_Parameters.Write_Initial_Velocity,
+        Name  => "initial velocity");
 
    function Set_Thruster_Acceleration is
      new Callbacks.Set_GEntry_Value
-       (T      => Shared_Types.Acceleration,
-        Target => Shared_Parameters.Thruster_Acceleration,
-        Name   => "thruster acceleration");
+       (T     => Shared_Types.Acceleration,
+        Read  => Shared_Parameters.Read_Thruster_Acceleration,
+        Write => Shared_Parameters.Write_Thruster_Acceleration,
+        Name  => "thruster acceleration");
 
    pragma Warnings (On, "instance does not use primitive operation ""*""");
 

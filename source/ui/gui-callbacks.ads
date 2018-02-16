@@ -19,7 +19,8 @@ private package GUI.Callbacks is
       type T is delta <>;
       with function Image (Value        : in T;
                            Include_Unit : in Boolean) return String is <>;
-      Target : in out T;
+      with function Read return T;
+      with procedure Write (Value : in T);
       Name   : String;
    function Set_GEntry_Value
      (Self  : access Gtk.Widget.Gtk_Widget_Record'Class;
