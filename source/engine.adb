@@ -12,10 +12,12 @@ package body Engine is
      (Stored_Type   => Shared_Types.Fuel_Mass,
       Initial_Value => Shared_Parameters.Read.Initial_Fuel_Mass);
 
-   function Remaining_Fuel return Shared_Types.Fuel_Mass is
+   Fuel_State : Fuel_Store.Shelf;
+
+   function Current_Fuel_Mass return Shared_Types.Fuel_Mass is
    begin
-      return Fuel_Store.Get;
-   end Remaining_Fuel;
+      return Fuel_State.Get;
+   end Current_Fuel_Mass;
 
    task Engine_Task;
 
@@ -29,7 +31,7 @@ package body Engine is
          delay until Next_Cycle;
          Next_Cycle := Next_Cycle + Cycle;
 
-         Current_Fuel := Fuel_Store.Get;
+         Current_Fuel := Fuel_State.Get;
 
          if Thrusters.Current_State = Shared_Types.Enabled then
             if Current_Fuel > Fuel_Flow_Rate then
@@ -43,7 +45,7 @@ package body Engine is
             end if;
          end if;
 
-         Fuel_Store.Set (New_Value => Current_Fuel);
+         Fuel_State.Set (New_Value => Current_Fuel);
       end loop;
    exception
       when E : others =>

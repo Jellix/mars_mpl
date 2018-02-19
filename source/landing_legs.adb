@@ -1,4 +1,5 @@
 with Ada.Real_Time;
+with Task_Safe_Store;
 
 package body Landing_Legs is
 
@@ -20,9 +21,12 @@ package body Landing_Legs is
       State           : Task_State := Running;
    end Task_Control;
 
+   package Leg_Store is new Task_Safe_Store
+     (Stored_Type   => Shared_Types.Leg_State,
+      Initial_Value => Shared_Types.In_Flight);
+
    type All_Legs_State_Atomic is
-     array (Shared_Types.Legs_Index) of Shared_Types.Leg_State
-     with Atomic_Components;
+     array (Shared_Types.Legs_Index) of Leg_Store.Shelf;
 
    Legs_State : All_Legs_State_Atomic;
 
@@ -65,13 +69,13 @@ package body Landing_Legs is
    procedure Read_State (Index : in     Shared_Types.Legs_Index;
                          State :    out Shared_Types.Leg_State) is
    begin
-      State := Legs_State (Index);
+      State := Legs_State (Index).Get;
    end Read_State;
 
    procedure Read_State (State : out Shared_Types.All_Legs_State) is
    begin
-      for The_Leg in Shared_Types.Legs_Index'Range loop
-         State (The_Leg) := Legs_State (The_Leg);
+      for I in Shared_Types.Legs_Index loop
+         State (I) := Legs_State (I).Get;
       end loop;
    end Read_State;
 
@@ -122,8 +126,10 @@ package body Landing_Legs is
                   Sensor_Glitch.Activate_Glitch;
 
                when Touched_Down         =>
-                  Legs_State (Shared_Types.Legs_Index'Range) :=
-                    (others => Shared_Types.Touched_Down);
+                  for I in Shared_Types.Legs_Index'Range loop
+                     Legs_State (I).Set
+                       (New_Value => Shared_Types.Touched_Down);
+                  end loop;
 
                when Running | Terminated =>
                   null;

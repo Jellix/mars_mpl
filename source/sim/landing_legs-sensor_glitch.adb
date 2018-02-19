@@ -67,11 +67,11 @@ package body Sensor_Glitch is
                                                   For_Duration => Activate_For);
 
          delay until Activate_At;
-         Legs_State (The_Leg) := Shared_Types.Touched_Down;
+         Legs_State (The_Leg).Set (New_Value => Shared_Types.Touched_Down);
          Log.Trace (Message => Leg_String & " triggered.");
 
          delay until Activate_At + Activate_For;
-         Legs_State (The_Leg) := Shared_Types.In_Flight;
+         Legs_State (The_Leg).Set (New_Value => Shared_Types.In_Flight);
          Log.Trace
            (Message =>
               Leg_String & " triggered for"

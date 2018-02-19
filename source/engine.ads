@@ -10,7 +10,7 @@ package Engine is
    Cycle : constant Ada.Real_Time.Time_Span :=
              Ada.Real_Time.Milliseconds (10);
 
-   function Remaining_Fuel return Shared_Types.Fuel_Mass;
+   function Current_Fuel_Mass return Shared_Types.Fuel_Mass;
 
    procedure Shutdown;
 

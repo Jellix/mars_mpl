@@ -19,10 +19,12 @@ package body Altimeter is
    package Altimeter_Store is new
      Task_Safe_Store (Stored_Type   => Shared_Types.Altitude,
                       Initial_Value => Shared_Parameters.Read.Initial_Altitude);
+   Altimeter_State : Altimeter_Store.Shelf;
 
    package Velocity_Store  is new
      Task_Safe_Store (Stored_Type   => Shared_Types.Velocity,
                       Initial_Value => Shared_Parameters.Read.Initial_Velocity);
+   Velocity_State : Velocity_Store.Shelf;
 
    pragma Warnings (On, "instance does not use primitive operation ""*""");
 
@@ -30,8 +32,8 @@ package body Altimeter is
 
    task body Radar_Simulator is
       Next_Cycle   : Ada.Real_Time.Time    := Global.Start_Time;
-      Altitude_Now : Shared_Types.Altitude := Altimeter_Store.Get;
-      Velocity_Now : Shared_Types.Velocity := Velocity_Store.Get;
+      Altitude_Now : Shared_Types.Altitude := Altimeter_State.Get;
+      Velocity_Now : Shared_Types.Velocity := Velocity_State.Get;
    begin
       Log.Trace (Message => "Altitude control monitor started.");
 
@@ -46,11 +48,11 @@ package body Altimeter is
          begin
             Altitude_Now :=
               Altitude_Now - Shared_Types.Altitude'Min (Altitude_Now, Delta_A);
-            Altimeter_Store.Set (New_Value => Altitude_Now);
+            Altimeter_State.Set (New_Value => Altitude_Now);
 
             Velocity_Now :=
               Shared_Types.Velocity'Max (0.0, Velocity_Now + Delta_V);
-            Velocity_Store.Set (New_Value => Velocity_Now);
+            Velocity_State.Set (New_Value => Velocity_Now);
          end;
 
          delay until Next_Cycle;
@@ -64,10 +66,10 @@ package body Altimeter is
          Log.Trace (E => E);
    end Radar_Simulator;
 
-   function Current_Altitude return Shared_Types.Altitude
-     renames Altimeter_Store.Get;
+   function Current_Altitude return Shared_Types.Altitude is
+     (Altimeter_State.Get);
 
-   function Current_Velocity return Shared_Types.Velocity
-     renames Velocity_Store.Get;
+   function Current_Velocity return Shared_Types.Velocity is
+     (Velocity_State.Get);
 
 end Altimeter;

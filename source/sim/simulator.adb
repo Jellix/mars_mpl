@@ -60,7 +60,7 @@ procedure Simulator is
       Thruster : constant Shared_Types.State     := Thrusters.Current_State;
       Altitude : constant Shared_Types.Altitude  := Altimeter.Current_Altitude;
       Velocity : constant Shared_Types.Velocity  := Altimeter.Current_Velocity;
-      Fuel     : constant Shared_Types.Fuel_Mass := Engine.Remaining_Fuel;
+      Fuel     : constant Shared_Types.Fuel_Mass := Engine.Current_Fuel_Mass;
    begin
       Landing_Legs.Read_State (State => All_Legs);
       Shared_Sensor_Data.Current_State.Set
