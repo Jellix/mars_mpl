@@ -1,4 +1,7 @@
-docs/*
-entities/*
+docs/*html
+docs/*js
+entities/*html
+entities/*js
 images/*
-srcs/*
+srcs/*html
+srcs/*js
