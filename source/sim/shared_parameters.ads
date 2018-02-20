@@ -1,5 +1,13 @@
 with Shared_Types;
 
+-- @summary
+-- All shared parameters.
+--
+-- @description
+-- Stores all shared parameters. This is a Shared_Passive package, thus the
+-- values stored within here are shared between all partitions.
+-- There is no public interface, for read and write access to the parameters,
+-- see the corresponding child packages.
 package Shared_Parameters with
   Shared_Passive => True
 is
