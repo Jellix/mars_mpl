@@ -1,0 +1,35 @@
+with "gtkada.gpr";
+
+project Gtkada_Contributions is
+
+   for Source_Dirs use (".");
+   for Source_Files use ("gdk-color-ihls.adb", "gdk-color-ihls.ads", "gdk-pixbuf-conversions.ads", "gdk-pixbuf-image.adb", "gdk-pixbuf-image.ads", "gio.ads", "gio-content_type.adb", "gio-content_type.ads", "gio-drive.adb", "gio-drive.ads", 
+      "gio-mount.adb", "gio-mount.ads", "gio-volume.adb", "gio-volume.ads", "gio-volume_monitor.adb", "gio-volume_monitor.ads", "glib-chars_ptr_vectors.adb", "glib-chars_ptr_vectors.ads", "glib-object-checked_destroy.adb", 
+      "glib-object-checked_destroy.ads", "glib-object-ref_count.adb", "glib-object-ref_count.ads", "glib-object-strong_references.adb", "glib-object-strong_references.ads", "glib-object-weak_references.adb", 
+      "glib-object-weak_references.ads", "glib-properties-icon_size.ads", "glib-properties-relief_style.ads", "glib-spawn.adb", "glib-spawn.ads", "glib-spawn-asynchronous.adb", "glib-spawn-asynchronous.ads", 
+      "glib-spawn-text_bufferred.adb", "glib-spawn-text_bufferred.ads", "glib-values-handling.adb", "glib-values-handling.ads", "glib-wrappers.adb", "glib-wrappers.ads", "gtk-abstract_browser.adb", "gtk-abstract_browser.ads", 
+      "gtk-cell_renderer-abstract_renderer.adb", "gtk-cell_renderer-abstract_renderer.ads", "gtk-cell_renderer_fixed.adb", "gtk-cell_renderer_fixed.ads", "gtk-enums-string_lists.adb", "gtk-enums-string_lists.ads", 
+      "gtk-generic_enum_combo_box.adb", "gtk-generic_enum_combo_box.ads", "gtk-generic_style_button.adb", "gtk-generic_style_button.ads", "gtk-handlers-references.adb", "gtk-handlers-references.ads", 
+      "gtk-handlers-generic_callback.adb", "gtk-handlers-generic_callback.ads", "gtk-image_button.adb", "gtk-image_button.ads", "gtk-main-router-gnat_stack.adb", "gtk-main-router-gnat_stack.ads", "gtk-main-router.adb", 
+      "gtk-main-router.ads", "gtk-missed.adb", "gtk-missed.ads", "gtk-recent_manager_alt.adb", "gtk-recent_manager_alt.ads", "gtk-recent_manager_keys.adb", "gtk-recent_manager_keys.ads", "gtk-tree_model-abstract_store.adb", 
+      "gtk-tree_model-abstract_store.ads", "gtk-tree_model-columned_store.adb", "gtk-tree_model-columned_store.ads", "gtk-tree_model-extension_store.adb", "gtk-tree_model-extension_store.ads", 
+      "gtk-tree_model-generic_sort.adb", "gtk-tree_model-generic_sort.ads", "gtk-widget-styles-css_store.adb", "gtk-widget-styles-css_store.ads", "gtk-widget-styles-generic_enumeration.adb", 
+      "gtk-widget-styles-generic_enumeration.ads", "gtk-widget-styles-icon_size.ads", "gtk-widget-styles-relief_style.ads", "gtk-widget-styles-store.adb", "gtk-widget-styles-store.ads", "gtk-widget-styles.adb", "gtk-widget-styles.ads");
+
+   package Binder is
+      for Default_Switches ("ada") use ();
+   end Binder;
+
+   package Builder is
+      for Default_Switches ("ada") use ("-s");
+   end Builder;
+
+   package Compiler is
+      for Default_Switches ("ada") use ("-gnaty3aAbBCdefhiklnoOprsStux", "-gnatw.e.Y", "-gnato", "-gnatVa", "-gnatf", "-O2", "-gnatn", "-gnat12");
+   end Compiler;
+
+   package Linker is
+      for Default_Switches ("ada") use ("-lgio-2.0", "-mwindows");
+   end Linker;
+
+end Gtkada_Contributions;

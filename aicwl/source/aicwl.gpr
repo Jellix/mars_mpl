@@ -1,0 +1,43 @@
+with "gtkada_contributions.gpr";
+with "strings_edit.gpr";
+
+project AICWL is
+
+   for Source_Dirs use (".");
+   for Source_Files use ("cairo-ellipses.adb", "cairo-ellipses.ads", "cairo-elementary_functions.ads", "cairo-font_slant_property.ads", "cairo-font_weight_property.ads", "cairo-line_cap_property.ads", "cairo-transformations.adb", 
+      "cairo-transformations.ads", "gtk-enums-shadow_property.ads", "gtk-layered.adb", "gtk-layered.ads", "gtk-layered-abstract_bordered.adb", "gtk-layered-abstract_bordered.ads", "gtk-layered-alignment_property.ads", 
+      "gtk-layered-arc.adb", "gtk-layered-arc.ads", "gtk-layered-bar.adb", "gtk-layered-bar.ads", "gtk-layered-clock_hand.adb", "gtk-layered-clock_hand.ads", "gtk-layered-cache.adb", "gtk-layered-cache.ads", "gtk-layered-cap.adb", 
+      "gtk-layered-cap.ads", "gtk-layered-digital.ads", "gtk-layered-elliptic_annotation.adb", "gtk-layered-elliptic_annotation.ads", "gtk-layered-elliptic_background.adb", "gtk-layered-elliptic_background.ads", 
+      "gtk-layered-elliptic_bar.adb", "gtk-layered-elliptic_bar.ads", "gtk-layered-elliptic_scale.adb", "gtk-layered-elliptic_scale.ads", "gtk-layered-elliptic_shape_property.ads", "gtk-layered-flat_annotation.adb", 
+      "gtk-layered-flat_annotation.ads", "gtk-layered-flat_needle.adb", "gtk-layered-flat_needle.ads", "gtk-layered-flat_scale.adb", "gtk-layered-flat_scale.ads", "gtk-layered-graph_paper.adb", "gtk-layered-graph_paper.ads", 
+      "gtk-layered-graph_paper_annotation.adb", "gtk-layered-graph_paper_annotation.ads", "gtk-layered-interpolation_mode_property.ads", "gtk-layered-label.adb", "gtk-layered-label.ads", "gtk-layered-label-digital.adb", 
+      "gtk-layered-label-digital.ads", "gtk-layered-line.adb", "gtk-layered-line.ads", "gtk-layered-needle.adb", "gtk-layered-needle.ads", "gtk-layered-rectangular_background.adb", 
+      "gtk-layered-rectangular_background.ads", "gtk-layered-rectangular_clip_region.adb", "gtk-layered-rectangular_clip_region.ads", "gtk-layered-rectangle.adb", "gtk-layered-rectangle.ads", "gtk-layered-refresh_engine.adb", 
+      "gtk-layered-refresh_engine.ads", "gtk-layered-sector_needle.adb", "gtk-layered-sector_needle.ads", "gtk-layered-stream_io.adb", "gtk-layered-stream_io.ads", "gtk-layered-text_transformation_property.ads", 
+      "gtk-layered-vertical_alignment_property.ads", "gtk-layered-waveform.adb", "gtk-layered-waveform.ads", "gtk-layered-waveform-amplifier.adb", "gtk-layered-waveform-amplifier.ads", 
+      "gtk-layered-waveform-draw_lines.adb", "gtk-layered-waveform_drawing_method_property.ads", "gtk-layered-waveform-ring_data_buffer.adb", "gtk-layered-waveform-ring_data_buffer.ads", 
+      "gtk-layered-waveform-sample_lines.adb", "gtk-layered-waveform-sweeper.adb", "gtk-layered-waveform-sweeper.ads", "gtk-gauge.ads", "gtk-gauge-elliptic_180.adb", "gtk-gauge-elliptic_180.ads", 
+      "gtk-gauge-flat_horizontal.adb", "gtk-gauge-flat_horizontal.ads", "gtk-gauge-flat_vertical.adb", "gtk-gauge-flat_vertical.ads", "gtk-gauge-led_rectangular.adb", "gtk-gauge-led_rectangular.ads", "gtk-gauge-led_round.adb", 
+      "gtk-gauge-led_round.ads", "gtk-gauge-rectangular_70s.adb", "gtk-gauge-rectangular_70s.ads", "gtk-gauge-rectangular_70s_slanted.adb", "gtk-gauge-rectangular_70s_slanted.ads", "gtk-gauge-round_90.adb", "gtk-gauge-round_90.ads", 
+      "gtk-gauge-round_110.adb", "gtk-gauge-round_110.ads", "gtk-gauge-round_180.adb", "gtk-gauge-round_180.ads", "gtk-gauge-round_254.adb", "gtk-gauge-round_254.ads", "gtk-gauge-round_270.adb", "gtk-gauge-round_270.ads", 
+      "gtk-gauge-round_270_inout.adb", "gtk-gauge-round_270_inout.ads", "gtk-gauge-round_270_60s.adb", "gtk-gauge-round_270_60s.ads", "gtk-gauge-round_270_outer.adb", "gtk-gauge-round_270_outer.ads", 
+      "gtk-gauge-round_270_reversed.adb", "gtk-gauge-round_270_reversed.ads", "gtk-meter.ads", "gtk-meter-angular_90.adb", "gtk-meter-angular_90.ads", "gtk-meter-elliptic_90.adb", "gtk-meter-elliptic_90.ads", "gtk-meter-round_90.adb", 
+      "gtk-meter-round_90.ads", "gtk-meter-round_94.adb", "gtk-meter-round_94.ads", "gtk-meter-thermo.adb", "gtk-meter-thermo.ads", "gtk-meter-thermo_dual.adb", "gtk-meter-thermo_dual.ads", "gtk-meter-thermo_symmetric.adb", 
+      "gtk-meter-thermo_symmetric.ads", "gtk-oscilloscope.adb", "gtk-oscilloscope.ads", "gtk-oscilloscope-channels_panel.adb", "gtk-oscilloscope-channels_panel.ads", "gtk-oscilloscope-get_type.adb", 
+      "gtk-oscilloscope-do_init.adb", "gtk-oscilloscope-on_button_press.adb", "gtk-oscilloscope-on_button_release.adb", "gtk-oscilloscope-on_motion.adb", "gtk-wall_clock.ads", "gtk-wall_clock-classic.adb", 
+      "gtk-wall_clock-classic.ads", "gtk-wall_clock-imperial.ads", "gtk-wall_clock-imperial.adb", "gtk-wall_clock-modern.adb", "gtk-wall_clock-modern.ads", "gtk-widget-styles-alignment_property.ads", 
+      "gtk-widget-styles-elliptic_shape_property.ads", "gtk-widget-styles-font_slant_property.ads", "gtk-widget-styles-font_type_property.ads", "gtk-widget-styles-font_weight_property.ads", 
+      "gtk-widget-styles-interpolation_mode_property.ads", "gtk-widget-styles-line_cap_property.ads", "gtk-widget-styles-pango_weight_property.ads", "gtk-widget-styles-shadow_property.ads", 
+      "gtk-widget-styles-text_transformation_property.ads", "gtk-widget-styles-vertical_alignment_property.ads", "pango-cairo-fonts.adb", "pango-cairo-fonts.ads", "pango-cairo-fonts-font_type_property.ads", 
+      "pango-enums-weight_property.ads");
+
+   package Binder renames Gtkada_Contributions.Binder;
+
+   package Builder renames Gtkada_Contributions.Builder;
+
+   package Compiler renames Gtkada_Contributions.Compiler;
+
+   package Linker renames Gtkada_Contributions.Linker;
+
+end AICWL;
+
