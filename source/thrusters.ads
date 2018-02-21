@@ -35,5 +35,6 @@ package Thrusters is
 private
 
    package Log is new Global.Log (Unit_Name => "THR");
+   --  Logger package instance for Thruster.
 
 end Thrusters;

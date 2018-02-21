@@ -32,5 +32,6 @@ package Altimeter is
 private
 
    package Log is new Global.Log (Unit_Name => "ATM");
+   --  Logger package instance for Altimeter.
 
 end Altimeter;

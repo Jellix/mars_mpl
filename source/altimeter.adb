@@ -34,16 +34,25 @@ package body Altimeter is
       Next_Cycle   : Ada.Real_Time.Time    := Global.Start_Time;
       Altitude_Now : Shared_Types.Altitude := Altimeter_State.Get;
       Velocity_Now : Shared_Types.Velocity := Velocity_State.Get;
+
+      --  The following parameters remain constant during the task's lifetime.
+      T            : constant Duration := Ada.Real_Time.To_Duration (Cycle);
+      Free_Fall    : constant Shared_Types.Velocity
+        := Shared_Types.Velocity (Parametrization.Gravity * Float (T));
+      Thrusted     : constant Shared_Types.Velocity
+        := Thruster_Acceleration * T;
    begin
       Log.Trace (Message => "Altitude control monitor started.");
 
       while Altitude_Now > 0.0 loop
+         delay until Next_Cycle;
+         Next_Cycle := Next_Cycle + Cycle;
+
          declare
-            T       : constant Duration := Ada.Real_Time.To_Duration (Cycle);
             Delta_V : constant Shared_Types.Velocity :=
                         (if Thrusters.Current_State = Shared_Types.Disabled
-                         then Shared_Types.Velocity (Parametrization.Gravity * Float (T))
-                         else Thruster_Acceleration * T);
+                         then Free_Fall
+                         else Thrusted);
             Delta_A : constant Shared_Types.Altitude := Velocity_Now * T;
          begin
             Altitude_Now :=
@@ -54,9 +63,6 @@ package body Altimeter is
               Shared_Types.Velocity'Max (0.0, Velocity_Now + Delta_V);
             Velocity_State.Set (New_Value => Velocity_Now);
          end;
-
-         delay until Next_Cycle;
-         Next_Cycle := Next_Cycle + Cycle;
       end loop;
 
       Landing_Legs.Touchdown;

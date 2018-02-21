@@ -3,8 +3,8 @@ with Ada.Text_IO;
 
 package body Shared_Types.IO is
 
-   function Generic_Image (Value : in T;
-                           Include_Unit : in Boolean := True) return String
+   function Generic_Image (Value     : in T;
+                           With_Unit : in Boolean := True) return String
    is
       pragma Warnings (Off, "instance does not use primitive operation ""*""");
       package Fixed_IO is new Ada.Text_IO.Fixed_IO (Num => T);
@@ -19,7 +19,7 @@ package body Shared_Types.IO is
                     Exp  => 0);
       return Ada.Strings.Fixed.Trim (Source => Result,
                                      Side   => Ada.Strings.Left)
-        & (if Include_Unit then " " & Unit else "");
+        & (if With_Unit then " " & Unit else "");
    end Generic_Image;
 
 end Shared_Types.IO;

@@ -61,5 +61,6 @@ package Landing_Legs is
 private
 
    package Log is new Global.Log (Unit_Name => "LLC");
+   --  Logger package instance for Landing Legs Control.
 
 end Landing_Legs;

@@ -42,53 +42,48 @@ begin
          Bug_Switch.all.On_State_Set (Call  => Callbacks.Switch_Bug'Access,
                                       After => False);
          V_Initial.all.Set_Text
-           (Text =>
-              Image (Value        => Shared_Parameters.Read.Initial_Velocity,
-                     Include_Unit => False));
+           (Text => Image (Value     => Shared_Parameters.Read.Initial_Velocity,
+                           With_Unit => False));
          V_Initial.all.On_Focus_Out_Event (Call  => Set_Initial_Velocity'Access,
                                            After => True);
 
          V_Safe_Landing.all.Set_Text
            (Text =>
-              Image
-                (Value        => Shared_Parameters.Read.Safe_Landing_Velocity,
-                 Include_Unit => False));
+              Image (Value     => Shared_Parameters.Read.Safe_Landing_Velocity,
+                     With_Unit => False));
          V_Safe_Landing.all.Set_Editable (Is_Editable => False);
 
          V_Target_Landing.all.Set_Text
            (Text =>
               Image
-                (Value        => Shared_Parameters.Read.Target_Landing_Velocity,
-                 Include_Unit => False));
+                (Value     => Shared_Parameters.Read.Target_Landing_Velocity,
+                 With_Unit => False));
          V_Target_Landing.all.Set_Editable (Is_Editable => False);
 
          A_Initial.all.Set_Text
-           (Text =>
-              Image (Value        => Shared_Parameters.Read.Initial_Altitude,
-                     Include_Unit => False));
+           (Text => Image (Value     => Shared_Parameters.Read.Initial_Altitude,
+                           With_Unit => False));
          A_Initial.all.On_Focus_Out_Event (Call  => Set_Initial_Altitude'Access,
                                            After => True);
 
          F_Initial.all.Set_Text
            (Text =>
-              Image (Value        => Shared_Parameters.Read.Initial_Fuel_Mass,
-                     Include_Unit => False));
+              Image (Value     => Shared_Parameters.Read.Initial_Fuel_Mass,
+                     With_Unit => False));
          F_Initial.all.On_Focus_Out_Event
            (Call  => Set_Initial_Fuel_Mass'Access,
             After => True);
 
          F_Rate.all.Set_Text
-           (Text =>
-              Image (Value        => Shared_Parameters.Read.Fuel_Flow_Rate,
-                     Include_Unit => False));
+           (Text => Image (Value     => Shared_Parameters.Read.Fuel_Flow_Rate,
+                           With_Unit => False));
          F_Rate.all.On_Focus_Out_Event (Call  => Set_Fuel_Flow_Rate'Access,
                                         After => True);
 
          A_Thruster.all.Set_Text
            (Text =>
-              Image
-                (Value        => Shared_Parameters.Read.Thruster_Acceleration,
-                 Include_Unit => False));
+              Image (Value     => Shared_Parameters.Read.Thruster_Acceleration,
+                     With_Unit => False));
          A_Thruster.all.On_Focus_Out_Event
            (Call  => Set_Thruster_Acceleration'Access,
             After => True);

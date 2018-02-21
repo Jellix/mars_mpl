@@ -12,6 +12,9 @@ package body Touchdown_Monitor is
          State  : Shared_Types.Leg_State;
          Health : Health_State;
       end record;
+   Default_Indicator : constant Leg_Indicator
+     := (State  => Shared_Types.In_Flight,
+         Health => Unknown);
 
    protected type Task_Control is
       procedure TC_Start;
@@ -44,30 +47,22 @@ package body Touchdown_Monitor is
    task type Touchdown_Monitor_Execute;
    Legs_Task    : array (Shared_Types.Legs_Index) of Touchdown_Monitor_Execute;
    pragma Unreferenced (Legs_Task);
+
    Legs_Control : array (Shared_Types.Legs_Index) of Task_Control;
 
    Assign_Leg : Landing_Legs.Leg_Iterator;
 
    task body Touchdown_Monitor_Execute is
+      Indicator         : Leg_Indicator          := Default_Indicator;
+      Event_Enabled     : Boolean                := False;
+      Last_Indicator    : Shared_Types.Leg_State := Shared_Types.In_Flight;
+      Current_Indicator : Shared_Types.Leg_State := Shared_Types.In_Flight;
+      Old_Run_State     : Run_State              := Not_Started;
+      Current_Run_State : Run_State              := Not_Started;
+      Next_Cycle        : Ada.Real_Time.Time     := Global.Start_Time;
       Leg               : Shared_Types.Legs_Index;
-      Indicator         : Leg_Indicator;
-      Event_Enabled     : Boolean;
-      Last_Indicator    : Shared_Types.Leg_State;
-      Current_Indicator : Shared_Types.Leg_State;
-      Old_Run_State     : Run_State;
-      Current_Run_State : Run_State;
-      Next_Cycle        : Ada.Real_Time.Time;
    begin
       --  Initialize local state.
-      Indicator         := Leg_Indicator'(State  => Shared_Types.In_Flight,
-                                          Health => Unknown);
-      Event_Enabled     := False;
-      Last_Indicator    := Shared_Types.In_Flight;
-      Current_Indicator := Shared_Types.In_Flight;
-      Old_Run_State     := Not_Started;
-      Current_Run_State := Not_Started;
-      Next_Cycle        := Global.Start_Time;
-
       Assign_Leg.Next (The_Leg => Leg);
 
       declare

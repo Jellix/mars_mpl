@@ -30,5 +30,6 @@ package Engine is
 private
 
    package Log is new Global.Log (Unit_Name => "ENG");
+   --  Logger package instance for Engine.
 
 end Engine;

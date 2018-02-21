@@ -31,6 +31,7 @@ package Task_Safe_Store is
    private
 
       Value : Stored_Type := Initial_Value;
+      --  The value stored internally.
 
    end Shelf;
    --  The actual protected type storing the value.

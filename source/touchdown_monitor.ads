@@ -54,5 +54,6 @@ package Touchdown_Monitor is
 private
 
    package Log is new Global.Log (Unit_Name => "TDM");
+   --  Logger package instance for Touchdown Monitor.
 
 end Touchdown_Monitor;

@@ -18,27 +18,27 @@ private
 
    pragma Warnings (Off, "instance does not use primitive operation ""*""");
 
-   --  The velocity considered safe for landing.
-   Shared_Safe_Landing_Velocity   : Shared_Types.Velocity  :=     2.500; -- m/s
+   Shared_Safe_Landing_Velocity : Shared_Types.Velocity := 2.500;
+   --  The velocity considered safe for landing in m/s.
 
-   --  Target landing velocity for thruster control.
-   Shared_Target_Landing_Velocity : Shared_Types.Velocity  :=     2.375; -- m/s
+   Shared_Target_Landing_Velocity : Shared_Types.Velocity := 2.375;
+   --  Target landing velocity for thruster control in m/s.
 
-   -- Altitude at which the simulation starts.
-   Shared_Initial_Altitude        : Shared_Types.Altitude  := 3_500.000; -- m
+   Shared_Initial_Altitude : Shared_Types.Altitude := 3_500.000;
+   -- Altitude at which the simulation starts in m.
 
-   --  Initial velocity at simulation start.
-   Shared_Initial_Velocity        : Shared_Types.Velocity  :=    80.000; -- m/s
+   Shared_Initial_Velocity : Shared_Types.Velocity := 80.000;
+   --  Initial velocity at simulation start in m/s.
 
-   --  Initial amount of fuel on spacecraft.
-   Shared_Initial_Fuel_Mass       : Shared_Types.Fuel_Mass :=    64.000; -- kg
+   Shared_Initial_Fuel_Mass : Shared_Types.Fuel_Mass := 64.000;
+   --  Initial amount of fuel on spacecraft in kg.
 
-   --  Fuel flow rate when Thrusters are (fully) enabled.
-   Shared_Fuel_Flow_Rate          : Shared_Types.Fuel_Mass :=     4.500; -- kg/s
+   Shared_Fuel_Flow_Rate : Shared_Types.Fuel_Mass := 4.500;
+   --  Fuel flow rate when Thrusters are (fully) enabled in kg/s.
 
-   --  Acceleration of space craft when thrusters are enabled.
    Shared_Thruster_Acceleration   : Shared_Types.Acceleration
-     := -22.265_999_794_006_347_656_250; -- equals -22.26 m/s² (6 g(Mars))
+     := -22.265_999_794_006_347_656_250;
+   --  Acceleration of space craft when thrusters are enabled in m/s².
 
    pragma Warnings (On, "instance does not use primitive operation ""*""");
 

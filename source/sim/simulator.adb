@@ -47,7 +47,6 @@ procedure Simulator is
    Monitor_Enabled   : Boolean := False;
    Cycle             : constant Ada.Real_Time.Time_Span :=
                          Ada.Real_Time.Milliseconds (MS => 10);
-   Next_Cycle        : Ada.Real_Time.Time;
 
    procedure Update_Shared_Data (Terminated : in Boolean := False);
 
@@ -84,15 +83,17 @@ begin
    Log.Trace (Message => "Starting touchdown monitors...");
    Touchdown_Monitor.Start;
 
-   Next_Cycle := Global.Start_Time + Cycle;
-
    declare
+      Next_Cycle       : Ada.Real_Time.Time    := Global.Start_Time;
       Current_Altitude : Shared_Types.Altitude := Altimeter.Current_Altitude;
-      Current_Velocity : Shared_Types.Velocity := Altimeter.Current_Velocity;
       Legs_Deployed    : Boolean               := False;
       Powered_Descent  : Boolean               := False;
+      Current_Velocity : Shared_Types.Velocity;
    begin
       while Current_Altitude > 0.0 loop
+         delay until Next_Cycle;
+         Next_Cycle := Next_Cycle + Cycle;
+
          Current_Altitude := Altimeter.Current_Altitude;
          Current_Velocity := Altimeter.Current_Velocity;
 
@@ -142,9 +143,6 @@ begin
          end if;
 
          Update_Shared_Data;
-
-         delay until Next_Cycle;
-         Next_Cycle := Next_Cycle + Cycle;
       end loop;
    end;
 

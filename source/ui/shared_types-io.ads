@@ -11,18 +11,16 @@ package Shared_Types.IO is
       --  The fixed point type we want to imag(ine).
       Unit : in String;
       --  The physical unit of the given type.
-   function Generic_Image (Value : in T;
-                           Include_Unit : in Boolean := True) return String;
+   function Generic_Image (Value     : in T;
+                           With_Unit : in Boolean := True) return String;
    --  Returns a human readable string for the given value, with the choice of
    --  including the physical unit (string).
    --  The returned string is restricted to three digits after the decimal
    --  point.  The Unit given in the instantiation is appended if the parameter
-   --  Include_Unit is True, otherwise only the stringified value will be
-   --  returned.
+   --  With_Unit is True, otherwise only the stringified value will be returned.
    --
-   --  @param Value The value to be converted into a human readable string.
-   --  @param Include_Unit Choice if the physical unit associated with the
-   --                      instance shall be appended to the human readable
-   --                      value.
+   --  @param Value     The value to be converted into a human readable string.
+   --  @param With_Unit Choice if the physical unit associated with the instance
+   --                   shall be appended to the string representation of Value.
 
 end Shared_Types.IO;
