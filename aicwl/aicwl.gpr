@@ -3,7 +3,9 @@ with "strings_edit.gpr";
 
 project AICWL is
 
-   for Source_Dirs use (".");
+   for Source_Dirs use ("source");
+   for Object_Dir use "_build";
+
    for Source_Files use ("cairo-ellipses.adb", "cairo-ellipses.ads", "cairo-elementary_functions.ads", "cairo-font_slant_property.ads", "cairo-font_weight_property.ads", "cairo-line_cap_property.ads", "cairo-transformations.adb", 
       "cairo-transformations.ads", "gtk-enums-shadow_property.ads", "gtk-layered.adb", "gtk-layered.ads", "gtk-layered-abstract_bordered.adb", "gtk-layered-abstract_bordered.ads", "gtk-layered-alignment_property.ads", 
       "gtk-layered-arc.adb", "gtk-layered-arc.ads", "gtk-layered-bar.adb", "gtk-layered-bar.ads", "gtk-layered-clock_hand.adb", "gtk-layered-clock_hand.ads", "gtk-layered-cache.adb", "gtk-layered-cache.ads", "gtk-layered-cap.adb", 
@@ -40,4 +42,3 @@ project AICWL is
    package Linker renames Gtkada_Contributions.Linker;
 
 end AICWL;
-

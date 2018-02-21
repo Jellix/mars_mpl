@@ -1,38 +1,40 @@
 with "gtkada_contributions.gpr";
-with "components-odbc.gpr";
+with "components-gnade.gpr";
 with "components-gtk.gpr";
 
-project Components.ODBC.GTK is
+project Components.GNADE.GTK is
 
-   for Source_Dirs use (".");
+   for Source_Dirs use ("source");
+   for Object_Dir use "_build";
+
    for Source_Files use
-      (  "gtk-persistent_storage_credentials_dialog-native_odbc.adb",
-         "gtk-persistent_storage_credentials_dialog-native_odbc.ads"
+      (  "gtk-persistent_storage_credentials_dialog-odbc.adb",
+         "gtk-persistent_storage_credentials_dialog-odbc.ads"
       );
 
    package Compiler is
       for Default_Switches ("ada") use
-         Components.ODBC.Compiler'Default_Switches ("ada") &
+         Components.GNADE.Compiler'Default_Switches ("ada") &
          GTKAda_Contributions.Compiler'Default_Switches ("ada");
    end Compiler;
 
    package Binder is
       for Default_Switches ("ada") use
-         Components.ODBC.Binder'Default_Switches ("ada") &
+         Components.GNADE.Binder'Default_Switches ("ada") &
          GTKAda_Contributions.Binder'Default_Switches ("ada");
    end Binder;
 
    package Builder is
       for Default_Switches ("ada") use
-         Components.ODBC.Builder'Default_Switches ("ada") &
+         Components.GNADE.Builder'Default_Switches ("ada") &
          GTKAda_Contributions.Builder'Default_Switches ("ada");
    end Builder;
 
    package Linker is
       for Default_Switches ("ada") use
-         Components.ODBC.Linker'Default_Switches ("ada") &
+         Components.GNADE.Linker'Default_Switches ("ada") &
          GTKAda_Contributions.Linker'Default_Switches ("ada");
    end Linker;
 
-end Components.ODBC.GTK;
+end Components.GNADE.GTK;
 

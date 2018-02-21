@@ -2,7 +2,9 @@ with "aicwl.gpr";
 
 project AICWL.Editor is
 
-   for Source_Dirs use (".");
+   for Source_Dirs use ("source");
+   for Object_Dir use "_build";
+
    for Source_Files use
        (  "gtk-layered_editor.adb",
           "gtk-layered_editor.ads"

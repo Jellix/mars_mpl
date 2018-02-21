@@ -2,7 +2,9 @@ with "gtkada_contributions.gpr";
 
 project Gtkada_Contributions.Source_View is
 
-   for Source_Dirs use (".");
+   for Source_Dirs use ("source");
+   for Object_Dir use "_build";
+
    for Source_Files use
        (  "gtk-source_buffer.adb",
           "gtk-source_buffer.ads",

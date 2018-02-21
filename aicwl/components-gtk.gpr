@@ -3,7 +3,9 @@ with "gtkada_contributions.gpr";
 
 project Components.GTK is
 
-   for Source_Dirs use (".");
+   for Source_Dirs use ("source");
+   for Object_Dir use "_build";
+
    for Source_Files use
        (  "glib-values-handle.adb",
           "glib-values-handle.ads",

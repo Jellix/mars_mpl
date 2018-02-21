@@ -2,7 +2,9 @@ with "gtkada.gpr";
 
 project Gtkada_Contributions is
 
-   for Source_Dirs use (".");
+   for Source_Dirs use ("source");
+   for Object_Dir use "_build";
+
    for Source_Files use ("gdk-color-ihls.adb", "gdk-color-ihls.ads", "gdk-pixbuf-conversions.ads", "gdk-pixbuf-image.adb", "gdk-pixbuf-image.ads", "gio.ads", "gio-content_type.adb", "gio-content_type.ads", "gio-drive.adb", "gio-drive.ads", 
       "gio-mount.adb", "gio-mount.ads", "gio-volume.adb", "gio-volume.ads", "gio-volume_monitor.adb", "gio-volume_monitor.ads", "glib-chars_ptr_vectors.adb", "glib-chars_ptr_vectors.ads", "glib-object-checked_destroy.adb", 
       "glib-object-checked_destroy.ads", "glib-object-ref_count.adb", "glib-object-ref_count.ads", "glib-object-strong_references.adb", "glib-object-strong_references.ads", "glib-object-weak_references.adb", 

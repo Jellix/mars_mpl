@@ -1,7 +1,8 @@
 project Strings_Edit is
 
-   for Source_Dirs use (".");
-   for Object_Dir use ".";
+   for Source_Dirs use ("source");
+   for Object_Dir use "_build";
+
    for Source_Files use ("strings_edit-base64.adb", "strings_edit-base64.ads", "strings_edit-fields.adb", "strings_edit-fields.ads", "strings_edit-floats.ads", "strings_edit-float_edit.adb", "strings_edit-float_edit.ads",
       "strings_edit-generic_scale.adb", "strings_edit-generic_scale.ads", "strings_edit-integers-subscript.ads", "strings_edit-integers-superscript.ads", "strings_edit-integers.ads", "strings_edit-integer_edit.adb",
       "strings_edit-integer_edit.ads", "strings_edit-lexicographical_order.adb", "strings_edit-lexicographical_order.ads", "strings_edit-quoted.adb", "strings_edit-quoted.ads", "strings_edit-roman_edit.adb",
