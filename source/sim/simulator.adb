@@ -26,8 +26,9 @@
 
 with Ada.Real_Time;
 with Altimeter;
+with Configuration.Task_Offsets;
 with Engine;
-with Global.Task_Offsets;
+with Global;
 with Landing_Legs;
 with Shared_Parameters.Read;
 with Shared_Sensor_Data;
@@ -84,7 +85,7 @@ begin
 
    declare
       Next_Cycle       : Ada.Real_Time.Time
-        := Global.Start_Time + Global.Task_Offsets.SIM_Task;
+        := Global.Start_Time + Configuration.Task_Offsets.SIM_Task;
 
       Current_Altitude : Shared_Types.Altitude := Altimeter.Current_Altitude;
       Legs_Deployed    : Boolean               := False;

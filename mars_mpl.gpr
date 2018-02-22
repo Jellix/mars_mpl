@@ -4,7 +4,7 @@ with "aicwl/AICWL";
 project Mars_Mpl is
 
    for Main use ("mars_mpl.adb", "simulator.adb");
-   for Source_Dirs use (".", "source", "source/physics", "source/sim", "source/ui");
+   for Source_Dirs use ("source", "source/lander", "source/physics", "source/sim", "source/ui");
    for Object_Dir use "_build";
    for Exec_Dir use ".";
 

@@ -1,4 +1,4 @@
-with Global.Task_Offsets;
+with Configuration.Task_Offsets;
 with Landing_Legs;
 with Shared_Sensor_Data;
 with Thrusters;
@@ -67,7 +67,8 @@ package body Touchdown_Monitor is
    begin
       --  Initialize local state.
       Assign_Leg.Next (The_Leg => Leg);
-      Next_Cycle := Global.Start_Time + Global.Task_Offsets.TD_Monitor (Leg);
+      Next_Cycle
+        := Global.Start_Time + Configuration.Task_Offsets.TD_Monitor (Leg);
 
       declare
          Legs_Monitoring : constant String

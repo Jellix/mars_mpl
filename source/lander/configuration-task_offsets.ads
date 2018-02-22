@@ -1,4 +1,6 @@
+with Ada.Real_Time;
 with Shared_Types;
+pragma Elaborate_All (Ada.Real_Time);
 
 --  @summary
 --  Provides offsets into activation times for the several tasks.
@@ -7,7 +9,7 @@ with Shared_Types;
 --  All tasks are activated at Global.Start_Time and run in 10 ms cycles. To
 --  distribute the load, these offsets are added to the activation time, so
 --  tasks run interleaved.
-package Global.Task_Offsets is
+package Configuration.Task_Offsets is
 
    Altitude_Task : Ada.Real_Time.Time_Span := Ada.Real_Time.Microseconds (0);
    --  Altitude task runs at exactly activation time.
@@ -27,4 +29,4 @@ package Global.Task_Offsets is
    SIM_Task      : Ada.Real_Time.Time_Span := Ada.Real_Time.Microseconds (7500);
    --  The simulator task runs with an offset of 7.5 milliseconds.
 
-end Global.Task_Offsets;
+end Configuration.Task_Offsets;
