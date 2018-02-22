@@ -1,6 +1,6 @@
 with Configuration.Task_Offsets;
 with Landing_Legs;
-with Shared_Sensor_Data;
+with Shared_Parameters.Read;
 with Thrusters;
 
 package body Touchdown_Monitor is
@@ -8,7 +8,7 @@ package body Touchdown_Monitor is
    use type Ada.Real_Time.Time;
    use type Shared_Types.Leg_State;
 
-   TDM_Bug_Enabled : constant Boolean := Shared_Sensor_Data.Bug_Enabled;
+   TDM_Bug_Enabled : constant Boolean := Shared_Parameters.Read.TDM_Bug_Enabled;
 
    type Leg_Indicator is
       record

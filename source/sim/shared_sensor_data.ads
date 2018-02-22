@@ -54,8 +54,4 @@ is
    --  To ensure atsk safe access, the actual shared sensor data is wrapped in
    --  this protected object.
 
-   Bug_Enabled : Boolean := False;
-   --  Indicates if the original Mars MPL implementation fault in the touchdown
-   --  monitor shall be simulated (=True) or not (=False).
-
 end Shared_Sensor_Data;

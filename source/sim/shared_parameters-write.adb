@@ -20,6 +20,11 @@ package body Shared_Parameters.Write is
       Shared_Initial_Velocity := Value;
    end Initial_Velocity;
 
+   procedure TDM_Bug_Enabled (Value : in Boolean) is
+   begin
+      Shared_Bug_Enabled := Value;
+   end TDM_Bug_Enabled;
+
    procedure Thruster_Acceleration (Value : in Shared_Types.Acceleration) is
    begin
       Shared_Thruster_Acceleration := Value;

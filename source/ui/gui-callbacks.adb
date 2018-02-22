@@ -1,5 +1,5 @@
 with Gtk.GEntry;
-with Shared_Sensor_Data;
+with Shared_Parameters.Write;
 
 package body GUI.Callbacks is
 
@@ -105,7 +105,7 @@ package body GUI.Callbacks is
    is
       pragma Unreferenced (Self);
    begin
-      Shared_Sensor_Data.Bug_Enabled := State;
+      Shared_Parameters.Write.TDM_Bug_Enabled (Value => State);
       Log.Trace (Message =>
                    "TDM bug " & (if State then "en" else "dis") & "abled.");
       return False;

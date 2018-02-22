@@ -40,6 +40,11 @@ package Shared_Parameters.Read is
    --  smaller than Safe_Landing_Velocity).
    --  @return The set target landing velocity.
 
+   function TDM_Bug_Enabled return Boolean
+     with Volatile_Function;
+   --  Indicates if the TDM bug shall be enabled or not in the simulation.
+   --  @return The state of the bug switch.
+
    function Thruster_Acceleration return Shared_Types.Acceleration
      with Volatile_Function;
    --  Parametrized thruster acceleration.
@@ -67,6 +72,9 @@ private
 
    function Target_Landing_Velocity return Shared_Types.Velocity is
      (Shared_Target_Landing_Velocity);
+
+   function TDM_Bug_Enabled return Boolean is
+     (Shared_Bug_Enabled);
 
    function Thruster_Acceleration return Shared_Types.Acceleration is
      (Shared_Thruster_Acceleration);

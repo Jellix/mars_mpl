@@ -38,7 +38,8 @@ begin
          A_Thruster       : constant Gtk.GEntry.Gtk_Entry :=
                               Gtk.GEntry.Gtk_Entry_New;
       begin
-         Bug_Switch.all.Set_State (State => Shared_Sensor_Data.Bug_Enabled);
+         Bug_Switch.all.Set_State
+           (State => Shared_Parameters.Read.TDM_Bug_Enabled);
          Bug_Switch.all.On_State_Set (Call  => Callbacks.Switch_Bug'Access,
                                       After => False);
          V_Initial.all.Set_Text

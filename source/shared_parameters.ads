@@ -16,6 +16,10 @@ private
 
    use type Shared_Types.Acceleration;
 
+   Shared_Bug_Enabled : Boolean := False;
+   --  Indicates if the original Mars MPL implementation fault in the touchdown
+   --  monitor shall be simulated (=True) or not (=False).
+
    pragma Warnings (Off, "instance does not use primitive operation ""*""");
 
    Shared_Safe_Landing_Velocity : Shared_Types.Velocity := 2.500;
