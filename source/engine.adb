@@ -1,3 +1,4 @@
+with Global.Task_Offsets;
 with Shared_Parameters.Read;
 with Task_Safe_Store;
 with Thrusters;
@@ -21,7 +22,9 @@ package body Engine is
    task Engine_Task;
 
    task body Engine_Task is
-      Next_Cycle   : Ada.Real_Time.Time := Global.Start_Time;
+      Next_Cycle   : Ada.Real_Time.Time
+        := Global.Start_Time + Global.Task_Offsets.Engine_Task;
+
       Current_Fuel : Shared_Types.Fuel_Mass := Fuel_State.Get;
       Fuel_Used    : constant Shared_Types.Fuel_Mass
         := Fuel_Flow_Rate / Duration'(1.0 / Ada.Real_Time.To_Duration (Cycle));

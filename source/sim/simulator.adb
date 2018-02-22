@@ -27,7 +27,7 @@
 with Ada.Real_Time;
 with Altimeter;
 with Engine;
-with Global;
+with Global.Task_Offsets;
 with Landing_Legs;
 with Shared_Parameters.Read;
 with Shared_Sensor_Data;
@@ -84,7 +84,9 @@ begin
    Touchdown_Monitor.Start;
 
    declare
-      Next_Cycle       : Ada.Real_Time.Time    := Global.Start_Time;
+      Next_Cycle       : Ada.Real_Time.Time
+        := Global.Start_Time + Global.Task_Offsets.SIM_Task;
+
       Current_Altitude : Shared_Types.Altitude := Altimeter.Current_Altitude;
       Legs_Deployed    : Boolean               := False;
       Powered_Descent  : Boolean               := False;

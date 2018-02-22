@@ -1,3 +1,4 @@
+with Global.Task_Offsets;
 with Landing_Legs;
 with Shared_Sensor_Data;
 with Thrusters;
@@ -6,6 +7,8 @@ package body Touchdown_Monitor is
 
    use type Ada.Real_Time.Time;
    use type Shared_Types.Leg_State;
+
+   TDM_Bug_Enabled : constant Boolean := Shared_Sensor_Data.Bug_Enabled;
 
    type Leg_Indicator is
       record
@@ -53,13 +56,15 @@ package body Touchdown_Monitor is
    Assign_Leg : Landing_Legs.Leg_Iterator;
 
    task body Touchdown_Monitor_Execute is
+      Next_Cycle : Ada.Real_Time.Time
+        := Global.Start_Time + Global.Task_Offsets.TD_Monitor;
+
       Indicator         : Leg_Indicator          := Default_Indicator;
       Event_Enabled     : Boolean                := False;
       Last_Indicator    : Shared_Types.Leg_State := Shared_Types.In_Flight;
       Current_Indicator : Shared_Types.Leg_State := Shared_Types.In_Flight;
       Old_Run_State     : Run_State              := Not_Started;
       Current_Run_State : Run_State              := Not_Started;
-      Next_Cycle        : Ada.Real_Time.Time     := Global.Start_Time;
       Leg               : Shared_Types.Legs_Index;
    begin
       --  Initialize local state.
@@ -119,7 +124,7 @@ package body Touchdown_Monitor is
                -- the actual result.
                -- Set indicator state only once.
                if
-                 (Shared_Sensor_Data.Bug_Enabled or else Event_Enabled)
+                 (TDM_Bug_Enabled or else Event_Enabled)
                  -- Bug is here.
                  and then
                    Last_Indicator    = Shared_Types.Touched_Down and then

@@ -1,3 +1,4 @@
+with Global.Task_Offsets;
 with Landing_Legs;
 with Parametrization;
 with Shared_Parameters.Read;
@@ -31,7 +32,9 @@ package body Altimeter is
    task Radar_Simulator;
 
    task body Radar_Simulator is
-      Next_Cycle   : Ada.Real_Time.Time    := Global.Start_Time;
+      Next_Cycle   : Ada.Real_Time.Time
+        := Global.Start_Time + Global.Task_Offsets.Altitude_Task;
+
       Altitude_Now : Shared_Types.Altitude := Altimeter_State.Get;
       Velocity_Now : Shared_Types.Velocity := Velocity_State.Get;
 
