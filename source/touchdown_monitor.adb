@@ -56,9 +56,6 @@ package body Touchdown_Monitor is
    Assign_Leg : Landing_Legs.Leg_Iterator;
 
    task body Touchdown_Monitor_Execute is
-      Next_Cycle : Ada.Real_Time.Time
-        := Global.Start_Time + Global.Task_Offsets.TD_Monitor;
-
       Indicator         : Leg_Indicator          := Default_Indicator;
       Event_Enabled     : Boolean                := False;
       Last_Indicator    : Shared_Types.Leg_State := Shared_Types.In_Flight;
@@ -66,9 +63,11 @@ package body Touchdown_Monitor is
       Old_Run_State     : Run_State              := Not_Started;
       Current_Run_State : Run_State              := Not_Started;
       Leg               : Shared_Types.Legs_Index;
+      Next_Cycle        : Ada.Real_Time.Time;
    begin
       --  Initialize local state.
       Assign_Leg.Next (The_Leg => Leg);
+      Next_Cycle := Global.Start_Time + Global.Task_Offsets.TD_Monitor (Leg);
 
       declare
          Legs_Monitoring : constant String

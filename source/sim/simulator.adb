@@ -43,7 +43,6 @@ procedure Simulator is
    use type Shared_Types.State;
    use type Touchdown_Monitor.Run_State;
 
-   All_Monitors_Dead : Boolean := False;
    Monitor_Enabled   : Boolean := False;
    Cycle             : constant Ada.Real_Time.Time_Span :=
                          Ada.Real_Time.Milliseconds (MS => 10);
@@ -161,28 +160,31 @@ begin
 
    Update_Shared_Data;
 
-   All_Monitors_Dead := False;
+   Touchdown_Monitor.Shutdown;
+   Landing_Legs.Shutdown;
+   Engine.Shutdown;
 
-   while not All_Monitors_Dead loop
-      All_Monitors_Dead :=
-        (for all Leg in Shared_Types.Legs_Index'Range =>
-           Touchdown_Monitor.Current_State (Leg => Leg) =
-             Touchdown_Monitor.Terminated);
+   declare
+      All_Monitors_Dead : Boolean := False;
+   begin
+      while not All_Monitors_Dead loop
+         All_Monitors_Dead :=
+           (for all Leg in Shared_Types.Legs_Index'Range =>
+              Touchdown_Monitor.Current_State (Leg => Leg) =
+                Touchdown_Monitor.Terminated);
 
-      if All_Monitors_Dead then
-         Log.Trace (Message => "All touchdown monitors finished.");
-         Update_Shared_Data;
-         Touchdown_Monitor.Shutdown;
-         Landing_Legs.Shutdown;
-         Engine.Shutdown;
-      end if;
-   end loop;
-
-   Log.Trace (Message => "Simulation finished.");
+         if All_Monitors_Dead then
+            Log.Trace (Message => "All touchdown monitors finished.");
+            Update_Shared_Data;
+         end if;
+      end loop;
+   end;
 
    --  Give the data generating task time to terminate.
    delay until Ada.Real_Time.Clock + Ada.Real_Time.Milliseconds (100);
    Update_Shared_Data (Terminated => True);
+
+   Log.Trace (Message => "Simulation finished.");
 exception
    when E : others =>
       Log.Trace (E => E);

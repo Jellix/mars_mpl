@@ -18,6 +18,8 @@ package body Engine is
       Initial_Value => Shared_Parameters.Read.Initial_Fuel_Mass);
 
    Fuel_State : Fuel_Store.Shelf;
+   Aborted    : Boolean := False
+     with Atomic => True;
 
    task Engine_Task;
 
@@ -29,7 +31,9 @@ package body Engine is
       Fuel_Used    : constant Shared_Types.Fuel_Mass
         := Fuel_Flow_Rate / Duration'(1.0 / Ada.Real_Time.To_Duration (Cycle));
    begin
-      loop
+      Log.Trace (Message => "Engine control task started.");
+
+      while not Aborted and then Current_Fuel /= 0.0 loop
          delay until Next_Cycle;
          Next_Cycle := Next_Cycle + Cycle;
 
@@ -42,11 +46,14 @@ package body Engine is
 
             if Current_Fuel = 0.0 then
                Thrusters.Out_Of_Fuel;
+               Log.Trace (Message => "Ran out of fuel, terminating...");
             end if;
          end if;
 
          Fuel_State.Set (New_Value => Current_Fuel);
       end loop;
+
+      Log.Trace (Message => "Engine control task finished.");
    exception
       when E : others =>
          Log.Trace (E => E);
@@ -57,7 +64,7 @@ package body Engine is
 
    procedure Shutdown is
    begin
-      abort Engine_Task;
+      Aborted := True;
    end Shutdown;
 
 end Engine;
