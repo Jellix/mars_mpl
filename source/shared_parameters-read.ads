@@ -55,6 +55,9 @@ package Shared_Parameters.Read is
 
 private
 
+   function Fuel_Flow_Rate return Shared_Types.Fuel_Mass is
+     (Shared_Fuel_Flow_Rate);
+
    function Initial_Altitude return Shared_Types.Altitude is
      (Shared_Initial_Altitude);
 
@@ -63,9 +66,6 @@ private
 
    function Initial_Fuel_Mass return Shared_Types.Fuel_Mass is
      (Shared_Initial_Fuel_Mass);
-
-   function Fuel_Flow_Rate return Shared_Types.Fuel_Mass is
-     (Shared_Fuel_Flow_Rate);
 
    function Safe_Landing_Velocity return Shared_Types.Velocity is
      (Shared_Safe_Landing_Velocity);
@@ -78,5 +78,17 @@ private
 
    function Thruster_Acceleration return Shared_Types.Acceleration is
      (Shared_Thruster_Acceleration);
+
+   --  The No_Inline pragmas are there to ensure that calls to retrieve shared
+   --  parameters are never inlined (even though they are implemented as
+   --  expression functions). Otherwise they may not work as expected.
+   pragma No_Inline (Fuel_Flow_Rate);
+   pragma No_Inline (Initial_Altitude);
+   pragma No_Inline (Initial_Velocity);
+   pragma No_Inline (Initial_Fuel_Mass);
+   pragma No_Inline (Safe_Landing_Velocity);
+   pragma No_Inline (Target_Landing_Velocity);
+   pragma No_Inline (TDM_Bug_Enabled);
+   pragma No_Inline (Thruster_Acceleration);
 
 end Shared_Parameters.Read;
