@@ -1,6 +1,6 @@
 with Configuration.Task_Offsets;
 with Landing_Legs;
-with Parametrization;
+with Planets.Parameters;
 with Shared_Parameters.Read;
 with Task_Safe_Store;
 with Thrusters;
@@ -12,8 +12,11 @@ package body Altimeter is
    use type Shared_Types.State;
    use type Shared_Types.Velocity;
 
-   Thruster_Acceleration : constant Shared_Types.Acceleration
+   Thruster_Accel : constant Shared_Types.Acceleration
      := Shared_Parameters.Read.Thruster_Acceleration;
+
+   Gravity        : constant Shared_Types.Acceleration
+     := Shared_Types.Acceleration (Planets.Parameters.Gravity (Planets.Mars));
 
    pragma Warnings (Off, "instance does not use primitive operation ""*""");
 
@@ -40,10 +43,8 @@ package body Altimeter is
 
       --  The following parameters remain constant during the task's lifetime.
       T            : constant Duration := Ada.Real_Time.To_Duration (Cycle);
-      Free_Fall    : constant Shared_Types.Velocity
-        := Shared_Types.Velocity (Parametrization.Gravity * Float (T));
-      Thrusted     : constant Shared_Types.Velocity
-        := Thruster_Acceleration * T;
+      Free_Fall    : constant Shared_Types.Velocity := Gravity * T;
+      Thrusted     : constant Shared_Types.Velocity := Thruster_Accel * T;
    begin
       Log.Trace (Message => "Altitude control monitor started.");
 
