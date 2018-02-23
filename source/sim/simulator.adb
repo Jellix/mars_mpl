@@ -41,7 +41,6 @@ procedure Simulator is
    use type Ada.Real_Time.Time;
    use type Shared_Types.Altitude;
    use type Shared_Types.Velocity;
-   use type Shared_Types.State;
    use type Touchdown_Monitor.Run_State;
 
    Monitor_Enabled   : Boolean := False;
@@ -52,25 +51,25 @@ procedure Simulator is
 
    procedure Update_Shared_Data (Terminated : in Boolean := False)
    is
-      All_Legs : Shared_Types.All_Legs_State;
-      Offset   : constant Duration               :=
-                   Ada.Real_Time.To_Duration
-                     (TS => Ada.Real_Time.Clock - Global.Start_Time);
-      Thruster : constant Shared_Types.State     := Thrusters.Current_State;
-      Altitude : constant Shared_Types.Altitude  := Altimeter.Current_Altitude;
-      Velocity : constant Shared_Types.Velocity  := Altimeter.Current_Velocity;
-      Fuel     : constant Shared_Types.Fuel_Mass := Engine.Current_Fuel_Mass;
+      Offset    : constant Duration :=
+                    Ada.Real_Time.To_Duration
+                      (TS => Ada.Real_Time.Clock - Global.Start_Time);
+      Thrust_On : constant Boolean                := Thrusters.Is_Enabled;
+      Altitude  : constant Shared_Types.Altitude  := Altimeter.Current_Altitude;
+      Velocity  : constant Shared_Types.Velocity  := Altimeter.Current_Velocity;
+      Fuel      : constant Shared_Types.Fuel_Mass := Engine.Current_Fuel_Mass;
+      All_Legs  : Shared_Types.All_Legs_State;
    begin
       Landing_Legs.Read_State (State => All_Legs);
       Shared_Sensor_Data.Current_State.Set
         (Data =>
-           Shared_Sensor_Data.State'(Legs       => All_Legs,
-                                     Thruster   => Thruster,
-                                     Altitude   => Altitude,
-                                     Velocity   => Velocity,
-                                     Fuel       => Fuel,
-                                     Time_Stamp => Offset,
-                                     Terminated => Terminated));
+           Shared_Sensor_Data.State'(Legs             => All_Legs,
+                                     Thruster_Enabled => Thrust_On,
+                                     Altitude         => Altitude,
+                                     Velocity         => Velocity,
+                                     Fuel             => Fuel,
+                                     Time_Stamp       => Offset,
+                                     Terminated       => Terminated));
    end Update_Shared_Data;
 
    Target_Landing_Velocity : constant Shared_Types.Velocity :=
@@ -148,6 +147,8 @@ begin
       end loop;
    end;
 
+   delay until Ada.Real_Time.Clock + Ada.Real_Time.Milliseconds (100);
+
    declare
       Touchdown_Velocity : constant Shared_Types.Velocity :=
                              Altimeter.Current_Velocity;
@@ -161,6 +162,7 @@ begin
 
    Update_Shared_Data;
 
+   Altimeter.Shutdown;
    Touchdown_Monitor.Shutdown;
    Landing_Legs.Shutdown;
    Engine.Shutdown;

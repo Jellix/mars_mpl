@@ -22,7 +22,6 @@ package body GUI is
    use type Glib.Gdouble;
    use type Gtk.Enums.String_Lists.Controlled_String_List;
    use type Shared_Types.Leg_State;
-   use type Shared_Types.State;
 
    Label_Font        : constant Pango.Cairo.Fonts.Pango_Cairo_Font :=
                          Pango.Cairo.Fonts.Create_Toy
@@ -185,7 +184,7 @@ package body GUI is
          DE.Leg_Led (Leg).all.Queue_Draw;
       end loop;
       DE.Thruster_Led.all.Set_State
-        (State => Update_State.Thruster = Shared_Types.Enabled);
+        (State => Update_State.Thruster_Enabled);
       DE.Thruster_Led.all.Queue_Draw;
 
       -- Altitude
@@ -242,7 +241,7 @@ package body GUI is
          Plotter.Feed
            (Channel => Win.Thruster_Channel,
             V       =>
-              Glib.Gdouble (Shared_Types.State'Pos (Update_State.Thruster)),
+              Glib.Gdouble (Boolean'Pos (Update_State.Thruster_Enabled)),
             T       => Time_Stamp);
       end;
    end Feed_Values;

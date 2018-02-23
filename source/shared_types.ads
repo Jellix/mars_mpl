@@ -99,11 +99,6 @@ is
    --  @param Scale The scaling factor.
    --  @return The new velocity V'Old scaled by Scale.
 
-   type State is (Disabled, Enabled);
-   --  State of thruster.
-   --  @value Disabled Thruster disabled, no upwards acceleration.
-   --  @value Enabled  Thruster enabled, upwards acceleration accordingly.
-
    --  @summary
    --  Provides a mass type.
    package Kilogram is

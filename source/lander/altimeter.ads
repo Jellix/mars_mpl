@@ -29,6 +29,9 @@ package Altimeter is
    --  Provides the current velocity.
    --  @return The current velocity.
 
+   procedure Shutdown;
+   --  Signals the altitude control monitor to terminate.
+
 private
 
    package Log is new Global.Log (Unit_Name => "ATM");

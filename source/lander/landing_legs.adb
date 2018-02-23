@@ -7,11 +7,18 @@ package body Landing_Legs is
    use type Shared_Types.Legs_Index;
 
    type Task_State is (Running, Deployed, Touched_Down, Terminated);
+   subtype Events is Task_State range Deployed .. Terminated;
+
+   package Leg_Store is new Task_Safe_Store
+     (Stored_Type   => Shared_Types.Leg_State,
+      Initial_Value => Shared_Types.In_Flight);
+
+   type All_Legs_State is array (Shared_Types.Legs_Index) of Leg_Store.Shelf;
+
+   Legs_State : All_Legs_State;
 
    protected Task_Control is
-      procedure Trigger_Deploy;
-      procedure Trigger_Touchdown;
-      procedure Trigger_Shutdown;
+      procedure Emit_Event (Event : Events);
 
       entry Wait_For_Event (Old_State : out Task_State;
                             New_State : out Task_State);
@@ -21,15 +28,6 @@ package body Landing_Legs is
       State           : Task_State := Running;
    end Task_Control;
 
-   package Leg_Store is new Task_Safe_Store
-     (Stored_Type   => Shared_Types.Leg_State,
-      Initial_Value => Shared_Types.In_Flight);
-
-   type All_Legs_State_Atomic is
-     array (Shared_Types.Legs_Index) of Leg_Store.Shelf;
-
-   Legs_State : All_Legs_State_Atomic;
-
    protected body Task_Control is
 
       entry Wait_For_Event (Old_State : out Task_State;
@@ -38,32 +36,22 @@ package body Landing_Legs is
       begin
          Old_State       := Previous_State;
          New_State       := State;
+
          Previous_State  := State;
          Event_Triggered := False;
       end Wait_For_Event;
 
-      procedure Trigger_Deploy is
+      procedure Emit_Event (Event : in Events) is
       begin
-         State           := Deployed;
+         State           := Event;
          Event_Triggered := True;
-      end Trigger_Deploy;
+      end Emit_Event;
 
-      procedure Trigger_Shutdown is
-      begin
-         State           := Terminated;
-         Event_Triggered := True;
-      end Trigger_Shutdown;
-
-      procedure Trigger_Touchdown is
-      begin
-         State           := Touched_Down;
-         Event_Triggered := True;
-      end Trigger_Touchdown;
    end Task_Control;
 
    procedure Deploy is
    begin
-      Task_Control.Trigger_Deploy;
+      Task_Control.Emit_Event (Event => Deployed);
    end Deploy;
 
    procedure Read_State (Index : in     Shared_Types.Legs_Index;
@@ -81,12 +69,12 @@ package body Landing_Legs is
 
    procedure Shutdown is
    begin
-      Task_Control.Trigger_Shutdown;
+      Task_Control.Emit_Event (Event => Terminated);
    end Shutdown;
 
    procedure Touchdown is
    begin
-      Task_Control.Trigger_Touchdown;
+      Task_Control.Emit_Event (Event => Touched_Down);
    end Touchdown;
 
    task Simulate_Landing_Legs;

@@ -9,7 +9,6 @@ package body Altimeter is
 
    use type Ada.Real_Time.Time;
    use type Shared_Types.Altitude;
-   use type Shared_Types.State;
    use type Shared_Types.Velocity;
 
    Thruster_Accel : constant Shared_Types.Acceleration
@@ -32,6 +31,20 @@ package body Altimeter is
 
    pragma Warnings (On, "instance does not use primitive operation ""*""");
 
+   function Current_Altitude return Shared_Types.Altitude is
+     (Altimeter_State.Get);
+
+   function Current_Velocity return Shared_Types.Velocity is
+     (Velocity_State.Get);
+
+   Aborted : Boolean := False
+     with Atomic;
+
+   procedure Shutdown is
+   begin
+      Aborted := True;
+   end Shutdown;
+
    task Radar_Simulator;
 
    task body Radar_Simulator is
@@ -48,13 +61,13 @@ package body Altimeter is
    begin
       Log.Trace (Message => "Altitude control monitor started.");
 
-      while Altitude_Now > 0.0 loop
+      while not Aborted and then Altitude_Now > 0.0 loop
          delay until Next_Cycle;
          Next_Cycle := Next_Cycle + Cycle;
 
          declare
             Delta_V : constant Shared_Types.Velocity :=
-                        (if Thrusters.Current_State = Shared_Types.Disabled
+                        (if Thrusters.Is_Disabled
                          then Free_Fall
                          else Thrusted);
             Delta_A : constant Shared_Types.Altitude := Velocity_Now * T;
@@ -67,19 +80,17 @@ package body Altimeter is
               Shared_Types.Velocity'Max (0.0, Velocity_Now + Delta_V);
             Velocity_State.Set (New_Value => Velocity_Now);
          end;
+
+         if Altitude_Now = 0.0 then
+            Landing_Legs.Touchdown;
+            Log.Trace (Message => "Touchdown triggered due to ground zero.");
+         end if;
       end loop;
 
-      Landing_Legs.Touchdown;
       Log.Trace (Message => "Altitude control monitor finished.");
    exception
       when E : others =>
          Log.Trace (E => E);
    end Radar_Simulator;
-
-   function Current_Altitude return Shared_Types.Altitude is
-     (Altimeter_State.Get);
-
-   function Current_Velocity return Shared_Types.Velocity is
-     (Velocity_State.Get);
 
 end Altimeter;

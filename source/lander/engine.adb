@@ -7,7 +7,6 @@ package body Engine is
 
    use type Ada.Real_Time.Time;
    use type Shared_Types.Fuel_Mass;
-   use type Shared_Types.State;
 
    Fuel_Flow_Rate : constant Shared_Types.Fuel_Mass
      := Shared_Parameters.Read.Fuel_Flow_Rate;
@@ -33,11 +32,11 @@ package body Engine is
    begin
       Log.Trace (Message => "Engine control task started.");
 
-      while not Aborted and then Current_Fuel /= 0.0 loop
+      while not Aborted and then Current_Fuel > 0.0 loop
          delay until Next_Cycle;
          Next_Cycle := Next_Cycle + Cycle;
 
-         if Thrusters.Current_State = Shared_Types.Enabled then
+         if Thrusters.Is_Enabled then
             if Current_Fuel > Fuel_Used then
                Current_Fuel := Current_Fuel - Fuel_Used;
             else

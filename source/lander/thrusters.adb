@@ -1,71 +1,65 @@
 package body Thrusters is
 
-   use type Shared_Types.State;
+   type State is (Disabled, Enabled);
+   --  State of thruster.
+   --  @value Disabled Thruster disabled, no upwards acceleration.
+   --  @value Enabled  Thruster enabled, upwards acceleration accordingly.
 
-   protected Thruster is
-      function Get return Shared_Types.State;
-      procedure Set (New_State : in     Shared_Types.State;
-                     Old_State :    out Shared_Types.State);
+   protected Thruster_State is
+      function Get return State;
+      procedure Set (Value : in State);
       procedure No_More_Fuel;
    private
-      Current_Thruster_State : Shared_Types.State := Shared_Types.Disabled;
-      Fuel_Tank_Empty        : Boolean            := False;
-   end Thruster;
+      Current_Thruster_State : State   := Disabled;
+      Fuel_Tank_Empty        : Boolean := False;
+   end Thruster_State;
 
-   protected body Thruster is
-      function Get return Shared_Types.State is
-      begin
-         return Current_Thruster_State;
-      end Get;
+   protected body Thruster_State is
+      function Get return State is
+        (Current_Thruster_State);
 
       procedure No_More_Fuel is
       begin
          Fuel_Tank_Empty := True;
-         Current_Thruster_State := Shared_Types.Disabled;
+         Current_Thruster_State := Disabled;
       end No_More_Fuel;
 
-      procedure Set (New_State : in     Shared_Types.State;
-                     Old_State :    out Shared_Types.State) is
+      procedure Set (Value : in State) is
       begin
-         Old_State := Current_Thruster_State;
-
-         if not Fuel_Tank_Empty or else New_State = Shared_Types.Disabled then
-            Current_Thruster_State := New_State;
+         if not Fuel_Tank_Empty or else Value = Disabled then
+            Current_Thruster_State := Value;
          end if;
       end Set;
-   end Thruster;
+   end Thruster_State;
 
    procedure Disable is
-      Old_State : Shared_Types.State;
    begin
-      Thruster.Set (New_State => Shared_Types.Disabled,
-                    Old_State => Old_State);
-      pragma Unreferenced (Old_State);
+      Thruster_State.Set (Value => Disabled);
    end Disable;
 
    procedure Enable is
-      Old_State : Shared_Types.State;
    begin
-      Thruster.Set (New_State => Shared_Types.Enabled,
-                    Old_State => Old_State);
-      pragma Unreferenced (Old_State);
+      Thruster_State.Set (Value => Enabled);
    end Enable;
+
+   function Is_Disabled return Boolean is
+     (Thruster_State.Get = Disabled);
+
+   function Is_Enabled return Boolean is
+     (Thruster_State.Get = Enabled);
 
    procedure Out_Of_Fuel is
    begin
-      Thruster.No_More_Fuel;
-      Log.Trace (Message => "Thrusters ran out of fuel!");
+      Thruster_State.No_More_Fuel;
+      Log.Trace (Message => "Engine ran out of fuel, thrusters disengaged!");
    end Out_Of_Fuel;
 
    procedure Shutdown (Source : in Shared_Types.Legs_Index) is
    begin
-      Thruster.No_More_Fuel;
+      Thruster_State.No_More_Fuel;
       Log.Trace (Message =>
                    "Thrusters have been disabled due to signal from leg "
                  & Shared_Types.Legs_Index'Image (Source) & ".");
    end Shutdown;
-
-   function Current_State return Shared_Types.State is
-     (Thruster.Get);
 
 end Thrusters;
