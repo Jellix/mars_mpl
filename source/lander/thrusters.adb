@@ -27,120 +27,111 @@ package body Thrusters is
    Aborted    : Boolean := False
      with Atomic => True;
 
-   protected Fuel_Flow_Tracker is
+   type Valve_Info is
+      record
+         Is_Open    : Boolean;
+         Open_Since : Ada.Real_Time.Time;
+         Total_Open : Ada.Real_Time.Time_Span;
+      end record
+     with
+       Dynamic_Predicate =>
+         (Is_Open = False or else Open_Since > Global.Start_Time);
 
-      procedure Get_Activation_Time (Activation_Time : out Duration);
-
-      procedure On (Activation_Time : in Ada.Real_Time.Time);
-
-      procedure Off (Deactivation_Time : in Ada.Real_Time.Time);
-
-   private
-
-      Last_On     : Ada.Real_Time.Time      := Global.Start_Time;
-      Active_Time : Ada.Real_Time.Time_Span := Ada.Real_Time.Time_Span_Zero;
-
-   end Fuel_Flow_Tracker;
-
-   protected Thruster_State is
+   protected Engine_State is
+      function Get_Total return Duration;
       function Get return State;
       procedure Set (Value : in State);
       procedure No_More_Fuel;
    private
-      Current_Thruster_State : State   := Disabled;
-      Fuel_Tank_Empty        : Boolean := False;
-   end Thruster_State;
+      Thruster_State  : State      := Disabled;
+      Fuel_Tank_Empty : Boolean    := False;
+      Valve_State     : Valve_Info :=
+                          (Is_Open    => False,
+                           Open_Since => Global.Start_Time,
+                           Total_Open => Ada.Real_Time.Time_Span_Zero);
+   end Engine_State;
 
-   protected body Fuel_Flow_Tracker is
-
-      procedure Get_Activation_Time (Activation_Time : out Duration) is
-      begin
-         if Last_On /= Global.Start_Time then
-            --  Thruster is currently on, recalculate fuel consumption.
-            Activation_Time :=
-              Ada.Real_Time.To_Duration
-                (TS => Active_Time + (Ada.Real_Time.Clock - Last_On));
-         else
-            --  Thruster is currently off, return recorded fuel consumption.
-            Activation_Time := Ada.Real_Time.To_Duration (TS => Active_Time);
-         end if;
-      end Get_Activation_Time;
-
-      procedure Off (Deactivation_Time : in Ada.Real_Time.Time) is
-      begin
-         --  Ignore off commands if thruster is not active.
-         if Last_On /= Global.Start_Time then
-            Active_Time := Active_Time + (Deactivation_Time - Last_On);
-            Last_On := Global.Start_Time;
-         end if;
-      end Off;
-
-      procedure On (Activation_Time : in Ada.Real_Time.Time) is
-      begin
-         --  Ignore On commands if thruster is already active.
-         if Last_On = Global.Start_Time then
-            Last_On := Activation_Time;
-         end if;
-      end On;
-
-   end Fuel_Flow_Tracker;
-
-   protected body Thruster_State is
+   protected body Engine_State is
 
       function Get return State is
-        (Current_Thruster_State);
+        (Thruster_State);
+
+      function Get_Total return Duration is
+      begin
+         if Valve_State.Is_Open then
+            declare
+               Now : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
+            begin
+               --  Thruster is currently on, recalculate fuel consumption.
+               return
+                 Ada.Real_Time.To_Duration
+                   (TS =>
+                      Valve_State.Total_Open + (Now - Valve_State.Open_Since));
+            end;
+         else
+            --  Thruster is currently off, return recorded fuel consumption.
+            return Ada.Real_Time.To_Duration (TS => Valve_State.Total_Open);
+         end if;
+      end Get_Total;
 
       procedure No_More_Fuel is
       begin
          Fuel_Tank_Empty := True;
-         Current_Thruster_State := Disabled;
-         Fuel_Flow_Tracker.Off (Deactivation_Time => Ada.Real_Time.Clock);
+         Set (Value => Disabled);
       end No_More_Fuel;
 
       procedure Set (Value : in State) is
-         Time_Stamp : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
       begin
          if not Fuel_Tank_Empty or else Value = Disabled then
-            Current_Thruster_State := Value;
+            declare
+               Now : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
+            begin
+               Thruster_State := Value;
 
-            case Value is
+               case Value is
+                  when Disabled =>
+                     --  Ignore off commands if thruster is not active.
+                     if Valve_State.Is_Open then
+                        Valve_State.Is_Open    := False;
+                        Valve_State.Total_Open :=
+                          Valve_State.Total_Open +
+                            (Now - Valve_State.Open_Since);
+                     end if;
 
-               when Disabled =>
-                  Fuel_Flow_Tracker.Off (Deactivation_Time => Time_Stamp);
-
-               when Enabled  =>
-                  Fuel_Flow_Tracker.On (Activation_Time => Time_Stamp);
-            end case;
+                  when Enabled  =>
+                     --  Ignore On commands if thruster is already active.
+                     if not Valve_State.Is_Open then
+                        Valve_State.Is_Open    := True;
+                        Valve_State.Open_Since := Now;
+                     end if;
+               end case;
+            end;
          end if;
       end Set;
 
-   end Thruster_State;
+   end Engine_State;
 
    function Burn_Time return Duration is
-      Result : Duration;
-   begin
-      Fuel_Flow_Tracker.Get_Activation_Time (Activation_Time => Result);
-      return Result;
-   end Burn_Time;
+     (Engine_State.Get_Total);
 
    function Current_Fuel_Mass return Shared_Types.Fuel_Mass is
      (Fuel_State.Get);
 
    procedure Disable is
    begin
-      Thruster_State.Set (Value => Disabled);
+      Engine_State.Set (Value => Disabled);
    end Disable;
 
    procedure Enable is
    begin
-      Thruster_State.Set (Value => Enabled);
+      Engine_State.Set (Value => Enabled);
    end Enable;
 
    function Is_Disabled return Boolean is
-     (Thruster_State.Get = Disabled);
+     (Engine_State.Get = Disabled);
 
    function Is_Enabled return Boolean is
-     (Thruster_State.Get = Enabled);
+     (Engine_State.Get = Enabled);
 
    procedure Shutdown is
    begin
@@ -149,7 +140,7 @@ package body Thrusters is
 
    procedure Shutdown (Source : in Shared_Types.Legs_Index) is
    begin
-      Thruster_State.No_More_Fuel;
+      Engine_State.No_More_Fuel;
       Log.Trace (Message =>
                    "Thrusters have been disabled due to signal from leg "
                  & Shared_Types.Legs_Index'Image (Source) & ".");
@@ -170,18 +161,15 @@ package body Thrusters is
          Next_Cycle := Next_Cycle + Configuration.Cycle_Times.Fuel_Monitor;
 
          declare
-            Valve_Open_Time : Duration;
-            Fuel_Used       : Shared_Types.Fuel_Mass;
+            Valve_Open_Time : constant Duration := Engine_State.Get_Total;
+            Fuel_Used       : constant Shared_Types.Fuel_Mass
+              := Shared_Types.Fuel_Mass'Min (Initial_Fuel,
+                                             Fuel_Flow_Rate * Valve_Open_Time);
          begin
-            Fuel_Flow_Tracker.Get_Activation_Time
-              (Activation_Time => Valve_Open_Time);
-            Fuel_Used :=
-              Shared_Types.Fuel_Mass'Min (Initial_Fuel,
-                                          Fuel_Flow_Rate * Valve_Open_Time);
             Current_Fuel := Initial_Fuel - Fuel_Used;
 
             if Current_Fuel = 0.0 then
-               Thruster_State.No_More_Fuel;
+               Engine_State.No_More_Fuel;
                Log.Trace (Message => "Ran out of fuel, terminating...");
             end if;
          end;
