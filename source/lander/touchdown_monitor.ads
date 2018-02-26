@@ -1,7 +1,6 @@
 --  pragma Profile (Ravenscar);
 --  pragma Partition_Elaboration_Policy (Sequential);
 
-with Ada.Real_Time;
 with Global;
 with Shared_Types;
 
@@ -13,9 +12,6 @@ with Shared_Types;
 --  thruster if a touchdown from at least one of the landing legs has been
 --  detected.
 package Touchdown_Monitor is
-
-   Cycle : constant Ada.Real_Time.Time_Span := Ada.Real_Time.Milliseconds (10);
-   -- Monitoring cycle
 
    type Health_State is (Unknown, Good, Bad);
    --  General health state of the landing leg hall sensor. Signals from landing

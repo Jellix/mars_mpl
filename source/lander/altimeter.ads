@@ -1,7 +1,6 @@
 --  pragma Profile (Ravenscar);
 --  pragma Partition_Elaboration_Policy (Sequential);
 
-with Ada.Real_Time;
 with Global;
 with Shared_Types;
 
@@ -15,9 +14,6 @@ with Shared_Types;
 --  calculates the change in altitude and velocity until (simulated) ground
 --  contact.
 package Altimeter is
-
-   Cycle : constant Ada.Real_Time.Time_Span := Ada.Real_Time.Milliseconds (10);
-   -- Sample cycle of simulated height sensor.
 
    function Current_Altitude return Shared_Types.Altitude
      with Volatile_Function;

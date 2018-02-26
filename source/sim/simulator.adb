@@ -27,12 +27,11 @@
 with Ada.Real_Time;
 with Altimeter;
 with Configuration.Task_Offsets;
-with Engine;
 with Global;
 with Landing_Legs;
 with Shared_Parameters.Read;
 with Shared_Sensor_Data;
-with Shared_Types;
+with Shared_Types.IO;
 with Thrusters;
 with Touchdown_Monitor;
 
@@ -57,7 +56,7 @@ procedure Simulator is
       Thrust_On : constant Boolean                := Thrusters.Is_Enabled;
       Altitude  : constant Shared_Types.Altitude  := Altimeter.Current_Altitude;
       Velocity  : constant Shared_Types.Velocity  := Altimeter.Current_Velocity;
-      Fuel      : constant Shared_Types.Fuel_Mass := Engine.Current_Fuel_Mass;
+      Fuel      : constant Shared_Types.Fuel_Mass := Thrusters.Current_Fuel_Mass;
       All_Legs  : Shared_Types.All_Legs_State;
    begin
       Landing_Legs.Read_State (State => All_Legs);
@@ -165,7 +164,7 @@ begin
    Altimeter.Shutdown;
    Touchdown_Monitor.Shutdown;
    Landing_Legs.Shutdown;
-   Engine.Shutdown;
+   Thrusters.Shutdown;
 
    declare
       All_Monitors_Dead : Boolean := False;
@@ -181,6 +180,16 @@ begin
             Update_Shared_Data;
          end if;
       end loop;
+   end;
+
+   declare
+      function Image is new Shared_Types.IO.Generic_Image (T    => Duration,
+                                                           Unit => "s");
+   begin
+      Log.Trace (Message => "Thrusters burned for a total of "
+                 & Image (Value     => Thrusters.Burn_Time,
+                          With_Unit => True)
+                 & ".");
    end;
 
    --  Give the data generating task time to terminate.

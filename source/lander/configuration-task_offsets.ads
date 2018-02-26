@@ -1,6 +1,5 @@
 with Ada.Real_Time;
 with Shared_Types;
-pragma Elaborate_All (Ada.Real_Time);
 
 --  @summary
 --  Provides offsets into activation times for the several tasks.
@@ -14,7 +13,7 @@ package Configuration.Task_Offsets is
    Altitude_Task : Ada.Real_Time.Time_Span := Ada.Real_Time.Microseconds (0);
    --  Altitude task runs at exactly activation time.
 
-   Engine_Task   : Ada.Real_Time.Time_Span := Ada.Real_Time.Microseconds (1500);
+   Fuel_Monitor  : Ada.Real_Time.Time_Span := Ada.Real_Time.Microseconds (1500);
    --  The engine task runs with an offset of 2 millisecond.
 
    type TDM_Offsets is

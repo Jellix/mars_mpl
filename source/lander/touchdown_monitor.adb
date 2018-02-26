@@ -1,3 +1,5 @@
+with Ada.Real_Time;
+with Configuration.Cycle_Times;
 with Configuration.Task_Offsets;
 with Landing_Legs;
 with Shared_Parameters.Read;
@@ -76,7 +78,8 @@ package body Touchdown_Monitor is
       begin
          while Current_Run_State /= Terminated loop
             delay until Next_Cycle;
-            Next_Cycle := Next_Cycle + Cycle;
+            Next_Cycle :=
+              Next_Cycle + Configuration.Cycle_Times.TD_Monitor (Leg);
 
             Old_Run_State     := Current_Run_State;
             Current_Run_State := Legs_Control (Leg).TC_State;

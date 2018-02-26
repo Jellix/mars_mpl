@@ -1,3 +1,5 @@
+with Ada.Real_Time;
+with Configuration.Cycle_Times;
 with Configuration.Task_Offsets;
 with Landing_Legs;
 with Planets.Parameters;
@@ -55,7 +57,8 @@ package body Altimeter is
       Velocity_Now : Shared_Types.Velocity := Velocity_State.Get;
 
       --  The following parameters remain constant during the task's lifetime.
-      T            : constant Duration := Ada.Real_Time.To_Duration (Cycle);
+      T            : constant Duration
+        := Ada.Real_Time.To_Duration (Configuration.Cycle_Times.Altitude_Task);
       Free_Fall    : constant Shared_Types.Velocity := Gravity * T;
       Thrusted     : constant Shared_Types.Velocity := Thruster_Accel * T;
    begin
@@ -63,7 +66,7 @@ package body Altimeter is
 
       while not Aborted and then Altitude_Now > 0.0 loop
          delay until Next_Cycle;
-         Next_Cycle := Next_Cycle + Cycle;
+         Next_Cycle := Next_Cycle + Configuration.Cycle_Times.Altitude_Task;
 
          declare
             Delta_V : constant Shared_Types.Velocity :=

@@ -1,6 +1,5 @@
 with Ada.Exceptions;
 with Ada.Real_Time;
-pragma Elaborate_All (Ada.Real_Time);
 
 --  @summary
 --  Provides the Start_Time and some logging facilities.
