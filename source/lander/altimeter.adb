@@ -1,3 +1,4 @@
+with Ada.Numerics.Elementary_Functions;
 with Ada.Real_Time;
 with Configuration.Cycle_Times;
 with Configuration.Task_Offsets;
@@ -11,13 +12,25 @@ package body Altimeter is
 
    use type Ada.Real_Time.Time;
    use type Shared_Types.Altitude;
+   use type Shared_Types.Fuel_Mass;
    use type Shared_Types.Velocity;
 
-   Thruster_Accel : constant Shared_Types.Acceleration
-     := Shared_Parameters.Read.Thruster_Acceleration;
-
-   Gravity        : constant Shared_Types.Acceleration
+   Gravity : constant Shared_Types.Acceleration
      := Shared_Types.Acceleration (Planets.Parameters.Gravity (Planets.Mars));
+
+   Initial_Fuel_Mass : constant Shared_Types.Fuel_Mass
+     := Shared_Parameters.Read.Initial_Fuel_Mass;
+
+   Initial_Velocity : constant Shared_Types.Velocity
+     := Shared_Parameters.Read.Initial_Velocity;
+
+   Exhaust_Velocity : constant Shared_Types.Velocity
+     := Shared_Parameters.Read.Exhaust_Velocity;
+
+   function Ln (X : in Float) return Float renames
+     Ada.Numerics.Elementary_Functions.Log;
+
+   Spacecraft_Mass : constant := 82.0;
 
    pragma Warnings (Off, "instance does not use primitive operation ""*""");
 
@@ -59,8 +72,8 @@ package body Altimeter is
       --  The following parameters remain constant during the task's lifetime.
       T            : constant Duration
         := Ada.Real_Time.To_Duration (Configuration.Cycle_Times.Altitude_Task);
-      Free_Fall    : constant Shared_Types.Velocity := Gravity * T;
-      Thrusted     : constant Shared_Types.Velocity := Thruster_Accel * T;
+      M0           : constant Float :=
+                       Float (Spacecraft_Mass + Initial_Fuel_Mass);
    begin
       Log.Trace (Message => "Altitude control monitor started.");
 
@@ -69,18 +82,22 @@ package body Altimeter is
          Next_Cycle := Next_Cycle + Configuration.Cycle_Times.Altitude_Task;
 
          declare
-            Delta_V : constant Shared_Types.Velocity :=
-                        (if Thrusters.Is_Disabled
-                         then Free_Fall
-                         else Thrusted);
-            Delta_A : constant Shared_Types.Altitude := Velocity_Now * T;
+            Mission_Time : constant Duration :=
+                             Ada.Real_Time.To_Duration
+                               (Ada.Real_Time.Clock - Global.Start_Time);
+            M1           : constant Float
+              := Float (Spacecraft_Mass + Thrusters.Current_Fuel_Mass);
+
+            Delta_A      : constant Shared_Types.Altitude := Velocity_Now * T;
+            Delta_V      : constant Shared_Types.Velocity
+              := (Gravity * Mission_Time) - Exhaust_Velocity * Ln (X => M0 / M1);
          begin
             Altitude_Now :=
               Altitude_Now - Shared_Types.Altitude'Min (Altitude_Now, Delta_A);
             Altimeter_State.Set (New_Value => Altitude_Now);
 
             Velocity_Now :=
-              Shared_Types.Velocity'Max (0.0, Velocity_Now + Delta_V);
+              Shared_Types.Velocity'Max (0.0, Initial_Velocity + Delta_V);
             Velocity_State.Set (New_Value => Velocity_Now);
          end;
 

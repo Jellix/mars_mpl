@@ -107,11 +107,11 @@ package body GUI is
       Write => Shared_Parameters.Write.Initial_Velocity,
       Name  => "initial velocity");
 
-   function Set_Thruster_Acceleration is new Callbacks.Set_GEntry_Value
-     (T     => Shared_Types.Acceleration,
-      Read  => Shared_Parameters.Read.Thruster_Acceleration,
-      Write => Shared_Parameters.Write.Thruster_Acceleration,
-      Name  => "thruster acceleration");
+   function Set_Exhaust_Velocity is new Callbacks.Set_GEntry_Value
+     (T     => Shared_Types.Velocity,
+      Read  => Shared_Parameters.Read.Exhaust_Velocity,
+      Write => Shared_Parameters.Write.Exhaust_Velocity,
+      Name  => "exhaust velocity");
 
    pragma Warnings (On, "instance does not use primitive operation ""*""");
 

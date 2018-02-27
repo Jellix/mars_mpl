@@ -40,9 +40,8 @@ private
    Shared_Fuel_Flow_Rate : Shared_Types.Fuel_Mass := 4.500;
    --  Fuel flow rate when Thrusters are (fully) enabled in kg/s.
 
-   Shared_Thruster_Acceleration   : Shared_Types.Acceleration
-     := -22.265_999_794_006_347_656_250;
-   --  Acceleration of space craft when thrusters are enabled in m/s².
+   Shared_Exhaust_Velocity : Shared_Types.Velocity := 2100.0;
+   --  Exhaust velocity of fuel when thruster are enabled in m/s.
 
    pragma Warnings (On, "instance does not use primitive operation ""*""");
 

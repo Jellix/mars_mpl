@@ -35,7 +35,7 @@ begin
                               Gtk.GEntry.Gtk_Entry_New;
          F_Rate           : constant Gtk.GEntry.Gtk_Entry :=
                               Gtk.GEntry.Gtk_Entry_New;
-         A_Thruster       : constant Gtk.GEntry.Gtk_Entry :=
+         V_Thruster       : constant Gtk.GEntry.Gtk_Entry :=
                               Gtk.GEntry.Gtk_Entry_New;
       begin
          Bug_Switch.all.Set_State
@@ -81,12 +81,12 @@ begin
          F_Rate.all.On_Focus_Out_Event (Call  => Set_Fuel_Flow_Rate'Access,
                                         After => True);
 
-         A_Thruster.all.Set_Text
+         V_Thruster.all.Set_Text
            (Text =>
-              Image (Value     => Shared_Parameters.Read.Thruster_Acceleration,
+              Image (Value     => Shared_Parameters.Read.Exhaust_Velocity,
                      With_Unit => False));
-         A_Thruster.all.On_Focus_Out_Event
-           (Call  => Set_Thruster_Acceleration'Access,
+         V_Thruster.all.On_Focus_Out_Event
+           (Call  => Set_Exhaust_Velocity'Access,
             After => True);
 
          declare
@@ -157,9 +157,9 @@ begin
                                            Unit        => "kg/s"));
             Widget_Box.all.Pack_Start
               (Child =>
-                 Labeled_Widget_With_Unit (Widget      => A_Thruster,
-                                           Description => "Thruster Acceleration",
-                                           Unit        => "m/s²"));
+                 Labeled_Widget_With_Unit (Widget      => V_Thruster,
+                                           Description => "Exhaust Velocity",
+                                           Unit        => "m/s"));
 
             Container.all.Pack_Start (Child  => Widget_Box,
                                       Expand => False);

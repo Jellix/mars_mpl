@@ -5,6 +5,13 @@
 --  Provides read access for each of the shared parameters.
 package Shared_Parameters.Read is
 
+   function Exhaust_Velocity return Shared_Types.Velocity
+     with Volatile_Function;
+   --  Parametrized thruster exhaust velocity.
+   --  This is the exhaust velocity of fuel through the thruster when the
+   --  thrusters are enabled.
+   --  @return The set exhaust velocity.
+
    function Fuel_Flow_Rate return Shared_Types.Fuel_Mass
      with Volatile_Function;
    --  Parametrized fuel flow rate.
@@ -45,15 +52,10 @@ package Shared_Parameters.Read is
    --  Indicates if the TDM bug shall be enabled or not in the simulation.
    --  @return The state of the bug switch.
 
-   function Thruster_Acceleration return Shared_Types.Acceleration
-     with Volatile_Function;
-   --  Parametrized thruster acceleration.
-   --  This is the acceleration the thruster applies to the spacecraft when the
-   --  thruster is enabled. The value shuld be negative, as it is an
-   --  acceleration in the opposite direction of gravity.
-   --  @return The set thruster acceleration.
-
 private
+
+   function Exhaust_Velocity return Shared_Types.Velocity is
+     (Shared_Exhaust_Velocity);
 
    function Fuel_Flow_Rate return Shared_Types.Fuel_Mass is
      (Shared_Fuel_Flow_Rate);
@@ -76,12 +78,10 @@ private
    function TDM_Bug_Enabled return Boolean is
      (Shared_Bug_Enabled);
 
-   function Thruster_Acceleration return Shared_Types.Acceleration is
-     (Shared_Thruster_Acceleration);
-
    --  The No_Inline pragmas are there to ensure that calls to retrieve shared
    --  parameters are never inlined (even though they are implemented as
    --  expression functions). Otherwise they may not work as expected.
+   pragma No_Inline (Exhaust_Velocity);
    pragma No_Inline (Fuel_Flow_Rate);
    pragma No_Inline (Initial_Altitude);
    pragma No_Inline (Initial_Velocity);
@@ -89,6 +89,5 @@ private
    pragma No_Inline (Safe_Landing_Velocity);
    pragma No_Inline (Target_Landing_Velocity);
    pragma No_Inline (TDM_Bug_Enabled);
-   pragma No_Inline (Thruster_Acceleration);
 
 end Shared_Parameters.Read;

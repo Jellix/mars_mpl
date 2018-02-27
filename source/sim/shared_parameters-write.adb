@@ -1,5 +1,10 @@
 package body Shared_Parameters.Write is
 
+   procedure Exhaust_Velocity (Value : in Shared_Types.Velocity) is
+   begin
+      Shared_Exhaust_Velocity := Value;
+   end Exhaust_Velocity;
+
    procedure Fuel_Flow_Rate (Value : in Shared_Types.Fuel_Mass) is
    begin
       Shared_Fuel_Flow_Rate := Value;
@@ -24,10 +29,5 @@ package body Shared_Parameters.Write is
    begin
       Shared_Bug_Enabled := Value;
    end TDM_Bug_Enabled;
-
-   procedure Thruster_Acceleration (Value : in Shared_Types.Acceleration) is
-   begin
-      Shared_Thruster_Acceleration := Value;
-   end Thruster_Acceleration;
 
 end Shared_Parameters.Write;
