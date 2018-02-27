@@ -22,11 +22,24 @@ private
 
    pragma Warnings (Off, "instance does not use primitive operation ""*""");
 
-   Shared_Safe_Landing_Velocity : Shared_Types.Velocity := 2.500;
-   --  The velocity considered safe for landing in m/s.
+   Shared_Dry_Mass : Shared_Types.Fuel_Mass := 290.0;
+   --  Dry mass of space craft after heat shield and cruise stage separation in
+   --  kg
+   --
+   --  https://nssdc.gsfc.nasa.gov/nmc/masterCatalog.do?sc=1999-001A:
+   --
+   --  The launch mass of the spacecraft is approximately 583 kg, including
+   --  64 kg of fuel, an 82 kg cruise stage, a 140 kg aeroshell/heatshield, and
+   --  the two 3.5 kg microprobes.
 
-   Shared_Target_Landing_Velocity : Shared_Types.Velocity := 2.375;
-   --  Target landing velocity for thruster control in m/s.
+   Shared_Exhaust_Velocity : Shared_Types.Velocity := 2300.0;
+   --  Exhaust velocity of fuel when thruster are enabled in m/s.
+   --  Hydrazine engine is rated as having a specific impulse of 230 - 240 s,
+   --  which converted to a mass based result in an effective exhaust velocity
+   --  of ~2300 m/s.
+
+   Shared_Fuel_Flow_Rate : Shared_Types.Fuel_Mass := 1.500;
+   --  Fuel flow rate when Thrusters are (fully) enabled in kg/s.
 
    Shared_Initial_Altitude : Shared_Types.Altitude := 3_500.000;
    -- Altitude at which the simulation starts in m.
@@ -37,14 +50,11 @@ private
    Shared_Initial_Fuel_Mass : Shared_Types.Fuel_Mass := 64.000;
    --  Initial amount of fuel on spacecraft in kg.
 
-   Shared_Fuel_Flow_Rate : Shared_Types.Fuel_Mass := 4.500;
-   --  Fuel flow rate when Thrusters are (fully) enabled in kg/s.
+   Shared_Safe_Landing_Velocity : Shared_Types.Velocity := 2.500;
+   --  The velocity considered safe for landing in m/s.
 
-   Shared_Exhaust_Velocity : Shared_Types.Velocity := 2300.0;
-   --  Exhaust velocity of fuel when thruster are enabled in m/s.
-   --  Hydrzine engine is rated as having a specific impulse of 230 - 240 s,
-   --  which converted to a mass based result in an effective exhaust velocity
-   --  of ~2300 m/s.
+   Shared_Target_Landing_Velocity : Shared_Types.Velocity := 2.375;
+   --  Target landing velocity for thruster control in m/s.
 
    pragma Warnings (On, "instance does not use primitive operation ""*""");
 

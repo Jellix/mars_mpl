@@ -1,5 +1,10 @@
 package body Shared_Parameters.Write is
 
+   procedure Dry_Mass (Value : in Shared_Types.Fuel_Mass) is
+   begin
+      Shared_Dry_Mass := Value;
+   end Dry_Mass;
+
    procedure Exhaust_Velocity (Value : in Shared_Types.Velocity) is
    begin
       Shared_Exhaust_Velocity := Value;

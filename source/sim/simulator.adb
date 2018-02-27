@@ -82,17 +82,18 @@ begin
    Touchdown_Monitor.Start;
 
    declare
-      Next_Cycle       : Ada.Real_Time.Time
+      Next_Cycle         : Ada.Real_Time.Time
         := Global.Start_Time + Configuration.Task_Offsets.SIM_Task;
 
-      Current_Altitude : Shared_Types.Altitude := Altimeter.Current_Altitude;
-      Legs_Deployed    : Boolean               := False;
-      Powered_Descent  : Boolean               := False;
-      Current_Velocity : Shared_Types.Velocity;
+      Current_Altitude   : Shared_Types.Altitude := Altimeter.Current_Altitude;
+      Legs_Deployed      : Boolean               := False;
+      Powered_Descent    : Boolean               := False;
+      Lander_Separated   : Boolean               := False;
+      Powered_Descent_At : Ada.Real_Time.Time    := Ada.Real_Time.Time_Last;
+      Current_Velocity   : Shared_Types.Velocity;
    begin
       while Current_Altitude > 0.0 loop
          delay until Next_Cycle;
-         Next_Cycle := Next_Cycle + Cycle;
 
          Current_Altitude := Altimeter.Current_Altitude;
          Current_Velocity := Altimeter.Current_Velocity;
@@ -114,7 +115,14 @@ begin
          --    [...] when the spacecraft is traveling at about 80 m/s [...] some
          --    1.4 kilometers [...] above the surface, the [...] descent engines
          --    will be turned on one-half second later [...]
-         if not Powered_Descent and then Current_Altitude <= 1300.0 then
+         if not Lander_Separated and then Current_Altitude <= 1300.0 then
+            Altimeter.Lander_Separation (Separated_At => Next_Cycle);
+            Lander_Separated   := True;
+            Powered_Descent_At := Next_Cycle + Ada.Real_Time.Milliseconds (500);
+            Log.Trace (Message => "Lander separated.");
+         end if;
+
+         if not Powered_Descent and then Next_Cycle >= Powered_Descent_At then
             Thrusters.Enable;
             Powered_Descent := True;
             Log.Trace (Message => "Entered powered descent flight mode.");
@@ -143,6 +151,7 @@ begin
          end if;
 
          Update_Shared_Data;
+         Next_Cycle := Next_Cycle + Cycle;
       end loop;
    end;
 

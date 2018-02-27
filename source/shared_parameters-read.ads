@@ -5,6 +5,13 @@
 --  Provides read access for each of the shared parameters.
 package Shared_Parameters.Read is
 
+   function Dry_Mass return Shared_Types.Fuel_Mass
+     with Volatile_Function;
+   --  Parametrized space craft mass (landing parts).
+   --  The mass of the landing parts of the space craft excluding fuel (hence
+   --  dry mass).
+   --  @return The set dry mass.
+
    function Exhaust_Velocity return Shared_Types.Velocity
      with Volatile_Function;
    --  Parametrized thruster exhaust velocity.
@@ -54,6 +61,9 @@ package Shared_Parameters.Read is
 
 private
 
+   function Dry_Mass return Shared_Types.Fuel_Mass is
+     (Shared_Dry_Mass);
+
    function Exhaust_Velocity return Shared_Types.Velocity is
      (Shared_Exhaust_Velocity);
 
@@ -81,6 +91,7 @@ private
    --  The No_Inline pragmas are there to ensure that calls to retrieve shared
    --  parameters are never inlined (even though they are implemented as
    --  expression functions). Otherwise they may not work as expected.
+   pragma No_Inline (Dry_Mass);
    pragma No_Inline (Exhaust_Velocity);
    pragma No_Inline (Fuel_Flow_Rate);
    pragma No_Inline (Initial_Altitude);

@@ -103,8 +103,8 @@ is
    --  Provides a mass type.
    package Kilogram is
       F : constant := 0.0;
-      L : constant := 2.0 ** 7;
-      R : constant := 1.0 / 2.0 ** 25;
+      L : constant := 2.0 ** 9;
+      R : constant := 1.0 / 2.0 ** 23;
       S : constant := 32;
 
       type T is delta R range F .. L - R with Size => S;

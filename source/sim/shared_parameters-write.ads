@@ -5,6 +5,10 @@
 --  Provides subroutines to change parametrization prior to simulation start.
 package Shared_Parameters.Write is
 
+   procedure Dry_Mass (Value : in Shared_Types.Fuel_Mass);
+   --  Set a new value for the space craft dry mass.
+   --  @param Value The new dry mass to be set.
+
    procedure Exhaust_Velocity (Value : in Shared_Types.Velocity);
    --  Set a new value for the thruster exhaust velocity.
    --  @param Value The new thruster exhaust velocity to be set.
@@ -34,6 +38,7 @@ private
 
    --  The No_Inline pragmas are there to ensure that calls to change shared
    --  parameters are never inlined. Otherwise they may not work as expected.
+   pragma No_Inline (Dry_Mass);
    pragma No_Inline (Exhaust_Velocity);
    pragma No_Inline (Fuel_Flow_Rate);
    pragma No_Inline (Initial_Altitude);

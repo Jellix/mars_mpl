@@ -83,6 +83,18 @@ package body GUI is
    --  Callbacks for entry fields
    pragma Warnings (Off, "instance does not use primitive operation ""*""");
 
+   function Set_Dry_Mass is new Callbacks.Set_GEntry_Value
+     (T     => Shared_Types.Fuel_Mass,
+      Read  => Shared_Parameters.Read.Dry_Mass,
+      Write => Shared_Parameters.Write.Dry_Mass,
+      Name  => "spacecraft dry mass");
+
+   function Set_Exhaust_Velocity is new Callbacks.Set_GEntry_Value
+     (T     => Shared_Types.Velocity,
+      Read  => Shared_Parameters.Read.Exhaust_Velocity,
+      Write => Shared_Parameters.Write.Exhaust_Velocity,
+      Name  => "exhaust velocity");
+
    function Set_Fuel_Flow_Rate is new Callbacks.Set_GEntry_Value
      (T     => Shared_Types.Fuel_Mass,
       Read  => Shared_Parameters.Read.Fuel_Flow_Rate,
@@ -106,12 +118,6 @@ package body GUI is
       Read  => Shared_Parameters.Read.Initial_Velocity,
       Write => Shared_Parameters.Write.Initial_Velocity,
       Name  => "initial velocity");
-
-   function Set_Exhaust_Velocity is new Callbacks.Set_GEntry_Value
-     (T     => Shared_Types.Velocity,
-      Read  => Shared_Parameters.Read.Exhaust_Velocity,
-      Write => Shared_Parameters.Write.Exhaust_Velocity,
-      Name  => "exhaust velocity");
 
    pragma Warnings (On, "instance does not use primitive operation ""*""");
 

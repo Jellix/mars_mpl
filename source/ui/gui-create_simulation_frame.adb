@@ -31,6 +31,8 @@ begin
                               Gtk.GEntry.Gtk_Entry_New;
          A_Initial        : constant Gtk.GEntry.Gtk_Entry :=
                               Gtk.GEntry.Gtk_Entry_New;
+         M_Dry            : constant Gtk.GEntry.Gtk_Entry :=
+                              Gtk.GEntry.Gtk_Entry_New;
          F_Initial        : constant Gtk.GEntry.Gtk_Entry :=
                               Gtk.GEntry.Gtk_Entry_New;
          F_Rate           : constant Gtk.GEntry.Gtk_Entry :=
@@ -66,6 +68,14 @@ begin
                            With_Unit => False));
          A_Initial.all.On_Focus_Out_Event (Call  => Set_Initial_Altitude'Access,
                                            After => True);
+
+         M_Dry.all.Set_Text
+           (Text =>
+              Image (Value     => Shared_Parameters.Read.Dry_Mass,
+                     With_Unit => False));
+         M_Dry.all.On_Focus_Out_Event
+           (Call  => Set_Dry_Mass'Access,
+            After => True);
 
          F_Initial.all.Set_Text
            (Text =>
@@ -145,6 +155,11 @@ begin
                  Labeled_Widget_With_Unit (Widget      => A_Initial,
                                            Description => "Initial Altitude",
                                            Unit        => "m"));
+            Widget_Box.all.Pack_Start
+              (Child =>
+                 Labeled_Widget_With_Unit (Widget      => M_Dry,
+                                           Description => "Spacecraft Dry Mass",
+                                           Unit        => "kg"));
             Widget_Box.all.Pack_Start
               (Child =>
                  Labeled_Widget_With_Unit (Widget      => F_Initial,

@@ -1,6 +1,7 @@
 --  pragma Profile (Ravenscar);
 --  pragma Partition_Elaboration_Policy (Sequential);
 
+with Ada.Real_Time;
 with Global;
 with Shared_Types;
 
@@ -24,6 +25,11 @@ package Altimeter is
      with Volatile_Function;
    --  Provides the current velocity.
    --  @return The current velocity.
+
+   procedure Lander_Separation (Separated_At : Ada.Real_Time.Time);
+   --  Tells the altimeter simulation that and when the lander has been
+   --  separated and the powered descent phase started (where we actively
+   --  monitor thruster and fuel state).
 
    procedure Shutdown;
    --  Signals the altitude control monitor to terminate.
