@@ -40,8 +40,11 @@ private
    Shared_Fuel_Flow_Rate : Shared_Types.Fuel_Mass := 4.500;
    --  Fuel flow rate when Thrusters are (fully) enabled in kg/s.
 
-   Shared_Exhaust_Velocity : Shared_Types.Velocity := 2100.0;
+   Shared_Exhaust_Velocity : Shared_Types.Velocity := 2300.0;
    --  Exhaust velocity of fuel when thruster are enabled in m/s.
+   --  Hydrzine engine is rated as having a specific impulse of 230 - 240 s,
+   --  which converted to a mass based result in an effective exhaust velocity
+   --  of ~2300 m/s.
 
    pragma Warnings (On, "instance does not use primitive operation ""*""");
 
