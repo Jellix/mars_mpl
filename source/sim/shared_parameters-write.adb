@@ -1,6 +1,6 @@
 package body Shared_Parameters.Write is
 
-   procedure Dry_Mass (Value : in Shared_Types.Mass) is
+   procedure Dry_Mass (Value : in Shared_Types.Vehicle_Mass) is
    begin
       Shared_Dry_Mass := Value;
    end Dry_Mass;

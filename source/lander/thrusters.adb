@@ -1,3 +1,4 @@
+with Ada.Numerics.Elementary_Functions;
 with Ada.Real_Time;
 with Configuration.Cycle_Times;
 with Configuration.Task_Offsets;
@@ -9,15 +10,33 @@ package body Thrusters is
    use type Ada.Real_Time.Time;
    use type Ada.Real_Time.Time_Span;
    use type Shared_Types.Fuel_Mass;
+   use type Shared_Types.Mass;
+   use type Shared_Types.Velocity;
 
    type State is (Disabled, Enabled);
    --  State of thruster.
    --  @value Disabled Thruster disabled, no upwards acceleration.
    --  @value Enabled  Thruster enabled, upwards acceleration accordingly.
 
+   Dry_Mass : constant Shared_Types.Vehicle_Mass
+     := Shared_Parameters.Read.Dry_Mass;
+   --  Parametrized dry mass of the space craft.
+
+   Exhaust_Velocity : constant Shared_Types.Velocity
+     := Shared_Parameters.Read.Exhaust_Velocity;
+   --  Parametrized effective exhaust velocity, read once at startup.
+
    Fuel_Flow_Rate : constant Shared_Types.Flow_Rate
      := Shared_Parameters.Read.Fuel_Flow_Rate;
    --  Parametrized Fuel_Flow_Rate, read once at startup.
+
+   Initial_Fuel_Mass : constant Shared_Types.Fuel_Mass
+     := Shared_Parameters.Read.Initial_Fuel_Mass;
+   --  Parametrized initial fuel mass, read once at startup.
+
+   Initial_Wet_Mass : constant Float
+     := Float (Shared_Types.Mass'Base (Dry_Mass) +
+                 Shared_Types.Mass'Base (Initial_Fuel_Mass));
 
    pragma Warnings (Off, "instance does not use primitive operation ""*""");
 
@@ -121,6 +140,19 @@ package body Thrusters is
 
    function Current_Fuel_Mass return Shared_Types.Fuel_Mass is
      (Fuel_State.Get);
+
+   function Delta_V return Shared_Types.Velocity
+   is
+      function Ln (X : in Float) return Float renames
+        Ada.Numerics.Elementary_Functions.Log;
+
+      Current_Wet_Mass : constant Float
+        := Float (Shared_Types.Mass'Base (Dry_Mass) +
+                    Shared_Types.Mass'Base (Fuel_State.Get));
+   begin
+      return
+        Exhaust_Velocity * Ln (X => Initial_Wet_Mass / Current_Wet_Mass);
+   end Delta_V;
 
    procedure Disable is
    begin

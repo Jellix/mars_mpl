@@ -1,4 +1,3 @@
-with Ada.Numerics.Elementary_Functions;
 with Configuration.Cycle_Times;
 with Configuration.Task_Offsets;
 with Landing_Legs;
@@ -11,22 +10,13 @@ package body Altimeter is
 
    use type Ada.Real_Time.Time;
    use type Shared_Types.Altitude;
-   use type Shared_Types.Mass;
    use type Shared_Types.Velocity;
 
    Gravity : constant Shared_Types.Acceleration
      := Shared_Types.Acceleration (Planets.Parameters.Gravity (Planets.Mars));
 
-   Initial_Fuel_Mass : constant Shared_Types.Fuel_Mass
-     := Shared_Parameters.Read.Initial_Fuel_Mass;
-
    Initial_Velocity : constant Shared_Types.Velocity
      := Shared_Parameters.Read.Initial_Velocity;
-
-   Exhaust_Velocity : constant Shared_Types.Velocity
-     := Shared_Parameters.Read.Exhaust_Velocity;
-
-   Dry_Mass : constant Shared_Types.Mass := Shared_Parameters.Read.Dry_Mass;
 
    pragma Warnings (Off, "instance does not use primitive operation ""*""");
 
@@ -47,9 +37,6 @@ package body Altimeter is
 
    function Current_Velocity return Shared_Types.Velocity is
      (Velocity_State.Get);
-
-   function Ln (X : in Float) return Float renames
-     Ada.Numerics.Elementary_Functions.Log;
 
    type Descent_Phase is (Start,
                           -- ... some more, not supported/relevant
@@ -115,9 +102,6 @@ package body Altimeter is
       T             : constant Duration
         := Ada.Real_Time.To_Duration (Configuration.Cycle_Times.Altitude_Task);
       --  Duration of a single task cycle.
-      M0            : constant Float
-        := Float (Dry_Mass + Shared_Types.Mass (Initial_Fuel_Mass));
-      --  Initial space craft wet mass.
       Current_Phase : Descent_Phase := Descent_State.Get;
       --  Current descent phase.
    begin
@@ -144,11 +128,8 @@ package body Altimeter is
                Descent_Time : constant Duration :=
                                 Ada.Real_Time.To_Duration
                                   (Next_Cycle - Descent_State.Separation_Time);
-               M1           : constant Float
-                 := Float (Dry_Mass
-                           + Shared_Types.Mass (Thrusters.Current_Fuel_Mass));
                Delta_V      : constant Shared_Types.Velocity
-                 := (Gravity * Descent_Time) - Exhaust_Velocity * Ln (X => M0 / M1);
+                 := (Gravity * Descent_Time) - Thrusters.Delta_V;
             begin
                Velocity_Now :=
                  Shared_Types.Velocity'Max (0.0, Initial_Velocity + Delta_V);

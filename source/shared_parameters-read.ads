@@ -5,7 +5,7 @@
 --  Provides read access for each of the shared parameters.
 package Shared_Parameters.Read is
 
-   function Dry_Mass return Shared_Types.Mass
+   function Dry_Mass return Shared_Types.Vehicle_Mass
      with Volatile_Function;
    --  Parametrized space craft mass (landing parts).
    --  The mass of the landing parts of the space craft excluding fuel (hence
@@ -61,7 +61,7 @@ package Shared_Parameters.Read is
 
 private
 
-   function Dry_Mass return Shared_Types.Mass is
+   function Dry_Mass return Shared_Types.Vehicle_Mass is
      (Shared_Dry_Mass);
 
    function Exhaust_Velocity return Shared_Types.Velocity is

@@ -5,7 +5,7 @@
 --  Provides subroutines to change parametrization prior to simulation start.
 package Shared_Parameters.Write is
 
-   procedure Dry_Mass (Value : in Shared_Types.Mass);
+   procedure Dry_Mass (Value : in Shared_Types.Vehicle_Mass);
    --  Set a new value for the space craft dry mass.
    --  @param Value The new dry mass to be set.
 

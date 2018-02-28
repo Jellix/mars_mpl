@@ -25,7 +25,7 @@ private
 
    pragma Warnings (Off, "instance does not use primitive operation ""*""");
 
-   Shared_Dry_Mass : Shared_Types.Mass := 290.0;
+   Shared_Dry_Mass : Shared_Types.Vehicle_Mass := 290.0;
    --  Dry mass of space craft after heat shield and cruise stage separation in
    --  kg
    --

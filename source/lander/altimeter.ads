@@ -30,6 +30,8 @@ package Altimeter is
    --  Tells the altimeter simulation that and when the lander has been
    --  separated and the powered descent phase started (where we actively
    --  monitor thruster and fuel state).
+   --  @param Separated_At The time at which the lander stage has been
+   --         separated.
 
    procedure Shutdown;
    --  Signals the altitude control monitor to terminate.

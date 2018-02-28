@@ -122,8 +122,9 @@ is
    type Mass is new Kilogram.T;
    --  Mass expressed in kg.
 
-   type Fuel_Mass is new Mass range Mass'First .. 100.0;
-   type Flow_Rate is new Mass range Mass'First ..  10.0;
+   type Vehicle_Mass is new Mass range       10.0 .. Mass'Last;
+   type Fuel_Mass    is new Mass range Mass'First ..     100.0;
+   type Flow_Rate    is new Mass range Mass'First ..      10.0;
 
    function "*" (Left  : in Flow_Rate;
                  Right : in Duration) return Fuel_Mass

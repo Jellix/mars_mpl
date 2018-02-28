@@ -85,7 +85,7 @@ package body GUI is
    pragma Warnings (Off, "instance does not use primitive operation ""*""");
 
    function Set_Dry_Mass is new Callbacks.Set_GEntry_Value
-     (T     => Shared_Types.Mass,
+     (T     => Shared_Types.Vehicle_Mass,
       Read  => Shared_Parameters.Read.Dry_Mass,
       Write => Shared_Parameters.Write.Dry_Mass,
       Name  => "spacecraft dry mass");

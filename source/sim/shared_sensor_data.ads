@@ -26,15 +26,15 @@ is
          Terminated       : Boolean;
       end record;
    --  The full space craft sensor state.
-   --  @field Legs       State of all landing legs.
-   --  @field Thruster   State of thruster.
-   --  @field Altitude   Current altitude of space craft.
-   --  @field Velocity   Current velocity of space craft.
-   --  @field Fuel       Fuel mass left in tank.
-   --  @field Time_Stamp (Relative) time since simulation start. Denotes the
-   --                    (rough) sampling time of all of the above.
-   --  @field Terminated Indicates that the simulation has been finished and no
-   --                    more updates will be incoming.
+   --  @field Legs             State of all landing legs.
+   --  @field Thruster_Enabled State of thruster.
+   --  @field Altitude         Current altitude of space craft.
+   --  @field Velocity         Current velocity of space craft.
+   --  @field Fuel             Fuel mass left in tank.
+   --  @field Time_Stamp       (Relative) time since simulation start. Denotes
+   --                          the (rough) sampling time of all of the above.
+   --  @field Terminated       Indicates that the simulation has been finished
+   --                          and no more updates will be incoming.
 
    pragma Annotate (GNATcheck, Exempt_Off, "Visible_Components");
 
