@@ -26,7 +26,7 @@ package Altimeter is
    --  Provides the current velocity.
    --  @return The current velocity.
 
-   procedure Lander_Separation (Separated_At : Ada.Real_Time.Time);
+   procedure Lander_Separation (Separated_At : in Ada.Real_Time.Time);
    --  Tells the altimeter simulation that and when the lander has been
    --  separated and the powered descent phase started (where we actively
    --  monitor thruster and fuel state).

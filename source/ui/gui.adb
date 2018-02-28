@@ -39,18 +39,19 @@ package body GUI is
 
       subtype Color is Gdk.Color.Gdk_Color;
 
-      function RGB (Red   : Glib.Gdouble;
-                    Green : Glib.Gdouble;
-                    Blue  : Glib.Gdouble) return Color renames Gtk.Missed.RGB;
+      function RGB (Red   : in Glib.Gdouble;
+                    Green : in Glib.Gdouble;
+                    Blue  : in Glib.Gdouble) return Color
+                    renames Gtk.Missed.RGB;
 
-      Black        : constant Color := RGB (0.0, 0.0, 0.0);
-      Blue         : constant Color := RGB (0.0, 0.0, 1.0);
-      Light_Yellow : constant Color := RGB (1.0, 1.0, 0.5);
-      Green        : constant Color := RGB (0.0, 1.0, 0.0);
-      Grey         : constant Color := RGB (0.5, 0.5, 0.5);
-      Purple       : constant Color := RGB (1.0, 0.5, 0.5);
-      Red          : constant Color := RGB (1.0, 0.0, 0.0);
-      White        : constant Color := RGB (1.0, 1.0, 1.0);
+      Black        : constant Color := RGB (Red => 0.0, Green => 0.0, Blue => 0.0);
+      Blue         : constant Color := RGB (Red => 0.0, Green => 0.0, Blue => 1.0);
+      Light_Yellow : constant Color := RGB (Red => 1.0, Green => 1.0, Blue => 0.5);
+      Green        : constant Color := RGB (Red => 0.0, Green => 1.0, Blue => 0.0);
+      Grey         : constant Color := RGB (Red => 0.5, Green => 0.5, Blue => 0.5);
+      Purple       : constant Color := RGB (Red => 1.0, Green => 0.5, Blue => 0.5);
+      Red          : constant Color := RGB (Red => 1.0, Green => 0.0, Blue => 0.0);
+      White        : constant Color := RGB (Red => 1.0, Green => 1.0, Blue => 1.0);
 
    end Colors;
 
@@ -61,20 +62,20 @@ package body GUI is
       end record;
 
    Altitude_Scale : constant Scaling
-     := (Texts  =>
-            new Gtk.Enums.String_Lists.Controlled_String_List'
-           ("0" / "1" / "2" / "3" / "4" / "5" / "6" / "7" / "8" / "9"),
-         Factor => 10000.0);
+     := Scaling'(Texts  =>
+                    new Gtk.Enums.String_Lists.Controlled_String_List'
+                   ("0" / "1" / "2" / "3" / "4" / "5" / "6" / "7" / "8" / "9"),
+                 Factor => 10000.0);
    Fuel_Scale     : constant Scaling
-     := (Texts  =>
-            new Gtk.Enums.String_Lists.Controlled_String_List'
-           ("0" / "20" / "40" / "60" / "80"),
-         Factor => 80.0);
+     := Scaling'(Texts  =>
+                    new Gtk.Enums.String_Lists.Controlled_String_List'
+                   ("0" / "20" / "40" / "60" / "80"),
+                 Factor => 80.0);
    Velocity_Scale : constant Scaling
-     := (Texts  =>
-            new Gtk.Enums.String_Lists.Controlled_String_List'
-           ("0" / "20" / "40" / "60" / "80" / "100" / "120" / "140" / "160"),
-         Factor => 160.0);
+     := Scaling'(Texts  =>
+                    new Gtk.Enums.String_Lists.Controlled_String_List'
+                   ("0" / "20" / "40" / "60" / "80" / "100" / "120" / "140" / "160"),
+                 Factor => 160.0);
 
    Update_Interval : constant Ada.Real_Time.Time_Span :=
                        Ada.Real_Time.Milliseconds (1);
@@ -123,7 +124,7 @@ package body GUI is
 
    function Labeled_Widget
      (Widget      : not null access Gtk.Widget.Gtk_Widget_Record'Class;
-      Description : String) return not null access
+      Description : in              String) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class;
 
    --  Prototypes
@@ -213,7 +214,7 @@ package body GUI is
         (Value => Glib.Gdouble (Update_State.Fuel) / Fuel_Scale.Factor);
       Win.Fuel_Scale.all.Queue_Draw;
 
-      --  Data plots
+      Feed_Data_Plots :
       declare
          Plotter    : Gtk.Oscilloscope.Gtk_Oscilloscope_Record renames
                         Gtk.Oscilloscope.Gtk_Oscilloscope_Record
@@ -232,6 +233,7 @@ package body GUI is
                        T       => Time_Stamp);
 
          for Leg in Shared_Types.Legs_Index loop
+            Feed_Leg_Plot :
             declare
                Offset : constant Glib.Gdouble :=
                           0.3 * Glib.Gdouble (Shared_Types.Legs_Index'Pos (Leg));
@@ -241,7 +243,7 @@ package body GUI is
                Plotter.Feed (Channel => Win.Touchdown_Channel (Leg),
                              V       => Offset + Active,
                              T       => Time_Stamp);
-            end;
+            end Feed_Leg_Plot;
          end loop;
 
          Plotter.Feed
@@ -249,7 +251,7 @@ package body GUI is
             V       =>
               Glib.Gdouble (Boolean'Pos (Update_State.Thruster_Enabled)),
             T       => Time_Stamp);
-      end;
+      end Feed_Data_Plots;
    end Feed_Values;
 
    procedure Initialize (Window : in out Main_Window_Record'Class);
@@ -259,6 +261,7 @@ package body GUI is
       Window.Initialize (The_Type => Gtk.Enums.Window_Toplevel);
       Window.Set_Title (Title => "Mars MPL simulation");
 
+      Add_Widgets_To_Box :
       declare
          Box : constant Gtk.Box.Gtk_Box :=
                  Gtk.Box.Gtk_Vbox_New (Homogeneous => False,
@@ -268,12 +271,12 @@ package body GUI is
          Box.all.Pack_Start (Child => Window.Create_Sensor_Signals_Frame);
          Box.all.Pack_Start (Child => Window.Create_Timeline_Frame);
          Box.all.Pack_Start (Child => Window.Create_Simulation_Frame);
-      end;
+      end Add_Widgets_To_Box;
    end Initialize;
 
    function Labeled_Widget
      (Widget      : not null access Gtk.Widget.Gtk_Widget_Record'Class;
-      Description : String) return not null access
+      Description : in              String) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class
    is
       Widget_Box : constant Gtk.Box.Gtk_Box :=
@@ -282,8 +285,8 @@ package body GUI is
       Label      : constant Gtk.Label.Gtk_Label :=
                      Gtk.Label.Gtk_Label_New (Str => Description);
    begin
-      Widget_Box.all.Pack_Start (Label);
-      Widget_Box.all.Pack_Start (Widget);
+      Widget_Box.all.Pack_Start (Child => Label);
+      Widget_Box.all.Pack_Start (Child => Widget);
 
       return Widget_Box;
    end Labeled_Widget;
@@ -304,6 +307,7 @@ package body GUI is
                    Update_State => Update_State);
       Win.all.Show_All;
 
+      Main_Block :
       declare
          Next_Update : Ada.Real_Time.Time := Global.Start_Time;
          Last_Update : Ada.Real_Time.Time := Global.Start_Time;
@@ -332,15 +336,16 @@ package body GUI is
             Win.all.Abort_Button.all.Set_Sensitive
               (Sensitive => Simulator_Running);
 
+            Handle_Gtk_Events :
             while Gtk.Main.Events_Pending loop
                if Gtk.Main.Main_Iteration_Do (Blocking => False) then
                   null;
                end if;
-            end loop;
+            end loop Handle_Gtk_Events;
 
             exit Main_Loop when Aborted;
          end loop Main_Loop;
-      end;
+      end Main_Block;
    exception
       when E : others =>
          Log.Trace (E => E);

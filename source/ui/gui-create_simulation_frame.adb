@@ -13,6 +13,7 @@ is
    Frame : constant Gtk.Frame.Gtk_Frame :=
              Gtk.Frame.Gtk_Frame_New (Label => "Simulation control");
 begin
+   Add_Widgets_To_Frame :
    declare
       Container : constant Gtk.Box.Gtk_Box :=
                     Gtk.Box.Gtk_Hbox_New (Homogeneous => False,
@@ -20,6 +21,7 @@ begin
    begin
       Frame.all.Add (Widget => Container);
 
+      Add_Controls :
       declare
          Bug_Switch       : constant Gtk.Switch.Gtk_Switch :=
                               Gtk.Switch.Gtk_Switch_New;
@@ -99,6 +101,7 @@ begin
            (Call  => Set_Exhaust_Velocity'Access,
             After => True);
 
+         Add_Labeled_Text_Entries :
          declare
             Widget_Box : constant Gtk.Box.Gtk_Box :=
                            Gtk.Box.Gtk_Vbox_New (Homogeneous => False,
@@ -178,9 +181,10 @@ begin
 
             Container.all.Pack_Start (Child  => Widget_Box,
                                       Expand => False);
-         end;
-      end;
+         end Add_Labeled_Text_Entries;
+      end Add_Controls;
 
+      Create_Buttons :
       declare
          Start_Button : constant Gtk.Button.Gtk_Button :=
                           Gtk.Button.Gtk_Button_New_With_Label
@@ -202,6 +206,7 @@ begin
          Exit_Button.all.On_Clicked (Call  => Callbacks.Exit_Main'Access,
                                      After => True);
 
+         Add_Buttons :
          declare
             Button_Box : constant Gtk.Button_Box.Gtk_Button_Box :=
                            Gtk.Button_Box.Gtk_Button_Box_New
@@ -215,9 +220,9 @@ begin
                                        Expand => False);
             Container.all.Pack_End (Child  => Button_Box,
                                     Expand => False);
-         end;
-      end;
-   end;
+         end Add_Buttons;
+      end Create_Buttons;
+   end Add_Widgets_To_Frame;
 
    return Frame;
 end Create_Simulation_Frame;

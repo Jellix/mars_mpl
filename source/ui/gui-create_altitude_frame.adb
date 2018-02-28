@@ -1,3 +1,4 @@
+with Cairo.Ellipses;
 with Gtk.Frame;
 with Gtk.Layered.Label;
 
@@ -12,6 +13,7 @@ begin
    Frame.all.Set_Size_Request (Width  => 400,
                                Height => 400);
 
+   Add_Widgets_To_Box :
    declare
       Box : constant Gtk.Box.Gtk_Box :=
               Gtk.Box.Gtk_Vbox_New (Homogeneous => False,
@@ -19,6 +21,7 @@ begin
    begin
       Frame.all.Add (Widget => Box);
 
+      Create_Altimeter_Gauge :
       declare
          Gauge : Gtk.Gauge.Altimeter.Gtk_Gauge_Altimeter;
       begin
@@ -32,7 +35,8 @@ begin
          Gtk.Layered.Label.Add_Label
            (Under    => Gauge.all.Get_Cache,
             Text     => "x 1000 m",
-            Location => (0.0175, 0.175),
+            Location => Cairo.Ellipses.Cairo_Tuple'(X => 0.0175,
+                                                    Y => 0.175),
             Face     => Label_Font,
             Height   => 0.04,
             Stretch  => 1.0,
@@ -46,8 +50,9 @@ begin
 
          Box.all.Pack_Start (Child  => Gauge,
                              Expand => True);
-      end;
+      end Create_Altimeter_Gauge;
 
+      Add_Text_Entry :
       declare
          Text : Gtk.GEntry.Gtk_Entry;
       begin
@@ -56,8 +61,8 @@ begin
                            Expand => False);
          Window.Elements.Altitude := Text;
          Text.all.Set_Editable (Is_Editable => False);
-      end;
-   end;
+      end Add_Text_Entry;
+   end Add_Widgets_To_Box;
 
    return Frame;
 end Create_Altitude_Frame;

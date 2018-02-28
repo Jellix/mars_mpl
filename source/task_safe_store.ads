@@ -20,7 +20,7 @@ package Task_Safe_Store is
 
    protected type Shelf is
 
-      procedure Set (New_Value : Stored_Type);
+      procedure Set (New_Value : in Stored_Type);
       --  Sets a new value.
       --  @param New_Value The new value to be set.
 

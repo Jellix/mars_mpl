@@ -44,7 +44,7 @@ package Thrusters is
    --  Tells if the thruster is currently disabled.
    --  @return True if the thruster is currently disabled, False otherwise.
 
-   procedure Shutdown (Source : Shared_Types.Legs_Index);
+   procedure Shutdown (Source : in Shared_Types.Legs_Index);
    --  Shutdown thrusters terminally due to touchdown signal from the given leg.
    --  @param Source The landing leg which detected the touchdown signal.
 

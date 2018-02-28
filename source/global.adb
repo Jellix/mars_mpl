@@ -28,13 +28,14 @@ package body Global is
    end Clock_Image;
 
    protected Logger is
-      procedure Write (Msg : String);
+      procedure Write (Msg : in String);
    end Logger;
 
    protected body Logger is
       procedure Write (Msg : in String) is
       begin
-         Ada.Text_IO.Put_Line (Ada.Text_IO.Standard_Output, Msg);
+         Ada.Text_IO.Put_Line (File => Ada.Text_IO.Standard_Output,
+                               Item => Msg);
       end Write;
    end Logger;
 

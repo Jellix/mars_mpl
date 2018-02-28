@@ -39,7 +39,7 @@ package body Thrusters is
       end record
      with
        Dynamic_Predicate =>
-         (Is_Open = False or else Open_Since > Global.Start_Time);
+         (not Is_Open or else Open_Since > Global.Start_Time);
 
    protected Engine_State is
       function Get_Total return Duration;
@@ -49,10 +49,10 @@ package body Thrusters is
    private
       Thruster_State  : State      := Disabled;
       Fuel_Tank_Empty : Boolean    := False;
-      Valve_State     : Valve_Info :=
-                          (Is_Open    => False,
-                           Open_Since => Global.Start_Time,
-                           Total_Open => Ada.Real_Time.Time_Span_Zero);
+      Valve_State     : Valve_Info
+        := Valve_Info'(Is_Open    => False,
+                       Open_Since => Global.Start_Time,
+                       Total_Open => Ada.Real_Time.Time_Span_Zero);
    end Engine_State;
 
    protected body Engine_State is
@@ -61,21 +61,23 @@ package body Thrusters is
         (Thruster_State);
 
       function Get_Total return Duration is
+         Result : Ada.Real_Time.Time_Span;
       begin
          if Valve_State.Is_Open then
+            --  Thruster is currently on.
+            Recalculate_Fuel_Consumption :
             declare
                Now : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
             begin
-               --  Thruster is currently on, recalculate fuel consumption.
-               return
-                 Ada.Real_Time.To_Duration
-                   (TS =>
-                      Valve_State.Total_Open + (Now - Valve_State.Open_Since));
-            end;
+               Result :=
+                 Valve_State.Total_Open + (Now - Valve_State.Open_Since);
+            end Recalculate_Fuel_Consumption;
          else
             --  Thruster is currently off, return recorded fuel consumption.
-            return Ada.Real_Time.To_Duration (TS => Valve_State.Total_Open);
+            Result := Valve_State.Total_Open;
          end if;
+
+         return Ada.Real_Time.To_Duration (Result);
       end Get_Total;
 
       procedure No_More_Fuel is
@@ -87,29 +89,28 @@ package body Thrusters is
       procedure Set (Value : in State) is
       begin
          if not Fuel_Tank_Empty or else Value = Disabled then
+            Recalculate_Valve_State :
             declare
                Now : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
             begin
                Thruster_State := Value;
 
-               case Value is
-                  when Disabled =>
-                     --  Ignore off commands if thruster is not active.
-                     if Valve_State.Is_Open then
-                        Valve_State.Is_Open    := False;
-                        Valve_State.Total_Open :=
-                          Valve_State.Total_Open +
-                            (Now - Valve_State.Open_Since);
-                     end if;
-
-                  when Enabled  =>
-                     --  Ignore On commands if thruster is already active.
-                     if not Valve_State.Is_Open then
-                        Valve_State.Is_Open    := True;
-                        Valve_State.Open_Since := Now;
-                     end if;
-               end case;
-            end;
+               if Value = Disabled then
+                  --  Ignore off commands if thruster is not active.
+                  if Valve_State.Is_Open then
+                     Valve_State.Is_Open    := False;
+                     Valve_State.Total_Open :=
+                       Valve_State.Total_Open +
+                         (Now - Valve_State.Open_Since);
+                  end if;
+               else
+                  --  Ignore On commands if thruster is already active.
+                  if not Valve_State.Is_Open then
+                     Valve_State.Is_Open    := True;
+                     Valve_State.Open_Since := Now;
+                  end if;
+               end if;
+            end Recalculate_Valve_State;
          end if;
       end Set;
 
@@ -164,6 +165,7 @@ package body Thrusters is
          delay until Next_Cycle;
          Next_Cycle := Next_Cycle + Configuration.Cycle_Times.Fuel_Monitor;
 
+         Recalculate_Fuel_Level :
          declare
             Valve_Open_Time : constant Duration := Engine_State.Get_Total;
             Fuel_Used       : constant Shared_Types.Fuel_Mass
@@ -176,7 +178,7 @@ package body Thrusters is
                Engine_State.No_More_Fuel;
                Log.Trace (Message => "Ran out of fuel, terminating...");
             end if;
-         end;
+         end Recalculate_Fuel_Level;
 
          Fuel_State.Set (New_Value => Current_Fuel);
       end loop;

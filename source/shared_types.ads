@@ -36,7 +36,9 @@ is
       R : constant := 1.0 / 2.0 ** 20;
       S : constant := 64;
 
-      type T is delta R range F .. L - R with Size => S;
+      type T is delta R range F .. L - R with
+        Size  => S,
+        Small => R;
       --  The fixed point representation of a length.
    end Meter;
 
@@ -51,7 +53,9 @@ is
       R : constant := 1.0 / 2.0 ** 20;
       S : constant := 64;
 
-      type T is delta R range F .. L - R with Size => S;
+      type T is delta R range F .. L - R with
+        Size  => S,
+        Small => R;
       --  The fixed point representation of a speed.
    end Meter_Per_Second;
 
@@ -66,7 +70,9 @@ is
       R : constant := 1.0 / 2.0 ** 20;
       S : constant := 32;
 
-      type T is delta R range F .. L - R with Size => S;
+      type T is delta R range F .. L - R with
+        Size  => S,
+        Small => R;
       --  The fixed point representation of an acceleration.
    end Meter_Per_Square_Second;
 
@@ -107,7 +113,9 @@ is
       R : constant := 1.0 / 2.0 ** 23;
       S : constant := 32;
 
-      type T is delta R range F .. L - R with Size => S;
+      type T is delta R range F .. L - R with
+        Size  => S,
+        Small => R;
       --  The fixed point representation of a mass.
    end Kilogram;
 

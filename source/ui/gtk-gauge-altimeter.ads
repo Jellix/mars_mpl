@@ -72,21 +72,21 @@ package Gtk.Gauge.Altimeter is
    -- texts are ignored. Missing texts are shown empty.
    --
    procedure Gtk_New (Widget     : out Gtk_Gauge_Altimeter;
-                      Texts      : Gtk.Enums.String_List.Glist;
-                      Adjustment : Gtk.Adjustment.Gtk_Adjustment := null;
-                      Sectors    : Positive                      := 12);
+                      Texts      : in  Gtk.Enums.String_List.Glist;
+                      Adjustment : in  Gtk.Adjustment.Gtk_Adjustment := null;
+                      Sectors    : in  Positive                      := 12);
 
    procedure Gtk_New
      (Widget     : out Gtk_Gauge_Altimeter;
-      Texts      : Gtk.Enums.String_Lists.Controlled_String_List;
-      Adjustment : Gtk.Adjustment.Gtk_Adjustment := null;
-      Sectors    : Positive                      := 12);
+      Texts      : in  Gtk.Enums.String_Lists.Controlled_String_List;
+      Adjustment : in  Gtk.Adjustment.Gtk_Adjustment := null;
+      Sectors    : in  Positive                      := 12);
 
    procedure Gtk_New (Widget     : out Gtk_Gauge_Altimeter;
-                      Texts      : UTF8_String;
-                      Delimiter  : Character                     := ' ';
-                      Adjustment : Gtk.Adjustment.Gtk_Adjustment := null;
-                      Sectors    : Positive                      := 12);
+                      Texts      : in  UTF8_String;
+                      Delimiter  : in  Character                     := ' ';
+                      Adjustment : in  Gtk.Adjustment.Gtk_Adjustment := null;
+                      Sectors    : in  Positive                      := 12);
 
    --
    -- Initialize -- The widget initialization
@@ -102,22 +102,22 @@ package Gtk.Gauge.Altimeter is
    --
    procedure Initialize
      (Widget     : not null access Gtk_Gauge_Altimeter_Record'Class;
-      Texts      : Gtk.Enums.String_List.Glist;
-      Adjustment : Gtk.Adjustment.Gtk_Adjustment;
-      Sectors    : Positive);
+      Texts      : in              Gtk.Enums.String_List.Glist;
+      Adjustment : in              Gtk.Adjustment.Gtk_Adjustment;
+      Sectors    : in              Positive);
 
    procedure Initialize
      (Widget     : not null access Gtk_Gauge_Altimeter_Record'Class;
-      Texts      : Gtk.Enums.String_Lists.Controlled_String_List;
-      Adjustment : Gtk.Adjustment.Gtk_Adjustment;
-      Sectors    : Positive);
+      Texts      : in              Gtk.Enums.String_Lists.Controlled_String_List;
+      Adjustment : in              Gtk.Adjustment.Gtk_Adjustment;
+      Sectors    : in              Positive);
 
    procedure Initialize
      (Widget     : not null access Gtk_Gauge_Altimeter_Record'Class;
-      Texts      : UTF8_String;
-      Delimiter  : Character;
-      Adjustment : Gtk.Adjustment.Gtk_Adjustment;
-      Sectors    : Positive);
+      Texts      : in              UTF8_String;
+      Delimiter  : in              Character;
+      Adjustment : in              Gtk.Adjustment.Gtk_Adjustment;
+      Sectors    : in              Positive);
 
    --
    -- Get_Annotation -- The gauge annotation
@@ -184,7 +184,7 @@ package Gtk.Gauge.Altimeter is
    -- be redrawn the event "draw" should be emitted.
    --
    procedure Set_Value (Widget : not null access Gtk_Gauge_Altimeter_Record;
-                        Value  : Gdouble);
+                        Value  : in              Gdouble);
 
    overriding
    procedure Style_Changed

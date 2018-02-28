@@ -7,7 +7,7 @@ package body Task_Safe_Store is
          return Value;
       end Get;
 
-      procedure Set (New_Value : Stored_Type) is
+      procedure Set (New_Value : in Stored_Type) is
       begin
          Value := New_Value;
       end Set;

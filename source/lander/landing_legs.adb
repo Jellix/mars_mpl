@@ -18,10 +18,9 @@ package body Landing_Legs is
    Legs_State : All_Legs_State;
 
    protected Task_Control is
-      procedure Emit_Event (Event : Events);
-
       entry Wait_For_Event (Old_State : out Task_State;
                             New_State : out Task_State);
+      procedure Emit_Event (Event : in Events);
    private
       Event_Triggered : Boolean    := False;
       Previous_State  : Task_State := Running;
@@ -102,6 +101,7 @@ package body Landing_Legs is
    begin
       Sensor_Glitch.Initialize;
 
+      Main_Loop :
       while Current_State /= Terminated loop
          Task_Control.Wait_For_Event (Old_State => Previous_State,
                                       New_State => Current_State);
@@ -114,16 +114,17 @@ package body Landing_Legs is
                   Sensor_Glitch.Activate_Glitch;
 
                when Touched_Down         =>
+                  Set_Legs_Touchdown :
                   for I in Shared_Types.Legs_Index'Range loop
                      Legs_State (I).Set
                        (New_Value => Shared_Types.Touched_Down);
-                  end loop;
+                  end loop Set_Legs_Touchdown;
 
                when Running | Terminated =>
                   null;
             end case;
          end if;
-      end loop;
+      end loop Main_Loop;
    exception
       when E : others =>
          Log.Trace (E => E);

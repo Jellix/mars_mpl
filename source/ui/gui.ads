@@ -18,8 +18,17 @@ private
 
    use type GNAT.OS_Lib.Process_Id;
 
+   pragma Annotate (GNATcheck,
+                    Exempt_On,
+                    "Global_Variables",
+                    "Intentionally shared global variables in private part.");
+
    Aborted : Boolean                := False;
    SIM_Pid : GNAT.OS_Lib.Process_Id := GNAT.OS_Lib.Invalid_Pid;
+
+   pragma Annotate (GNATcheck,
+                    Exempt_Off,
+                    "Global_Variables");
 
    type Leg_Switches is
      array (Shared_Types.Legs_Index) of Gtk.Gauge.LED_Round.Gtk_Gauge_LED_Round;

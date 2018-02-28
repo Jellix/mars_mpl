@@ -10,6 +10,11 @@ package Shared_Sensor_Data with
   Shared_Passive => True
 is
 
+   pragma Annotate (GNATcheck,
+                    Exempt_On,
+                    "Visible_Components",
+                    "Intentionally visible components for easier access.");
+
    type State is
       record
          Legs             : Shared_Types.All_Legs_State;
@@ -31,6 +36,8 @@ is
    --  @field Terminated Indicates that the simulation has been finished and no
    --                    more updates will be incoming.
 
+   pragma Annotate (GNATcheck, Exempt_Off, "Visible_Components");
+
    protected Current_State is
 
       procedure Set (Data : in State);
@@ -43,7 +50,9 @@ is
 
    private
       The_Blob : State
-        := State'(Legs             => (others => Shared_Types.In_Flight),
+        := State'(Legs             =>
+                    Shared_Types.All_Legs_State'
+                      (others => Shared_Types.In_Flight),
                   Thruster_Enabled => False,
                   Altitude         => 0.0,
                   Velocity         => 0.0,

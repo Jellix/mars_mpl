@@ -18,8 +18,8 @@ package body Touchdown_Monitor is
          Health : Health_State;
       end record;
    Default_Indicator : constant Leg_Indicator
-     := (State  => Shared_Types.In_Flight,
-         Health => Unknown);
+     := Leg_Indicator'(State  => Shared_Types.In_Flight,
+                       Health => Unknown);
 
    protected type Task_Control is
       procedure TC_Start;
@@ -50,10 +50,16 @@ package body Touchdown_Monitor is
    end Task_Control;
 
    task type Touchdown_Monitor_Execute;
-   Legs_Task    : array (Shared_Types.Legs_Index) of Touchdown_Monitor_Execute;
+
+   type Task_Control_List is array (Shared_Types.Legs_Index) of Task_Control;
+
+   type Task_Exec_List is
+     array (Shared_Types.Legs_Index) of Touchdown_Monitor_Execute;
+
+   Legs_Task    : Task_Exec_List;
    pragma Unreferenced (Legs_Task);
 
-   Legs_Control : array (Shared_Types.Legs_Index) of Task_Control;
+   Legs_Control : Task_Control_List;
 
    Assign_Leg : Landing_Legs.Leg_Iterator;
 
@@ -72,6 +78,7 @@ package body Touchdown_Monitor is
       Next_Cycle
         := Global.Start_Time + Configuration.Task_Offsets.TD_Monitor (Leg);
 
+      Main_Block :
       declare
          Legs_Monitoring : constant String
            := "Monitoring for leg " & Shared_Types.Legs_Index'Image (Leg);
@@ -113,13 +120,14 @@ package body Touchdown_Monitor is
             if Current_Run_State /= Terminated then
                Last_Indicator := Current_Indicator;
 
+               Handle_Read_Exceptions :
                begin
                   Landing_Legs.Read_State (Index => Leg,
                                            State => Current_Indicator);
                exception
                   when Landing_Legs.IO_Error =>
                      Indicator.Health := Bad;
-               end;
+               end Handle_Read_Exceptions;
 
                -- Bug lies here. While we certainly want to read the state of
                -- the leg in each cycle (for a) health monitoring and
@@ -138,8 +146,8 @@ package body Touchdown_Monitor is
 
                if
                  Event_Enabled and then
-                 Indicator = (State  => Shared_Types.Touched_Down,
-                              Health => Good)
+                 Indicator = Leg_Indicator'(State  => Shared_Types.Touched_Down,
+                                            Health => Good)
                then
                   Thrusters.Shutdown (Source => Leg);
                   Legs_Control (Leg).TC_Shutdown;
@@ -147,13 +155,13 @@ package body Touchdown_Monitor is
                end if;
             end if;
          end loop;
-      end;
+      end Main_Block;
    exception
       when E : others =>
          Log.Trace (E => E);
    end Touchdown_Monitor_Execute;
 
-   function Current_State (Leg : Shared_Types.Legs_Index) return Run_State is
+   function Current_State (Leg : in Shared_Types.Legs_Index) return Run_State is
       New_State : Run_State;
    begin
       New_State := Legs_Control (Leg).TC_State;

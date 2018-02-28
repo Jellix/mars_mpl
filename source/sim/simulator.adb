@@ -81,6 +81,7 @@ begin
    Log.Trace (Message => "Starting touchdown monitors...");
    Touchdown_Monitor.Start;
 
+   Main_Block :
    declare
       Next_Cycle         : Ada.Real_Time.Time
         := Global.Start_Time + Configuration.Task_Offsets.SIM_Task;
@@ -153,10 +154,11 @@ begin
          Update_Shared_Data;
          Next_Cycle := Next_Cycle + Cycle;
       end loop;
-   end;
+   end Main_Block;
 
    delay until Ada.Real_Time.Clock + Ada.Real_Time.Milliseconds (100);
 
+   Check_Touchdown :
    declare
       Touchdown_Velocity : constant Shared_Types.Velocity :=
                              Altimeter.Current_Velocity;
@@ -166,7 +168,7 @@ begin
       else
          Log.Trace (Message => "MISSION SUCCESS: MPL touched down safely.");
       end if;
-   end;
+   end Check_Touchdown;
 
    Update_Shared_Data;
 
@@ -175,6 +177,7 @@ begin
    Landing_Legs.Shutdown;
    Thrusters.Shutdown;
 
+   Wait_For_Monitors :
    declare
       All_Monitors_Dead : Boolean := False;
    begin
@@ -189,8 +192,9 @@ begin
             Update_Shared_Data;
          end if;
       end loop;
-   end;
+   end Wait_For_Monitors;
 
+   Output_Statistics :
    declare
       function Image is new Shared_Types.IO.Generic_Image (T    => Duration,
                                                            Unit => "s");
@@ -199,7 +203,7 @@ begin
                  & Image (Value     => Thrusters.Burn_Time,
                           With_Unit => True)
                  & ".");
-   end;
+   end Output_Statistics;
 
    --  Give the data generating task time to terminate.
    delay until Ada.Real_Time.Clock + Ada.Real_Time.Milliseconds (100);

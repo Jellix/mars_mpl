@@ -13,7 +13,7 @@ private package GUI.Callbacks is
    procedure SIM_Start (Button : access Gtk.Button.Gtk_Button_Record'Class);
 
    function Switch_Bug (Self  : access Gtk.Switch.Gtk_Switch_Record'Class;
-                        State : in Boolean) return Boolean;
+                        State : in     Boolean) return Boolean;
 
    generic
       type T is delta <>;

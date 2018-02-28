@@ -1,2 +1,64 @@
 +RNon_Visible_Exceptions
 +RUSE_PACKAGE_Clauses
++RAbstract_Type_Declarations
+-- +RAnonymous_Subtypes
++RGenerics_In_Subprograms
++RImplicit_IN_Mode_Parameters
++RMembership_Tests
+-- +RConditional_Expressions
++RControlled_Type_Declarations
++RDiscriminated_Records
++REnumeration_Representation_Clauses
++RExplicit_Full_Discrete_Ranges
+-- +RExpression_Functions
++RNon_Qualified_Aggregates
++RPredicate_Testing
+-- +RQuantified_Expressions
++RRaising_Predefined_Exceptions
+-- +RRepresentation_Specifications
++RSubprogram_Access
++RUnassigned_OUT_Parameters
++RUnconditional_Exits
++RBoolean_Relational_Operators
++RExpanded_Loop_Exit_Names
+-- +RNon_Tagged_Derived_Types
++ROuter_Loop_Exits
+-- +ROverloaded_Operators
++RSlices
++RUniversal_Ranges
+-- +RDirect_Calls_To_Primitives
++RVisible_Components
++RImplicit_SMALL_For_Fixed_Point_Types
++RRaising_External_Exceptions
++RAnonymous_Arrays
++RBinary_Case_Statements
+-- +RDefault_Values_For_Record_Components
++RDeriving_From_Predefined_Type
++REnumeration_Ranges_In_CASE_Statements
++RExceptions_As_Control_Flow
++RExits_From_Conditional_Loops
++REXIT_Statements_With_No_Loop_Name
++RGlobal_Variables
++RGOTO_Statements
++RImproper_Returns
+-- +RNested_Subprograms
++RNon_Short_Circuit_Operators
+-- +RNull_Paths
++RObjects_Of_Anonymous_Types
++ROTHERS_In_Aggregates
++ROTHERS_In_CASE_Statements
++RPositional_Actuals_For_Defaulted_Generic_Parameters
++RPositional_Actuals_For_Defaulted_Parameters
+-- +RPOS_On_Enumeration_Types
++RPositional_Components
++RPositional_Generic_Parameters
++RPositional_Parameters
+-- +RRecursive_Subprograms
++RUnchecked_Address_Conversions
++RUnchecked_Conversions_As_Actuals
++RUninitialized_Global_Variables
++RUnnamed_Blocks_And_Loops
++RUncommented_BEGIN_In_Package_Bodies
++RIdentifier_Prefixes:Exclusive
++RMultiple_Entries_In_Protected_Definitions
++RVolatile_Objects_Without_Address_Clauses

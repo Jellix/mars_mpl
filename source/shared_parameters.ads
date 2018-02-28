@@ -14,6 +14,11 @@ is
 
 private
 
+   pragma Annotate (GnatCheck,
+                    Exempt_On,
+                    "Global_Variables",
+                    "These shared variables are intentional");
+
    Shared_Bug_Enabled : Boolean := False;
    --  Indicates if the original Mars MPL implementation fault in the touchdown
    --  monitor shall be simulated (=True) or not (=False).
@@ -55,5 +60,9 @@ private
    --  Target landing velocity for thruster control in m/s.
 
    pragma Warnings (On, "instance does not use primitive operation ""*""");
+
+   pragma Annotate (GnatCheck,
+                    Exempt_Off,
+                    "Global_Variables");
 
 end Shared_Parameters;

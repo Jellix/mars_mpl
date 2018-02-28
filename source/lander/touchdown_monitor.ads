@@ -39,7 +39,7 @@ package Touchdown_Monitor is
    procedure Shutdown;
    --  Terminate the touchdown monitor.
 
-   function Current_State (Leg : Shared_Types.Legs_Index) return Run_State
+   function Current_State (Leg : in Shared_Types.Legs_Index) return Run_State
      with Volatile_Function;
    --  Return the running state of the monitoring task for the given landing
    --  leg.

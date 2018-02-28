@@ -36,18 +36,19 @@ package body GUI.Callbacks is
    is
       pragma Unreferenced (Event);
       GEntry : constant Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry (Self);
+
+      function Range_Image return String;
+      function Range_Image return String is
+      begin
+         return
+           Image (Value        => T'First,
+                  Include_Unit => False)
+           & " .. "
+           & Image (Value        => T'Last,
+                    Include_Unit => False);
+      end Range_Image;
    begin
-      declare
-         function Range_Image return String;
-         function Range_Image return String is
-         begin
-            return
-              Image (Value        => T'First,
-                     Include_Unit => False)
-              & " .. "
-              & Image (Value        => T'Last,
-                       Include_Unit => False);
-         end Range_Image;
+      Handle_Invalid_Data :
       begin
          Write (Value => T'Value (GEntry.all.Get_Text));
       exception
@@ -55,7 +56,7 @@ package body GUI.Callbacks is
             Log.Trace (Message =>
                           "Bad input for " & Name & ". Must be in range "
                        & Range_Image & ".");
-      end;
+      end Handle_Invalid_Data;
 
       GEntry.all.Set_Text (Image (Value        => Read,
                                   Include_Unit => False));
@@ -84,9 +85,11 @@ package body GUI.Callbacks is
       pragma Unreferenced (Button);
       Pid : GNAT.OS_Lib.Process_Id;
    begin
-      Pid := GNAT.OS_Lib.Non_Blocking_Spawn (Program_Name => "simulator.exe",
-                                             Args         => (1 .. 0 => null),
-                                             Output_File  => "CON");
+      Pid :=
+        GNAT.OS_Lib.Non_Blocking_Spawn
+          (Program_Name => "simulator.exe",
+           Args         => GNAT.OS_Lib.Argument_List'(1 .. 0 => null),
+           Output_File  => "CON");
 
       if Pid = GNAT.OS_Lib.Invalid_Pid then
          Log.Trace (Message => "Failed to start simulator.exe!");
@@ -101,7 +104,7 @@ package body GUI.Callbacks is
    end SIM_Start;
 
    function Switch_Bug (Self  : access Gtk.Switch.Gtk_Switch_Record'Class;
-                        State : Boolean) return Boolean
+                        State : in     Boolean) return Boolean
    is
       pragma Unreferenced (Self);
    begin

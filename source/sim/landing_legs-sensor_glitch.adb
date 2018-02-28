@@ -13,11 +13,10 @@ package body Sensor_Glitch is
 
    pragma Warnings (Off, "declaration hides ""Task_Control""");
    protected type Task_Control is
-      procedure Trigger_Glitch (At_Time      : in Ada.Real_Time.Time;
-                                For_Duration : in Ada.Real_Time.Time_Span);
-
       entry Wait_For_Event (At_Time      : out Ada.Real_Time.Time;
                             For_Duration : out Ada.Real_Time.Time_Span);
+      procedure Trigger_Glitch (At_Time      : in Ada.Real_Time.Time;
+                                For_Duration : in Ada.Real_Time.Time_Span);
    private
       Event_Triggered : Boolean := False;
       At_Time         : Ada.Real_Time.Time;
@@ -26,7 +25,6 @@ package body Sensor_Glitch is
    pragma Warnings (On, "declaration hides ""Task_Control""");
 
    protected body Task_Control is
-
       procedure Trigger_Glitch (At_Time      : in Ada.Real_Time.Time;
                                 For_Duration : in Ada.Real_Time.Time_Span) is
       begin
@@ -43,7 +41,6 @@ package body Sensor_Glitch is
          At_Time      := Task_Control.At_Time;
          For_Duration := Task_Control.For_Duration;
       end Wait_For_Event;
-
    end Task_Control;
 
    type Control_Objects is array (Shared_Types.Legs_Index) of Task_Control;
@@ -59,6 +56,8 @@ package body Sensor_Glitch is
       Activate_For : Ada.Real_Time.Time_Span;
    begin
       Assign_Leg.Next (The_Leg => The_Leg);
+
+      Handle_Leg_Event :
       declare
          Leg_String : constant String
            := "Landing leg " & Shared_Types.Legs_Index'Image (The_Leg);
@@ -77,7 +76,7 @@ package body Sensor_Glitch is
               Leg_String & " triggered for"
             & Integer'Image (Activate_For / Ada.Real_Time.Milliseconds (1))
             & " ms.");
-      end;
+      end Handle_Leg_Event;
    exception
       when E : others =>
          Log.Trace (E => E);
@@ -94,15 +93,25 @@ package body Sensor_Glitch is
       Now : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
    begin
       for The_Leg in Shared_Types.Legs_Index'Range loop
+         Schedule_Leg_Event :
          declare
-            Trigger_Offset : constant Glitch_Delay    :=
-                               Random_Delay.Random (Gen => Delay_G);
-            Trigger_Length : constant Glitch_Duration :=
-                               Random_Duration.Random (Gen => Duration_G);
+            Trigger_Offset   : constant Glitch_Delay    :=
+                                 Random_Delay.Random (Gen => Delay_G);
+            Trigger_Duration : constant Glitch_Duration :=
+                                 Random_Duration.Random (Gen => Duration_G);
+            Trigger_At       : constant Ada.Real_Time.Time :=
+                                 Now +
+                                   Ada.Real_Time.Milliseconds
+                                     (MS => Trigger_Offset);
+            Trigger_Length   : constant Ada.Real_Time.Time_Span :=
+                                 Ada.Real_Time.Milliseconds
+                                   (MS => Trigger_Duration);
+            Trigger_Until    : constant Ada.Real_Time.Time :=
+                                 Trigger_At + Trigger_Length;
          begin
             Control_Object (The_Leg).Trigger_Glitch
-              (At_Time      => Now + Ada.Real_Time.Milliseconds (Trigger_Offset),
-               For_Duration => Ada.Real_Time.Milliseconds (Trigger_Length));
+              (At_Time      => Trigger_At,
+               For_Duration => Trigger_Length);
             Log.Trace
               (Message =>
                  "Landing leg "
@@ -110,13 +119,13 @@ package body Sensor_Glitch is
                & " scheduled to trigger in"
                & Glitch_Duration'Image (Trigger_Offset)
                & " ms (@"
-               & Global.Clock_Image (Now + Ada.Real_Time.Milliseconds (MS => Trigger_Offset))
+               & Global.Clock_Image (Time => Trigger_At)
                & ") for"
-               & Glitch_Duration'Image (Trigger_Length)
+               & Glitch_Duration'Image (Trigger_Duration)
                & " ms (@"
-               & Global.Clock_Image (Now + Ada.Real_Time.Milliseconds (MS => Trigger_Offset + Trigger_Length))
+               & Global.Clock_Image (Time => Trigger_Until)
                & ").");
-         end;
+         end Schedule_Leg_Event;
       end loop;
    end Activate_Glitch;
 

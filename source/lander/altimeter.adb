@@ -129,15 +129,17 @@ package body Altimeter is
          Current_Phase := Descent_State.Get;
 
          --  Calculate change in altitude according to current velocity.
+         Calculate_Delta_A :
          declare
             Delta_A : constant Shared_Types.Altitude := Velocity_Now * T;
          begin
             Altitude_Now :=
               Altitude_Now - Shared_Types.Altitude'Min (Altitude_Now, Delta_A);
             Altimeter_State.Set (New_Value => Altitude_Now);
-         end;
+         end Calculate_Delta_A;
 
          if Current_Phase = Lander_Separation then
+            Calculate_Delta_V :
             declare
                Descent_Time : constant Duration :=
                                 Ada.Real_Time.To_Duration
@@ -151,7 +153,7 @@ package body Altimeter is
                Velocity_Now :=
                  Shared_Types.Velocity'Max (0.0, Initial_Velocity + Delta_V);
                Velocity_State.Set (New_Value => Velocity_Now);
-            end;
+            end Calculate_Delta_V;
          end if;
 
          if Altitude_Now = 0.0 then

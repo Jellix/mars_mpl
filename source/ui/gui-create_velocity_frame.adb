@@ -1,3 +1,4 @@
+with Cairo.Ellipses;
 with Gtk.Frame;
 with Gtk.Layered.Label;
 
@@ -12,6 +13,7 @@ begin
    Frame.all.Set_Size_Request (Width  => 400,
                                Height => 400);
 
+   Add_Widgets_To_Frame :
    declare
       Box : constant Gtk.Box.Gtk_Box :=
               Gtk.Box.Gtk_Vbox_New (Homogeneous => False,
@@ -19,6 +21,7 @@ begin
    begin
       Frame.all.Add (Widget => Box);
 
+      Add_Velocity_Gauge :
       declare
          Gauge : Gtk.Gauge.Round_270.Gtk_Gauge_Round_270;
       begin
@@ -32,7 +35,8 @@ begin
          Gtk.Layered.Label.Add_Label
            (Under    => Gauge.all.Get_Cache,
             Text     => "m/s",
-            Location => (0.01, 0.15),
+            Location => Cairo.Ellipses.Cairo_Tuple'(X => 0.01,
+                                                    Y => 0.15),
             Face     => Label_Font,
             Height   => 0.03,
             Stretch  => 0.9,
@@ -45,8 +49,9 @@ begin
          Box.all.Pack_Start (Child  => Gauge,
                              Expand => True);
          Window.Tachometer := Gauge;
-      end;
+      end Add_Velocity_Gauge;
 
+      Add_Text_Entry :
       declare
          Text : Gtk.GEntry.Gtk_Entry;
       begin
@@ -55,8 +60,8 @@ begin
                            Expand => False);
          Window.Elements.Velocity := Text;
          Text.all.Set_Editable (Is_Editable => False);
-      end;
-   end;
+      end Add_Text_Entry;
+   end Add_Widgets_To_Frame;
 
    return Frame;
 end Create_Velocity_Frame;
