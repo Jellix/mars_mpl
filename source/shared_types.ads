@@ -111,18 +111,33 @@ is
       --  The fixed point representation of a mass.
    end Kilogram;
 
-   type Fuel_Mass is new Kilogram.T;
-   --  Fuel mass expressed in kg.
+   type Mass is new Kilogram.T;
+   --  Mass expressed in kg.
+
+   type Fuel_Mass is new Mass range Mass'First .. 100.0;
+   type Flow_Rate is new Mass range Mass'First ..  10.0;
+
+   function "*" (Left  : in Flow_Rate;
+                 Right : in Duration) return Fuel_Mass
+     with Inline => True;
+   --  Multiplies a flow rate with a duration to calculate the resulting mass.
+   --  @param Left The flow rate.
+   --  @param Right The duration.
+   --  @return The total mass flown during given duration at given flow rate.
 
 private
 
    function "*" (A : in Acceleration;
                  T : in Duration) return Velocity is
-     (Velocity (A * Acceleration (T)));
+     (Velocity (Acceleration'Base (A) * Acceleration'Base (T)));
+
+   function "*" (Left  : in Flow_Rate;
+                 Right : in Duration) return Fuel_Mass is
+     (Fuel_Mass (Flow_Rate'Base (Left) * Flow_Rate'Base (Right)));
 
    function "*" (V : in Velocity;
                  T : in Duration) return Altitude is
-     (Altitude (V * Velocity (T)));
+     (Altitude (Velocity'Base (V) * Velocity'Base (T)));
 
    function "*" (V     : in Velocity;
                  Scale : in Float) return Velocity is

@@ -70,7 +70,15 @@ private
                                     Unit => "m");
 
    function Image is new
+     Shared_Types.IO.Generic_Image (T    => Shared_Types.Flow_Rate,
+                                    Unit => "kg/s");
+
+   function Image is new
      Shared_Types.IO.Generic_Image (T    => Shared_Types.Fuel_Mass,
+                                    Unit => "kg");
+
+   function Image is new
+     Shared_Types.IO.Generic_Image (T    => Shared_Types.Mass,
                                     Unit => "kg");
 
    function Image is new

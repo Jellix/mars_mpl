@@ -5,7 +5,7 @@
 --  Provides subroutines to change parametrization prior to simulation start.
 package Shared_Parameters.Write is
 
-   procedure Dry_Mass (Value : in Shared_Types.Fuel_Mass);
+   procedure Dry_Mass (Value : in Shared_Types.Mass);
    --  Set a new value for the space craft dry mass.
    --  @param Value The new dry mass to be set.
 
@@ -13,7 +13,7 @@ package Shared_Parameters.Write is
    --  Set a new value for the thruster exhaust velocity.
    --  @param Value The new thruster exhaust velocity to be set.
 
-   procedure Fuel_Flow_Rate (Value : in Shared_Types.Fuel_Mass);
+   procedure Fuel_Flow_Rate (Value : in Shared_Types.Flow_Rate);
    --  Set a new value for the fuel flow rate.
    --  @param Value The new fuel flow rate to be set.
 

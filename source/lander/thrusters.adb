@@ -15,13 +15,17 @@ package body Thrusters is
    --  @value Disabled Thruster disabled, no upwards acceleration.
    --  @value Enabled  Thruster enabled, upwards acceleration accordingly.
 
-   Fuel_Flow_Rate : constant Shared_Types.Fuel_Mass
+   Fuel_Flow_Rate : constant Shared_Types.Flow_Rate
      := Shared_Parameters.Read.Fuel_Flow_Rate;
-   --  Read parametrization only once at startup.
+   --  Parametrized Fuel_Flow_Rate, read once at startup.
+
+   pragma Warnings (Off, "instance does not use primitive operation ""*""");
 
    package Fuel_Store is new Task_Safe_Store
      (Stored_Type   => Shared_Types.Fuel_Mass,
       Initial_Value => Shared_Parameters.Read.Initial_Fuel_Mass);
+
+   pragma Warnings (On, "instance does not use primitive operation ""*""");
 
    Fuel_State : Fuel_Store.Shelf;
    Aborted    : Boolean := False

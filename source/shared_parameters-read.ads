@@ -5,7 +5,7 @@
 --  Provides read access for each of the shared parameters.
 package Shared_Parameters.Read is
 
-   function Dry_Mass return Shared_Types.Fuel_Mass
+   function Dry_Mass return Shared_Types.Mass
      with Volatile_Function;
    --  Parametrized space craft mass (landing parts).
    --  The mass of the landing parts of the space craft excluding fuel (hence
@@ -19,7 +19,7 @@ package Shared_Parameters.Read is
    --  thrusters are enabled.
    --  @return The set exhaust velocity.
 
-   function Fuel_Flow_Rate return Shared_Types.Fuel_Mass
+   function Fuel_Flow_Rate return Shared_Types.Flow_Rate
      with Volatile_Function;
    --  Parametrized fuel flow rate.
    --  @return The set fuel flow rate.
@@ -61,13 +61,13 @@ package Shared_Parameters.Read is
 
 private
 
-   function Dry_Mass return Shared_Types.Fuel_Mass is
+   function Dry_Mass return Shared_Types.Mass is
      (Shared_Dry_Mass);
 
    function Exhaust_Velocity return Shared_Types.Velocity is
      (Shared_Exhaust_Velocity);
 
-   function Fuel_Flow_Rate return Shared_Types.Fuel_Mass is
+   function Fuel_Flow_Rate return Shared_Types.Flow_Rate is
      (Shared_Fuel_Flow_Rate);
 
    function Initial_Altitude return Shared_Types.Altitude is

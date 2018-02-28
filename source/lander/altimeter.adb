@@ -11,7 +11,7 @@ package body Altimeter is
 
    use type Ada.Real_Time.Time;
    use type Shared_Types.Altitude;
-   use type Shared_Types.Fuel_Mass;
+   use type Shared_Types.Mass;
    use type Shared_Types.Velocity;
 
    Gravity : constant Shared_Types.Acceleration
@@ -26,10 +26,7 @@ package body Altimeter is
    Exhaust_Velocity : constant Shared_Types.Velocity
      := Shared_Parameters.Read.Exhaust_Velocity;
 
-   function Ln (X : in Float) return Float renames
-     Ada.Numerics.Elementary_Functions.Log;
-
-   Dry_Mass : constant := 583.0 - 64.0 - 82.0 - 140.0 - 2 * 3.5;
+   Dry_Mass : constant Shared_Types.Mass := Shared_Parameters.Read.Dry_Mass;
 
    pragma Warnings (Off, "instance does not use primitive operation ""*""");
 
@@ -51,8 +48,8 @@ package body Altimeter is
    function Current_Velocity return Shared_Types.Velocity is
      (Velocity_State.Get);
 
-   Aborted : Boolean := False
-     with Atomic;
+   function Ln (X : in Float) return Float renames
+     Ada.Numerics.Elementary_Functions.Log;
 
    type Descent_Phase is (Start,
                           -- ... some more, not supported/relevant
@@ -96,6 +93,9 @@ package body Altimeter is
                          Change_At => Separated_At);
    end Lander_Separation;
 
+   Aborted : Boolean := False
+     with Atomic;
+
    procedure Shutdown is
    begin
       Aborted := True;
@@ -111,10 +111,15 @@ package body Altimeter is
       Velocity_Now  : Shared_Types.Velocity := Velocity_State.Get;
 
       --  The following parameters remain constant during the task's lifetime.
+
       T             : constant Duration
         := Ada.Real_Time.To_Duration (Configuration.Cycle_Times.Altitude_Task);
-      M0            : constant Float := Float (Dry_Mass + Initial_Fuel_Mass);
+      --  Duration of a single task cycle.
+      M0            : constant Float
+        := Float (Dry_Mass + Shared_Types.Mass (Initial_Fuel_Mass));
+      --  Initial space craft wet mass.
       Current_Phase : Descent_Phase := Descent_State.Get;
+      --  Current descent phase.
    begin
       Log.Trace (Message => "Altitude control monitor started.");
 
@@ -137,8 +142,9 @@ package body Altimeter is
                Descent_Time : constant Duration :=
                                 Ada.Real_Time.To_Duration
                                   (Next_Cycle - Descent_State.Separation_Time);
-               M1           : constant Float :=
-                                Float (Dry_Mass + Thrusters.Current_Fuel_Mass);
+               M1           : constant Float
+                 := Float (Dry_Mass
+                           + Shared_Types.Mass (Thrusters.Current_Fuel_Mass));
                Delta_V      : constant Shared_Types.Velocity
                  := (Gravity * Descent_Time) - Exhaust_Velocity * Ln (X => M0 / M1);
             begin

@@ -84,7 +84,7 @@ package body GUI is
    pragma Warnings (Off, "instance does not use primitive operation ""*""");
 
    function Set_Dry_Mass is new Callbacks.Set_GEntry_Value
-     (T     => Shared_Types.Fuel_Mass,
+     (T     => Shared_Types.Mass,
       Read  => Shared_Parameters.Read.Dry_Mass,
       Write => Shared_Parameters.Write.Dry_Mass,
       Name  => "spacecraft dry mass");
@@ -96,7 +96,7 @@ package body GUI is
       Name  => "exhaust velocity");
 
    function Set_Fuel_Flow_Rate is new Callbacks.Set_GEntry_Value
-     (T     => Shared_Types.Fuel_Mass,
+     (T     => Shared_Types.Flow_Rate,
       Read  => Shared_Parameters.Read.Fuel_Flow_Rate,
       Write => Shared_Parameters.Write.Fuel_Flow_Rate,
       Name  => "fuel flow rate");
