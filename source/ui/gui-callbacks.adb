@@ -1,3 +1,4 @@
+with GNAT.OS_Lib;
 with Gtk.GEntry;
 with Shared_Parameters.Write;
 
@@ -68,37 +69,41 @@ package body GUI.Callbacks is
    is
       pragma Unreferenced (Button);
    begin
-      if SIM_Pid /= GNAT.OS_Lib.Invalid_Pid then
+      if SIM_Pid /= GNAT.Expect.Invalid_Pid then
          Log.Trace
            (Message =>
               "Aborting simulator.exe... (PID ="
-            & Integer'Image (GNAT.OS_Lib.Pid_To_Integer (Pid => SIM_Pid))
+            & GNAT.Expect.Process_Id'Image (SIM_Pid)
             & ")");
+         GNAT.Expect.Close (Descriptor => SIM_Process);
       end if;
 
-      GNAT.OS_Lib.Kill (Pid => SIM_Pid);
-      SIM_Pid := GNAT.OS_Lib.Invalid_Pid;
+      SIM_Pid := GNAT.Expect.Invalid_Pid;
    end SIM_Abort;
 
    procedure SIM_Start (Button : access Gtk.Button.Gtk_Button_Record'Class)
    is
       pragma Unreferenced (Button);
-      Pid : GNAT.OS_Lib.Process_Id;
+      Pid        : GNAT.Expect.Process_Id;
    begin
-      Pid :=
-        GNAT.OS_Lib.Non_Blocking_Spawn
-          (Program_Name => "simulator.exe",
-           Args         => GNAT.OS_Lib.Argument_List'(1 .. 0 => null),
-           Output_File  => "CON");
+      Handle_Exception :
+      begin
+         GNAT.Expect.Non_Blocking_Spawn
+           (Descriptor   => SIM_Process,
+            Command      => "simulator.exe",
+            Args         => GNAT.OS_Lib.Argument_List'(1 .. 0 => null));
 
-      if Pid = GNAT.OS_Lib.Invalid_Pid then
-         Log.Trace (Message => "Failed to start simulator.exe!");
-      else
+         Pid := GNAT.Expect.Get_Pid (Descriptor => SIM_Process);
+
          Log.Trace
            (Message =>
               "Simulator.exe started (PID ="
-            & Integer'Image (GNAT.OS_Lib.Pid_To_Integer (Pid => Pid)) & ")");
-      end if;
+            & GNAT.Expect.Process_Id'Image (Pid) & ")");
+      exception
+         when GNAT.Expect.Invalid_Process =>
+            Log.Trace (Message => "Failed to start simulator.exe!");
+            Pid := GNAT.Expect.Invalid_Pid;
+      end Handle_Exception;
 
       SIM_Pid := Pid;
    end SIM_Start;

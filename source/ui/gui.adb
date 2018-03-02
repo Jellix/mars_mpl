@@ -2,11 +2,14 @@ with Ada.Real_Time;
 with Cairo;
 with Gdk.Color;
 with Glib;
+with GNAT.Regpat;
 with Gtk.Box;
 with Gtk.Enums.String_Lists;
 with Gtk.Label;
 with Gtk.Main;
 with Gtk.Missed;
+with Gtk.Text_Buffer;
+with Gtk.Text_Iter;
 with GUI.Callbacks;
 with Pango.Cairo.Fonts;
 with Shared_Parameters.Read;
@@ -16,10 +19,10 @@ with Shared_Sensor_Data;
 package body GUI is
 
    use type Ada.Real_Time.Time;
-   use type GNAT.OS_Lib.Process_Id;
    use type Shared_Types.Altitude;
    use type Shared_Types.Velocity;
    use type Glib.Gdouble;
+   use type GNAT.Expect.Expect_Match;
    use type Gtk.Enums.String_Lists.Controlled_String_List;
    use type Shared_Types.Leg_State;
 
@@ -335,6 +338,46 @@ package body GUI is
             --  thus there's no point in enabling the Abort button.
             Win.all.Abort_Button.all.Set_Sensitive
               (Sensitive => Simulator_Running);
+
+            Read_SIM_Output :
+            declare
+               Match_Result : GNAT.Expect.Expect_Match;
+               New_Line     : constant GNAT.Regpat.Pattern_Matcher :=
+                                GNAT.Regpat.Compile (Expression => ".*\n");
+            begin
+               GNAT.Expect.Expect (Descriptor  => SIM_Process,
+                                   Result      => Match_Result,
+                                   Regexp      => New_Line,
+                                   Timeout     => 5,
+                                   Full_Buffer => False);
+
+               if Match_Result /= GNAT.Expect.Expect_Timeout then
+                  Add_SIM_Output_To_Text_Window :
+                  declare
+                     Buffer   : constant Gtk.Text_Buffer.Gtk_Text_Buffer :=
+                                  Win.all.SIMon_Says.all.Get_Buffer;
+                     End_Iter : Gtk.Text_Iter.Gtk_Text_Iter;
+                  begin
+                     Buffer.all.Get_End_Iter (Iter => End_Iter);
+                     Buffer.all.Insert
+                       (Text =>
+                          GNAT.Expect.Expect_Out_Match
+                            (Descriptor => SIM_Process),
+                        Iter => End_Iter);
+                     Win.all.SIMon_Says.all.Scroll_To_Mark
+                       (Mark          => Buffer.all.Get_Mark ("end_of_text"),
+                        Within_Margin => 0.0,
+                        Use_Align     => True,
+                        Xalign        => 1.0,
+                        Yalign        => 1.0);
+                  end Add_SIM_Output_To_Text_Window;
+               end if;
+            exception
+               when GNAT.Expect.Process_Died =>
+                  null;
+               when E : others                   =>
+                  Log.Trace (E => E);
+            end Read_SIM_Output;
 
             Handle_Gtk_Events :
             while Gtk.Main.Events_Pending loop

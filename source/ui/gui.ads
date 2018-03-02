@@ -1,11 +1,12 @@
 with Global;
-with GNAT.OS_Lib;
+with GNAT.Expect;
 with Gtk.Gauge.Altimeter;
 with Gtk.Gauge.LED_Round;
 with Gtk.Gauge.Round_270;
 with Gtk.GEntry;
 with Gtk.Meter.Angular_90;
 with Gtk.Oscilloscope;
+with Gtk.Text_View;
 with Gtk.Widget;
 with Gtk.Window;
 with Shared_Types.IO;
@@ -16,15 +17,24 @@ package GUI is
 
 private
 
-   use type GNAT.OS_Lib.Process_Id;
+   use type GNAT.Expect.Process_Id;
 
    pragma Annotate (GNATcheck,
                     Exempt_On,
                     "Global_Variables",
                     "Intentionally shared global variables in private part.");
 
-   Aborted : Boolean                := False;
-   SIM_Pid : GNAT.OS_Lib.Process_Id := GNAT.OS_Lib.Invalid_Pid;
+   Aborted     : Boolean                := False;
+   SIM_Pid     : GNAT.Expect.Process_Id := GNAT.Expect.Invalid_Pid;
+
+   pragma Annotate (GNATcheck,
+                    Exempt_On,
+                    "Uninitialized_Global_Variables",
+                    "Process_Descriptor has default initialization.");
+   SIM_Process : GNAT.Expect.Process_Descriptor;
+   pragma Annotate (GNATcheck,
+                    Exempt_Off,
+                    "Uninitialized_Global_Variables");
 
    pragma Annotate (GNATcheck,
                     Exempt_Off,
@@ -59,12 +69,13 @@ private
          Tachometer        : Gtk.Gauge.Round_270.Gtk_Gauge_Round_270;
          Altimeter         : Gtk.Gauge.Altimeter.Gtk_Gauge_Altimeter;
          Fuel_Scale        : Gtk.Meter.Angular_90.Gtk_Meter_Angular_90;
+         SIMon_Says        : access Gtk.Text_View.Gtk_Text_View_Record'Class;
       end record;
    type Main_Window is access all Main_Window_Record'Class;
 
    function Simulator_Running return Boolean;
    function Simulator_Running return Boolean is
-     (SIM_Pid /= GNAT.OS_Lib.Invalid_Pid);
+     (SIM_Pid /= GNAT.Expect.Invalid_Pid);
 
    package Log is new Global.Log (Unit_Name => "GUI");
 
