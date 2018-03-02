@@ -81,8 +81,8 @@ package body GUI is
                  Factor => 160.0);
 
    Update_Interval : constant Ada.Real_Time.Time_Span :=
-                       Ada.Real_Time.Milliseconds (1);
-   -- GUI update frequency.
+                       Ada.Real_Time.Milliseconds (10);
+   -- GUI update frequency, 100/s ought to be enough.
 
    --  Callbacks for entry fields
    pragma Warnings (Off, "instance does not use primitive operation ""*""");
@@ -298,6 +298,8 @@ package body GUI is
       Win          : Main_Window;
       Update_State : Shared_Sensor_Data.State :=
                        Shared_Sensor_Data.Current_State.Get;
+      New_Line     : constant GNAT.Regpat.Pattern_Matcher :=
+                       GNAT.Regpat.Compile (Expression => ".*\n");
    begin
       Aborted := False;
 
@@ -319,6 +321,7 @@ package body GUI is
          loop
             delay until Next_Update;
             Next_Update := Next_Update + Update_Interval;
+
             Update_State := Shared_Sensor_Data.Current_State.Get;
 
             if not Update_State.Terminated then
@@ -342,13 +345,11 @@ package body GUI is
             Read_SIM_Output :
             declare
                Match_Result : GNAT.Expect.Expect_Match;
-               New_Line     : constant GNAT.Regpat.Pattern_Matcher :=
-                                GNAT.Regpat.Compile (Expression => ".*\n");
             begin
                GNAT.Expect.Expect (Descriptor  => SIM_Process,
                                    Result      => Match_Result,
                                    Regexp      => New_Line,
-                                   Timeout     => 5,
+                                   Timeout     => 1, --  essentially polling
                                    Full_Buffer => False);
 
                if Match_Result /= GNAT.Expect.Expect_Timeout then
