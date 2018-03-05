@@ -357,17 +357,23 @@ package body GUI is
 
    function Simulator_Running return Boolean is
       Match_Result : GNAT.Expect.Expect_Match;
+      Result       : Boolean;
    begin
-      GNAT.Expect.Expect (Descriptor  => SIM_Process.all,
-                          Result      => Match_Result,
-                          Regexp      => GNAT.Regpat.Never_Match,
-                          Timeout     => 0,
-                          Full_Buffer => False);
-      return True;
-   exception
-      when GNAT.Expect.Invalid_Process
-         | GNAT.Expect.Process_Died =>
-         return False;
+      Handle_Exceptions :
+      begin
+         GNAT.Expect.Expect (Descriptor  => SIM_Process.all,
+                             Result      => Match_Result,
+                             Regexp      => GNAT.Regpat.Never_Match,
+                             Timeout     => 0,
+                             Full_Buffer => False);
+         Result := True;
+      exception
+         when GNAT.Expect.Invalid_Process
+            | GNAT.Expect.Process_Died =>
+            Result := False;
+      end Handle_Exceptions;
+
+      return Result;
    end Simulator_Running;
 
 end GUI;
