@@ -8,7 +8,7 @@ with Gtk.Enums.String_Lists;
 with Gtk.Label;
 with Gtk.Main;
 with Gtk.Missed;
-with Gtk.Text_Buffer;
+with Gtk.Text_Buffer.With_End_Mark;
 with Gtk.Text_Iter;
 with GUI.Callbacks;
 with Pango.Cairo.Fonts;
@@ -355,8 +355,12 @@ package body GUI is
                if Match_Result /= GNAT.Expect.Expect_Timeout then
                   Add_SIM_Output_To_Text_Window :
                   declare
-                     Buffer   : constant Gtk.Text_Buffer.Gtk_Text_Buffer :=
-                                  Win.all.SIMon_Says.all.Get_Buffer;
+                     Buffer   : constant
+                       Gtk.Text_Buffer.With_End_Mark.
+                         Gtk_Text_Buffer_With_End_Mark :=
+                           Gtk.Text_Buffer.With_End_Mark.
+                             Gtk_Text_Buffer_With_End_Mark
+                               (Win.all.SIMon_Says.all.Get_Buffer);
                      End_Iter : Gtk.Text_Iter.Gtk_Text_Iter;
                   begin
                      Buffer.all.Get_End_Iter (Iter => End_Iter);
@@ -366,7 +370,7 @@ package body GUI is
                             (Descriptor => SIM_Process),
                         Iter => End_Iter);
                      Win.all.SIMon_Says.all.Scroll_To_Mark
-                       (Mark          => Buffer.all.Get_Mark ("end_of_text"),
+                       (Mark          => Buffer.all.End_Mark,
                         Within_Margin => 0.0,
                         Use_Align     => True,
                         Xalign        => 1.0,

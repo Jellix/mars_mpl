@@ -4,7 +4,7 @@ with Gtk.Frame;
 with Gtk.Label;
 with Gtk.Scrolled_Window;
 with Gtk.Switch;
-with Gtk.Text_Mark;
+with Gtk.Text_Buffer.With_End_Mark;
 with Shared_Parameters.Read;
 
 separate (GUI)
@@ -189,35 +189,22 @@ begin
       --  Create the simulator output window.
       Create_SIM_Logger :
       declare
-         Text_Frame  : constant Gtk.Frame.Gtk_Frame :=
-                         Gtk.Frame.Gtk_Frame_New (Label => "SIMon says:");
-         Text_Window : constant Gtk.Scrolled_Window.Gtk_Scrolled_Window :=
+         Log_Frame  : constant Gtk.Frame.Gtk_Frame :=
+                        Gtk.Frame.Gtk_Frame_New (Label => "SIMon says:");
+         Log_Window : constant Gtk.Scrolled_Window.Gtk_Scrolled_Window :=
                          Gtk.Scrolled_Window.Gtk_Scrolled_Window_New;
-         Text_View   : constant Gtk.Text_View.Gtk_Text_View :=
-                         Gtk.Text_View.Gtk_Text_View_New;
+         Log_View   : constant Gtk.Text_View.Gtk_Text_View :=
+                        Gtk.Text_View.Gtk_Text_View_New_With_Buffer
+                          (Buffer =>
+                             Gtk.Text_Buffer.With_End_Mark.
+                               Gtk_Text_Buffer_With_End_Mark_New);
       begin
-         Text_View.all.Set_Editable (Setting => False);
-         Window.SIMon_Says := Text_View;
-
-         Add_Autoscroll :
-         declare
-            Buffer        : constant Gtk.Text_Buffer.Gtk_Text_Buffer :=
-                              Text_View.all.Get_Buffer;
-            End_Of_Buffer : Gtk.Text_Iter.Gtk_Text_Iter;
-            Dummy         : Gtk.Text_Mark.Gtk_Text_Mark;
-
-            use type Glib.Gint;
-         begin
-            Buffer.all.Get_End_Iter (Iter => End_Of_Buffer);
-            Dummy := Buffer.all.Create_Mark (Mark_Name    => "end_of_text",
-                                             Where        => End_Of_Buffer,
-                                             Left_Gravity => False);
-         end Add_Autoscroll;
-
-         Text_Window.all.Add (Widget => Text_View);
-         Text_Frame.all.Add (Widget => Text_Window);
-         Container.all.Pack_Start (Child  => Text_Frame,
+         Log_View.all.Set_Editable (Setting => False);
+         Log_Window.all.Add (Widget => Log_View);
+         Log_Frame.all.Add (Widget => Log_Window);
+         Container.all.Pack_Start (Child  => Log_Frame,
                                    Expand => True);
+         Window.SIMon_Says := Log_View;
       end Create_SIM_Logger;
 
       Create_Buttons :
