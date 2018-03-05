@@ -25,7 +25,6 @@ private
                     "Intentionally shared global variables in private part.");
 
    Aborted     : Boolean                := False;
-   SIM_Pid     : GNAT.Expect.Process_Id := GNAT.Expect.Invalid_Pid;
    SIM_Process : GNAT.Expect.Process_Descriptor_Access :=
                    new GNAT.Expect.Process_Descriptor;
 
@@ -67,8 +66,6 @@ private
    type Main_Window is access all Main_Window_Record'Class;
 
    function Simulator_Running return Boolean;
-   function Simulator_Running return Boolean is
-     (SIM_Pid /= GNAT.Expect.Invalid_Pid);
 
    package Log is new Global.Log (Unit_Name => "GUI");
 

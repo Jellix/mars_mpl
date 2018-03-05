@@ -2,6 +2,7 @@ with Ada.Real_Time;
 with Cairo;
 with Gdk.Color;
 with Glib;
+with GNAT.Regpat;
 with Gtk.Box;
 with Gtk.Enums.String_Lists;
 with Gtk.Label;
@@ -19,7 +20,6 @@ package body GUI is
    use type Shared_Types.Altitude;
    use type Shared_Types.Velocity;
    use type Glib.Gdouble;
-   use type GNAT.Expect.Expect_Match;
    use type Gtk.Enums.String_Lists.Controlled_String_List;
    use type Shared_Types.Leg_State;
 
@@ -354,5 +354,20 @@ package body GUI is
       when E : others =>
          Log.Trace (E => E);
    end Run;
+
+   function Simulator_Running return Boolean is
+      Match_Result : GNAT.Expect.Expect_Match;
+   begin
+      GNAT.Expect.Expect (Descriptor  => SIM_Process.all,
+                          Result      => Match_Result,
+                          Regexp      => GNAT.Regpat.Never_Match,
+                          Timeout     => 0,
+                          Full_Buffer => False);
+      return True;
+   exception
+      when GNAT.Expect.Invalid_Process
+         | GNAT.Expect.Process_Died =>
+         return False;
+   end Simulator_Running;
 
 end GUI;

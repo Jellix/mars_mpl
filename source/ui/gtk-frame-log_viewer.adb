@@ -48,42 +48,46 @@ package body Gtk.Frame.Log_Viewer is
    not overriding procedure Update
      (This : not null access Gtk_Frame_Log_Viewer_Record)
    is
-      Match_Result       : GNAT.Expect.Expect_Match := 0;
-      Some_Text_Inserted : Boolean                  := False;
+      Match_Result : GNAT.Expect.Expect_Match := 0;
+      My_Buffer    : Gtk.Text_Buffer.Gtk_Text_Buffer renames
+                       This.all.Text_Buffer;
+      My_Process   : GNAT.Expect.Process_Descriptor_Access renames
+                       This.all.Process;
    begin
       Handle_Dead_Process :
       begin
          Read_Line_From_Process :
          while Match_Result /= GNAT.Expect.Expect_Timeout loop
-            GNAT.Expect.Expect (Descriptor  => This.all.Process.all,
+            GNAT.Expect.Expect (Descriptor  => My_Process.all,
                                 Result      => Match_Result,
                                 Regexp      => New_Line,
                                 Timeout     => 1, --  essentially polling
                                 Full_Buffer => False);
 
             if Match_Result /= GNAT.Expect.Expect_Timeout then
-               Some_Text_Inserted := True;
-               This.all.Is_Dead   := False;
-
-               This.all.Text_Buffer.all.Insert
+               My_Buffer.all.Insert
                  (Iter => This.all.End_Iter,
                   Text =>
                     GNAT.Expect.Expect_Out_Match
-                      (Descriptor => This.all.Process.all));
+                      (Descriptor => My_Process.all));
             end if;
          end loop Read_Line_From_Process;
+
+         This.all.Is_Dead := False; --  Expect() did not raise an exception,
+                                    --  so the process is running.
       exception
          when GNAT.Expect.Process_Died =>
             if not This.all.Is_Dead then
                This.all.Is_Dead := True;
 
-               This.all.Text_Buffer.all.Insert
+               My_Buffer.all.Insert
                  (Iter => This.all.End_Iter,
                   Text => "Process terminated." & Ada.Characters.Latin_1.LF);
             end if;
       end Handle_Dead_Process;
 
-      if Some_Text_Inserted then
+      if My_Buffer.all.Get_Modified then
+         My_Buffer.all.Set_Modified (Setting => False);
          This.all.Text_View.all.Scroll_To_Mark
            (Mark          => This.all.End_Mark,
             Within_Margin => 0.0,

@@ -69,43 +69,43 @@ package body GUI.Callbacks is
    is
       pragma Unreferenced (Button);
    begin
-      if SIM_Pid /= GNAT.Expect.Invalid_Pid then
+      if Simulator_Running then
          Log.Trace
            (Message =>
               "Aborting simulator.exe... (PID ="
-            & GNAT.Expect.Process_Id'Image (SIM_Pid)
+            & GNAT.Expect.Process_Id'Image
+                (GNAT.Expect.Get_Pid (SIM_Process.all))
             & ")");
          GNAT.Expect.Close (Descriptor => SIM_Process.all);
+         --  We do not handle the Invalid_Process exception which Close() may
+         --  raise, because this is only expected if the process id is invalid.
+         --  Yet, at this point we have a valid Pid even if the process might
+         --  have been terminated already, thus we do not expect this exception
+         --  to occur.
       end if;
-
-      SIM_Pid := GNAT.Expect.Invalid_Pid;
    end SIM_Abort;
 
    procedure SIM_Start (Button : access Gtk.Button.Gtk_Button_Record'Class)
    is
       pragma Unreferenced (Button);
-      Pid : GNAT.Expect.Process_Id;
    begin
       Handle_Exception :
       begin
          GNAT.Expect.Non_Blocking_Spawn
            (Descriptor   => SIM_Process.all,
-            Command      => "simulator.exe",
+            Command      => "simulator",
             Args         => GNAT.OS_Lib.Argument_List'(1 .. 0 => null));
-
-         Pid := GNAT.Expect.Get_Pid (Descriptor => SIM_Process.all);
 
          Log.Trace
            (Message =>
-              "Simulator.exe started (PID ="
-            & GNAT.Expect.Process_Id'Image (Pid) & ")");
+              "simulator started (PID ="
+            & GNAT.Expect.Process_Id'Image
+                (GNAT.Expect.Get_Pid (Descriptor => SIM_Process.all))
+            & ")");
       exception
          when GNAT.Expect.Invalid_Process =>
-            Log.Trace (Message => "Failed to start simulator.exe!");
-            Pid := GNAT.Expect.Invalid_Pid;
+            Log.Trace (Message => "Failed to start simulator!");
       end Handle_Exception;
-
-      SIM_Pid := Pid;
    end SIM_Start;
 
    function Switch_Bug (Self  : access Gtk.Switch.Gtk_Switch_Record'Class;
