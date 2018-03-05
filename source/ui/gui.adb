@@ -2,14 +2,11 @@ with Ada.Real_Time;
 with Cairo;
 with Gdk.Color;
 with Glib;
-with GNAT.Regpat;
 with Gtk.Box;
 with Gtk.Enums.String_Lists;
 with Gtk.Label;
 with Gtk.Main;
 with Gtk.Missed;
-with Gtk.Text_Buffer.With_End_Mark;
-with Gtk.Text_Iter;
 with GUI.Callbacks;
 with Pango.Cairo.Fonts;
 with Shared_Parameters.Read;
@@ -37,9 +34,6 @@ package body GUI is
                            (Family => "arial",
                             Slant  => Cairo.Cairo_Font_Slant_Italic,
                             Weight => Cairo.Cairo_Font_Weight_Bold);
-
-   New_Line : constant GNAT.Regpat.Pattern_Matcher :=
-                GNAT.Regpat.Compile (Expression => ".*\n");
 
    package Colors is
 
@@ -184,50 +178,6 @@ package body GUI is
      Gtk.Widget.Gtk_Widget_Record'Class is separate;
 
    --
-   procedure Feed_Process_Output
-     (Process   : in out          GNAT.Expect.Process_Descriptor;
-      Text_View : not null access Gtk.Text_View.Gtk_Text_View_Record'Class);
-   procedure Feed_Process_Output
-     (Process   : in out          GNAT.Expect.Process_Descriptor;
-      Text_View : not null access Gtk.Text_View.Gtk_Text_View_Record'Class)
-   is
-      Buffer       : constant
-        Gtk.Text_Buffer.With_End_Mark.Gtk_Text_Buffer_With_End_Mark :=
-          Gtk.Text_Buffer.With_End_Mark.Gtk_Text_Buffer_With_End_Mark
-            (Text_View.all.Get_Buffer);
-      End_Iter     : Gtk.Text_Iter.Gtk_Text_Iter;
-      Match_Result : GNAT.Expect.Expect_Match := 0;
-   begin
-      Buffer.all.Get_End_Iter (Iter => End_Iter);
-
-      Read_Line_From_Process :
-      while Match_Result /= GNAT.Expect.Expect_Timeout loop
-         GNAT.Expect.Expect (Descriptor  => Process,
-                             Result      => Match_Result,
-                             Regexp      => New_Line,
-                             Timeout     => 1, --  essentially polling
-                             Full_Buffer => False);
-
-         if Match_Result /= GNAT.Expect.Expect_Timeout then
-            Buffer.all.Insert (Text =>
-                                 GNAT.Expect.Expect_Out_Match
-                                   (Descriptor => Process),
-                               Iter => End_Iter);
-         end if;
-      end loop Read_Line_From_Process;
-
-      Text_View.all.Scroll_To_Mark (Mark          => Buffer.all.End_Mark,
-                                    Within_Margin => 0.0,
-                                    Use_Align     => True,
-                                    Xalign        => 1.0,
-                                    Yalign        => 1.0);
-   exception
-      when GNAT.Expect.Process_Died =>
-         null;
-      when E : others               =>
-         Log.Trace (E => E);
-   end Feed_Process_Output;
-
    procedure Feed_Values (Win          : in Main_Window_Record'Class;
                           Update_State : in Shared_Sensor_Data.State);
    procedure Feed_Values (Win          : in Main_Window_Record'Class;
@@ -387,8 +337,8 @@ package body GUI is
             Win.all.Abort_Button.all.Set_Sensitive
               (Sensitive => Simulator_Running);
 
-            Feed_Process_Output (Process   => SIM_Process,
-                                 Text_View => Win.all.SIMon_Says);
+            --  Update SIM log view.
+            Win.all.SIMon_Says.all.Update;
 
             Handle_Gtk_Events :
             while Gtk.Main.Events_Pending loop

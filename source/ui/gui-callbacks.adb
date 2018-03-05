@@ -75,7 +75,7 @@ package body GUI.Callbacks is
               "Aborting simulator.exe... (PID ="
             & GNAT.Expect.Process_Id'Image (SIM_Pid)
             & ")");
-         GNAT.Expect.Close (Descriptor => SIM_Process);
+         GNAT.Expect.Close (Descriptor => SIM_Process.all);
       end if;
 
       SIM_Pid := GNAT.Expect.Invalid_Pid;
@@ -84,16 +84,16 @@ package body GUI.Callbacks is
    procedure SIM_Start (Button : access Gtk.Button.Gtk_Button_Record'Class)
    is
       pragma Unreferenced (Button);
-      Pid        : GNAT.Expect.Process_Id;
+      Pid : GNAT.Expect.Process_Id;
    begin
       Handle_Exception :
       begin
          GNAT.Expect.Non_Blocking_Spawn
-           (Descriptor   => SIM_Process,
+           (Descriptor   => SIM_Process.all,
             Command      => "simulator.exe",
             Args         => GNAT.OS_Lib.Argument_List'(1 .. 0 => null));
 
-         Pid := GNAT.Expect.Get_Pid (Descriptor => SIM_Process);
+         Pid := GNAT.Expect.Get_Pid (Descriptor => SIM_Process.all);
 
          Log.Trace
            (Message =>

@@ -1,12 +1,12 @@
 with Global;
 with GNAT.Expect;
+with Gtk.Frame.Log_Viewer;
 with Gtk.Gauge.Altimeter;
 with Gtk.Gauge.LED_Round;
 with Gtk.Gauge.Round_270;
 with Gtk.GEntry;
 with Gtk.Meter.Angular_90;
 with Gtk.Oscilloscope;
-with Gtk.Text_View;
 with Gtk.Widget;
 with Gtk.Window;
 with Shared_Types.IO;
@@ -26,15 +26,8 @@ private
 
    Aborted     : Boolean                := False;
    SIM_Pid     : GNAT.Expect.Process_Id := GNAT.Expect.Invalid_Pid;
-
-   pragma Annotate (GNATcheck,
-                    Exempt_On,
-                    "Uninitialized_Global_Variables",
-                    "Process_Descriptor has default initialization.");
-   SIM_Process : GNAT.Expect.Process_Descriptor;
-   pragma Annotate (GNATcheck,
-                    Exempt_Off,
-                    "Uninitialized_Global_Variables");
+   SIM_Process : GNAT.Expect.Process_Descriptor_Access :=
+                   new GNAT.Expect.Process_Descriptor;
 
    pragma Annotate (GNATcheck,
                     Exempt_Off,
@@ -69,7 +62,7 @@ private
          Tachometer        : Gtk.Gauge.Round_270.Gtk_Gauge_Round_270;
          Altimeter         : Gtk.Gauge.Altimeter.Gtk_Gauge_Altimeter;
          Fuel_Scale        : Gtk.Meter.Angular_90.Gtk_Meter_Angular_90;
-         SIMon_Says        : access Gtk.Text_View.Gtk_Text_View_Record'Class;
+         SIMon_Says        : Gtk.Frame.Log_Viewer.Gtk_Frame_Log_Viewer;
       end record;
    type Main_Window is access all Main_Window_Record'Class;
 
