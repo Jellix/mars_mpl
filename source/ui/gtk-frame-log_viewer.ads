@@ -1,6 +1,7 @@
 with GNAT.Expect;
 with GNAT.Regpat;
 with Gtk.Text_Buffer;
+with Gtk.Text_Iter;
 with Gtk.Text_Mark;
 with Gtk.Text_View;
 
@@ -33,7 +34,9 @@ private
          Process     : GNAT.Expect.Process_Descriptor_Access;
          Text_Buffer : Gtk.Text_Buffer.Gtk_Text_Buffer;
          Text_View   : Gtk.Text_View.Gtk_Text_View;
+         End_Iter    : Gtk.Text_Iter.Gtk_Text_Iter;
          End_Mark    : Gtk.Text_Mark.Gtk_Text_Mark;
+         Is_Dead     : Boolean;
       end record;
 
 end Gtk.Frame.Log_Viewer;
