@@ -184,17 +184,14 @@ begin
          end Add_Labeled_Text_Entries;
       end Add_Controls;
 
-      Create_SIM_Logger :
-      declare
-         Log_Viewer : constant Gtk.Frame.Log_Viewer.Gtk_Frame_Log_Viewer :=
-                        Gtk.Frame.Log_Viewer.Gtk_Frame_Log_Viewer_New
-                          (Label   => "SIMon says",
-                           Process => SIM_Process);
-      begin
-         Container.all.Pack_Start (Child  => Log_Viewer,
-                                   Expand => True);
-         Window.SIMon_Says := Log_Viewer;
-      end Create_SIM_Logger;
+      --  create SIM log viewer
+      Window.SIMon_Says :=
+        Gtk.Frame.Log_Viewer.Gtk_Frame_Log_Viewer_New
+          (Label   => "SIMon says",
+           Process => SIM_Process);
+
+      Container.all.Pack_Start (Child  => Window.SIMon_Says,
+                                Expand => True);
 
       Create_Buttons :
       declare
