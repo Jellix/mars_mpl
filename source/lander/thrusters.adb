@@ -38,9 +38,6 @@ package body Thrusters is
      := Float (Shared_Types.Mass'Base (Dry_Mass) +
                  Shared_Types.Mass'Base (Initial_Fuel_Mass));
 
-   Min_Pulse_Time : constant Ada.Real_Time.Time_Span :=
-                      Ada.Real_Time.Milliseconds (MS => 250);
-
    pragma Warnings (Off, "instance does not use primitive operation ""*""");
 
    package Fuel_Store is new Task_Safe_Store
@@ -77,50 +74,18 @@ package body Thrusters is
                        Total_Open => Ada.Real_Time.Time_Span_Zero);
    end Engine_State;
 
-   task Valve_Control;
+   package Valve_Timing is
 
-   protected Valve_Timing_Control is
-      entry Wait_For_Off (At_Time : out Ada.Real_Time.Time);
-      procedure Schedule_Off (At_Time : Ada.Real_Time.Time);
-      procedure Cancel;
-      function Is_Cancelled return Boolean;
-      procedure Wake_Up;
-   private
-      Turn_Off_At : Ada.Real_Time.Time := Global.Start_Time;
-      Cancelled   : Boolean            := True;
-      Scheduled   : Boolean            := False;
-   end Valve_Timing_Control;
+      Min_Pulse_Time : constant Ada.Real_Time.Time_Span :=
+                         Ada.Real_Time.Milliseconds (MS => 250);
 
-   protected body Valve_Timing_Control is
-      entry Wait_For_Off (At_Time : out Ada.Real_Time.Time) when Scheduled is
-      begin
-         At_Time := Turn_Off_At;
-      end Wait_For_Off;
+      procedure Do_Schedule (At_Time : Ada.Real_Time.Time);
+      procedure Do_Cancel;
+      procedure Do_Wake_Up;
 
-      procedure Cancel is
-      begin
-         Cancelled := True;
-         Scheduled := False; --  Close barrier.
-      end Cancel;
+   end Valve_Timing;
 
-      function Is_Cancelled return Boolean is
-        (Cancelled);
-
-      procedure Schedule_Off (At_Time : Ada.Real_Time.Time) is
-      begin
-         Turn_Off_At := At_Time;
-         Cancelled   := False;
-         Scheduled   := True;
-         --  trigger waiting task to turn off the valve at given time.
-      end Schedule_Off;
-
-      procedure Wake_Up is
-      begin
-         Turn_Off_At := Global.Start_Time; --  Immediate trigger
-         Cancelled   := True; --  Don't do anything.
-         Scheduled   := True; --  Open barrier for waiting tasks.
-      end Wake_Up;
-   end Valve_Timing_Control;
+   package body Valve_Timing is separate;
 
    protected body Engine_State is
 
@@ -168,14 +133,14 @@ package body Thrusters is
                   if Valve_State.Is_Open then
                      declare
                         Off_Time : constant Ada.Real_Time.Time :=
-                                     Valve_State.Open_Since + Min_Pulse_Time;
+                                     Valve_State.Open_Since +
+                                       Valve_Timing.Min_Pulse_Time;
                      begin
                         if Off_Time > Now then
-                           Valve_Timing_Control.Schedule_Off
-                             (At_Time => Off_Time);
+                           Valve_Timing.Do_Schedule (At_Time => Off_Time);
                         else
                            --  Cancel scheduled off commands.
-                           Valve_Timing_Control.Cancel;
+                           Valve_Timing.Do_Cancel;
 
                            Valve_State.Is_Open    := False;
                            Valve_State.Total_Open :=
@@ -188,7 +153,7 @@ package body Thrusters is
                   --  Ignore On commands if thruster is already active.
                   if not Valve_State.Is_Open then
                      --  Cancel pending off commands.
-                     Valve_Timing_Control.Cancel;
+                     Valve_Timing.Do_Cancel;
 
                      Valve_State.Is_Open    := True;
                      Valve_State.Open_Since := Now;
@@ -237,7 +202,7 @@ package body Thrusters is
    procedure Shutdown is
    begin
       Aborted := True;
-      Valve_Timing_Control.Wake_Up;
+      Valve_Timing.Do_Wake_Up;
    end Shutdown;
 
    procedure Shutdown (Source : in Shared_Types.Legs_Index) is
@@ -285,19 +250,5 @@ package body Thrusters is
       when E : others =>
          Log.Trace (E => E);
    end Fuel_Monitor;
-
-   task body Valve_Control is
-      At_Time : Ada.Real_Time.Time;
-   begin
-      while not Aborted loop
-         Valve_Timing_Control.Wait_For_Off (At_Time => At_Time);
-         delay until At_Time;
-
-         if not Valve_Timing_Control.Is_Cancelled then
-            --  Off command was not cancelled yet.
-            Engine_State.Set (Value => Disabled);
-         end if;
-      end loop;
-   end Valve_Control;
 
 end Thrusters;
