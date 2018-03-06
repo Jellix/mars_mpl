@@ -17,11 +17,11 @@ with Shared_Sensor_Data;
 package body GUI is
 
    use type Ada.Real_Time.Time;
-   use type Shared_Types.Altitude;
-   use type Shared_Types.Velocity;
    use type Glib.Gdouble;
    use type Gtk.Enums.String_Lists.Controlled_String_List;
+   use type Shared_Types.Altitude;
    use type Shared_Types.Leg_State;
+   use type Shared_Types.Velocity;
 
    Label_Font        : constant Pango.Cairo.Fonts.Pango_Cairo_Font :=
                          Pango.Cairo.Fonts.Create_Toy

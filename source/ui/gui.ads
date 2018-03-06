@@ -17,8 +17,6 @@ package GUI is
 
 private
 
-   use type GNAT.Expect.Process_Id;
-
    pragma Annotate (GNATcheck,
                     Exempt_On,
                     "Global_Variables",
