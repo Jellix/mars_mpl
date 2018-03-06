@@ -38,6 +38,11 @@ package body Thrusters is
      := Float (Shared_Types.Mass'Base (Dry_Mass) +
                  Shared_Types.Mass'Base (Initial_Fuel_Mass));
 
+   Shortest_On_Time : constant Ada.Real_Time.Time_Span :=
+                        Ada.Real_Time.Milliseconds (MS => 16);
+   --  Shortes On-Time for thruster.
+   --  TODO: Should also be in Shared_Parameter area.
+
    pragma Warnings (Off, "instance does not use primitive operation ""*""");
 
    package Fuel_Store is new Task_Safe_Store
@@ -76,10 +81,7 @@ package body Thrusters is
 
    package Valve_Timing is
 
-      Min_Pulse_Time : constant Ada.Real_Time.Time_Span :=
-                         Ada.Real_Time.Milliseconds (MS => 250);
-
-      procedure Do_Schedule (At_Time : Ada.Real_Time.Time);
+      procedure Do_Schedule (At_Time : in Ada.Real_Time.Time);
       procedure Do_Cancel;
       procedure Do_Wake_Up;
 
@@ -131,10 +133,10 @@ package body Thrusters is
                if Value = Disabled then
                   --  Ignore off commands if thruster is not active.
                   if Valve_State.Is_Open then
+                     Handle_Shortest_On_Time :
                      declare
                         Off_Time : constant Ada.Real_Time.Time :=
-                                     Valve_State.Open_Since +
-                                       Valve_Timing.Min_Pulse_Time;
+                                     Valve_State.Open_Since + Shortest_On_Time;
                      begin
                         if Off_Time > Now then
                            Valve_Timing.Do_Schedule (At_Time => Off_Time);
@@ -147,7 +149,7 @@ package body Thrusters is
                              Valve_State.Total_Open +
                                (Now - Valve_State.Open_Since);
                         end if;
-                     end;
+                     end Handle_Shortest_On_Time;
                   end if;
                else
                   --  Ignore On commands if thruster is already active.

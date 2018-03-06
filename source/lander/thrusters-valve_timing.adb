@@ -3,7 +3,7 @@ package body Valve_Timing is
 
    protected Control is
       entry Wait_For_Off (At_Time : out Ada.Real_Time.Time);
-      procedure Schedule_Off (At_Time : Ada.Real_Time.Time);
+      procedure Schedule_Off (At_Time : in Ada.Real_Time.Time);
       procedure Cancel;
       function Is_Cancelled return Boolean;
       procedure Wake_Up;
@@ -18,7 +18,7 @@ package body Valve_Timing is
       Control.Cancel;
    end Do_Cancel;
 
-   procedure Do_Schedule (At_Time : Ada.Real_Time.Time) is
+   procedure Do_Schedule (At_Time : in Ada.Real_Time.Time) is
    begin
       Control.Schedule_Off (At_Time => At_Time);
    end Do_Schedule;
@@ -32,6 +32,7 @@ package body Valve_Timing is
       entry Wait_For_Off (At_Time : out Ada.Real_Time.Time) when Scheduled is
       begin
          At_Time := Turn_Off_At;
+         Scheduled := False;
       end Wait_For_Off;
 
       procedure Cancel is
@@ -43,7 +44,7 @@ package body Valve_Timing is
       function Is_Cancelled return Boolean is
         (Cancelled);
 
-      procedure Schedule_Off (At_Time : Ada.Real_Time.Time) is
+      procedure Schedule_Off (At_Time : in Ada.Real_Time.Time) is
       begin
          Turn_Off_At := At_Time;
          Cancelled   := False;
