@@ -131,8 +131,7 @@ package body Altimeter is
                Delta_V      : constant Shared_Types.Velocity
                  := (Gravity * Descent_Time) - Thrusters.Delta_V;
             begin
-               Velocity_Now :=
-                 Shared_Types.Velocity'Max (0.0, Initial_Velocity + Delta_V);
+               Velocity_Now := Initial_Velocity + Delta_V;
                Velocity_State.Set (New_Value => Velocity_Now);
             end Calculate_Delta_V;
          end if;
