@@ -30,6 +30,11 @@ package body Shared_Parameters.Write is
       Shared_Initial_Velocity := Value;
    end Initial_Velocity;
 
+   procedure Shortest_On_Time (Value : in Shared_Types.On_Time) is
+   begin
+      Shared_Shortest_On_Time := Value;
+   end Shortest_On_Time;
+
    procedure TDM_Bug_Enabled (Value : in Boolean) is
    begin
       Shared_Bug_Enabled := Value;

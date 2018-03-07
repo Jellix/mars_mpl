@@ -39,6 +39,8 @@ begin
                               Gtk.GEntry.Gtk_Entry_New;
          F_Rate           : constant Gtk.GEntry.Gtk_Entry :=
                               Gtk.GEntry.Gtk_Entry_New;
+         T_On             : constant Gtk.GEntry.Gtk_Entry :=
+                              Gtk.GEntry.Gtk_Entry_New;
          V_Thruster       : constant Gtk.GEntry.Gtk_Entry :=
                               Gtk.GEntry.Gtk_Entry_New;
       begin
@@ -92,6 +94,12 @@ begin
                            With_Unit => False));
          F_Rate.all.On_Focus_Out_Event (Call  => Set_Fuel_Flow_Rate'Access,
                                         After => True);
+
+         T_On.all.Set_Text
+           (Text => Image (Value     => Shared_Parameters.Read.Shortest_On_Time,
+                           With_Unit => False));
+         T_On.all.On_Focus_Out_Event (Call  => Set_Shortest_On_Time'Access,
+                                      After => True);
 
          V_Thruster.all.Set_Text
            (Text =>
@@ -173,6 +181,11 @@ begin
                  Labeled_Widget_With_Unit (Widget      => F_Rate,
                                            Description => "Fuel Flow Rate",
                                            Unit        => "kg/s"));
+            Widget_Box.all.Pack_Start
+              (Child =>
+                 Labeled_Widget_With_Unit (Widget      => T_On,
+                                           Description => "Shortest on-time",
+                                           Unit        => "ms"));
             Widget_Box.all.Pack_Start
               (Child =>
                  Labeled_Widget_With_Unit (Widget      => V_Thruster,

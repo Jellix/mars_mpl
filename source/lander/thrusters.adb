@@ -39,9 +39,11 @@ package body Thrusters is
                  Shared_Types.Mass'Base (Initial_Fuel_Mass));
 
    Shortest_On_Time : constant Ada.Real_Time.Time_Span :=
-                        Ada.Real_Time.Milliseconds (MS => 16);
-   --  Shortes On-Time for thruster.
-   --  TODO: Should also be in Shared_Parameter area.
+                        Ada.Real_Time.To_Time_Span
+                          (D =>
+                            Shared_Types.To_Duration
+                              (Shared_Parameters.Read.Shortest_On_Time));
+   --  Shortest on-time for thruster.
 
    pragma Warnings (Off, "instance does not use primitive operation ""*""");
 
@@ -71,7 +73,6 @@ package body Thrusters is
       procedure Set (Value : in State);
       procedure No_More_Fuel;
    private
-      Thruster_State  : State      := Disabled;
       Fuel_Tank_Empty : Boolean    := False;
       Valve_State     : Valve_Info
         := Valve_Info'(Is_Open    => False,
@@ -92,7 +93,9 @@ package body Thrusters is
    protected body Engine_State is
 
       function Get return State is
-        (Thruster_State);
+        (if Valve_State.Is_Open and then not Fuel_Tank_Empty
+           then Enabled
+           else Disabled);
 
       function Get_Total return Duration is
          Result : Ada.Real_Time.Time_Span;
@@ -128,8 +131,6 @@ package body Thrusters is
             declare
                Now : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
             begin
-               Thruster_State := Value;
-
                if Value = Disabled then
                   --  Ignore off commands if thruster is not active.
                   if Valve_State.Is_Open then

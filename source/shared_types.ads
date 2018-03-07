@@ -134,6 +134,24 @@ is
    --  @param Right The duration.
    --  @return The total mass flown during given duration at given flow rate.
 
+   --  @summary Provides a distinct time type.
+   package Milliseconds is
+      F : constant := 0.0;
+      L : constant := 2.0 ** 22;
+      R : constant := 1.0 / 2.0 ** 10;
+      S : constant := 32;
+
+      type T is delta R range F .. L - R with
+        Size  => S,
+        Small => R;
+      --  The fixed point representation of a time in ms.
+   end Milliseconds;
+
+   type On_Time is new Milliseconds.T range 0.0 .. 2000.0;
+   --  Shortest on-time in milliseconds.
+
+   function To_Duration (T : in On_Time) return Duration;
+
 private
 
    function "*" (A : in Acceleration;
@@ -151,5 +169,8 @@ private
    function "*" (V     : in Velocity;
                  Scale : in Float) return Velocity is
      (Velocity (Float (V) * Scale));
+
+   function To_Duration (T : in On_Time) return Duration is
+      (Duration (T / 1000.0));
 
 end Shared_Types;

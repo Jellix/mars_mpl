@@ -86,6 +86,10 @@ private
                                     Unit => "kg");
 
    function Image is new
+     Shared_Types.IO.Generic_Image (T    => Shared_Types.On_Time,
+                                    Unit => "ms");
+
+   function Image is new
      Shared_Types.IO.Generic_Image (T    => Shared_Types.Vehicle_Mass,
                                     Unit => "kg");
 

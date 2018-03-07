@@ -35,7 +35,7 @@ package Thrusters is
    procedure Enable;
    --  Enable thruster.
    --
-   --  Thrusters are not enabled if there is no more an fuel left to burn.
+   --  Thrusters are not enabled if there is no more fuel left to burn.
 
    procedure Disable;
    --  Disable thrusters.

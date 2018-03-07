@@ -120,6 +120,12 @@ package body GUI is
       Write => Shared_Parameters.Write.Initial_Velocity,
       Name  => "initial velocity");
 
+   function Set_Shortest_On_Time is new Callbacks.Set_GEntry_Value
+     (T     => Shared_Types.On_Time,
+      Read  => Shared_Parameters.Read.Shortest_On_Time,
+      Write => Shared_Parameters.Write.Shortest_On_Time,
+      Name  => "Shortest on-time");
+
    pragma Warnings (On, "instance does not use primitive operation ""*""");
 
    function Labeled_Widget

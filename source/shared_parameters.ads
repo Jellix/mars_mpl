@@ -56,6 +56,9 @@ private
    Shared_Safe_Landing_Velocity : Shared_Types.Velocity := 2.500;
    --  The velocity considered safe for landing in m/s.
 
+   Shared_Shortest_On_Time : Shared_Types.On_Time := 16.0;
+   --  Shortest possible on-time for thruster in ms.
+
    Shared_Target_Landing_Velocity : Shared_Types.Velocity := 2.375;
    --  Target landing velocity for thruster control in m/s.
 

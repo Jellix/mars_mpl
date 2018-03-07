@@ -47,6 +47,13 @@ package Shared_Parameters.Read is
    --  This is the velocity at which a touchdown is deemed survivable.
    --  @return The set safe landing velocity.
 
+   function Shortest_On_Time return Shared_Types.On_Time
+     with Volatile_Function;
+   --  Parametrized shortest on-time for thrusters.
+   --  This is the amount of milliseconds a thruster remains active after it has
+   --  been fired.
+   --  @return The shortest on-time for thrusters.
+
    function Target_Landing_Velocity return Shared_Types.Velocity
      with Volatile_Function;
    --  Parametrized target landing velocity.
@@ -82,6 +89,9 @@ private
    function Safe_Landing_Velocity return Shared_Types.Velocity is
      (Shared_Safe_Landing_Velocity);
 
+   function Shortest_On_Time return Shared_Types.On_Time is
+      (Shared_Shortest_On_Time);
+
    function Target_Landing_Velocity return Shared_Types.Velocity is
      (Shared_Target_Landing_Velocity);
 
@@ -98,6 +108,7 @@ private
    pragma No_Inline (Initial_Velocity);
    pragma No_Inline (Initial_Fuel_Mass);
    pragma No_Inline (Safe_Landing_Velocity);
+   pragma No_Inline (Shortest_On_Time);
    pragma No_Inline (Target_Landing_Velocity);
    pragma No_Inline (TDM_Bug_Enabled);
 
