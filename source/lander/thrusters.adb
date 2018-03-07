@@ -62,13 +62,13 @@ package body Thrusters is
 
    type Valve_Info is
       record
-         Is_Open    : Boolean;
-         Open_Since : Ada.Real_Time.Time;
-         Total_Open : Ada.Real_Time.Time_Span;
+         Fuel_Flow  : State;                   --  Current state of fuel flow.
+         Flow_Since : Ada.Real_Time.Time;      --  Time at which the flow was enabled.
+         Flow_Total : Ada.Real_Time.Time_Span; --  Accumulated flow duration.
       end record
      with
        Dynamic_Predicate =>
-         (not Is_Open or else Open_Since > Global.Start_Time);
+         (Fuel_Flow = Disabled or else Flow_Since > Global.Start_Time);
 
    protected Engine_State is
       function Get_Total return Duration;
@@ -78,9 +78,9 @@ package body Thrusters is
    private
       Fuel_Tank_Empty : Boolean    := False;
       Valve_State     : Valve_Info
-        := Valve_Info'(Is_Open    => False,
-                       Open_Since => Global.Start_Time,
-                       Total_Open => Ada.Real_Time.Time_Span_Zero);
+        := Valve_Info'(Fuel_Flow  => Disabled,
+                       Flow_Since => Global.Start_Time,
+                       Flow_Total => Ada.Real_Time.Time_Span_Zero);
    end Engine_State;
 
    package Valve_Timing is
@@ -96,25 +96,25 @@ package body Thrusters is
    protected body Engine_State is
 
       function Get return State is
-        (if Valve_State.Is_Open and then not Fuel_Tank_Empty
-           then Enabled
-           else Disabled);
+        (if Fuel_Tank_Empty
+           then Disabled
+           else Valve_State.Fuel_Flow);
 
       function Get_Total return Duration is
          Result : Ada.Real_Time.Time_Span;
       begin
-         if Valve_State.Is_Open then
+         if Valve_State.Fuel_Flow = Enabled then
             --  Thruster is currently on.
             Recalculate_Fuel_Consumption :
             declare
                Now : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
             begin
                Result :=
-                 Valve_State.Total_Open + (Now - Valve_State.Open_Since);
+                 Valve_State.Flow_Total + (Now - Valve_State.Flow_Since);
             end Recalculate_Fuel_Consumption;
          else
             --  Thruster is currently off, return recorded fuel consumption.
-            Result := Valve_State.Total_Open;
+            Result := Valve_State.Flow_Total;
          end if;
 
          return Ada.Real_Time.To_Duration (Result);
@@ -134,13 +134,14 @@ package body Thrusters is
             declare
                Now : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
             begin
-               if Value = Disabled then
-                  --  Ignore off commands if thruster is not active.
-                  if Valve_State.Is_Open then
+               if Valve_State.Fuel_Flow /= Value then
+                  --  Changes to the valve state are only done if it is not in
+                  --  the requested state yet.
+                  if Value = Disabled then
                      Handle_Shortest_On_Time :
                      declare
                         Off_Time : constant Ada.Real_Time.Time :=
-                                     Valve_State.Open_Since + Shortest_On_Time;
+                                     Valve_State.Flow_Since + Shortest_On_Time;
                      begin
                         if Off_Time > Now then
                            Valve_Timing.Do_Schedule (At_Time => Off_Time);
@@ -148,21 +149,18 @@ package body Thrusters is
                            --  Cancel scheduled off commands.
                            Valve_Timing.Do_Cancel;
 
-                           Valve_State.Is_Open    := False;
-                           Valve_State.Total_Open :=
-                             Valve_State.Total_Open +
-                               (Now - Valve_State.Open_Since);
+                           Valve_State.Fuel_Flow  := Disabled;
+                           Valve_State.Flow_Total :=
+                             Valve_State.Flow_Total +
+                               (Now - Valve_State.Flow_Since);
                         end if;
                      end Handle_Shortest_On_Time;
-                  end if;
-               else
-                  --  Ignore On commands if thruster is already active.
-                  if not Valve_State.Is_Open then
+                  else
                      --  Cancel pending off commands.
                      Valve_Timing.Do_Cancel;
 
-                     Valve_State.Is_Open    := True;
-                     Valve_State.Open_Since := Now;
+                     Valve_State.Fuel_Flow  := Enabled;
+                     Valve_State.Flow_Since := Now;
                   end if;
                end if;
             end Recalculate_Valve_State;
