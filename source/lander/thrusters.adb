@@ -56,6 +56,9 @@ package body Thrusters is
    Fuel_State : Fuel_Store.Shelf;
    Aborted    : Boolean := False
      with Atomic => True;
+   pragma Warnings (Off,
+                    Aborted,
+                    Reason => "Do not warn about atomic synchronization");
 
    type Valve_Info is
       record
