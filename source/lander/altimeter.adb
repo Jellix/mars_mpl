@@ -82,6 +82,9 @@ package body Altimeter is
 
    Aborted : Boolean := False
      with Atomic;
+   pragma Warnings (Off,
+                    Aborted,
+                    Reason => "Do not warn about atomic synchronization");
 
    procedure Shutdown is
    begin
