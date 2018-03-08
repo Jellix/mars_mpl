@@ -1,8 +1,13 @@
 with GNAT.OS_Lib;
+
+with Gtk.Dialog;
 with Gtk.GEntry;
+with Gtk.Message_Dialog;
 with Shared_Parameters.Write;
 
 package body GUI.Callbacks is
+
+   use type Gtk.Dialog.Gtk_Response_Type;
 
    procedure Quit_GUI;
 
@@ -20,12 +25,30 @@ package body GUI.Callbacks is
       pragma Unreferenced (Widget);
    begin
       Quit_GUI;
-      return False; --  continue event processing chain
+      return True; --  stop event processing chain
    end Exit_Main;
 
    procedure Quit_GUI is
+      Do_Abort : Boolean := not Aborted;
    begin
-      if not Aborted then
+      if Simulator_Running and then Do_Abort then
+         User_Confirm :
+         declare
+            Confirm : constant Gtk.Message_Dialog.Gtk_Message_Dialog :=
+                        Gtk.Message_Dialog.Gtk_Message_Dialog_New
+                          (Parent   => The_Main_Window,
+                           Flags    => Gtk.Dialog.Modal,
+                           The_Type => Gtk.Message_Dialog.Message_Question,
+                           Buttons  => Gtk.Message_Dialog.Buttons_Yes_No,
+                           Message  =>
+                             "Simulator seems still running, quit anyway?");
+         begin
+            Do_Abort := Confirm.all.Run = Gtk.Dialog.Gtk_Response_Yes;
+            Confirm.all.Destroy;
+         end User_Confirm;
+      end if;
+
+      if Do_Abort then
          Log.Trace (Message => "Quitting GUI...");
          Aborted := True;
       end if;

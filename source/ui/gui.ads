@@ -17,19 +17,6 @@ package GUI is
 
 private
 
-   pragma Annotate (GNATcheck,
-                    Exempt_On,
-                    "Global_Variables",
-                    "Intentionally shared global variables in private part.");
-
-   Aborted     : Boolean                := False;
-   SIM_Process : GNAT.Expect.Process_Descriptor_Access :=
-                   new GNAT.Expect.Process_Descriptor;
-
-   pragma Annotate (GNATcheck,
-                    Exempt_Off,
-                    "Global_Variables");
-
    type Leg_Switches is
      array (Shared_Types.Legs_Index) of Gtk.Gauge.LED_Round.Gtk_Gauge_LED_Round;
 
@@ -62,6 +49,20 @@ private
          SIMon_Says        : Gtk.Frame.Log_Viewer.Gtk_Frame_Log_Viewer;
       end record;
    type Main_Window is access all Main_Window_Record'Class;
+
+   pragma Annotate (GNATcheck,
+                    Exempt_On,
+                    "Global_Variables",
+                    "Intentionally shared global variables in private part.");
+
+   Aborted         : Boolean                               := False;
+   SIM_Process     : GNAT.Expect.Process_Descriptor_Access :=
+                       new GNAT.Expect.Process_Descriptor;
+   The_Main_Window : Main_Window                           := null;
+
+   pragma Annotate (GNATcheck,
+                    Exempt_Off,
+                    "Global_Variables");
 
    function Simulator_Running return Boolean;
 

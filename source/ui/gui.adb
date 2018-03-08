@@ -307,6 +307,7 @@ package body GUI is
       Gtk.Main.Init;
       Win := new Main_Window_Record;
       Initialize (Window => Win.all);
+      The_Main_Window := Win;
       Win.all.On_Delete_Event (Call  => Callbacks.Exit_Main'Access,
                                After => True);
       Feed_Values (Win          => Win.all,
