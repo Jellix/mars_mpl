@@ -94,26 +94,19 @@ package body Altimeter is
    task Radar_Simulator;
 
    task body Radar_Simulator is
-      Next_Cycle    : Ada.Real_Time.Time
-        := Global.Start_Time + Configuration.Task_Offsets.Altitude_Task;
-
-      Altitude_Now  : Shared_Types.Altitude := Altimeter_State.Get;
-      Velocity_Now  : Shared_Types.Velocity := Velocity_State.Get;
-
-      --  The following parameters remain constant during the task's lifetime.
-
       T             : constant Duration
         := Ada.Real_Time.To_Duration (Configuration.Cycle_Times.Altitude_Task);
       --  Duration of a single task cycle.
-      Current_Phase : Descent_Phase := Descent_State.Get;
-      --  Current descent phase.
+
+      Next_Cycle    : Ada.Real_Time.Time
+        := Global.Start_Time + Configuration.Task_Offsets.Altitude_Task;
+      Altitude_Now  : Shared_Types.Altitude := Altimeter_State.Get;
+      Velocity_Now  : Shared_Types.Velocity := Velocity_State.Get;
    begin
       Log.Trace (Message => "Altitude control monitor started.");
 
       while not Aborted and then Altitude_Now > 0.0 loop
          delay until Next_Cycle;
-
-         Current_Phase := Descent_State.Get;
 
          --  Calculate change in altitude according to current velocity.
          Calculate_Delta_A :
@@ -125,19 +118,24 @@ package body Altimeter is
             Altimeter_State.Set (New_Value => Altitude_Now);
          end Calculate_Delta_A;
 
-         if Current_Phase = Lander_Separation then
-            Calculate_Delta_V :
-            declare
-               Descent_Time : constant Duration :=
-                                Ada.Real_Time.To_Duration
-                                  (Next_Cycle - Descent_State.Separation_Time);
-               Delta_V      : constant Shared_Types.Velocity
-                 := (Gravity * Descent_Time) - Thrusters.Delta_V;
-            begin
-               Velocity_Now := Initial_Velocity + Delta_V;
-               Velocity_State.Set (New_Value => Velocity_Now);
-            end Calculate_Delta_V;
-         end if;
+         Check_Descent_Phase :
+         declare
+            Current_Phase : constant Descent_Phase := Descent_State.Get;
+         begin
+            if Current_Phase = Lander_Separation then
+               Calculate_Delta_V :
+               declare
+                  Descent_Time : constant Duration :=
+                                   Ada.Real_Time.To_Duration
+                                     (Next_Cycle - Descent_State.Separation_Time);
+                  Delta_V      : constant Shared_Types.Velocity
+                    := (Gravity * Descent_Time) - Thrusters.Delta_V;
+               begin
+                  Velocity_Now := Initial_Velocity + Delta_V;
+                  Velocity_State.Set (New_Value => Velocity_Now);
+               end Calculate_Delta_V;
+            end if;
+         end Check_Descent_Phase;
 
          if Altitude_Now = 0.0 then
             Landing_Legs.Touchdown;
