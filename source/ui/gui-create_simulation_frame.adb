@@ -7,7 +7,7 @@ with Shared_Parameters.Read;
 
 separate (GUI)
 function Create_Simulation_Frame
-  (Window : in out Main_Window_Record'Class) return not null access
+  (Window : in out Main_Window_Record) return not null access
   Gtk.Widget.Gtk_Widget_Record'Class
 is
    Frame : constant Gtk.Frame.Gtk_Frame :=

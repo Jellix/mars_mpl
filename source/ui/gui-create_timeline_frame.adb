@@ -3,7 +3,7 @@ with Gtk.Missed;
 
 separate (GUI)
 function Create_Timeline_Frame
-  (Window : in out Main_Window_Record'Class) return not null access
+  (Window : in out Main_Window_Record) return not null access
   Gtk.Widget.Gtk_Widget_Record'Class
 is
    Frame : constant Gtk.Frame.Gtk_Frame :=

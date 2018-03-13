@@ -138,58 +138,58 @@ package body GUI is
 
    --  Prototypes
    function Create_Altitude_Frame
-     (Window : in out Main_Window_Record'Class) return not null access
+     (Window : in out Main_Window_Record) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class;
 
    function Create_Fuel_Frame
-     (Window : in out Main_Window_Record'Class) return not null access
+     (Window : in out Main_Window_Record) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class;
 
    function Create_Sensor_Signals_Frame
-     (Window : in out Main_Window_Record'Class) return not null access
+     (Window : in out Main_Window_Record) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class;
 
    function Create_Simulation_Frame
-     (Window : in out Main_Window_Record'Class) return not null access
+     (Window : in out Main_Window_Record) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class;
 
    function Create_Timeline_Frame
-     (Window : in out Main_Window_Record'Class) return not null access
+     (Window : in out Main_Window_Record) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class;
 
    function Create_Velocity_Frame
-     (Window : in out Main_Window_Record'Class) return not null access
+     (Window : in out Main_Window_Record) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class;
 
    --  Stubs
    function Create_Altitude_Frame
-     (Window : in out Main_Window_Record'Class) return not null access
+     (Window : in out Main_Window_Record) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class is separate;
 
    function Create_Fuel_Frame
-     (Window : in out Main_Window_Record'Class) return not null access
+     (Window : in out Main_Window_Record) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class is separate;
 
    function Create_Sensor_Signals_Frame
-     (Window : in out Main_Window_Record'Class) return not null access
+     (Window : in out Main_Window_Record) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class is separate;
 
    function Create_Simulation_Frame
-     (Window : in out Main_Window_Record'Class) return not null access
+     (Window : in out Main_Window_Record) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class is separate;
 
    function Create_Timeline_Frame
-     (Window : in out Main_Window_Record'Class) return not null access
+     (Window : in out Main_Window_Record) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class is separate;
 
    function Create_Velocity_Frame
-     (Window : in out Main_Window_Record'Class) return not null access
+     (Window : in out Main_Window_Record) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class is separate;
 
    --
-   procedure Feed_Values (Win          : in Main_Window_Record'Class;
+   procedure Feed_Values (Win          : in Main_Window_Record;
                           Update_State : in Shared_Sensor_Data.State);
-   procedure Feed_Values (Win          : in Main_Window_Record'Class;
+   procedure Feed_Values (Win          : in Main_Window_Record;
                           Update_State : in Shared_Sensor_Data.State)
    is
       DE : Dynamic_Elements renames Win.Elements;
@@ -264,8 +264,8 @@ package body GUI is
       end Feed_Data_Plots;
    end Feed_Values;
 
-   procedure Initialize (Window : in out Main_Window_Record'Class);
-   procedure Initialize (Window : in out Main_Window_Record'Class) is
+   procedure Initialize (Window : in out Main_Window_Record);
+   procedure Initialize (Window : in out Main_Window_Record) is
    begin
       Window.Initialize (The_Type => Gtk.Enums.Window_Toplevel);
       Window.Set_Title (Title => "Mars MPL simulation");
@@ -303,7 +303,7 @@ package body GUI is
       return Widget_Box;
    end Labeled_Widget;
 
-   procedure Quit_GUI (Win : access Main_Window_Record'Class) is
+   procedure Quit_GUI (Win : access Main_Window_Record) is
       Do_Abort : Boolean := not Win.all.Aborted;
    begin
       if Win.all.Simulator_Running and then Do_Abort then
@@ -390,7 +390,7 @@ package body GUI is
    end Run;
 
    function Simulator_Running
-     (Win : access Main_Window_Record'Class) return Boolean
+     (Win : access Main_Window_Record) return Boolean
    is
       Match_Result : GNAT.Expect.Expect_Match;
       Result       : Boolean;
