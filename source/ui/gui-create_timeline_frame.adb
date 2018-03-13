@@ -12,27 +12,35 @@ begin
    Frame.all.Set_Size_Request (Width  => 800,
                                Height => 200);
 
+   Add_Scope :
+   declare
+      Scope : Gtk.Oscilloscope.Gtk_Oscilloscope;
+   begin
+      Gtk.Oscilloscope.Gtk_New (Widget => Scope);
+      Frame.all.Add (Widget => Scope);
+
+      Window.Plot.Oscilloscope := Scope;
+   end Add_Scope;
+
    Add_Plots :
    declare
-      Plot : Gtk.Oscilloscope.Gtk_Oscilloscope;
+      Plots : Plot_Elements renames Window.Plot;
+      Scope : Gtk.Oscilloscope.Gtk_Oscilloscope_Record renames
+                Gtk.Oscilloscope.Gtk_Oscilloscope_Record
+                  (Window.Plot.Oscilloscope.all);
    begin
-      Gtk.Oscilloscope.Gtk_New (Widget => Plot);
-      Frame.all.Add (Widget => Plot);
-
-      Window.Oscilloscope := Plot;
-
-      Window.Altitude_Channel := Plot.all.Add_Channel (Color => Colors.Red,
-                                                       Name  => "Altitude");
-      Window.Fuel_Channel     := Plot.all.Add_Channel (Color => Colors.Blue,
-                                                       Name  => "Fuel");
-      Window.Velocity_Channel := Plot.all.Add_Channel (Color => Colors.Purple,
-                                                       Name  => "Velocity");
+      Plots.Altitude_Channel := Scope.Add_Channel (Color => Colors.Red,
+                                                   Name  => "Altitude");
+      Plots.Fuel_Channel     := Scope.Add_Channel (Color => Colors.Blue,
+                                                   Name  => "Fuel");
+      Plots.Velocity_Channel := Scope.Add_Channel (Color => Colors.Purple,
+                                                   Name  => "Velocity");
 
       Add_Discretes :
       declare
          G : Gtk.Oscilloscope.Group_Number;
       begin
-         G := Plot.all.Add_Group (Name => "Signals");
+         G := Scope.Add_Group (Name => "Signals");
 
          for Leg in Shared_Types.Legs_Index loop
             Add_Leg_Discrete :
@@ -40,8 +48,8 @@ begin
                Color_Offset : constant Glib.Gdouble :=
                                 0.2 * Glib.Gdouble (Shared_Types.Legs_Index'Pos (Leg));
             begin
-               Window.Touchdown_Channel (Leg) :=
-                 Plot.all.Add_Channel
+               Plots.Touchdown_Channel (Leg) :=
+                 Scope.Add_Channel
                    (Group => G,
                     Color => Gtk.Missed.RGB (Red   => Color_Offset,
                                              Green => 1.0,
@@ -50,16 +58,15 @@ begin
             end Add_Leg_Discrete;
          end loop;
 
-         Window.Thruster_Channel :=
-           Plot.all.Add_Channel (Group => G,
-                                 Color => Colors.Blue,
-                                 Name  => "Thruster");
+         Plots.Thruster_Channel := Scope.Add_Channel (Group => G,
+                                                      Color => Colors.Blue,
+                                                      Name  => "Thruster");
       end Add_Discretes;
 
-      Plot.all.Set_Manual_Sweep (False);
-      Plot.all.Set_Time_Axis (Sweeper => Gtk.Oscilloscope.Lower,
-                              Visible => True,
-                              As_Time => True);
+      Scope.Set_Manual_Sweep (False);
+      Scope.Set_Time_Axis (Sweeper => Gtk.Oscilloscope.Lower,
+                           Visible => True,
+                           As_Time => True);
    end Add_Plots;
 
    return Frame;

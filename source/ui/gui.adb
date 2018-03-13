@@ -4,9 +4,11 @@ with Gdk.Color;
 with Glib;
 with GNAT.Regpat;
 with Gtk.Box;
+with Gtk.Dialog;
 with Gtk.Enums.String_Lists;
 with Gtk.Label;
 with Gtk.Main;
+with Gtk.Message_Dialog;
 with Gtk.Missed;
 with GUI.Callbacks;
 with Pango.Cairo.Fonts;
@@ -18,6 +20,7 @@ package body GUI is
 
    use type Ada.Real_Time.Time;
    use type Glib.Gdouble;
+   use type Gtk.Dialog.Gtk_Response_Type;
    use type Gtk.Enums.String_Lists.Controlled_String_List;
    use type Shared_Types.Altitude;
    use type Shared_Types.Leg_State;
@@ -74,8 +77,8 @@ package body GUI is
    Velocity_Scale : constant Scaling
      := Scaling'(Texts  =>
                     new Gtk.Enums.String_Lists.Controlled_String_List'
-                   ("0" / "20" / "40" / "60" / "80" / "100" / "120" / "140" / "160"),
-                 Factor => 160.0);
+                   ("0" / "20" / "40" / "60" / "80" / "100"),
+                 Factor => 100.0);
 
    Update_Interval : constant Ada.Real_Time.Time_Span :=
                        Ada.Real_Time.Milliseconds (10);
@@ -225,17 +228,17 @@ package body GUI is
       declare
          Plotter    : Gtk.Oscilloscope.Gtk_Oscilloscope_Record renames
                         Gtk.Oscilloscope.Gtk_Oscilloscope_Record
-                          (Win.Oscilloscope.all);
+                          (Win.Plot.Oscilloscope.all);
          Time_Stamp : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
       begin
          -- Data plot
-         Plotter.Feed (Channel => Win.Altitude_Channel,
+         Plotter.Feed (Channel => Win.Plot.Altitude_Channel,
                        V       => Glib.Gdouble (Update_State.Altitude),
                        T       => Time_Stamp);
-         Plotter.Feed (Channel => Win.Fuel_Channel,
+         Plotter.Feed (Channel => Win.Plot.Fuel_Channel,
                        V       => Glib.Gdouble (Update_State.Fuel),
                        T       => Time_Stamp);
-         Plotter.Feed (Channel => Win.Velocity_Channel,
+         Plotter.Feed (Channel => Win.Plot.Velocity_Channel,
                        V       => Glib.Gdouble (Update_State.Velocity),
                        T       => Time_Stamp);
 
@@ -247,14 +250,14 @@ package body GUI is
                Active : constant Glib.Gdouble :=
                           0.2 * Glib.Gdouble (Boolean'Pos (Update_State.Legs (Leg) = Shared_Types.Touched_Down));
             begin
-               Plotter.Feed (Channel => Win.Touchdown_Channel (Leg),
+               Plotter.Feed (Channel => Win.Plot.Touchdown_Channel (Leg),
                              V       => Offset + Active,
                              T       => Time_Stamp);
             end Feed_Leg_Plot;
          end loop;
 
          Plotter.Feed
-           (Channel => Win.Thruster_Channel,
+           (Channel => Win.Plot.Thruster_Channel,
             V       =>
               Glib.Gdouble (Boolean'Pos (Update_State.Thruster_Enabled)),
             T       => Time_Stamp);
@@ -266,6 +269,9 @@ package body GUI is
    begin
       Window.Initialize (The_Type => Gtk.Enums.Window_Toplevel);
       Window.Set_Title (Title => "Mars MPL simulation");
+
+      Window.Aborted := False;
+      Window.SIM_Process := new GNAT.Expect.Process_Descriptor;
 
       Add_Widgets_To_Box :
       declare
@@ -297,22 +303,43 @@ package body GUI is
       return Widget_Box;
    end Labeled_Widget;
 
+   procedure Quit_GUI (Win : access Main_Window_Record'Class) is
+      Do_Abort : Boolean := not Win.all.Aborted;
+   begin
+      if Win.all.Simulator_Running and then Do_Abort then
+         User_Confirm :
+         declare
+            Confirm : constant Gtk.Message_Dialog.Gtk_Message_Dialog :=
+                        Gtk.Message_Dialog.Gtk_Message_Dialog_New
+                          (Parent   => Win,
+                           Flags    => Gtk.Dialog.Modal,
+                           The_Type => Gtk.Message_Dialog.Message_Question,
+                           Buttons  => Gtk.Message_Dialog.Buttons_Yes_No,
+                           Message  =>
+                             "Simulator seems still running, quit anyway?");
+         begin
+            Do_Abort := Confirm.all.Run = Gtk.Dialog.Gtk_Response_Yes;
+            Confirm.all.Destroy;
+         end User_Confirm;
+      end if;
+
+      if Do_Abort then
+         Log.Trace (Message => "Quitting GUI...");
+         Win.all.Aborted := True;
+      end if;
+   end Quit_GUI;
+
    procedure Run is
-      Win          : Main_Window;
+      Win          : aliased Main_Window_Record;
       Update_State : Shared_Sensor_Data.State :=
                        Shared_Sensor_Data.Current_State.Get;
    begin
-      Aborted := False;
-
       Gtk.Main.Init;
-      Win := new Main_Window_Record;
-      Initialize (Window => Win.all);
-      The_Main_Window := Win;
-      Win.all.On_Delete_Event (Call  => Callbacks.Exit_Main'Access,
-                               After => True);
-      Feed_Values (Win          => Win.all,
-                   Update_State => Update_State);
-      Win.all.Show_All;
+      Initialize (Window => Win);
+      Win.On_Delete_Event (Call  => Callbacks.Exit_Main'Access,
+                           After => True);
+      Win.Feed_Values (Update_State => Update_State);
+      Win.Show_All;
 
       Main_Block :
       declare
@@ -327,25 +354,25 @@ package body GUI is
             Update_State := Shared_Sensor_Data.Current_State.Get;
 
             if not Update_State.Terminated then
-               Win.all.Feed_Values (Update_State => Update_State);
+               Win.Feed_Values (Update_State => Update_State);
                Last_Update := Ada.Real_Time.Clock;
             end if;
 
-            Win.all.Oscilloscope.all.Set_Time
+            Win.Plot.Oscilloscope.all.Set_Time
               (Sweeper => Gtk.Oscilloscope.Lower,
                Stamp   => Last_Update);
 
-            Win.all.Start_Button.all.Set_Sensitive
-              (Sensitive => not Simulator_Running);
+            Win.Start_Button.all.Set_Sensitive
+              (Sensitive => not Win.Simulator_Running);
 
             --  There might be a simulator running, but as we don't know its
             --  Process_Id at this point, we can't send it a kill signal anyway,
             --  thus there's no point in enabling the Abort button.
-            Win.all.Abort_Button.all.Set_Sensitive
-              (Sensitive => Simulator_Running);
+            Win.Abort_Button.all.Set_Sensitive
+              (Sensitive => Win.Simulator_Running);
 
             --  Update SIM log view.
-            Win.all.SIMon_Says.all.Update;
+            Win.SIMon_Says.all.Update;
 
             Handle_Gtk_Events :
             while Gtk.Main.Events_Pending loop
@@ -354,7 +381,7 @@ package body GUI is
                end if;
             end loop Handle_Gtk_Events;
 
-            exit Main_Loop when Aborted;
+            exit Main_Loop when Win.Aborted;
          end loop Main_Loop;
       end Main_Block;
    exception
@@ -362,13 +389,15 @@ package body GUI is
          Log.Trace (E => E);
    end Run;
 
-   function Simulator_Running return Boolean is
+   function Simulator_Running
+     (Win : access Main_Window_Record'Class) return Boolean
+   is
       Match_Result : GNAT.Expect.Expect_Match;
       Result       : Boolean;
    begin
       Handle_Exceptions :
       begin
-         GNAT.Expect.Expect (Descriptor  => SIM_Process.all,
+         GNAT.Expect.Expect (Descriptor  => Win.all.SIM_Process.all,
                              Result      => Match_Result,
                              Regexp      => GNAT.Regpat.Never_Match,
                              Timeout     => 0,

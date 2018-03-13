@@ -201,7 +201,7 @@ begin
       Window.SIMon_Says :=
         Gtk.Frame.Log_Viewer.Gtk_Frame_Log_Viewer_New
           (Label   => "SIMon says",
-           Process => SIM_Process);
+           Process => Window.SIM_Process);
 
       Container.all.Pack_Start (Child  => Window.SIMon_Says,
                                 Expand => True);

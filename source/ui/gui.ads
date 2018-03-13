@@ -32,39 +32,35 @@ private
    type Legs_Channels is array (Shared_Types.Legs_Index) of
      Gtk.Oscilloscope.Channel_Number;
 
+   type Plot_Elements is
+      record
+         Oscilloscope      : Gtk.Oscilloscope.Gtk_Oscilloscope;
+         Altitude_Channel  : Gtk.Oscilloscope.Channel_Number;
+         Fuel_Channel      : Gtk.Oscilloscope.Channel_Number;
+         Thruster_Channel  : Gtk.Oscilloscope.Channel_Number;
+         Touchdown_Channel : Legs_Channels;
+         Velocity_Channel  : Gtk.Oscilloscope.Channel_Number;
+      end record;
+
    type Main_Window_Record is new Gtk.Window.Gtk_Window_Record with
       record
          Start_Button      : access Gtk.Widget.Gtk_Widget_Record'Class;
          Abort_Button      : access Gtk.Widget.Gtk_Widget_Record'Class;
          Elements          : Dynamic_Elements;
-         Oscilloscope      : Gtk.Oscilloscope.Gtk_Oscilloscope;
-         Altitude_Channel  : Gtk.Oscilloscope.Channel_Number;
-         Velocity_Channel  : Gtk.Oscilloscope.Channel_Number;
-         Touchdown_Channel : Legs_Channels;
-         Thruster_Channel  : Gtk.Oscilloscope.Channel_Number;
-         Fuel_Channel      : Gtk.Oscilloscope.Channel_Number;
+         Plot              : Plot_Elements;
          Tachometer        : Gtk.Gauge.Round_270.Gtk_Gauge_Round_270;
          Altimeter         : Gtk.Gauge.Altimeter.Gtk_Gauge_Altimeter;
          Fuel_Scale        : Gtk.Meter.Angular_90.Gtk_Meter_Angular_90;
          SIMon_Says        : Gtk.Frame.Log_Viewer.Gtk_Frame_Log_Viewer;
-      end record;
+         Aborted           : Boolean;
+         SIM_Process       : GNAT.Expect.Process_Descriptor_Access;
+   end record;
    type Main_Window is access all Main_Window_Record'Class;
 
-   pragma Annotate (GNATcheck,
-                    Exempt_On,
-                    "Global_Variables",
-                    "Intentionally shared global variables in private part.");
+   procedure Quit_GUI (Win : access Main_Window_Record'Class);
 
-   Aborted         : Boolean                               := False;
-   SIM_Process     : GNAT.Expect.Process_Descriptor_Access :=
-                       new GNAT.Expect.Process_Descriptor;
-   The_Main_Window : Main_Window                           := null;
-
-   pragma Annotate (GNATcheck,
-                    Exempt_Off,
-                    "Global_Variables");
-
-   function Simulator_Running return Boolean;
+   function Simulator_Running
+     (Win : access Main_Window_Record'Class) return Boolean;
 
    package Log is new Global.Log (Unit_Name => "GUI");
 

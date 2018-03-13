@@ -17,9 +17,10 @@ package Gtk.Frame.Log_Viewer is
       Process : in GNAT.Expect.Process_Descriptor_Access) return not null access
      Gtk_Frame_Log_Viewer_Record'Class;
 
-   procedure Initialize (This    : not null access Gtk_Frame_Log_Viewer_Record;
-                         Label   : in String;
-                         Process : in GNAT.Expect.Process_Descriptor_Access);
+   procedure Initialize
+     (This    :    out Gtk_Frame_Log_Viewer_Record;
+      Label   : in     String;
+      Process : in     GNAT.Expect.Process_Descriptor_Access);
 
    not overriding
    procedure Update (This : not null access Gtk_Frame_Log_Viewer_Record);

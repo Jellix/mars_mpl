@@ -19,30 +19,30 @@ package body Gtk.Frame.Log_Viewer is
    end Gtk_Frame_Log_Viewer_New;
 
    procedure Initialize
-     (This    : not null access Gtk_Frame_Log_Viewer_Record;
-      Label   : in String;
-      Process : in GNAT.Expect.Process_Descriptor_Access)
+     (This    :    out Gtk_Frame_Log_Viewer_Record;
+      Label   : in     String;
+      Process : in     GNAT.Expect.Process_Descriptor_Access)
    is
       Log_Window : constant Gtk.Scrolled_Window.Gtk_Scrolled_Window :=
                      Gtk.Scrolled_Window.Gtk_Scrolled_Window_New;
       Log_View   : constant Gtk.Text_View.Gtk_Text_View :=
                      Gtk.Text_View.Gtk_Text_View_New;
    begin
-      Gtk.Frame.Initialize (Frame => This,
+      Gtk.Frame.Initialize (Frame => This'Access,
                             Label => Label);
 
-      This.all.Is_Dead := True;
-      This.all.Process := Process;
-      This.all.Text_Buffer := Log_View.all.Get_Buffer;
-      This.all.Text_View   := Log_View;
-      This.all.Text_Buffer.all.Get_End_Iter (Iter => This.all.End_Iter);
-      This.all.End_Mark    :=
-        This.all.Text_Buffer.all.Create_Mark (Where        => This.all.End_Iter,
-                                              Left_Gravity => False);
+      This.Is_Dead := True;
+      This.Process := Process;
+      This.Text_Buffer := Log_View.all.Get_Buffer;
+      This.Text_View   := Log_View;
+      This.Text_Buffer.all.Get_End_Iter (Iter => This.End_Iter);
+      This.End_Mark    :=
+        This.Text_Buffer.all.Create_Mark (Where        => This.End_Iter,
+                                          Left_Gravity => False);
 
       Log_View.all.Set_Editable (Setting => False);
       Log_Window.all.Add (Widget => Log_View);
-      This.all.Add (Widget => Log_Window);
+      This.Add (Widget => Log_Window);
    end Initialize;
 
    not overriding procedure Update

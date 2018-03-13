@@ -1,58 +1,23 @@
 with GNAT.OS_Lib;
 
-with Gtk.Dialog;
 with Gtk.GEntry;
-with Gtk.Message_Dialog;
 with Shared_Parameters.Write;
 
 package body GUI.Callbacks is
 
-   use type Gtk.Dialog.Gtk_Response_Type;
-
-   procedure Quit_GUI;
-
-   procedure Exit_Main (Button : access Gtk.Button.Gtk_Button_Record'Class)
-   is
-      pragma Unreferenced (Button);
+   procedure Exit_Main (Button : access Gtk.Button.Gtk_Button_Record'Class) is
    begin
-      Quit_GUI;
+      Main_Window (Button.all.Get_Parent.all.Get_Toplevel).all.Quit_GUI;
    end Exit_Main;
 
    function Exit_Main (Widget : access Gtk.Widget.Gtk_Widget_Record'Class;
                        Event  : in     Gdk.Event.Gdk_Event) return Boolean
    is
       pragma Unreferenced (Event);
-      pragma Unreferenced (Widget);
    begin
-      Quit_GUI;
+      Main_Window (Widget).all.Quit_GUI;
       return True; --  stop event processing chain
    end Exit_Main;
-
-   procedure Quit_GUI is
-      Do_Abort : Boolean := not Aborted;
-   begin
-      if Simulator_Running and then Do_Abort then
-         User_Confirm :
-         declare
-            Confirm : constant Gtk.Message_Dialog.Gtk_Message_Dialog :=
-                        Gtk.Message_Dialog.Gtk_Message_Dialog_New
-                          (Parent   => The_Main_Window,
-                           Flags    => Gtk.Dialog.Modal,
-                           The_Type => Gtk.Message_Dialog.Message_Question,
-                           Buttons  => Gtk.Message_Dialog.Buttons_Yes_No,
-                           Message  =>
-                             "Simulator seems still running, quit anyway?");
-         begin
-            Do_Abort := Confirm.all.Run = Gtk.Dialog.Gtk_Response_Yes;
-            Confirm.all.Destroy;
-         end User_Confirm;
-      end if;
-
-      if Do_Abort then
-         Log.Trace (Message => "Quitting GUI...");
-         Aborted := True;
-      end if;
-   end Quit_GUI;
 
    function Set_GEntry_Value
      (Self  : access Gtk.Widget.Gtk_Widget_Record'Class;
@@ -90,16 +55,18 @@ package body GUI.Callbacks is
 
    procedure SIM_Abort (Button : access Gtk.Button.Gtk_Button_Record'Class)
    is
-      pragma Unreferenced (Button);
+      Win     : constant Main_Window := Main_Window (Button.all.Get_Toplevel);
+      Process : constant GNAT.Expect.Process_Descriptor_Access :=
+                  Win.all.SIM_Process;
    begin
-      if Simulator_Running then
+      if Win.all.Simulator_Running then
          Log.Trace
            (Message =>
               "Aborting simulator.exe... (PID ="
             & GNAT.Expect.Process_Id'Image
-                (GNAT.Expect.Get_Pid (SIM_Process.all))
+                (GNAT.Expect.Get_Pid (Process.all))
             & ")");
-         GNAT.Expect.Close (Descriptor => SIM_Process.all);
+         GNAT.Expect.Close (Descriptor => Process.all);
          --  We do not handle the Invalid_Process exception which Close() may
          --  raise, because this is only expected if the process id is invalid.
          --  Yet, at this point we have a valid Pid even if the process might
@@ -110,12 +77,14 @@ package body GUI.Callbacks is
 
    procedure SIM_Start (Button : access Gtk.Button.Gtk_Button_Record'Class)
    is
-      pragma Unreferenced (Button);
+      Win : constant Main_Window := Main_Window (Button.all.Get_Toplevel);
+      Process : constant GNAT.Expect.Process_Descriptor_Access :=
+                  Win.all.SIM_Process;
    begin
       Handle_Exception :
       begin
          GNAT.Expect.Non_Blocking_Spawn
-           (Descriptor   => SIM_Process.all,
+           (Descriptor   => Process.all,
             Command      => "simulator",
             Args         => GNAT.OS_Lib.Argument_List'(1 .. 0 => null));
 
@@ -123,7 +92,7 @@ package body GUI.Callbacks is
            (Message =>
               "simulator started (PID ="
             & GNAT.Expect.Process_Id'Image
-                (GNAT.Expect.Get_Pid (Descriptor => SIM_Process.all))
+                (GNAT.Expect.Get_Pid (Descriptor => Process.all))
             & ")");
       exception
          when GNAT.Expect.Invalid_Process =>
