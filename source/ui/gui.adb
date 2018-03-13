@@ -303,7 +303,7 @@ package body GUI is
       return Widget_Box;
    end Labeled_Widget;
 
-   procedure Quit_GUI (Win : access Main_Window_Record) is
+   procedure Quit_GUI (Win : not null access Main_Window_Record) is
       Do_Abort : Boolean := not Win.all.Aborted;
    begin
       if Win.all.Simulator_Running and then Do_Abort then
@@ -389,15 +389,14 @@ package body GUI is
          Log.Trace (E => E);
    end Run;
 
-   function Simulator_Running
-     (Win : access Main_Window_Record) return Boolean
+   function Simulator_Running (Win : in Main_Window_Record) return Boolean
    is
       Match_Result : GNAT.Expect.Expect_Match;
       Result       : Boolean;
    begin
       Handle_Exceptions :
       begin
-         GNAT.Expect.Expect (Descriptor  => Win.all.SIM_Process.all,
+         GNAT.Expect.Expect (Descriptor  => Win.SIM_Process.all,
                              Result      => Match_Result,
                              Regexp      => GNAT.Regpat.Never_Match,
                              Timeout     => 0,

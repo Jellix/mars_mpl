@@ -57,9 +57,9 @@ private
    end record;
    type Main_Window is access all Main_Window_Record'Class;
 
-   procedure Quit_GUI (Win : access Main_Window_Record);
+   procedure Quit_GUI (Win : not null access Main_Window_Record);
 
-   function Simulator_Running (Win : access Main_Window_Record) return Boolean;
+   function Simulator_Running (Win : in Main_Window_Record) return Boolean;
 
    package Log is new Global.Log (Unit_Name => "GUI");
 
