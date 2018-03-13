@@ -23,7 +23,6 @@ is
          Velocity         : Shared_Types.Velocity;
          Fuel             : Shared_Types.Fuel_Mass;
          Time_Stamp       : Duration;
-         Terminated       : Boolean;
       end record;
    --  The full space craft sensor state.
    --  @field Legs             State of all landing legs.
@@ -57,8 +56,7 @@ is
                   Altitude         => 0.0,
                   Velocity         => 0.0,
                   Fuel             => 0.0,
-                  Time_Stamp       => 0.0,
-                  Terminated       => False);
+                  Time_Stamp       => 0.0);
    end Current_State;
    --  To ensure atsk safe access, the actual shared sensor data is wrapped in
    --  this protected object.

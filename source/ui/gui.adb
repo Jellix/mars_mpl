@@ -345,6 +345,7 @@ package body GUI is
       declare
          Next_Update : Ada.Real_Time.Time := Global.Start_Time;
          Last_Update : Ada.Real_Time.Time := Global.Start_Time;
+         Last_Change : Duration           := -1.0;
       begin
          Main_Loop :
          loop
@@ -353,9 +354,13 @@ package body GUI is
 
             Update_State := Shared_Sensor_Data.Current_State.Get;
 
-            if not Update_State.Terminated then
-               Win.Feed_Values (Update_State => Update_State);
+            if Last_Change /= Update_State.Time_Stamp then
+               --  Update time stamp control.
+               Last_Change := Update_State.Time_Stamp;
                Last_Update := Ada.Real_Time.Clock;
+               --  Should be Next_Update, but we're too slow for that.
+
+               Win.Feed_Values (Update_State => Update_State);
             end if;
 
             Win.Plot.Oscilloscope.all.Set_Time

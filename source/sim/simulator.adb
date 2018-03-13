@@ -46,10 +46,8 @@ procedure Simulator is
    Cycle             : constant Ada.Real_Time.Time_Span :=
                          Ada.Real_Time.Milliseconds (MS => 10);
 
-   procedure Update_Shared_Data (Terminated : in Boolean := False);
-
-   procedure Update_Shared_Data (Terminated : in Boolean := False)
-   is
+   procedure Update_Shared_Data;
+   procedure Update_Shared_Data is
       Offset    : constant Duration :=
                     Ada.Real_Time.To_Duration
                       (TS => Ada.Real_Time.Clock - Global.Start_Time);
@@ -67,8 +65,7 @@ procedure Simulator is
                                      Altitude         => Altitude,
                                      Velocity         => Velocity,
                                      Fuel             => Fuel,
-                                     Time_Stamp       => Offset,
-                                     Terminated       => Terminated));
+                                     Time_Stamp       => Offset));
    end Update_Shared_Data;
 
    Target_Landing_Velocity : constant Shared_Types.Velocity :=
@@ -207,7 +204,7 @@ begin
 
    --  Give the data generating task time to terminate.
    delay until Ada.Real_Time.Clock + Ada.Real_Time.Milliseconds (100);
-   Update_Shared_Data (Terminated => True);
+   Update_Shared_Data;
 
    Log.Trace (Message => "Simulation finished.");
 exception
