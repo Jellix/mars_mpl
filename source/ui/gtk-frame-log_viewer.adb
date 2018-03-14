@@ -49,9 +49,9 @@ package body Gtk.Frame.Log_Viewer is
      (This : not null access Gtk_Frame_Log_Viewer_Record)
    is
       Match_Result : GNAT.Expect.Expect_Match := 0;
-      My_Buffer    : Gtk.Text_Buffer.Gtk_Text_Buffer renames
+      My_Buffer    : not null Gtk.Text_Buffer.Gtk_Text_Buffer renames
                        This.all.Text_Buffer;
-      My_Process   : GNAT.Expect.Process_Descriptor_Access renames
+      My_Process   : not null GNAT.Expect.Process_Descriptor_Access renames
                        This.all.Process;
    begin
       Handle_Dead_Process :
@@ -74,7 +74,7 @@ package body Gtk.Frame.Log_Viewer is
          end loop Read_Line_From_Process;
 
          This.all.Is_Dead := False; --  Expect() did not raise an exception,
-                                    --  so the process is running.
+                                    --  so the process is running (again).
       exception
          when GNAT.Expect.Process_Died =>
             if not This.all.Is_Dead then
