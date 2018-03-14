@@ -367,14 +367,18 @@ package body GUI is
               (Sweeper => Gtk.Oscilloscope.Lower,
                Stamp   => Last_Update);
 
-            Win.Start_Button.all.Set_Sensitive
-              (Sensitive => not Win.Simulator_Running);
+            Check_SIM_State :
+            declare
+               SIM_Active : constant Boolean := Win.Simulator_Running;
+               --  This call is rather expensive, so only do it once per check.
+            begin
+               Win.Start_Button.all.Set_Sensitive (Sensitive => not SIM_Active);
 
-            --  There might be a simulator running, but as we don't know its
-            --  Process_Id at this point, we can't send it a kill signal anyway,
-            --  thus there's no point in enabling the Abort button.
-            Win.Abort_Button.all.Set_Sensitive
-              (Sensitive => Win.Simulator_Running);
+               --  There might be a simulator running, but as we don't know its
+               --  Process_Id at this point, we can't send it a kill signal
+               --  anyway, thus there's no point in enabling the Abort button.
+               Win.Abort_Button.all.Set_Sensitive (Sensitive => SIM_Active);
+            end Check_SIM_State;
 
             --  Update SIM log view.
             Win.SIMon_Says.all.Update;
