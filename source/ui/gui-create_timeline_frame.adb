@@ -1,4 +1,5 @@
 with Gtk.Frame;
+with Gtk.Layered;
 with Gtk.Missed;
 
 separate (GUI)
@@ -31,10 +32,16 @@ begin
    begin
       Plots.Altitude_Channel := Scope.Add_Channel (Color => Colors.Red,
                                                    Name  => "Altitude");
+      Scope.Set_Interpolation_Mode (Channel => Plots.Altitude_Channel,
+                                    Mode    => Gtk.Layered.Linear);
       Plots.Fuel_Channel     := Scope.Add_Channel (Color => Colors.Blue,
                                                    Name  => "Fuel");
+      Scope.Set_Interpolation_Mode (Channel => Plots.Fuel_Channel,
+                                    Mode    => Gtk.Layered.Linear);
       Plots.Velocity_Channel := Scope.Add_Channel (Color => Colors.Purple,
                                                    Name  => "Velocity");
+      Scope.Set_Interpolation_Mode (Channel => Plots.Velocity_Channel,
+                                    Mode    => Gtk.Layered.Linear);
 
       Add_Discretes :
       declare
@@ -55,12 +62,17 @@ begin
                                              Green => 1.0,
                                              Blue  => Color_Offset),
                     Name  => "Touchdown" & Shared_Types.Legs_Index'Image (Leg));
+               Scope.Set_Interpolation_Mode
+                 (Channel => Plots.Touchdown_Channel (Leg),
+                  Mode    => Gtk.Layered.Left);
             end Add_Leg_Discrete;
          end loop;
 
          Plots.Thruster_Channel := Scope.Add_Channel (Group => G,
                                                       Color => Colors.Blue,
                                                       Name  => "Thruster");
+         Scope.Set_Interpolation_Mode (Channel => Plots.Thruster_Channel,
+                                       Mode    => Gtk.Layered.Left);
       end Add_Discretes;
 
       Scope.Set_Manual_Sweep (False);
