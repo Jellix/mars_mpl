@@ -31,17 +31,14 @@ begin
                   (Window.Plot.Oscilloscope.all);
    begin
       Plots.Altitude_Channel := Scope.Add_Channel (Color => Colors.Red,
+                                                   Mode  => Gtk.Layered.Linear,
                                                    Name  => "Altitude");
-      Scope.Set_Interpolation_Mode (Channel => Plots.Altitude_Channel,
-                                    Mode    => Gtk.Layered.Linear);
       Plots.Fuel_Channel     := Scope.Add_Channel (Color => Colors.Blue,
+                                                   Mode  => Gtk.Layered.Linear,
                                                    Name  => "Fuel");
-      Scope.Set_Interpolation_Mode (Channel => Plots.Fuel_Channel,
-                                    Mode    => Gtk.Layered.Linear);
       Plots.Velocity_Channel := Scope.Add_Channel (Color => Colors.Purple,
+                                                   Mode  => Gtk.Layered.Linear,
                                                    Name  => "Velocity");
-      Scope.Set_Interpolation_Mode (Channel => Plots.Velocity_Channel,
-                                    Mode    => Gtk.Layered.Linear);
 
       Add_Discretes :
       declare
@@ -61,18 +58,15 @@ begin
                     Color => Gtk.Missed.RGB (Red   => Color_Offset,
                                              Green => 1.0,
                                              Blue  => Color_Offset),
+                    Mode  => Gtk.Layered.Left,
                     Name  => "Touchdown" & Shared_Types.Legs_Index'Image (Leg));
-               Scope.Set_Interpolation_Mode
-                 (Channel => Plots.Touchdown_Channel (Leg),
-                  Mode    => Gtk.Layered.Left);
             end Add_Leg_Discrete;
          end loop;
 
          Plots.Thruster_Channel := Scope.Add_Channel (Group => G,
                                                       Color => Colors.Blue,
+                                                      Mode  => Gtk.Layered.Left,
                                                       Name  => "Thruster");
-         Scope.Set_Interpolation_Mode (Channel => Plots.Thruster_Channel,
-                                       Mode    => Gtk.Layered.Left);
       end Add_Discretes;
 
       Scope.Set_Manual_Sweep (False);
