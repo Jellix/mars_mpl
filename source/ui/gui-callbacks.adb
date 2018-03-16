@@ -94,6 +94,7 @@ package body GUI.Callbacks is
             & GNAT.Expect.Process_Id'Image
                 (GNAT.Expect.Get_Pid (Descriptor => Process.all))
             & ")");
+         Reset_Timeline (Plot => Win.all.Plot);
       exception
          when GNAT.Expect.Invalid_Process =>
             Log.Trace (Message => "Failed to start simulator!");

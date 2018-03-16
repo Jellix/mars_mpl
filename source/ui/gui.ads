@@ -59,6 +59,8 @@ private
 
    procedure Quit_GUI (Win : not null access Main_Window_Record);
 
+   procedure Reset_Timeline (Plot : in Plot_Elements);
+
    function Simulator_Running (Win : in Main_Window_Record) return Boolean;
 
    package Log is new Global.Log (Unit_Name => "GUI");

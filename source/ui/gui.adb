@@ -7,6 +7,7 @@ with Gtk.Box;
 with Gtk.Dialog;
 with Gtk.Enums.String_Lists;
 with Gtk.Label;
+with Gtk.Layered.Waveform;
 with Gtk.Main;
 with Gtk.Message_Dialog;
 with Gtk.Missed;
@@ -51,6 +52,7 @@ package body GUI is
       Blue         : constant Color := RGB (Red => 0.0, Green => 0.0, Blue => 1.0);
       Light_Yellow : constant Color := RGB (Red => 1.0, Green => 1.0, Blue => 0.5);
       Green        : constant Color := RGB (Red => 0.0, Green => 1.0, Blue => 0.0);
+      Light_Grey   : constant Color := RGB (Red => 0.9, Green => 0.9, Blue => 0.9);
       Grey         : constant Color := RGB (Red => 0.5, Green => 0.5, Blue => 0.5);
       Purple       : constant Color := RGB (Red => 1.0, Green => 0.5, Blue => 0.5);
       Red          : constant Color := RGB (Red => 1.0, Green => 0.0, Blue => 0.0);
@@ -229,7 +231,8 @@ package body GUI is
          Plotter    : Gtk.Oscilloscope.Gtk_Oscilloscope_Record renames
                         Gtk.Oscilloscope.Gtk_Oscilloscope_Record
                           (Win.Plot.Oscilloscope.all);
-         Time_Stamp : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
+         Time_Stamp : constant Glib.Gdouble :=
+                        Glib.Gdouble (Update_State.Time_Stamp);
       begin
          -- Data plot
          Plotter.Feed (Channel => Win.Plot.Altitude_Channel,
@@ -329,6 +332,37 @@ package body GUI is
       end if;
    end Quit_GUI;
 
+   --
+   procedure Reset_Timeline (Plot : in Plot_Elements) is
+      procedure Erase (Channel : in Gtk.Oscilloscope.Channel_Number);
+      procedure Erase (Channel : in Gtk.Oscilloscope.Channel_Number) is
+      begin
+         Plot.Oscilloscope.all.Get_Buffer (Channel => Channel).all.Erase;
+      end Erase;
+   begin
+      Plot.Oscilloscope.all.Get_Sweeper (Sweeper => Gtk.Oscilloscope.Lower).all.
+        Configure (Value          => 0.0,
+                   Lower          => 0.0,
+                   Upper          => 10.0,
+                   Step_Increment => 1.0,
+                   Page_Increment => 5.0,
+                   Page_Size      => 10.0);
+      Plot.Oscilloscope.all.Set_Time
+        (Sweeper => Gtk.Oscilloscope.Lower,
+         Stamp   =>
+           Ada.Real_Time.Time'(Gtk.Layered.Waveform.To_Time (Value => 10.0)));
+
+      Erase (Channel => Plot.Altitude_Channel);
+      Erase (Channel => Plot.Fuel_Channel);
+      Erase (Channel => Plot.Thruster_Channel);
+
+      for T in Plot.Touchdown_Channel'Range loop
+         Erase (Channel => Plot.Touchdown_Channel (T));
+      end loop;
+
+      Erase (Channel => Plot.Velocity_Channel);
+   end Reset_Timeline;
+
    procedure Run is
       Win          : aliased Main_Window_Record;
       Update_State : Shared_Sensor_Data.State :=
@@ -338,15 +372,15 @@ package body GUI is
       Initialize (Window => Win);
       Win.On_Delete_Event (Call  => Callbacks.Exit_Main'Access,
                            After => True);
-      Win.Feed_Values (Update_State => Update_State);
       Win.Show_All;
 
       Main_Block :
       declare
          Next_Update : Ada.Real_Time.Time := Global.Start_Time;
-         Last_Update : Ada.Real_Time.Time := Global.Start_Time;
          Last_Change : Duration           := -1.0;
       begin
+         Last_Change := Update_State.Time_Stamp;
+
          Main_Loop :
          loop
             delay until Next_Update;
@@ -357,15 +391,18 @@ package body GUI is
             if Last_Change /= Update_State.Time_Stamp then
                --  Update time stamp control.
                Last_Change := Update_State.Time_Stamp;
-               Last_Update := Ada.Real_Time.Clock;
-               --  Should be Next_Update, but we're too slow for that.
 
+               --  Feed new values.
                Win.Feed_Values (Update_State => Update_State);
-            end if;
 
-            Win.Plot.Oscilloscope.all.Set_Time
-              (Sweeper => Gtk.Oscilloscope.Lower,
-               Stamp   => Last_Update);
+               --  Update right margin of sweeper.
+               Win.Plot.Oscilloscope.all.Set_Time
+                 (Sweeper => Gtk.Oscilloscope.Lower,
+                  Stamp   =>
+                    Ada.Real_Time.Time'
+                      (Gtk.Layered.Waveform.To_Time
+                        (Value => Glib.Gdouble (Last_Change))));
+            end if;
 
             Check_SIM_State :
             declare
