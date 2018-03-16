@@ -184,7 +184,7 @@ package Gtk.Oscilloscope is
       Right   : Boolean := False;
       Name    : String  := "";
       Sweeper : Sweeper_Type := Lower;
-      Buffer  : access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer_Record'Class := null)
+      Buffer  : access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Waveform_Ring_Data_Buffer_Record'Class := null)
       return Channel_Number;
 
    function Add_Channel
@@ -195,7 +195,7 @@ package Gtk.Oscilloscope is
       Right   : Boolean := False;
       Name    : String  := "";
       Sweeper : Sweeper_Type := Lower;
-      Buffer  : access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer_Record'Class := null)
+      Buffer  : access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Waveform_Ring_Data_Buffer_Record'Class := null)
       return Channel_Number;
 
    function Add_Channel
@@ -206,7 +206,7 @@ package Gtk.Oscilloscope is
       Right   : Boolean := False;
       Name    : String  := "";
       Sweeper : Sweeper_Type := Lower;
-      Buffer  : access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer_Record'Class := null)
+      Buffer  : access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Waveform_Ring_Data_Buffer_Record'Class := null)
       return Channel_Number;
 
    function Add_Channel
@@ -216,7 +216,7 @@ package Gtk.Oscilloscope is
       Right   : Boolean := False;
       Name    : String  := "";
       Sweeper : Sweeper_Type := Lower;
-      Buffer  : access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer_Record'Class := null)
+      Buffer  : access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Waveform_Ring_Data_Buffer_Record'Class := null)
       return Channel_Number;
 
    --
@@ -531,7 +531,7 @@ package Gtk.Oscilloscope is
    function Get_Buffer
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
       Channel : Channel_Number)
-      return not null access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer_Record'Class;
+      return not null access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Waveform_Ring_Data_Buffer_Record'Class;
 
    --
    -- Get_Channel_List -- Get the list store containing channel names
@@ -2273,7 +2273,7 @@ private
    type Waveform_Layer_Ptr is access all Gtk.Layered.Waveform.Waveform_Layer;
    type Channel_Data is record
       Waveform     : Waveform_Layer_Ptr;
-      Source       : Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer;
+      Source       : Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Waveform_Ring_Data_Buffer;
       Status       : Channel_Value := Undefined;
       Group        : Group_Number;
       Tip_Prefix   : String_Ptr;
@@ -2545,8 +2545,8 @@ private
          -- Channels and groups
          Channels_Number : Channel_Count                     := 0;
          Groups_Number   : Group_Count                       := 0;
-         Refresh_Period  : Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer;
-         Drawing_Time    : Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer;
+         Refresh_Period  : Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Waveform_Ring_Data_Buffer;
+         Drawing_Time    : Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Waveform_Ring_Data_Buffer;
          Channels        : Channel_List (1 .. Size);
          Groups          : Group_List_Ptr;
          Selection       : Selection_State_Ptr;

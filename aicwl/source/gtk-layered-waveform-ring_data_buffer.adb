@@ -41,8 +41,8 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
 
    procedure Free is
       new Ada.Unchecked_Deallocation
-       (Gtk_Wavefrom_Ring_Data_Buffer_Record'Class,
-        Gtk_Wavefrom_Ring_Data_Buffer);
+       (Gtk_Waveform_Ring_Data_Buffer_Record'Class,
+        Gtk_Waveform_Ring_Data_Buffer);
 
    function Where (Name : String) return String;
 
@@ -51,7 +51,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
       T      : in out X_Axis;
       V      : out Y_Axis)
    is
-      Buffer : Gtk_Wavefrom_Ring_Data_Buffer_Record renames
+      Buffer : Gtk_Waveform_Ring_Data_Buffer_Record renames
                Source.Source.all;
       Index  : Reference := Source.Index;
       This   : Point;
@@ -90,7 +90,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
       V      : out Y_Axis;
       Got_It : out Boolean)
    is
-      Buffer : Gtk_Wavefrom_Ring_Data_Buffer_Record renames
+      Buffer : Gtk_Waveform_Ring_Data_Buffer_Record renames
                Source.Source.all;
       Index  : Reference := Source.Index;
       This   : Point;
@@ -128,7 +128,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
    end Backward;
 
    overriding procedure Connected
-     (Source : in out Gtk_Wavefrom_Ring_Data_Buffer_Record;
+     (Source : in out Gtk_Waveform_Ring_Data_Buffer_Record;
       Layer  : in out Waveform_Layer'Class) is
    begin
       if Source.Layers.Connected > 0 then
@@ -156,7 +156,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
    end Connected;
 
    overriding function Create
-     (Source : not null access Gtk_Wavefrom_Ring_Data_Buffer_Record)
+     (Source : not null access Gtk_Waveform_Ring_Data_Buffer_Record)
       return Waveform_Data_Scanner'Class is
    begin
       if Source.all.Length > 0 then
@@ -178,7 +178,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
    end Create;
 
    overriding procedure Disconnected
-     (Source : in out Gtk_Wavefrom_Ring_Data_Buffer_Record;
+     (Source : in out Gtk_Waveform_Ring_Data_Buffer_Record;
       Layer  : in out Waveform_Layer'Class)
    is
       Layers : Layers_List renames Source.Layers.Ptr.all;
@@ -197,7 +197,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
    end Disconnected;
 
    overriding procedure Erase
-     (Source : in out Gtk_Wavefrom_Ring_Data_Buffer_Record)
+     (Source : in out Gtk_Waveform_Ring_Data_Buffer_Record)
    is
       First, Last : Point;
    begin
@@ -230,7 +230,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
    end Finalize;
 
    procedure Find
-     (Source : Gtk_Wavefrom_Ring_Data_Buffer_Record;
+     (Source : Gtk_Waveform_Ring_Data_Buffer_Record;
       T      : X_Axis;
       Above  : Boolean;
       Index  : out Reference;
@@ -278,7 +278,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
       T      : out X_Axis;
       V      : out Y_Axis)
    is
-      Buffer : Gtk_Wavefrom_Ring_Data_Buffer_Record renames
+      Buffer : Gtk_Waveform_Ring_Data_Buffer_Record renames
                Source.Source.all;
       Data   : Point;
       Got_It : Boolean;
@@ -302,7 +302,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
       V      : out Y_Axis;
       Got_It : out Boolean)
    is
-      Buffer : Gtk_Wavefrom_Ring_Data_Buffer_Record renames
+      Buffer : Gtk_Waveform_Ring_Data_Buffer_Record renames
                Source.Source.all;
       Data   : Point;
    begin
@@ -325,7 +325,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
       T      : in out X_Axis;
       V      : out Y_Axis)
    is
-      Buffer : Gtk_Wavefrom_Ring_Data_Buffer_Record renames
+      Buffer : Gtk_Waveform_Ring_Data_Buffer_Record renames
                Source.Source.all;
       Index  : Reference := Source.Index;
       This   : Point;
@@ -361,7 +361,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
       V      : out Y_Axis;
       Got_It : out Boolean)
    is
-      Buffer : Gtk_Wavefrom_Ring_Data_Buffer_Record renames
+      Buffer : Gtk_Waveform_Ring_Data_Buffer_Record renames
                Source.Source.all;
       Index  : Reference := Source.Index;
       This   : Point;
@@ -392,7 +392,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
    end Forward;
 
    procedure Get
-     (Source : Gtk_Wavefrom_Ring_Data_Buffer_Record;
+     (Source : Gtk_Waveform_Ring_Data_Buffer_Record;
       Index  : Reference;
       Data   : out Point;
       Got_It : out Boolean) is
@@ -413,10 +413,10 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
    end Get_Source;
 
    procedure Gtk_New
-     (Source : out Gtk_Wavefrom_Ring_Data_Buffer;
+     (Source : out Gtk_Waveform_Ring_Data_Buffer;
       Size   : Positive) is
    begin
-      Source := new Gtk_Wavefrom_Ring_Data_Buffer_Record (Size);
+      Source := new Gtk_Waveform_Ring_Data_Buffer_Record (Size);
       Gtk.Layered.Waveform.Ring_Data_Buffer.Initialize (Source);
    exception
       when others =>
@@ -425,13 +425,13 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
    end Gtk_New;
 
    procedure Initialize
-     (Source : not null access Gtk_Wavefrom_Ring_Data_Buffer_Record'Class) is
+     (Source : not null access Gtk_Waveform_Ring_Data_Buffer_Record'Class) is
    begin
       Glib.Object.Initialize (Source);
    end Initialize;
 
    function Is_In
-     (Source : Gtk_Wavefrom_Ring_Data_Buffer_Record;
+     (Source : Gtk_Waveform_Ring_Data_Buffer_Record;
       Index  : Reference) return Boolean is
    begin
       return
@@ -443,7 +443,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
      (Source : Source_Scanner;
       T      : X_Axis) return Boolean
    is
-      Buffer   : Gtk_Wavefrom_Ring_Data_Buffer_Record renames
+      Buffer   : Gtk_Waveform_Ring_Data_Buffer_Record renames
                    Source.Source.all;
       From, To : Point;
       Got_It   : Boolean;
@@ -467,7 +467,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
       T      : out X_Axis;
       V      : out Y_Axis)
    is
-      Buffer : Gtk_Wavefrom_Ring_Data_Buffer_Record renames
+      Buffer : Gtk_Waveform_Ring_Data_Buffer_Record renames
                  Source.Source.all;
       Data   : Point;
       Got_It : Boolean;
@@ -491,7 +491,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
       V      : out Y_Axis;
       Got_It : out Boolean)
    is
-      Buffer : Gtk_Wavefrom_Ring_Data_Buffer_Record renames
+      Buffer : Gtk_Waveform_Ring_Data_Buffer_Record renames
                Source.Source.all;
       Data   : Point;
    begin
@@ -510,7 +510,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
    end Last;
 
    procedure Notify
-     (Source : Gtk_Wavefrom_Ring_Data_Buffer_Record;
+     (Source : Gtk_Waveform_Ring_Data_Buffer_Record;
       From   : X_Axis;
       To     : X_Axis) is
    begin
@@ -543,7 +543,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
    end Notify;
 
    overriding procedure Put
-     (Source : in out Gtk_Wavefrom_Ring_Data_Buffer_Record;
+     (Source : in out Gtk_Waveform_Ring_Data_Buffer_Record;
       T      : X_Axis;
       V      : Y_Axis)
    is
@@ -603,7 +603,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
    end Put;
 
    procedure Scan_Backward
-     (Source : Gtk_Wavefrom_Ring_Data_Buffer_Record;
+     (Source : Gtk_Waveform_Ring_Data_Buffer_Record;
       Index  : in out Reference;
       T      : in out X_Axis;
       V      : out Y_Axis;
@@ -624,7 +624,7 @@ package body Gtk.Layered.Waveform.Ring_Data_Buffer is
    end Scan_Backward;
 
    procedure Scan_Forward
-     (Source : Gtk_Wavefrom_Ring_Data_Buffer_Record;
+     (Source : Gtk_Waveform_Ring_Data_Buffer_Record;
       Index  : in out Reference;
       T      : in out X_Axis;
       V      : out Y_Axis;

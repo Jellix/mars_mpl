@@ -36,11 +36,11 @@ package Gtk.Layered.Waveform.Ring_Data_Buffer is
    -- other tasks without interlocking. When more than two tasks write  the
    -- buffer it must be protected from concurrent access.
    --
-   type Gtk_Wavefrom_Ring_Data_Buffer_Record (Size : Positive) is
+   type Gtk_Waveform_Ring_Data_Buffer_Record (Size : Positive) is
      new GObject_Record
      and Waveform_Data_Feed with private;
-   type Gtk_Wavefrom_Ring_Data_Buffer is
-     access all Gtk_Wavefrom_Ring_Data_Buffer_Record'Class;
+   type Gtk_Waveform_Ring_Data_Buffer is
+     access all Gtk_Waveform_Ring_Data_Buffer_Record'Class;
 
    --
    -- Gtk_New -- Factory
@@ -49,7 +49,7 @@ package Gtk.Layered.Waveform.Ring_Data_Buffer is
    --    Size   - Maximal number of points in the buffer
    --
    procedure Gtk_New
-     (Source : out Gtk_Wavefrom_Ring_Data_Buffer;
+     (Source : out Gtk_Waveform_Ring_Data_Buffer;
       Size   : Positive);
 
    --
@@ -61,7 +61,7 @@ package Gtk.Layered.Waveform.Ring_Data_Buffer is
    -- type.
    --
    procedure Initialize
-     (Source : not null access Gtk_Wavefrom_Ring_Data_Buffer_Record'Class);
+     (Source : not null access Gtk_Waveform_Ring_Data_Buffer_Record'Class);
 
    --
    -- Source_Scanner -- The buffer scanner object
@@ -84,19 +84,19 @@ package Gtk.Layered.Waveform.Ring_Data_Buffer is
       Got_It : out Boolean);
 
    overriding procedure Connected
-     (Source : in out Gtk_Wavefrom_Ring_Data_Buffer_Record;
+     (Source : in out Gtk_Waveform_Ring_Data_Buffer_Record;
       Layer  : in out Waveform_Layer'Class);
 
    overriding function Create
-     (Source : not null access Gtk_Wavefrom_Ring_Data_Buffer_Record)
+     (Source : not null access Gtk_Waveform_Ring_Data_Buffer_Record)
       return Waveform_Data_Scanner'Class;
 
    overriding procedure Disconnected
-     (Source : in out Gtk_Wavefrom_Ring_Data_Buffer_Record;
+     (Source : in out Gtk_Waveform_Ring_Data_Buffer_Record;
       Layer  : in out Waveform_Layer'Class);
 
    overriding procedure Erase
-     (Source : in out Gtk_Wavefrom_Ring_Data_Buffer_Record);
+     (Source : in out Gtk_Waveform_Ring_Data_Buffer_Record);
 
    overriding procedure First
      (Source : in out Source_Scanner;
@@ -140,7 +140,7 @@ package Gtk.Layered.Waveform.Ring_Data_Buffer is
       Got_It : out Boolean);
 
    overriding procedure Put
-     (Source : in out Gtk_Wavefrom_Ring_Data_Buffer_Record;
+     (Source : in out Gtk_Waveform_Ring_Data_Buffer_Record;
       T      : X_Axis;
       V      : Y_Axis);
 
@@ -173,7 +173,7 @@ private
    type Reference is mod 2 ** System.Word_Size;
    -- type Reference is new Unsigned_64;
 
-   type Gtk_Wavefrom_Ring_Data_Buffer_Record (Size : Positive) is
+   type Gtk_Waveform_Ring_Data_Buffer_Record (Size : Positive) is
      new GObject_Record
      and Waveform_Data_Feed with
       record
@@ -200,36 +200,36 @@ private
    -- is less or equal to T.
    --
    procedure Find
-     (Source : Gtk_Wavefrom_Ring_Data_Buffer_Record;
+     (Source : Gtk_Waveform_Ring_Data_Buffer_Record;
       T      : X_Axis;
       Above  : Boolean;
       Index  : out Reference;
       Got_It : out Boolean);
 
    procedure Get
-     (Source : Gtk_Wavefrom_Ring_Data_Buffer_Record;
+     (Source : Gtk_Waveform_Ring_Data_Buffer_Record;
       Index  : Reference;
       Data   : out Point;
       Got_It : out Boolean);
 
    function Is_In
-     (Source : Gtk_Wavefrom_Ring_Data_Buffer_Record;
+     (Source : Gtk_Waveform_Ring_Data_Buffer_Record;
       Index  : Reference) return Boolean;
 
    procedure Notify
-     (Source : Gtk_Wavefrom_Ring_Data_Buffer_Record;
+     (Source : Gtk_Waveform_Ring_Data_Buffer_Record;
       From   : X_Axis;
       To     : X_Axis);
 
    procedure Scan_Backward
-     (Source : Gtk_Wavefrom_Ring_Data_Buffer_Record;
+     (Source : Gtk_Waveform_Ring_Data_Buffer_Record;
       Index  : in out Reference;
       T      : in out X_Axis;
       V      : out Y_Axis;
       Got_It : out Boolean);
 
    procedure Scan_Forward
-     (Source : Gtk_Wavefrom_Ring_Data_Buffer_Record;
+     (Source : Gtk_Waveform_Ring_Data_Buffer_Record;
       Index  : in out Reference;
       T      : in out X_Axis;
       V      : out Y_Axis;
@@ -239,7 +239,7 @@ private
      with record
       Index  : Reference := 1;
       T      : X_Axis    := X_Axis'Last;
-      Source : not null access Gtk_Wavefrom_Ring_Data_Buffer_Record;
+      Source : not null access Gtk_Waveform_Ring_Data_Buffer_Record;
    end record;
 
    pragma Inline (Find);

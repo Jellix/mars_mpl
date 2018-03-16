@@ -160,7 +160,7 @@ package body Gtk.Oscilloscope is
       Right   : Boolean := False;
       Name    : String  := "";
       Sweeper : Sweeper_Type := Lower;
-      Buffer  : access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer_Record'Class := null)
+      Buffer  : access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Waveform_Ring_Data_Buffer_Record'Class := null)
       return Channel_Number is
    begin
       if Widget.all.Channels_Number >= Widget.all.Size then
@@ -231,7 +231,7 @@ package body Gtk.Oscilloscope is
       Right   : Boolean := False;
       Name    : String  := "";
       Sweeper : Sweeper_Type := Lower;
-      Buffer  : access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer_Record'Class := null)
+      Buffer  : access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Waveform_Ring_Data_Buffer_Record'Class := null)
       return Channel_Number is
    begin
       return
@@ -259,7 +259,7 @@ package body Gtk.Oscilloscope is
       Right   : Boolean := False;
       Name    : String  := "";
       Sweeper : Sweeper_Type := Lower;
-      Buffer  : access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer_Record'Class := null)
+      Buffer  : access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Waveform_Ring_Data_Buffer_Record'Class := null)
       return Channel_Number is
    begin
       return
@@ -282,7 +282,7 @@ package body Gtk.Oscilloscope is
       Right   : Boolean := False;
       Name    : String  := "";
       Sweeper : Sweeper_Type := Lower;
-      Buffer  : access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer_Record'Class := null)
+      Buffer  : access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Waveform_Ring_Data_Buffer_Record'Class := null)
       return Channel_Number is
    begin
       return
@@ -321,7 +321,7 @@ package body Gtk.Oscilloscope is
       return Index : constant Channel_Number :=
         Widget.all.Channels_Number + 1 do
          declare
-            use type Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer;
+            use type Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Waveform_Ring_Data_Buffer;
             This : Channel_Data renames Widget.all.Channels (Index);
             Row  : Gtk.Tree_Model.Gtk_Tree_Iter;
          begin
@@ -1304,7 +1304,7 @@ package body Gtk.Oscilloscope is
    function Get_Buffer
      (Widget  : not null access constant Gtk_Oscilloscope_Record;
       Channel : Channel_Number)
-      return not null access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer_Record'Class is
+      return not null access Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Waveform_Ring_Data_Buffer_Record'Class is
    begin
       if Channel <= Widget.all.Channels_Number then
          return Widget.all.Channels (Channel).Source.all'Unchecked_Access;
@@ -2382,7 +2382,7 @@ package body Gtk.Oscilloscope is
       Oscilloscope : Gtk_Oscilloscope)
    is
       use type Gtk.Layered.Waveform.Amplifier.Gtk_Waveform_Amplifier;
-      use type Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer;
+      use type Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Waveform_Ring_Data_Buffer;
       use type Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper;
       pragma Unreferenced (Object);
    begin
@@ -3191,7 +3191,7 @@ package body Gtk.Oscilloscope is
    overriding procedure Refresh (Widget  : not null access Gtk_Graphs_Record;
                                  Context : Cairo.Cairo_Context)
    is
-      use type Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Wavefrom_Ring_Data_Buffer;
+      use type Gtk.Layered.Waveform.Ring_Data_Buffer.Gtk_Waveform_Ring_Data_Buffer;
    begin
       Gtk.Layered.Gtk_Layered_Record (Widget.all).Refresh (Context);
       if
