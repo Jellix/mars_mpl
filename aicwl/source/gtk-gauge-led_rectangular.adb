@@ -71,19 +71,19 @@ package body Gtk.Gauge.LED_Rectangular is
    end Lock;
 
    protected body Lock  is
-      function On_Color
-        (LED : Gtk_Gauge_LED_Rectangular_Record'Class)
-         return Gdk.Color.Gdk_Color is
-      begin
-         return LED.On;
-      end On_Color;
-
       function Off_Color
         (LED : Gtk_Gauge_LED_Rectangular_Record'Class)
          return Gdk.Color.Gdk_Color is
       begin
          return LED.Off;
       end Off_Color;
+
+      function On_Color
+        (LED : Gtk_Gauge_LED_Rectangular_Record'Class)
+         return Gdk.Color.Gdk_Color is
+      begin
+         return LED.On;
+      end On_Color;
 
       procedure Set
         (LED : in out Gtk_Gauge_LED_Rectangular_Record'Class;
