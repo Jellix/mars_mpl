@@ -20,11 +20,12 @@ package Gtk.Box.Digital_Clock is
 
 private
 
-   type Digit_Index is range 1 .. 6;
+   type Digit_Index is range 1 .. 5;
    subtype Valid_Digits is Natural range 0 .. 9;
 
    type LED_Assignment is array (Glib.Gint range <>,
-                                 Glib.Gint range <>) of Boolean;
+                                 Glib.Gint range <>) of Boolean
+     with Pack => True;
 
    type Gtk_Box_Digital_Clock_Record is new Gtk_Box_Record with
       record
@@ -42,69 +43,89 @@ private
    X : constant Boolean := True;
    O : constant Boolean := False;
 
-   subtype Single_Digit_5_X_3 is LED_Assignment (0 .. 4, 0 .. 2);
+   subtype Single_Digit_7_X_5 is LED_Assignment (0 .. 6, 0 .. 4);
 
-   LED_0 : constant Single_Digit_5_X_3 := (0 => (X, X, X),
-                                           1 => (X, O, X),
-                                           2 => (X, O, X),
-                                           3 => (X, O, X),
-                                           4 => (X, X, X));
+   LED_0 : constant Single_Digit_7_X_5 := ((O, X, X, X, O),
+                                           (X, O, O, O, X),
+                                           (X, O, O, O, X),
+                                           (X, O, O, O, X),
+                                           (X, O, O, O, X),
+                                           (X, O, O, O, X),
+                                           (O, X, X, X, O));
 
-   LED_1 : constant Single_Digit_5_X_3 := (0 => (O, O, X),
-                                           1 => (O, X, X),
-                                           2 => (O, O, X),
-                                           3 => (O, O, X),
-                                           4 => (O, O, X));
+   LED_1 : constant Single_Digit_7_X_5 := ((O, O, X, O, O),
+                                           (O, X, X, O, O),
+                                           (O, O, X, O, O),
+                                           (O, O, X, O, O),
+                                           (O, O, X, O, O),
+                                           (O, O, X, O, O),
+                                           (O, X, X, X, O));
 
-   LED_2 : constant Single_Digit_5_X_3 := (0 => (X, X, X),
-                                           1 => (O, O, X),
-                                           2 => (X, X, X),
-                                           3 => (X, O, O),
-                                           4 => (X, X, X));
+   LED_2 : constant Single_Digit_7_X_5 := ((O, X, X, X, O),
+                                           (X, O, O, O, X),
+                                           (O, O, O, O, X),
+                                           (O, O, X, X, O),
+                                           (O, X, O, O, O),
+                                           (X, O, O, O, O),
+                                           (X, X, X, X, X));
 
-   LED_3 : constant Single_Digit_5_X_3 := (0 => (X, X, X),
-                                           1 => (O, O, X),
-                                           2 => (O, X, X),
-                                           3 => (O, O, X),
-                                           4 => (X, X, X));
+   LED_3 : constant Single_Digit_7_X_5 := ((O, X, X, X, O),
+                                           (X, O, O, O, X),
+                                           (O, O, O, O, X),
+                                           (O, X, X, X, O),
+                                           (O, O, O, O, X),
+                                           (X, O, O, O, X),
+                                           (O, X, X, X, O));
 
-   LED_4 : constant Single_Digit_5_X_3 := (0 => (O, O, X),
-                                           1 => (O, X, X),
-                                           2 => (X, O, X),
-                                           3 => (X, X, X),
-                                           4 => (O, O, X));
+   LED_4 : constant Single_Digit_7_X_5 := ((O, O, O, X, O),
+                                           (O, O, X, X, O),
+                                           (O, X, O, X, O),
+                                           (X, O, O, X, O),
+                                           (X, X, X, X, X),
+                                           (O, O, O, X, O),
+                                           (O, O, O, X, O));
 
-   LED_5 : constant Single_Digit_5_X_3 := (0 => (X, X, X),
-                                           1 => (X, O, O),
-                                           2 => (X, X, X),
-                                           3 => (O, O, X),
-                                           4 => (X, X, X));
+   LED_5 : constant Single_Digit_7_X_5 := ((X, X, X, X, X),
+                                           (X, O, O, O, O),
+                                           (X, X, X, X, O),
+                                           (O, O, O, O, X),
+                                           (O, O, O, O, X),
+                                           (X, O, O, O, X),
+                                           (O, X, X, X, O));
 
-   LED_6 : constant Single_Digit_5_X_3 := (0 => (X, X, X),
-                                           1 => (X, O, O),
-                                           2 => (X, X, X),
-                                           3 => (X, O, X),
-                                           4 => (X, X, X));
+   LED_6 : constant Single_Digit_7_X_5 := ((O, O, X, X, O),
+                                           (O, X, O, O, O),
+                                           (X, O, O, O, O),
+                                           (X, X, X, X, O),
+                                           (X, O, O, O, X),
+                                           (X, O, O, O, X),
+                                           (O, X, X, X, O));
 
-   LED_7 : constant Single_Digit_5_X_3 := (0 => (X, X, X),
-                                           1 => (O, O, X),
-                                           2 => (O, X, O),
-                                           3 => (X, O, O),
-                                           4 => (X, O, O));
+   LED_7 : constant Single_Digit_7_X_5 := ((X, X, X, X, X),
+                                           (O, O, O, O, X),
+                                           (O, O, O, X, O),
+                                           (O, O, X, O, O),
+                                           (O, X, O, O, O),
+                                           (O, X, O, O, O),
+                                           (O, X, O, O, O));
 
-   LED_8 : constant Single_Digit_5_X_3 := (0 => (X, X, X),
-                                           1 => (X, O, X),
-                                           2 => (X, X, X),
-                                           3 => (X, O, X),
-                                           4 => (X, X, X));
+   LED_8 : constant Single_Digit_7_X_5 := ((O, X, X, X, O),
+                                           (X, O, O, O, X),
+                                           (X, O, O, O, X),
+                                           (O, X, X, X, O),
+                                           (X, O, O, O, X),
+                                           (X, O, O, O, X),
+                                           (O, X, X, X, O));
 
-   LED_9 : constant Single_Digit_5_X_3 := (0 => (X, X, X),
-                                           1 => (X, O, X),
-                                           2 => (X, X, X),
-                                           3 => (O, O, X),
-                                           4 => (X, X, X));
+   LED_9 : constant Single_Digit_7_X_5 := ((O, X, X, X, O),
+                                           (X, O, O, O, X),
+                                           (X, O, O, O, X),
+                                           (O, X, X, X, X),
+                                           (O, O, O, O, X),
+                                           (O, O, O, X, O),
+                                           (O, X, X, O, O));
 
-   type LED_Lookup is array (Valid_Digits) of Single_Digit_5_X_3;
+   type LED_Lookup is array (Valid_Digits) of Single_Digit_7_X_5;
 
    Digit_Lookup : constant LED_Lookup := (0 => LED_0,
                                           1 => LED_1,
@@ -118,6 +139,6 @@ private
                                           9 => LED_9);
 
    Digit_Offset : constant array (Digit_Index) of Glib.Gint :=
-                    (0, 4, 10, 14, 20, 24);
+                    (0, 6, 14, 20, 28);
 
 end Gtk.Box.Digital_Clock;

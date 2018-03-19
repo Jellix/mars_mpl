@@ -27,22 +27,22 @@ package body Gtk.Box.Digital_Clock is
       Clk_Box.all.Pack_End (Child  => Gtk_Hbox_New,
                             Expand => True);
       Clk_Frame.all.Add (Widget => The_Grid);
-      The_Grid.all.Set_Size_Request (135, 25);
+      The_Grid.all.Set_Size_Request (165, 35);
       The_Grid.all.Set_Column_Homogeneous (Homogeneous => True);
       The_Grid.all.Set_Column_Spacing (Spacing => 0);
       The_Grid.all.Set_Row_Homogeneous (Homogeneous => True);
       The_Grid.all.Set_Row_Spacing (Spacing => 0);
 
-      for X in Glib.Gint range 0 .. 26 loop
+      for X in Glib.Gint range 0 .. 32 loop
          The_Grid.all.Insert_Row (Position => X);
       end loop;
 
-      for Y in Glib.Gint range 0 .. 4 loop
+      for Y in Glib.Gint range 0 .. 6 loop
          The_Grid.all.Insert_Column (Position => Y);
       end loop;
 
-      for X in Glib.Gint range 0 .. 26 loop
-         for Y in Glib.Gint range 0 .. 4 loop
+      for X in Glib.Gint range 0 .. 32 loop
+         for Y in Glib.Gint range 0 .. 6 loop
             The_Grid.all.Attach (Child => New_LED (On_Color  => On_Color,
                                                    Off_Color => Off_Color),
                                  Left  => X,
@@ -51,11 +51,11 @@ package body Gtk.Box.Digital_Clock is
       end loop;
 
       Gtk.Gauge.LED_Rectangular.Gtk_Gauge_LED_Rectangular
-        (The_Grid.all.Get_Child_At (8, 1)).all.Set_State (State => True);
+        (The_Grid.all.Get_Child_At (12, 2)).all.Set_State (State => True);
       Gtk.Gauge.LED_Rectangular.Gtk_Gauge_LED_Rectangular
-        (The_Grid.all.Get_Child_At (8, 3)).all.Set_State (State => True);
+        (The_Grid.all.Get_Child_At (12, 4)).all.Set_State (State => True);
       Gtk.Gauge.LED_Rectangular.Gtk_Gauge_LED_Rectangular
-        (The_Grid.all.Get_Child_At (18, 4)).all.Set_State (State => True);
+        (The_Grid.all.Get_Child_At (26, 6)).all.Set_State (State => True);
 
       Clk_Box.all.Set_Time (0.0);
       return Clk_Box;
@@ -92,9 +92,6 @@ package body Gtk.Box.Digital_Clock is
       Temp := Temp - 1.0 * Glib.Gdouble (The_Digits (4));
 
       The_Digits (5) := Natural (Glib.Gdouble'Floor (Temp * 10.0));
-      Temp := Temp - 0.1 * Glib.Gdouble (The_Digits (5));
-
-      The_Digits (6) := Natural (Glib.Gdouble'Floor (Temp * 100.0));
 
       for Digit in Digit_Index'Range loop
          Clock.Write_Digit (Digit => Digit,
@@ -106,7 +103,7 @@ package body Gtk.Box.Digital_Clock is
                           Digit : in Digit_Index;
                           Num   : in Valid_Digits)
    is
-      Digit_Layout : Single_Digit_5_X_3 renames Digit_Lookup (Num);
+      Digit_Layout : Single_Digit_7_X_5 renames Digit_Lookup (Num);
       use type Glib.Gint;
    begin
       for X in Digit_Layout'Range (2) loop
