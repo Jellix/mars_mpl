@@ -265,6 +265,10 @@ package body GUI is
               Glib.Gdouble (Boolean'Pos (Update_State.Thruster_Enabled)),
             T       => Time_Stamp);
       end Feed_Data_Plots;
+
+      --  Advance mission clock.
+      Win.Mission_Clock.all.Set_Time (Time => Update_State.Time_Stamp);
+      Win.Mission_Clock.all.Queue_Draw;
    end Feed_Values;
 
    procedure Initialize (Window : in out Main_Window_Record);
