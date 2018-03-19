@@ -5,6 +5,115 @@ package body Gtk.Box.Digital_Clock is
 
    use type Glib.Gdouble;
 
+   subtype Single_Digit_7_X_5 is LED_Assignment (0 .. 6, 0 .. 4);
+
+   function "+" (S : in String) return Single_Digit_7_X_5;
+   function "+" (S : in String) return Single_Digit_7_X_5 is
+      Result : Single_Digit_7_X_5;
+   begin
+      for Y in Result'Range (1) loop
+         for X in Result'Range (2) loop
+            Result (Y, X) :=
+              S (S'First + Integer (Y * Result'Length (2) + X)) /= ' ';
+         end loop;
+      end loop;
+
+      return Result;
+   end "+";
+
+   LED_0 : constant Single_Digit_7_X_5 := +(" XXX " &
+                                            "X   X" &
+                                            "X   X" &
+                                            "X   X" &
+                                            "X   X" &
+                                            "X   X" &
+                                            " XXX ");
+
+   LED_1 : constant Single_Digit_7_X_5 := +("  X  " &
+                                            " XX  " &
+                                            "  X  " &
+                                            "  X  " &
+                                            "  X  " &
+                                            "  X  " &
+                                            " XXX ");
+
+   LED_2 : constant Single_Digit_7_X_5 := +(" XXX " &
+                                            "X   X" &
+                                            "    X" &
+                                            "  XX " &
+                                            " X   " &
+                                            "X    " &
+                                            "XXXXX");
+
+   LED_3 : constant Single_Digit_7_X_5 := +(" XXX " &
+                                            "X   X" &
+                                            "    X" &
+                                            "  XX " &
+                                            "    X" &
+                                            "X   X" &
+                                            " XXX ");
+
+   LED_4 : constant Single_Digit_7_X_5 := +("   X " &
+                                            "  XX " &
+                                            " X X " &
+                                            "X  X " &
+                                            "XXXXX" &
+                                            "   X " &
+                                            "   X ");
+
+   LED_5 : constant Single_Digit_7_X_5 := +("XXXXX" &
+                                            "X    " &
+                                            "XXXX " &
+                                            "    X" &
+                                            "    X" &
+                                            "X   X" &
+                                            " XXX ");
+
+   LED_6 : constant Single_Digit_7_X_5 := +("  XX " &
+                                            " X   " &
+                                            "X    " &
+                                            "XXXX " &
+                                            "X   X" &
+                                            "X   X" &
+                                            " XXX ");
+
+   LED_7 : constant Single_Digit_7_X_5 := +("XXXXX" &
+                                            "    X" &
+                                            "   X " &
+                                            "  X  " &
+                                            " X   " &
+                                            " X   " &
+                                            " X   ");
+
+   LED_8 : constant Single_Digit_7_X_5 := +(" XXX " &
+                                            "X   X" &
+                                            "X   X" &
+                                            " XXX " &
+                                            "X   X" &
+                                            "X   X" &
+                                            " XXX ");
+
+   LED_9 : constant Single_Digit_7_X_5 := +(" XXX " &
+                                            "X   X" &
+                                            "X   X" &
+                                            " XXXX" &
+                                            "    X" &
+                                            "   X " &
+                                            " XX  ");
+
+   type LED_Lookup is array (Valid_Digits) of Single_Digit_7_X_5;
+
+   Digit_Lookup : constant LED_Lookup := (0 => LED_0,
+                                          1 => LED_1,
+                                          2 => LED_2,
+                                          3 => LED_3,
+                                          4 => LED_4,
+                                          5 => LED_5,
+                                          6 => LED_6,
+                                          7 => LED_7,
+                                          8 => LED_8,
+                                          9 => LED_9);
+
    function Gtk_New
      (Label     : in Glib.UTF8_String;
       On_Color  : in Gdk.Color.Gdk_Color;
