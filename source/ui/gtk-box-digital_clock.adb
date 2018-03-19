@@ -1,6 +1,5 @@
 with Gtk.Enums;
 with Gtk.Frame;
-with Gtk.Gauge.LED_Rectangular;
 
 package body Gtk.Box.Digital_Clock is
 
@@ -33,48 +32,52 @@ package body Gtk.Box.Digital_Clock is
       The_Grid.all.Set_Row_Homogeneous (Homogeneous => True);
       The_Grid.all.Set_Row_Spacing (Spacing => 0);
 
-      for X in Glib.Gint range 0 .. 32 loop
+      for X in Clk_Box.all.LED_Matrix'Range (1) loop
          The_Grid.all.Insert_Row (Position => X);
       end loop;
 
-      for Y in Glib.Gint range 0 .. 6 loop
+      for Y in Clk_Box.all.LED_Matrix'Range (2) loop
          The_Grid.all.Insert_Column (Position => Y);
       end loop;
 
-      for X in Glib.Gint range 0 .. 32 loop
-         for Y in Glib.Gint range 0 .. 6 loop
-            The_Grid.all.Attach (Child => New_LED (On_Color  => On_Color,
-                                                   Off_Color => Off_Color),
+      for X in Clk_Box.all.LED_Matrix'Range (1) loop
+         for Y in Clk_Box.all.LED_Matrix'Range (2) loop
+            Clk_Box.all.LED_Matrix (X, Y) := New_LED (On_Color  => On_Color,
+                                                      Off_Color => Off_Color);
+            The_Grid.all.Attach (Child => Clk_Box.all.LED_Matrix (X, Y),
                                  Left  => X,
                                  Top   => Y);
          end loop;
       end loop;
 
-      Gtk.Gauge.LED_Rectangular.Gtk_Gauge_LED_Rectangular
-        (The_Grid.all.Get_Child_At (12, 2)).all.Set_State (State => True);
-      Gtk.Gauge.LED_Rectangular.Gtk_Gauge_LED_Rectangular
-        (The_Grid.all.Get_Child_At (12, 4)).all.Set_State (State => True);
-      Gtk.Gauge.LED_Rectangular.Gtk_Gauge_LED_Rectangular
-        (The_Grid.all.Get_Child_At (26, 6)).all.Set_State (State => True);
+      Clk_Box.all.LED_Matrix (12, 2).all.Set_State (State => True);
+      Clk_Box.all.LED_Matrix (12, 4).all.Set_State (State => True);
+      Clk_Box.all.LED_Matrix (26, 6).all.Set_State (State => True);
 
-      Clk_Box.all.Set_Time (0.0);
+      --  Force digits to all zero, so we have a defined state.
+      for Digit in Digit_Index'Range loop
+         Clk_Box.all.Write_Digit (Digit => Digit,
+                                  Num   => 0,
+                                  Force => True);
+      end loop;
+
       return Clk_Box;
    end Gtk_New;
 
    function New_LED (On_Color  : in Gdk.Color.Gdk_Color;
                      Off_Color : in Gdk.Color.Gdk_Color) return not null
-     Gtk.Widget.Gtk_Widget
+     Gtk.Gauge.LED_Rectangular.Gtk_Gauge_LED_Rectangular
    is
       LED : Gtk.Gauge.LED_Rectangular.Gtk_Gauge_LED_Rectangular;
    begin
       Gtk.Gauge.LED_Rectangular.Gtk_New (Widget    => LED,
                                          On_Color  => On_Color,
                                          Off_Color => Off_Color);
-      return Gtk.Widget.Gtk_Widget (LED);
+      return LED;
    end New_LED;
 
-   procedure Set_Time (Clock : in Gtk_Box_Digital_Clock_Record;
-                       Time  : in Duration)
+   procedure Set_Time (Clock : in out Gtk_Box_Digital_Clock_Record;
+                       Time  : in     Duration)
    is
       The_Digits : array (Digit_Index) of Valid_Digits;
       Temp       : Glib.Gdouble := Glib.Gdouble (Time);
@@ -99,21 +102,31 @@ package body Gtk.Box.Digital_Clock is
       end loop;
    end Set_Time;
 
-   procedure Write_Digit (This  : in Gtk_Box_Digital_Clock_Record;
-                          Digit : in Digit_Index;
-                          Num   : in Valid_Digits)
+   procedure Write_Digit (This  : in out Gtk_Box_Digital_Clock_Record;
+                          Digit : in     Digit_Index;
+                          Num   : in     Valid_Digits;
+                          Force : in     Boolean := False)
    is
+      Old_Layout   : Single_Digit_7_X_5 renames Digit_Lookup (This.Old_Digits (Digit));
       Digit_Layout : Single_Digit_7_X_5 renames Digit_Lookup (Num);
       use type Glib.Gint;
    begin
-      for X in Digit_Layout'Range (2) loop
-         for Y in Digit_Layout'Range (1) loop
-            Gtk.Gauge.LED_Rectangular.Gtk_Gauge_LED_Rectangular
-              (This.Grid.all.Get_Child_At (Left => Digit_Offset (Digit) + X,
-                                           Top  => Y)).all.
-              Set_State (State => Digit_Layout (Y, X));
+      --  Speed optimization 1: Only change LED state if the digit to be shown
+      --  is different from the previously displayed one.
+      if Force or else This.Old_Digits (Digit) /= Num then
+         for X in Digit_Layout'Range (2) loop
+            for Y in Digit_Layout'Range (1) loop
+               --  Speed optimization 2: Only change state of the LED if it's
+               --  different from the previously shown digit.
+               if Force or else Old_Layout (Y, X) /= Digit_Layout (Y, X) then
+                  This.LED_Matrix (Digit_Offset (Digit) + X, Y).all.Set_State
+                    (State => Digit_Layout (Y, X));
+               end if;
+            end loop;
          end loop;
-      end loop;
+
+         This.Old_Digits (Digit) := Num;
+      end if;
    end Write_Digit;
 
 end Gtk.Box.Digital_Clock;

@@ -1,6 +1,7 @@
 with Gdk.Color;
 with Glib;
 with Gtk.Box;
+with Gtk.Gauge.LED_Rectangular;
 with Gtk.Grid;
 
 package Gtk.Box.Digital_Clock is
@@ -15,30 +16,39 @@ package Gtk.Box.Digital_Clock is
       On_Color  : in Gdk.Color.Gdk_Color;
       Off_Color : in Gdk.Color.Gdk_Color) return Gtk_Box_Digital_Clock;
 
-   procedure Set_Time (Clock : in Gtk_Box_Digital_Clock_Record;
-                       Time  : in Duration);
+   procedure Set_Time (Clock : in out Gtk_Box_Digital_Clock_Record;
+                       Time  : in     Duration);
 
 private
 
-   type Digit_Index is range 1 .. 5;
+   type    Digit_Index  is range 1 .. 5;
    subtype Valid_Digits is Natural range 0 .. 9;
+
+   type Digits_Set is array (Digit_Index) of Valid_Digits;
 
    type LED_Assignment is array (Glib.Gint range <>,
                                  Glib.Gint range <>) of Boolean
      with Pack => True;
 
+   type Dot_Matrix is array (Glib.Gint range <>,
+                             Glib.Gint range <>) of
+     Gtk.Gauge.LED_Rectangular.Gtk_Gauge_LED_Rectangular;
+
    type Gtk_Box_Digital_Clock_Record is new Gtk_Box_Record with
       record
-         Grid : Gtk.Grid.Gtk_Grid;
+         Grid       : Gtk.Grid.Gtk_Grid;
+         Old_Digits : Digits_Set;
+         LED_Matrix : Dot_Matrix (0 .. 32, 0 .. 6);
       end record;
 
-   procedure Write_Digit (This  : in Gtk_Box_Digital_Clock_Record;
-                          Digit : in Digit_Index;
-                          Num   : in Valid_Digits);
+   procedure Write_Digit (This  : in out Gtk_Box_Digital_Clock_Record;
+                          Digit : in     Digit_Index;
+                          Num   : in     Valid_Digits;
+                          Force : in     Boolean := False);
 
    function New_LED (On_Color  : in Gdk.Color.Gdk_Color;
                      Off_Color : in Gdk.Color.Gdk_Color) return not null
-     Gtk.Widget.Gtk_Widget;
+     Gtk.Gauge.LED_Rectangular.Gtk_Gauge_LED_Rectangular;
 
    X : constant Boolean := True;
    O : constant Boolean := False;
