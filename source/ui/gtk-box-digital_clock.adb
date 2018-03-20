@@ -6,9 +6,11 @@ package body Gtk.Box.Digital_Clock is
    use type Glib.Gdouble;
 
    subtype Single_Digit_7_X_5 is LED_Assignment (0 .. 4, 0 .. 6);
+   type Char_Def_String is
+     new String (1 .. Single_Digit_7_X_5'Length (X_Dimension) * Single_Digit_7_X_5'Length (Y_Dimension));
 
-   function "+" (S : in String) return Single_Digit_7_X_5;
-   function "+" (S : in String) return Single_Digit_7_X_5 is
+   function "+" (S : in Char_Def_String) return Single_Digit_7_X_5;
+   function "+" (S : in Char_Def_String) return Single_Digit_7_X_5 is
       Result : Single_Digit_7_X_5;
       X_Width : constant := Result'Length (X_Dimension);
    begin
