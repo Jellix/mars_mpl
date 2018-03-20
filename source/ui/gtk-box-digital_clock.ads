@@ -26,7 +26,7 @@ package Gtk.Box.Digital_Clock is
 
 private
 
-   type    Digit_Index  is range 1 .. 5;
+   type    Digit_Index  is range 1 .. 6; -- H:MM:SS.T
    subtype Valid_Digits is Natural range 0 .. 9;
 
    type Digits_Set is array (Digit_Index) of Valid_Digits;
@@ -45,7 +45,7 @@ private
       record
          Grid       : Gtk.Grid.Gtk_Grid;
          Old_Digits : Digits_Set;
-         LED_Matrix : Dot_Matrix (0 .. 32, 0 .. 6);
+         LED_Matrix : Dot_Matrix (0 .. 40, 0 .. 6);
       end record;
 
    procedure Write_Digit (This  : in out Gtk_Box_Digital_Clock_Record;
@@ -58,6 +58,15 @@ private
      Gtk.Gauge.LED_Rectangular.Gtk_Gauge_LED_Rectangular;
 
    Digit_Offset : constant array (Digit_Index) of Glib.Gint :=
-                    (0, 6, 14, 20, 28);
+                    (0, 8, 14, 22, 28, 36);
+   -- 0         1         2         3         4
+   -- 01234567890123456789012345678901234567890
+   -- .....   ..... .....   ..... .....   .....
+   -- .....   ..... .....   ..... .....   .....
+   -- ..... . ..... ..... . ..... .....   .....
+   -- .....   ..... .....   ..... .....   .....
+   -- ..... . ..... ..... . ..... .....   .....
+   -- .....   ..... .....   ..... .....   .....
+   -- .....   ..... .....   ..... ..... . .....
 
 end Gtk.Box.Digital_Clock;

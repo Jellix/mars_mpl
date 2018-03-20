@@ -180,9 +180,11 @@ package body Gtk.Box.Digital_Clock is
          end loop;
       end loop;
 
-      This.LED_Matrix (12, 2).all.Set_State (State => True);
-      This.LED_Matrix (12, 4).all.Set_State (State => True);
-      This.LED_Matrix (26, 6).all.Set_State (State => True);
+      This.LED_Matrix (6,  2).all.Set_State (State => True);
+      This.LED_Matrix (6,  4).all.Set_State (State => True);
+      This.LED_Matrix (20, 2).all.Set_State (State => True);
+      This.LED_Matrix (20, 4).all.Set_State (State => True);
+      This.LED_Matrix (34, 6).all.Set_State (State => True);
 
       --  Force digits to all zero, so we have a defined state.
       for Digit in Digit_Index'Range loop
@@ -209,11 +211,12 @@ package body Gtk.Box.Digital_Clock is
    is
       Temp       : constant Glib.Gdouble := Glib.Gdouble (Time);
       The_Digits : constant array (Digit_Index) of Valid_Digits :=
-                     (Natural (Glib.Gdouble'Floor (Temp / 600.0)) mod  6,
-                      Natural (Glib.Gdouble'Floor (Temp /  60.0)) mod 10,
-                      Natural (Glib.Gdouble'Floor (Temp /  10.0)) mod  6,
-                      Natural (Glib.Gdouble'Floor (Temp /   1.0)) mod 10,
-                      Natural (Glib.Gdouble'Floor (Temp *  10.0)) mod 10);
+                     (Natural (Glib.Gdouble'Floor (Temp / 3600.0)) mod 10,
+                      Natural (Glib.Gdouble'Floor (Temp /  600.0)) mod  6,
+                      Natural (Glib.Gdouble'Floor (Temp /   60.0)) mod 10,
+                      Natural (Glib.Gdouble'Floor (Temp /   10.0)) mod  6,
+                      Natural (Glib.Gdouble'Floor (Temp /    1.0)) mod 10,
+                      Natural (Glib.Gdouble'Floor (Temp *   10.0)) mod 10);
    begin
       for Digit in Digit_Index'Range loop
          This.Write_Digit (Digit => Digit,
