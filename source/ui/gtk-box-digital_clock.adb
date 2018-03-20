@@ -5,16 +5,16 @@ package body Gtk.Box.Digital_Clock is
 
    use type Glib.Gdouble;
 
-   subtype Single_Digit_7_X_5 is LED_Assignment (0 .. 6, 0 .. 4);
+   subtype Single_Digit_7_X_5 is LED_Assignment (0 .. 4, 0 .. 6);
 
    function "+" (S : in String) return Single_Digit_7_X_5;
    function "+" (S : in String) return Single_Digit_7_X_5 is
       Result : Single_Digit_7_X_5;
    begin
-      for Y in Result'Range (1) loop
-         for X in Result'Range (2) loop
-            Result (Y, X) :=
-              S (S'First + Integer (Y * Result'Length (2) + X)) /= ' ';
+      for X in Result'Range (1) loop
+         for Y in Result'Range (2) loop
+            Result (X, Y) :=
+              S (S'First + Integer (Y * Result'Length (1) + X)) /= ' ';
          end loop;
       end loop;
 
@@ -119,59 +119,71 @@ package body Gtk.Box.Digital_Clock is
       On_Color  : in Gdk.Color.Gdk_Color;
       Off_Color : in Gdk.Color.Gdk_Color) return Gtk_Box_Digital_Clock
    is
-      Clk_Box   : constant Gtk_Box_Digital_Clock :=
+      The_Clock : constant Gtk_Box_Digital_Clock :=
                     new Gtk_Box_Digital_Clock_Record;
+   begin
+      Initialize (This      => The_Clock.all,
+                  Label     => Label,
+                  On_Color  => On_Color,
+                  Off_Color => Off_Color);
+      return The_Clock;
+   end Gtk_New;
+
+   procedure Initialize (This      : in out Gtk_Box_Digital_Clock_Record;
+                         Label     : in Glib.UTF8_String;
+                         On_Color  : in Gdk.Color.Gdk_Color;
+                         Off_Color : in Gdk.Color.Gdk_Color)
+   is
       Clk_Frame : constant Gtk.Frame.Gtk_Frame   :=
                     Gtk.Frame.Gtk_Frame_New (Label => Label);
       The_Grid  : constant Gtk.Grid.Gtk_Grid     := Gtk.Grid.Gtk_Grid_New;
    begin
-      Initialize (Box         => Clk_Box,
-                  Orientation => Gtk.Enums.Orientation_Vertical,
-                  Spacing     => 0);
-      Clk_Box.all.Grid := The_Grid;
+      Gtk.Box.Initialize (Box         => This'Access,
+                          Orientation => Gtk.Enums.Orientation_Vertical,
+                          Spacing     => 0);
+      This.Grid := The_Grid;
 
-      Clk_Box.all.Pack_Start (Child => Clk_Frame,
-                              Expand => False);
-      Clk_Box.all.Pack_End (Child  => Gtk_Hbox_New,
-                            Expand => True);
+      This.Pack_Start (Child => Clk_Frame,
+                       Expand => False);
+      This.Pack_End (Child  => Gtk_Hbox_New,
+                     Expand => True);
       Clk_Frame.all.Add (Widget => The_Grid);
-      The_Grid.all.Set_Size_Request (165, 35);
+      The_Grid.all.Set_Size_Request (Width  => This.LED_Matrix'Length (1) * 5,
+                                     Height => This.LED_Matrix'Length (2) * 5);
       The_Grid.all.Set_Column_Homogeneous (Homogeneous => True);
       The_Grid.all.Set_Column_Spacing (Spacing => 0);
       The_Grid.all.Set_Row_Homogeneous (Homogeneous => True);
       The_Grid.all.Set_Row_Spacing (Spacing => 0);
 
-      for X in Clk_Box.all.LED_Matrix'Range (1) loop
-         The_Grid.all.Insert_Row (Position => X);
+      for X in This.LED_Matrix'Range (1) loop
+         The_Grid.all.Insert_Column (Position => X);
       end loop;
 
-      for Y in Clk_Box.all.LED_Matrix'Range (2) loop
-         The_Grid.all.Insert_Column (Position => Y);
+      for Y in This.LED_Matrix'Range (2) loop
+         The_Grid.all.Insert_Row (Position => Y);
       end loop;
 
-      for X in Clk_Box.all.LED_Matrix'Range (1) loop
-         for Y in Clk_Box.all.LED_Matrix'Range (2) loop
-            Clk_Box.all.LED_Matrix (X, Y) := New_LED (On_Color  => On_Color,
-                                                      Off_Color => Off_Color);
-            The_Grid.all.Attach (Child => Clk_Box.all.LED_Matrix (X, Y),
+      for X in This.LED_Matrix'Range (1) loop
+         for Y in This.LED_Matrix'Range (2) loop
+            This.LED_Matrix (X, Y) := New_LED (On_Color  => On_Color,
+                                               Off_Color => Off_Color);
+            The_Grid.all.Attach (Child => This.LED_Matrix (X, Y),
                                  Left  => X,
                                  Top   => Y);
          end loop;
       end loop;
 
-      Clk_Box.all.LED_Matrix (12, 2).all.Set_State (State => True);
-      Clk_Box.all.LED_Matrix (12, 4).all.Set_State (State => True);
-      Clk_Box.all.LED_Matrix (26, 6).all.Set_State (State => True);
+      This.LED_Matrix (12, 2).all.Set_State (State => True);
+      This.LED_Matrix (12, 4).all.Set_State (State => True);
+      This.LED_Matrix (26, 6).all.Set_State (State => True);
 
       --  Force digits to all zero, so we have a defined state.
       for Digit in Digit_Index'Range loop
-         Clk_Box.all.Write_Digit (Digit => Digit,
-                                  Num   => 0,
-                                  Force => True);
+         This.Write_Digit (Digit => Digit,
+                           Num   => 0,
+                           Force => True);
       end loop;
-
-      return Clk_Box;
-   end Gtk_New;
+   end Initialize;
 
    function New_LED (On_Color  : in Gdk.Color.Gdk_Color;
                      Off_Color : in Gdk.Color.Gdk_Color) return not null
@@ -185,29 +197,20 @@ package body Gtk.Box.Digital_Clock is
       return LED;
    end New_LED;
 
-   procedure Set_Time (Clock : in out Gtk_Box_Digital_Clock_Record;
-                       Time  : in     Duration)
+   procedure Set_Time (This : in out Gtk_Box_Digital_Clock_Record;
+                       Time : in     Duration)
    is
-      The_Digits : array (Digit_Index) of Valid_Digits;
-      Temp       : Glib.Gdouble := Glib.Gdouble (Time);
+      Temp       : constant Glib.Gdouble := Glib.Gdouble (Time);
+      The_Digits : constant array (Digit_Index) of Valid_Digits :=
+                     (Natural (Glib.Gdouble'Floor (Temp / 600.0)) mod  6,
+                      Natural (Glib.Gdouble'Floor (Temp /  60.0)) mod 10,
+                      Natural (Glib.Gdouble'Floor (Temp /  10.0)) mod  6,
+                      Natural (Glib.Gdouble'Floor (Temp /   1.0)) mod 10,
+                      Natural (Glib.Gdouble'Floor (Temp *  10.0)) mod 10);
    begin
-      The_Digits (1) := Natural (Glib.Gdouble'Floor (Temp / 600.0));
-      Temp := Temp - 600.0 * Glib.Gdouble (The_Digits (1));
-
-      The_Digits (2) := Natural (Glib.Gdouble'Floor (Temp / 60.0));
-      Temp := Temp - 60.0 * Glib.Gdouble (The_Digits (2));
-
-      The_Digits (3) := Natural (Glib.Gdouble'Floor (Temp / 10.0));
-      Temp := Temp - 10.0 * Glib.Gdouble (The_Digits (3));
-
-      The_Digits (4) := Natural (Glib.Gdouble'Floor (Temp / 1.0));
-      Temp := Temp - 1.0 * Glib.Gdouble (The_Digits (4));
-
-      The_Digits (5) := Natural (Glib.Gdouble'Floor (Temp * 10.0));
-
       for Digit in Digit_Index'Range loop
-         Clock.Write_Digit (Digit => Digit,
-                            Num   => The_Digits (Digit));
+         This.Write_Digit (Digit => Digit,
+                           Num   => The_Digits (Digit));
       end loop;
    end Set_Time;
 
@@ -216,22 +219,29 @@ package body Gtk.Box.Digital_Clock is
                           Num   : in     Valid_Digits;
                           Force : in     Boolean := False)
    is
-      Old_Layout   : Single_Digit_7_X_5 renames Digit_Lookup (This.Old_Digits (Digit));
-      Digit_Layout : Single_Digit_7_X_5 renames Digit_Lookup (Num);
+      Old_Layout   : Single_Digit_7_X_5 renames
+                       Digit_Lookup (This.Old_Digits (Digit));
+      Digit_Layout : Single_Digit_7_X_5 renames
+                       Digit_Lookup (Num);
       use type Glib.Gint;
    begin
       --  Speed optimization 1: Only change LED state if the digit to be shown
       --  is different from the previously displayed one.
       if Force or else This.Old_Digits (Digit) /= Num then
-         for X in Digit_Layout'Range (2) loop
-            for Y in Digit_Layout'Range (1) loop
-               --  Speed optimization 2: Only change state of the LED if it's
-               --  different from the previously shown digit.
-               if Force or else Old_Layout (Y, X) /= Digit_Layout (Y, X) then
-                  This.LED_Matrix (Digit_Offset (Digit) + X, Y).all.Set_State
-                    (State => Digit_Layout (Y, X));
-               end if;
-            end loop;
+         for X in Digit_Layout'Range (1) loop
+            Set_Column :
+            declare
+               Column : constant Glib.Gint := Digit_Offset (Digit) + X;
+            begin
+               for Y in Digit_Layout'Range (2) loop
+                  --  Speed optimization 2: Only change state of the LED if it's
+                  --  different from the previously shown digit.
+                  if Force or else Old_Layout (X, Y) /= Digit_Layout (X, Y) then
+                     This.LED_Matrix (Column, Y).all.Set_State
+                       (State => Digit_Layout (X, Y));
+                  end if;
+               end loop;
+            end Set_Column;
          end loop;
 
          This.Old_Digits (Digit) := Num;

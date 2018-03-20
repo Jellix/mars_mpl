@@ -16,8 +16,13 @@ package Gtk.Box.Digital_Clock is
       On_Color  : in Gdk.Color.Gdk_Color;
       Off_Color : in Gdk.Color.Gdk_Color) return Gtk_Box_Digital_Clock;
 
-   procedure Set_Time (Clock : in out Gtk_Box_Digital_Clock_Record;
-                       Time  : in     Duration);
+   procedure Initialize (This      : in out Gtk_Box_Digital_Clock_Record;
+                         Label     : in Glib.UTF8_String;
+                         On_Color  : in Gdk.Color.Gdk_Color;
+                         Off_Color : in Gdk.Color.Gdk_Color);
+
+   procedure Set_Time (This : in out Gtk_Box_Digital_Clock_Record;
+                       Time : in     Duration);
 
 private
 
@@ -50,6 +55,7 @@ private
                      Off_Color : in Gdk.Color.Gdk_Color) return not null
      Gtk.Gauge.LED_Rectangular.Gtk_Gauge_LED_Rectangular;
 
-   Digit_Offset : constant array (Digit_Index) of Glib.Gint := (0, 6, 14, 20, 28);
+   Digit_Offset : constant array (Digit_Index) of Glib.Gint :=
+                    (0, 6, 14, 20, 28);
 
 end Gtk.Box.Digital_Clock;
