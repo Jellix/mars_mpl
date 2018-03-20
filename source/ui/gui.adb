@@ -43,20 +43,20 @@ package body GUI is
 
       subtype Color is Gdk.Color.Gdk_Color;
 
-      function RGB (Red   : in Glib.Gdouble;
-                    Green : in Glib.Gdouble;
-                    Blue  : in Glib.Gdouble) return Color
+      function RGB (R : in Glib.Gdouble;
+                    G : in Glib.Gdouble;
+                    B : in Glib.Gdouble) return Color
                     renames Gtk.Missed.RGB;
 
-      Black        : constant Color := RGB (Red => 0.0, Green => 0.0, Blue => 0.0);
-      Blue         : constant Color := RGB (Red => 0.0, Green => 0.0, Blue => 1.0);
-      Light_Yellow : constant Color := RGB (Red => 1.0, Green => 1.0, Blue => 0.5);
-      Green        : constant Color := RGB (Red => 0.0, Green => 1.0, Blue => 0.0);
-      Light_Grey   : constant Color := RGB (Red => 0.9, Green => 0.9, Blue => 0.9);
-      Grey         : constant Color := RGB (Red => 0.5, Green => 0.5, Blue => 0.5);
-      Purple       : constant Color := RGB (Red => 1.0, Green => 0.5, Blue => 0.5);
-      Red          : constant Color := RGB (Red => 1.0, Green => 0.0, Blue => 0.0);
-      White        : constant Color := RGB (Red => 1.0, Green => 1.0, Blue => 1.0);
+      Black        : constant Color := RGB (R => 0.0, G => 0.0, B => 0.0);
+      Blue         : constant Color := RGB (R => 0.0, G => 0.0, B => 1.0);
+      Light_Yellow : constant Color := RGB (R => 1.0, G => 1.0, B => 0.5);
+      Green        : constant Color := RGB (R => 0.0, G => 1.0, B => 0.0);
+      Light_Grey   : constant Color := RGB (R => 0.9, G => 0.9, B => 0.9);
+      Grey         : constant Color := RGB (R => 0.5, G => 0.5, B => 0.5);
+      Purple       : constant Color := RGB (R => 1.0, G => 0.5, B => 0.5);
+      Red          : constant Color := RGB (R => 1.0, G => 0.0, B => 0.0);
+      White        : constant Color := RGB (R => 1.0, G => 1.0, B => 1.0);
 
    end Colors;
 
@@ -195,6 +195,8 @@ package body GUI is
                           Update_State : in Shared_Sensor_Data.State)
    is
       DE : Dynamic_Elements renames Win.Elements;
+      function Touched_Down (Leg : in Shared_Types.Legs_Index) return Boolean is
+         (Update_State.Legs (Leg) = Shared_Types.Touched_Down);
    begin
       --  LEDs
       for Leg in DE.Leg_Led'Range loop
@@ -249,9 +251,10 @@ package body GUI is
             Feed_Leg_Plot :
             declare
                Offset : constant Glib.Gdouble :=
-                          0.3 * Glib.Gdouble (Shared_Types.Legs_Index'Pos (Leg));
+                          0.3 *
+                            Glib.Gdouble (Shared_Types.Legs_Index'Pos (Leg));
                Active : constant Glib.Gdouble :=
-                          0.2 * Glib.Gdouble (Boolean'Pos (Update_State.Legs (Leg) = Shared_Types.Touched_Down));
+                          0.2 * Glib.Gdouble (Boolean'Pos (Touched_Down (Leg)));
             begin
                Plotter.Feed (Channel => Win.Plot.Touchdown_Channel (Leg),
                              V       => Offset + Active,
