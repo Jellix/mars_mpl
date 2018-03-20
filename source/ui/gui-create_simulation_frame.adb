@@ -206,6 +206,7 @@ begin
       Container.all.Pack_Start (Child  => Window.SIMon_Says,
                                 Expand => True);
 
+      Add_Time_And_Sim_Control :
       declare
          Box : constant Gtk.Box.Gtk_Vbox :=
                  Gtk.Box.Gtk_Vbox_New (Homogeneous => False,
@@ -267,7 +268,7 @@ begin
                                  Expand => False);
             end Add_Buttons;
          end Create_Buttons;
-      end;
+      end Add_Time_And_Sim_Control;
    end Add_Widgets_To_Frame;
 
    return Frame;
