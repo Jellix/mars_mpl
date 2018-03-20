@@ -34,6 +34,8 @@ private
    type LED_Assignment is array (Glib.Gint range <>,
                                  Glib.Gint range <>) of Boolean
      with Pack => True;
+   X_Dimension : constant := 1;
+   Y_Dimension : constant := 2;
 
    type Dot_Matrix is array (Glib.Gint range <>,
                              Glib.Gint range <>) of

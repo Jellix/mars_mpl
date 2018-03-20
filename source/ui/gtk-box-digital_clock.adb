@@ -10,12 +10,16 @@ package body Gtk.Box.Digital_Clock is
    function "+" (S : in String) return Single_Digit_7_X_5;
    function "+" (S : in String) return Single_Digit_7_X_5 is
       Result : Single_Digit_7_X_5;
+      X_Width : constant := Result'Length (X_Dimension);
    begin
-      for X in Result'Range (1) loop
-         for Y in Result'Range (2) loop
-            Result (X, Y) :=
-              S (S'First + Integer (Y * Result'Length (1) + X)) /= ' ';
-         end loop;
+      for Y in Result'Range (Y_Dimension) loop
+         declare
+            X_Offset : constant Glib.Gint := Glib.Gint (S'First) + Y * X_Width;
+         begin
+            for X in Result'Range (X_Dimension) loop
+               Result (X, Y) := S (Positive (X_Offset + X)) /= ' ';
+            end loop;
+         end;
       end loop;
 
       return Result;
@@ -148,23 +152,24 @@ package body Gtk.Box.Digital_Clock is
       This.Pack_End (Child  => Gtk_Hbox_New,
                      Expand => True);
       Clk_Frame.all.Add (Widget => The_Grid);
-      The_Grid.all.Set_Size_Request (Width  => This.LED_Matrix'Length (1) * 5,
-                                     Height => This.LED_Matrix'Length (2) * 5);
+      The_Grid.all.Set_Size_Request
+        (Width  => This.LED_Matrix'Length (X_Dimension) * 5,
+         Height => This.LED_Matrix'Length (Y_Dimension) * 5);
       The_Grid.all.Set_Column_Homogeneous (Homogeneous => True);
       The_Grid.all.Set_Column_Spacing (Spacing => 0);
       The_Grid.all.Set_Row_Homogeneous (Homogeneous => True);
       The_Grid.all.Set_Row_Spacing (Spacing => 0);
 
-      for X in This.LED_Matrix'Range (1) loop
+      for X in This.LED_Matrix'Range (X_Dimension) loop
          The_Grid.all.Insert_Column (Position => X);
       end loop;
 
-      for Y in This.LED_Matrix'Range (2) loop
+      for Y in This.LED_Matrix'Range (Y_Dimension) loop
          The_Grid.all.Insert_Row (Position => Y);
       end loop;
 
-      for X in This.LED_Matrix'Range (1) loop
-         for Y in This.LED_Matrix'Range (2) loop
+      for X in This.LED_Matrix'Range (X_Dimension) loop
+         for Y in This.LED_Matrix'Range (Y_Dimension) loop
             This.LED_Matrix (X, Y) := New_LED (On_Color  => On_Color,
                                                Off_Color => Off_Color);
             The_Grid.all.Attach (Child => This.LED_Matrix (X, Y),
@@ -228,12 +233,12 @@ package body Gtk.Box.Digital_Clock is
       --  Speed optimization 1: Only change LED state if the digit to be shown
       --  is different from the previously displayed one.
       if Force or else This.Old_Digits (Digit) /= Num then
-         for X in Digit_Layout'Range (1) loop
+         for X in Digit_Layout'Range (X_Dimension) loop
             Set_Column :
             declare
                Column : constant Glib.Gint := Digit_Offset (Digit) + X;
             begin
-               for Y in Digit_Layout'Range (2) loop
+               for Y in Digit_Layout'Range (Y_Dimension) loop
                   --  Speed optimization 2: Only change state of the LED if it's
                   --  different from the previously shown digit.
                   if Force or else Old_Layout (X, Y) /= Digit_Layout (X, Y) then
