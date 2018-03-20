@@ -1,4 +1,3 @@
-with Gtk.Box.Digital_Clock;
 with Gtk.Frame;
 with Gtk.Missed;
 
@@ -9,9 +8,7 @@ function Create_Timeline_Frame
 is
    Frame : constant Gtk.Frame.Gtk_Frame :=
              Gtk.Frame.Gtk_Frame_New (Label => "Timeline");
-   Box   : constant Gtk.Box.Gtk_Hbox := Gtk.Box.Gtk_Hbox_New;
 begin
-   Frame.all.Add (Widget => Box);
    Frame.all.Set_Size_Request (Width  => 600,
                                Height => 200);
 
@@ -24,8 +21,7 @@ begin
       --  A typical simulation runs about 70s. With 100 datapoints/s this
       --  amounts to roughly 7000 distinct data points, thus the default buffer
       --  size of ~60_000 should easily be enough.
-      Box.all.Pack_Start (Child  => Scope,
-                          Expand => True);
+      Frame.all.Add (Widget => Scope);
 
       Scope.all.Set_Manual_Sweep (Enable => False);
 
@@ -98,20 +94,6 @@ begin
    end Add_Plots;
 
    Reset_Timeline (Plot => Window.Plot);
-
-   Add_Mission_Clock :
-   declare
-      Mission_Clock : constant Gtk.Box.Digital_Clock.Gtk_Box_Digital_Clock :=
-                        Gtk.Box.Digital_Clock.Gtk_New
-                          (Label     => "Mission Clock",
-                           On_Color  => Colors.Black,
-                           Off_Color => Colors.White);
-   begin
-      Window.Mission_Clock := Mission_Clock;
-      Box.all.Pack_End
-        (Child  => Mission_Clock,
-         Expand => False);
-   end Add_Mission_Clock;
 
    return Frame;
 end Create_Timeline_Frame;

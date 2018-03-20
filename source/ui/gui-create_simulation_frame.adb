@@ -206,44 +206,68 @@ begin
       Container.all.Pack_Start (Child  => Window.SIMon_Says,
                                 Expand => True);
 
-      Create_Buttons :
       declare
-         Start_Button : constant Gtk.Button.Gtk_Button :=
-                          Gtk.Button.Gtk_Button_New_With_Label
-                            (Label => "Start");
-         Abort_Button : constant Gtk.Button.Gtk_Button :=
-                          Gtk.Button.Gtk_Button_New_With_Label
-                            (Label => "Abort");
-         Exit_Button  : constant Gtk.Button.Gtk_Button :=
-                          Gtk.Button.Gtk_Button_New_With_Label
-                            (Label => "Exit");
+         Box : constant Gtk.Box.Gtk_Vbox :=
+                 Gtk.Box.Gtk_Vbox_New (Homogeneous => False,
+                                       Spacing     => 0);
       begin
-         Window.Start_Button := Start_Button;
-         Window.Abort_Button := Abort_Button;
+         Container.all.Pack_Start (Child  => Box,
+                                   Expand => False);
 
-         Start_Button.all.On_Clicked (Call  => Callbacks.SIM_Start'Access,
-                                      After => True);
-         Abort_Button.all.On_Clicked (Call  => Callbacks.SIM_Abort'Access,
-                                      After => True);
-         Exit_Button.all.On_Clicked (Call  => Callbacks.Exit_Main'Access,
-                                     After => True);
-
-         Add_Buttons :
+         Add_Mission_Clock :
          declare
-            Button_Box : constant Gtk.Button_Box.Gtk_Button_Box :=
-                           Gtk.Button_Box.Gtk_Button_Box_New
-                             (Orientation => Gtk.Enums.Orientation_Horizontal);
+            Mission_Clock : constant
+              Gtk.Box.Digital_Clock.Gtk_Box_Digital_Clock :=
+                Gtk.Box.Digital_Clock.Gtk_New (Label     => "Mission Clock",
+                                               On_Color  => Colors.Black,
+                                               Off_Color => Colors.White);
          begin
-            Button_Box.all.Pack_Start (Child  => Start_Button,
-                                       Expand => False);
-            Button_Box.all.Pack_Start (Child  => Abort_Button,
-                                       Expand => False);
-            Button_Box.all.Pack_Start (Child  => Exit_Button,
-                                       Expand => False);
-            Container.all.Pack_End (Child  => Button_Box,
-                                    Expand => False);
-         end Add_Buttons;
-      end Create_Buttons;
+            Window.Mission_Clock := Mission_Clock;
+            Box.all.Pack_Start
+              (Child  => Mission_Clock,
+               Expand => False);
+         end Add_Mission_Clock;
+
+         Create_Buttons :
+         declare
+            Start_Button : constant Gtk.Button.Gtk_Button :=
+                             Gtk.Button.Gtk_Button_New_With_Label
+                               (Label => "Start");
+            Abort_Button : constant Gtk.Button.Gtk_Button :=
+                             Gtk.Button.Gtk_Button_New_With_Label
+                               (Label => "Abort");
+            Exit_Button  : constant Gtk.Button.Gtk_Button :=
+                             Gtk.Button.Gtk_Button_New_With_Label
+                               (Label => "Exit");
+         begin
+            Window.Start_Button := Start_Button;
+            Window.Abort_Button := Abort_Button;
+
+            Start_Button.all.On_Clicked (Call  => Callbacks.SIM_Start'Access,
+                                         After => True);
+            Abort_Button.all.On_Clicked (Call  => Callbacks.SIM_Abort'Access,
+                                         After => True);
+            Exit_Button.all.On_Clicked (Call  => Callbacks.Exit_Main'Access,
+                                        After => True);
+
+            Add_Buttons :
+            declare
+               Button_Box : constant Gtk.Button_Box.Gtk_Button_Box :=
+                              Gtk.Button_Box.Gtk_Button_Box_New
+                                (Orientation =>
+                                   Gtk.Enums.Orientation_Horizontal);
+            begin
+               Button_Box.all.Pack_Start (Child  => Start_Button,
+                                          Expand => False);
+               Button_Box.all.Pack_Start (Child  => Abort_Button,
+                                          Expand => False);
+               Button_Box.all.Pack_Start (Child  => Exit_Button,
+                                          Expand => False);
+               Box.all.Pack_End (Child  => Button_Box,
+                                 Expand => False);
+            end Add_Buttons;
+         end Create_Buttons;
+      end;
    end Add_Widgets_To_Frame;
 
    return Frame;
