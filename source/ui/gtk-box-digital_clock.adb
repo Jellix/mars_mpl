@@ -164,12 +164,9 @@ package body Gtk.Box.Digital_Clock is
       This.Pack_End (Child  => Gtk_Hbox_New,
                      Expand => True);
       Clk_Frame.all.Add (Widget => The_Grid);
-      The_Grid.all.Set_Size_Request
-        (Width  => This.LED_Matrix'Length (X_Dimension) * 5,
-         Height => This.LED_Matrix'Length (Y_Dimension) * 5);
-      The_Grid.all.Set_Column_Homogeneous (Homogeneous => True);
+      The_Grid.all.Set_Column_Homogeneous (Homogeneous => False);
       The_Grid.all.Set_Column_Spacing (Spacing => 0);
-      The_Grid.all.Set_Row_Homogeneous (Homogeneous => True);
+      The_Grid.all.Set_Row_Homogeneous (Homogeneous => False);
       The_Grid.all.Set_Row_Spacing (Spacing => 0);
 
       for X in This.LED_Matrix'Range (X_Dimension) loop
@@ -185,29 +182,38 @@ package body Gtk.Box.Digital_Clock is
          Row_Loop :
          for Y in This.LED_Matrix'Range (Y_Dimension) loop
             This.LED_Matrix (X, Y) := New_LED (On_Color  => On_Color,
-                                               Off_Color => Off_Color);
+                                               Off_Color => Off_Color,
+                                               Size      => 7);
             The_Grid.all.Attach (Child => This.LED_Matrix (X, Y),
                                  Left  => Glib.Gint (X),
                                  Top   => Glib.Gint (Y));
          end loop Row_Loop;
       end loop Column_Loop;
 
+      --  Colon between hour and minutes.
       This.LED_Matrix (1 * Char_Width + 1, 2).all.Set_State (State => True);
       This.LED_Matrix (1 * Char_Width + 1, 4).all.Set_State (State => True);
+
+      --  Colon between minutes and seconds.
       This.LED_Matrix (3 * Char_Width + 5, 2).all.Set_State (State => True);
       This.LED_Matrix (3 * Char_Width + 5, 4).all.Set_State (State => True);
+
+      --  Decimal point between seconds and tenth seconds.
       This.LED_Matrix (5 * Char_Width + 9, 6).all.Set_State (State => True);
 
       --  Force digits to all zero, so we have a defined state.
       for Digit in Digit_Index'Range loop
+         This.Old_Digits (Digit) := 9; --  Preset a different digit than the one
+                                       --  we're writing to defeat the draw
+                                       --  optimization.
          This.Write_Digit (Digit => Digit,
-                           Num   => 0,
-                           Force => True);
+                           Num   => 0);
       end loop;
    end Initialize;
 
    function New_LED (On_Color  : in Gdk.Color.Gdk_Color;
-                     Off_Color : in Gdk.Color.Gdk_Color) return not null
+                     Off_Color : in Gdk.Color.Gdk_Color;
+                     Size      : in Glib.Gint) return not null
      Gtk.Gauge.LED_Rectangular.Gtk_Gauge_LED_Rectangular
    is
       LED : Gtk.Gauge.LED_Rectangular.Gtk_Gauge_LED_Rectangular;
@@ -215,6 +221,9 @@ package body Gtk.Box.Digital_Clock is
       Gtk.Gauge.LED_Rectangular.Gtk_New (Widget    => LED,
                                          On_Color  => On_Color,
                                          Off_Color => Off_Color);
+      LED.all.Set_Size_Request (Width  => Size,
+                                Height => Size);
+
       return LED;
    end New_LED;
 
@@ -239,16 +248,14 @@ package body Gtk.Box.Digital_Clock is
 
    procedure Write_Digit (This  : in out Gtk_Box_Digital_Clock_Record;
                           Digit : in     Digit_Index;
-                          Num   : in     Valid_Digits;
-                          Force : in     Boolean := False)
+                          Num   : in     Valid_Digits)
    is
-      Old_Layout   : Char_7_X_5 renames Digit_Lookup (This.Old_Digits (Digit));
       Digit_Layout : Char_7_X_5 renames Digit_Lookup (Num);
       use type Glib.Gint;
    begin
       --  Speed optimization 1: Only change LED state if the digit to be shown
       --  is different from the previously displayed one.
-      if Force or else This.Old_Digits (Digit) /= Num then
+      if This.Old_Digits (Digit) /= Num then
          Column_Loop :
          for X in Digit_Layout'Range (X_Dimension) loop
             Set_Column :
@@ -257,14 +264,11 @@ package body Gtk.Box.Digital_Clock is
             begin
                Row_Loop :
                for Y in Digit_Layout'Range (Y_Dimension) loop
-                  --  Speed optimization 2: Only change state of the LED if it's
-                  --  different from the previously shown digit.
-                  if
-                    Force or else (Old_Layout (X, Y) xor Digit_Layout (X, Y))
-                  then
-                     This.LED_Matrix (Column, Y).all.Set_State
-                       (State => Digit_Layout (X, Y));
-                  end if;
+                  --  No speed optmization here. LED.Set_State already takes
+                  --  care of state changes. It is believed (*not* measured)
+                  --  that additional, prior checks only slow us down.
+                  This.LED_Matrix (Column, Y).all.Set_State
+                    (State => Digit_Layout (X, Y));
                end loop Row_Loop;
             end Set_Column;
          end loop Column_Loop;

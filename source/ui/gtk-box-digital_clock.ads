@@ -54,11 +54,11 @@ private
 
    procedure Write_Digit (This  : in out Gtk_Box_Digital_Clock_Record;
                           Digit : in     Digit_Index;
-                          Num   : in     Valid_Digits;
-                          Force : in     Boolean := False);
+                          Num   : in     Valid_Digits);
 
    function New_LED (On_Color  : in Gdk.Color.Gdk_Color;
-                     Off_Color : in Gdk.Color.Gdk_Color) return not null
+                     Off_Color : in Gdk.Color.Gdk_Color;
+                     Size      : in Glib.Gint) return not null
      Gtk.Gauge.LED_Rectangular.Gtk_Gauge_LED_Rectangular;
 
    type Offset_List is array (Digit_Index) of Natural;
