@@ -1,7 +1,7 @@
 with Gdk.Color;
 with Glib;
 with Gtk.Box;
-with Gtk.Gauge.LED_Rectangular;
+with Gtk.Gauge.Dot_Matrix;
 with Gtk.Grid;
 
 package Gtk.Box.Digital_Clock is
@@ -42,7 +42,7 @@ private
 
    type Dot_Matrix is array (Natural range <>,
                              Natural range <>) of
-     Gtk.Gauge.LED_Rectangular.Gtk_Gauge_LED_Rectangular;
+     Gtk.Gauge.Dot_Matrix.Gtk_Gauge_Dot_Matrix;
 
    type Gtk_Box_Digital_Clock_Record is new Gtk_Box_Record with
       record
@@ -59,7 +59,7 @@ private
    function New_LED (On_Color  : in Gdk.Color.Gdk_Color;
                      Off_Color : in Gdk.Color.Gdk_Color;
                      Size      : in Glib.Gint) return not null
-     Gtk.Gauge.LED_Rectangular.Gtk_Gauge_LED_Rectangular;
+     Gtk.Gauge.Dot_Matrix.Gtk_Gauge_Dot_Matrix;
 
    type Offset_List is array (Digit_Index) of Natural;
 

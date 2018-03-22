@@ -214,13 +214,13 @@ package body Gtk.Box.Digital_Clock is
    function New_LED (On_Color  : in Gdk.Color.Gdk_Color;
                      Off_Color : in Gdk.Color.Gdk_Color;
                      Size      : in Glib.Gint) return not null
-     Gtk.Gauge.LED_Rectangular.Gtk_Gauge_LED_Rectangular
+     Gtk.Gauge.Dot_Matrix.Gtk_Gauge_Dot_Matrix
    is
-      LED : Gtk.Gauge.LED_Rectangular.Gtk_Gauge_LED_Rectangular;
+      LED : Gtk.Gauge.Dot_Matrix.Gtk_Gauge_Dot_Matrix;
    begin
-      Gtk.Gauge.LED_Rectangular.Gtk_New (Widget    => LED,
-                                         On_Color  => On_Color,
-                                         Off_Color => Off_Color);
+      Gtk.Gauge.Dot_Matrix.Gtk_New (This      => LED,
+                                    On_Color  => On_Color,
+                                    Off_Color => Off_Color);
       LED.all.Set_Size_Request (Width  => Size,
                                 Height => Size);
 
