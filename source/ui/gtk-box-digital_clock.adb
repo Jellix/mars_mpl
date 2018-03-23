@@ -4,12 +4,17 @@ with Gtk.Frame;
 package body Gtk.Box.Digital_Clock is
 
    use type Glib.Gdouble;
+   use type Gtk.Gauge.Dot_Matrix.Col_Index;
+   use type Gtk.Gauge.Dot_Matrix.Row_Index;
 
    Char_Width  : constant := 5;
    Char_Height : constant := 7;
 
-   subtype Char_Width_Index  is Natural range 0 .. Char_Width  - 1;
-   subtype Char_Height_Index is Natural range 0 .. Char_Height - 1;
+   subtype Char_Width_Index is
+     Gtk.Gauge.Dot_Matrix.Col_Index range 1 .. Char_Width;
+
+   subtype Char_Height_Index is
+     Gtk.Gauge.Dot_Matrix.Row_Index range 1 .. Char_Height;
 
    subtype Char_7_X_5 is LED_Assignment (Char_Width_Index'Range,
                                          Char_Height_Index'Range);
@@ -25,11 +30,14 @@ package body Gtk.Box.Digital_Clock is
       for Y in Result'Range (Y_Dimension) loop
          Convert_Row :
          declare
-            X_Offset : constant Positive := S'First + Y * X_Width;
+            X_Offset : constant Positive :=
+                         S'First +
+                           Natural ((Y - Result'First (Y_Dimension)) * X_Width);
          begin
             Row_Loop :
             for X in Result'Range (X_Dimension) loop
-               Result (X, Y) := S (X_Offset + X) /= ' ';
+               Result (X, Y) :=
+                 S (X_Offset + Natural (X - Result'First (X_Dimension))) /= ' ';
             end loop Row_Loop;
          end Convert_Row;
       end loop Column_Loop;
@@ -152,54 +160,44 @@ package body Gtk.Box.Digital_Clock is
    is
       Clk_Frame : constant Gtk.Frame.Gtk_Frame   :=
                     Gtk.Frame.Gtk_Frame_New (Label => Label);
-      The_Grid  : constant Gtk.Grid.Gtk_Grid     := Gtk.Grid.Gtk_Grid_New;
    begin
       Gtk.Box.Initialize (Box         => This'Access,
                           Orientation => Gtk.Enums.Orientation_Vertical,
                           Spacing     => 0);
-      This.Grid := The_Grid;
+      Gtk.Gauge.Dot_Matrix.Gtk_New (This      => This.LED_Matrix,
+                                    Columns   => Matrix_Width'Last,
+                                    Rows      => Matrix_Height'Last,
+                                    On_Color  => On_Color,
+                                    Off_Color => Off_Color);
 
-      This.Pack_Start (Child => Clk_Frame,
-                       Expand => False);
-      This.Pack_End (Child  => Gtk_Hbox_New,
-                     Expand => True);
-      Clk_Frame.all.Add (Widget => The_Grid);
-      The_Grid.all.Set_Column_Homogeneous (Homogeneous => False);
-      The_Grid.all.Set_Column_Spacing (Spacing => 0);
-      The_Grid.all.Set_Row_Homogeneous (Homogeneous => False);
-      The_Grid.all.Set_Row_Spacing (Spacing => 0);
+      This.LED_Matrix.all.Set_Size_Request
+        (Width  => Glib.Gint (Matrix_Width'Last * 5),
+         Height => Glib.Gint (Matrix_Height'Last * 5));
 
-      for X in This.LED_Matrix'Range (X_Dimension) loop
-         The_Grid.all.Insert_Column (Position => Glib.Gint (X));
-      end loop;
-
-      for Y in This.LED_Matrix'Range (Y_Dimension) loop
-         The_Grid.all.Insert_Row (Position => Glib.Gint (Y));
-      end loop;
-
-      Column_Loop :
-      for X in This.LED_Matrix'Range (X_Dimension) loop
-         Row_Loop :
-         for Y in This.LED_Matrix'Range (Y_Dimension) loop
-            This.LED_Matrix (X, Y) := New_LED (On_Color  => On_Color,
-                                               Off_Color => Off_Color,
-                                               Size      => 7);
-            The_Grid.all.Attach (Child => This.LED_Matrix (X, Y),
-                                 Left  => Glib.Gint (X),
-                                 Top   => Glib.Gint (Y));
-         end loop Row_Loop;
-      end loop Column_Loop;
+      This.Pack_Start (Child  => Clk_Frame,
+                       Expand => True);
+      Clk_Frame.all.Add (Widget => This.LED_Matrix);
 
       --  Colon between hour and minutes.
-      This.LED_Matrix (1 * Char_Width + 1, 2).all.Set_State (State => True);
-      This.LED_Matrix (1 * Char_Width + 1, 4).all.Set_State (State => True);
+      This.LED_Matrix.all.Set_State (Column => 1 * Char_Width + 1,
+                                     Row    => 2,
+                                     State  => True);
+      This.LED_Matrix.all.Set_State (Column => 1 * Char_Width + 1,
+                                     Row    => 4,
+                                     State  => True);
 
       --  Colon between minutes and seconds.
-      This.LED_Matrix (3 * Char_Width + 5, 2).all.Set_State (State => True);
-      This.LED_Matrix (3 * Char_Width + 5, 4).all.Set_State (State => True);
+      This.LED_Matrix.all.Set_State (Column => 3 * Char_Width + 5,
+                                     Row    => 2,
+                                     State  => True);
+      This.LED_Matrix.all.Set_State (Column => 3 * Char_Width + 5,
+                                     Row    => 4,
+                                     State  => True);
 
       --  Decimal point between seconds and tenth seconds.
-      This.LED_Matrix (5 * Char_Width + 9, 6).all.Set_State (State => True);
+      This.LED_Matrix.all.Set_State (Column => 5 * Char_Width + 9,
+                                     Row    => 6,
+                                     State  => True);
 
       --  Force digits to all zero, so we have a defined state.
       for Digit in Digit_Index'Range loop
@@ -210,22 +208,6 @@ package body Gtk.Box.Digital_Clock is
                            Num   => 0);
       end loop;
    end Initialize;
-
-   function New_LED (On_Color  : in Gdk.Color.Gdk_Color;
-                     Off_Color : in Gdk.Color.Gdk_Color;
-                     Size      : in Glib.Gint) return not null
-     Gtk.Gauge.Dot_Matrix.Gtk_Gauge_Dot_Matrix
-   is
-      LED : Gtk.Gauge.Dot_Matrix.Gtk_Gauge_Dot_Matrix;
-   begin
-      Gtk.Gauge.Dot_Matrix.Gtk_New (This      => LED,
-                                    On_Color  => On_Color,
-                                    Off_Color => Off_Color);
-      LED.all.Set_Size_Request (Width  => Size,
-                                Height => Size);
-
-      return LED;
-   end New_LED;
 
    procedure Set_Time (This : in out Gtk_Box_Digital_Clock_Record;
                        Time : in     Duration)
@@ -260,15 +242,17 @@ package body Gtk.Box.Digital_Clock is
          for X in Digit_Layout'Range (X_Dimension) loop
             Set_Column :
             declare
-               Column : constant Natural := Digit_Offset (Digit) + X;
+               Column : constant Gtk.Gauge.Dot_Matrix.Col_Index :=
+                          Digit_Offset (Digit) + X;
             begin
                Row_Loop :
                for Y in Digit_Layout'Range (Y_Dimension) loop
                   --  No speed optmization here. LED.Set_State already takes
                   --  care of state changes. It is believed (*not* measured)
                   --  that additional, prior checks only slow us down.
-                  This.LED_Matrix (Column, Y).all.Set_State
-                    (State => Digit_Layout (X, Y));
+                  This.LED_Matrix.all.Set_State (Column => Column,
+                                                 Row    => Y,
+                                                 State  => Digit_Layout (X, Y));
                end loop Row_Loop;
             end Set_Column;
          end loop Column_Loop;

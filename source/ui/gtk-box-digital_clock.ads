@@ -2,7 +2,6 @@ with Gdk.Color;
 with Glib;
 with Gtk.Box;
 with Gtk.Gauge.Dot_Matrix;
-with Gtk.Grid;
 
 package Gtk.Box.Digital_Clock is
 
@@ -31,37 +30,28 @@ private
 
    type Digits_Set is array (Digit_Index) of Valid_Digits;
 
-   type LED_Assignment is array (Natural range <>,
-                                 Natural range <>) of Boolean
+   type LED_Assignment is
+     array (Gtk.Gauge.Dot_Matrix.Col_Index range <>,
+            Gtk.Gauge.Dot_Matrix.Row_Index range <>) of Boolean
      with Pack => True;
+
    X_Dimension : constant := 1;
    Y_Dimension : constant := 2;
 
-   subtype Matrix_Width  is Natural range 0 .. 40;
-   subtype Matrix_Height is Natural range 0 .. 6;
-
-   type Dot_Matrix is array (Natural range <>,
-                             Natural range <>) of
-     Gtk.Gauge.Dot_Matrix.Gtk_Gauge_Dot_Matrix;
+   subtype Matrix_Width  is Gtk.Gauge.Dot_Matrix.Col_Index range 1 .. 41;
+   subtype Matrix_Height is Gtk.Gauge.Dot_Matrix.Row_Index range 1 ..  7;
 
    type Gtk_Box_Digital_Clock_Record is new Gtk_Box_Record with
       record
-         Grid       : Gtk.Grid.Gtk_Grid;
          Old_Digits : Digits_Set;
-         LED_Matrix : Dot_Matrix (Matrix_Width'Range,
-                                  Matrix_Height'Range);
+         LED_Matrix : Gtk.Gauge.Dot_Matrix.Gtk_Gauge_Dot_Matrix;
       end record;
 
    procedure Write_Digit (This  : in out Gtk_Box_Digital_Clock_Record;
                           Digit : in     Digit_Index;
                           Num   : in     Valid_Digits);
 
-   function New_LED (On_Color  : in Gdk.Color.Gdk_Color;
-                     Off_Color : in Gdk.Color.Gdk_Color;
-                     Size      : in Glib.Gint) return not null
-     Gtk.Gauge.Dot_Matrix.Gtk_Gauge_Dot_Matrix;
-
-   type Offset_List is array (Digit_Index) of Natural;
+   type Offset_List is array (Digit_Index) of Gtk.Gauge.Dot_Matrix.Col_Count;
 
    -- 0         1         2         3         4
    -- 01234567890123456789012345678901234567890

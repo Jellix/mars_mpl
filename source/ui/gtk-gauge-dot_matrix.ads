@@ -2,8 +2,6 @@ with Cairo;
 with Gdk.Color;
 with Gtk.Enums;
 with Gtk.Layered.Cache;
-with Gtk.Layered.Elliptic_Background;
-with Gtk.Layered.Line;
 with Gtk.Layered.Rectangular_Background;
 with Gtk.Missed;
 
@@ -13,6 +11,12 @@ package Gtk.Gauge.Dot_Matrix is
    -- Class_Name - Of the widget
    --
    Class_Name : constant String := "GtkGaugeDotMatrix";
+
+   --
+   type Row_Index is new Glib.Gint range 1 .. Glib.Gint'Last;
+
+   type    Col_Count is new Glib.Gint range 0 .. Glib.Gint'Last;
+   subtype Col_Index is Col_Count     range 1 .. Col_Count'Last;
 
    --
    -- Gtk_Gauge_Dot_Matrix -- Dot Matrix Display
@@ -57,8 +61,10 @@ package Gtk.Gauge.Dot_Matrix is
    --
    procedure Gtk_New
      (This          :    out Gtk_Gauge_Dot_Matrix;
-      On_Color      : in     Gdk.Color.Gdk_Color       := Gtk.Missed.RGB (0.0, 1.0, 0.0);
-      Off_Color     : in     Gdk.Color.Gdk_Color       := Gtk.Missed.RGB (0.5, 0.5, 0.5);
+      Columns       : in     Col_Index;
+      Rows          : in     Row_Index;
+      On_Color      : in     Gdk.Color.Gdk_Color       := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Off_Color     : in     Gdk.Color.Gdk_Color       := Gtk.Missed.RGB (1.0, 1.0, 1.0);
       Border_Shadow : in     Gtk.Enums.Gtk_Shadow_Type := Gtk.Enums.Shadow_In);
 
    --
@@ -71,9 +77,11 @@ package Gtk.Gauge.Dot_Matrix is
    --
    procedure Initialize
      (This          : not null access Gtk_Gauge_Dot_Matrix_Record'Class;
-      On_Color      : Gdk.Color.Gdk_Color;
-      Off_Color     : Gdk.Color.Gdk_Color;
-      Border_Shadow : Gtk.Enums.Gtk_Shadow_Type);
+      Columns       : in              Col_Index;
+      Rows          : in              Row_Index;
+      On_Color      : in              Gdk.Color.Gdk_Color;
+      Off_Color     : in              Gdk.Color.Gdk_Color;
+      Border_Shadow : in              Gtk.Enums.Gtk_Shadow_Type);
 
    --
    -- Get_Background -- The display's background
@@ -122,8 +130,9 @@ package Gtk.Gauge.Dot_Matrix is
    --    The current state of the widget
    --
    function Get_State
-     (This : not null access Gtk_Gauge_Dot_Matrix_Record) return Boolean;
-   --  TODO: Extent with X/Y coordinates
+     (This   : not null access Gtk_Gauge_Dot_Matrix_Record;
+      Column : in              Col_Index;
+      Row    : in              Row_Index) return Boolean;
 
    --
    -- Set_Colors -- Change the colors
@@ -150,27 +159,40 @@ package Gtk.Gauge.Dot_Matrix is
    -- is task safe.
    --
    procedure Set_State
-     (This  : not null access Gtk_Gauge_Dot_Matrix_Record;
-      State : in              Boolean);
-   --  TODO: Extent with X/Y coordinates
+     (This   : not null access Gtk_Gauge_Dot_Matrix_Record;
+      Column : in              Col_Index;
+      Row    : in              Row_Index;
+      State  : in              Boolean);
 
    overriding procedure Refresh
      (This    : not null access Gtk_Gauge_Dot_Matrix_Record;
       Context : in              Cairo.Cairo_Context);
 
+   overriding procedure Finalize
+     (This : in out Gtk_Gauge_Dot_Matrix_Record);
+
 private
+
+   type State_Array is array (Col_Index range <>,
+                              Row_Index range <>) of Boolean
+     with Atomic_Components => True;
+   type States is access State_Array;
+
+   type Dotted_Matrix_Array is array (Col_Index range <>,
+                                      Row_Index range <>) of
+     access Gtk.Layered.Abstract_Layer'Class;
+   type Dotted_Matrix is access Dotted_Matrix_Array;
 
    type Gtk_Gauge_Dot_Matrix_Record is
      new Gtk.Layered.Gtk_Layered_Record with
       record
          Background : access Gtk.Layered.Rectangular_Background.Rectangular_Background_Layer;
-         Dot        : access Gtk.Layered.Elliptic_Background.Elliptic_Background_Layer;
          Cache      : access Gtk.Layered.Cache.Cache_Layer;
-         State      : Boolean := False;
+         Dots       : Dotted_Matrix;
+         State      : States;
          Toggled    : Boolean := False;
          On         : Gdk.Color.Gdk_Color;
          Off        : Gdk.Color.Gdk_Color;
-         pragma Atomic (State);
          pragma Atomic (Toggled);
       end record;
 
