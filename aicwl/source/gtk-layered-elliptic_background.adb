@@ -436,8 +436,8 @@ package body Gtk.Layered.Elliptic_Background is
             when Property_Shape =>
                return
                  Gtk.Layered.Elliptic_Shape_Property.Gnew_Enum
-                   (Name    => "backround-shape",
-                    Nick    => "backround shape",
+                   (Name    => "background-shape",
+                    Nick    => "background shape",
                     Default => Bagel,
                     Blurb   => "The shape of the background");
             when Property_Inner_Center_X =>

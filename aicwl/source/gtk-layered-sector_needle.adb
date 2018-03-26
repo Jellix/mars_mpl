@@ -922,8 +922,7 @@ package body Gtk.Layered.Sector_Needle is
                       (Layer.Outer.Angle, 2.0 * Ada.Numerics.Pi);
                end if;
             when Property_Shape =>
-               case Gtk.Layered.
-                       Elliptic_Shape_Property.Get_Enum (Value) is
+               case Gtk.Layered.Elliptic_Shape_Property.Get_Enum (Value) is
                   when Bagel =>
                      Layer.Inner :=
                        (Shape => Bagel,
