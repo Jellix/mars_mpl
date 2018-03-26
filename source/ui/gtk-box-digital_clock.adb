@@ -217,18 +217,20 @@ package body Gtk.Box.Digital_Clock is
                                            State  => True);
          end loop;
 
-         for I in 1 .. 2 loop
+         Draw_Legs :
+         for I in Gtk.Gauge.Dot_Matrix.Col_Index range 1 .. 2 loop
             X := X + 1;
             This.LED_Matrix.all.Set_State (Column => X,
                                            Row    => 5,
                                            State  => True);
             X := X + 1;
+            Draw_Leg :
             for Y in Gtk.Gauge.Dot_Matrix.Row_Index range 6 .. 7 loop
                This.LED_Matrix.all.Set_State (Column => X,
                                               Row    => Y,
                                               State  => True);
-            end loop;
-         end loop;
+            end loop Draw_Leg;
+         end loop Draw_Legs;
       end Draw_M;
 
       --  Decimal point between seconds and tenth seconds.
