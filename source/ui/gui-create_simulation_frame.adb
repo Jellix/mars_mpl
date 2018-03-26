@@ -220,6 +220,7 @@ begin
             Mission_Clock : constant
               Gtk.Box.Digital_Clock.Gtk_Box_Digital_Clock :=
                 Gtk.Box.Digital_Clock.Gtk_New (Label     => "Mission Clock",
+                                               BG_Color  => Colors.Light_Grey,
                                                On_Color  => Colors.Black,
                                                Off_Color => Colors.White);
          begin

@@ -1,6 +1,5 @@
 with Cairo;
 with Gdk.Color;
-with Gtk.Enums;
 with Gtk.Layered.Cache;
 with Gtk.Layered.Rectangular_Background;
 with Gtk.Missed;
@@ -12,11 +11,15 @@ package Gtk.Gauge.Dot_Matrix is
    --
    Class_Name : constant String := "GtkGaugeDotMatrix";
 
-   --
-   type Row_Index is new Glib.Gint range 1 .. Glib.Gint'Last;
+   Max_Columns : constant := 4096;
+   Max_Rows    : constant := 4096;
 
-   type    Col_Count is new Glib.Gint range 0 .. Glib.Gint'Last;
-   subtype Col_Index is Col_Count     range 1 .. Col_Count'Last;
+   --
+   type    Col_Count is           range 0 .. Max_Columns;
+   subtype Col_Index is Col_Count range 1 .. Col_Count'Last;
+
+   type    Row_Count is           range 0 .. Max_Rows;
+   subtype Row_Index is Row_Count range 1 .. Row_Count'Last;
 
    --
    -- Gtk_Gauge_Dot_Matrix -- Dot Matrix Display
@@ -62,8 +65,18 @@ package Gtk.Gauge.Dot_Matrix is
      (This          :    out Gtk_Gauge_Dot_Matrix;
       Columns       : in     Col_Index;
       Rows          : in     Row_Index;
-      On_Color      : in     Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Off_Color     : in     Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 1.0, 1.0));
+      BG_Color      : in     Gdk.Color.Gdk_Color :=
+        Gtk.Missed.RGB (Red   => 0.8,
+                        Green => 0.8,
+                        Blue  => 0.8);
+      On_Color      : in     Gdk.Color.Gdk_Color :=
+        Gtk.Missed.RGB (Red   => 0.0,
+                        Green => 0.0,
+                        Blue  => 0.0);
+      Off_Color     : in     Gdk.Color.Gdk_Color :=
+        Gtk.Missed.RGB (Red   => 1.0,
+                        Green => 1.0,
+                        Blue  => 1.0));
 
    --
    -- Initialize -- The widget initialization
@@ -76,6 +89,7 @@ package Gtk.Gauge.Dot_Matrix is
      (This          : not null access Gtk_Gauge_Dot_Matrix_Record'Class;
       Columns       : in              Col_Index;
       Rows          : in              Row_Index;
+      BG_Color      : in              Gdk.Color.Gdk_Color;
       On_Color      : in              Gdk.Color.Gdk_Color;
       Off_Color     : in              Gdk.Color.Gdk_Color);
 
@@ -142,8 +156,8 @@ package Gtk.Gauge.Dot_Matrix is
    --
    procedure Set_Colors
      (This      : not null access Gtk_Gauge_Dot_Matrix_Record;
-      On_Color  : Gdk.Color.Gdk_Color;
-      Off_Color : Gdk.Color.Gdk_Color);
+      On_Color  : in              Gdk.Color.Gdk_Color;
+      Off_Color : in              Gdk.Color.Gdk_Color);
 
    --
    -- Set_State -- Change a LED's status
@@ -186,10 +200,10 @@ private
          Cache      : access Gtk.Layered.Cache.Cache_Layer;
          Dots       : Dotted_Matrix;
          State      : States;
-         Toggled    : Boolean := False;
+         Changed    : Boolean := False;
          On         : Gdk.Color.Gdk_Color;
          Off        : Gdk.Color.Gdk_Color;
-         pragma Atomic (Toggled);
+         pragma Atomic (Changed);
       end record;
 
    procedure Update_State (This : not null access Gtk_Gauge_Dot_Matrix_Record);

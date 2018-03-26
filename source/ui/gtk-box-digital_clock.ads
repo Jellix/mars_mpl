@@ -12,11 +12,13 @@ package Gtk.Box.Digital_Clock is
 
    function Gtk_New
      (Label     : in Glib.UTF8_String;
+      BG_Color  : in Gdk.Color.Gdk_Color;
       On_Color  : in Gdk.Color.Gdk_Color;
       Off_Color : in Gdk.Color.Gdk_Color) return Gtk_Box_Digital_Clock;
 
    procedure Initialize (This      : in out Gtk_Box_Digital_Clock_Record;
                          Label     : in Glib.UTF8_String;
+                         BG_Color  : in Gdk.Color.Gdk_Color;
                          On_Color  : in Gdk.Color.Gdk_Color;
                          Off_Color : in Gdk.Color.Gdk_Color);
 
@@ -38,9 +40,6 @@ private
    X_Dimension : constant := 1;
    Y_Dimension : constant := 2;
 
-   subtype Matrix_Width  is Gtk.Gauge.Dot_Matrix.Col_Index range 1 .. 41;
-   subtype Matrix_Height is Gtk.Gauge.Dot_Matrix.Row_Index range 1 ..  7;
-
    type Gtk_Box_Digital_Clock_Record is new Gtk_Box_Record with
       record
          Old_Digits : Digits_Set;
@@ -53,20 +52,23 @@ private
 
    type Offset_List is array (Digit_Index) of Gtk.Gauge.Dot_Matrix.Col_Count;
 
-   -- 0         1         2         3         4
-   -- 01234567890123456789012345678901234567890
-   -- .....   ..... .....   ..... .....   .....
-   -- .....   ..... .....   ..... .....   .....
-   -- ..... . ..... ..... . ..... .....   .....
-   -- .....   ..... .....   ..... .....   .....
-   -- ..... . ..... ..... . ..... .....   .....
-   -- .....   ..... .....   ..... .....   .....
-   -- .....   ..... .....   ..... ..... . .....
+   -- \X 00000000001111111111222222222233333333334444444
+   -- Y\ 01234567890123456789012345678901234567890123456
+   -- 0  .....     ..... .....       ..... .....   .....
+   -- 1  .....     ..... .....       ..... .....   .....
+   -- 2  .....     ..... .....       ..... .....   .....
+   -- 3  ..... o   ..... .....       ..... .....   .....
+   -- 4  ..... oo  ..... ..... oo o  ..... .....   .....
+   -- 5  ..... o o ..... ..... o o o ..... .....   .....
+   -- 6  ..... o o ..... ..... o o o ..... ..... o .....
+   subtype Matrix_Width  is Gtk.Gauge.Dot_Matrix.Col_Index range 1 .. 47;
+   subtype Matrix_Height is Gtk.Gauge.Dot_Matrix.Row_Index range 1 ..  7;
+
    Digit_Offset : constant Offset_List := Offset_List'(H_1    => 0,
-                                                       M_10   => 8,
-                                                       M_1    => 14,
-                                                       S_10   => 22,
-                                                       S_1    => 28,
-                                                       S_10th => 36);
+                                                       M_10   => 10,
+                                                       M_1    => 16,
+                                                       S_10   => 28,
+                                                       S_1    => 34,
+                                                       S_10th => 42);
 
 end Gtk.Box.Digital_Clock;
