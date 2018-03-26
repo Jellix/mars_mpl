@@ -171,32 +171,32 @@ package body Gtk.Box.Digital_Clock is
                                     Off_Color => Off_Color);
 
       This.LED_Matrix.all.Set_Size_Request
-        (Width  => Glib.Gint (Matrix_Width'Last * 5),
-         Height => Glib.Gint (Matrix_Height'Last * 5));
+        (Width  => Glib.Gint (Matrix_Width'Last * 7),
+         Height => Glib.Gint (Matrix_Height'Last * 7));
 
       This.Pack_Start (Child  => Clk_Frame,
                        Expand => True);
       Clk_Frame.all.Add (Widget => This.LED_Matrix);
 
       --  Colon between hour and minutes.
-      This.LED_Matrix.all.Set_State (Column => 1 * Char_Width + 1,
-                                     Row    => 2,
+      This.LED_Matrix.all.Set_State (Column => 1 * Char_Width + 2,
+                                     Row    => 3,
                                      State  => True);
-      This.LED_Matrix.all.Set_State (Column => 1 * Char_Width + 1,
-                                     Row    => 4,
+      This.LED_Matrix.all.Set_State (Column => 1 * Char_Width + 2,
+                                     Row    => 5,
                                      State  => True);
 
       --  Colon between minutes and seconds.
-      This.LED_Matrix.all.Set_State (Column => 3 * Char_Width + 5,
-                                     Row    => 2,
+      This.LED_Matrix.all.Set_State (Column => 3 * Char_Width + 6,
+                                     Row    => 3,
                                      State  => True);
-      This.LED_Matrix.all.Set_State (Column => 3 * Char_Width + 5,
-                                     Row    => 4,
+      This.LED_Matrix.all.Set_State (Column => 3 * Char_Width + 6,
+                                     Row    => 5,
                                      State  => True);
 
       --  Decimal point between seconds and tenth seconds.
-      This.LED_Matrix.all.Set_State (Column => 5 * Char_Width + 9,
-                                     Row    => 6,
+      This.LED_Matrix.all.Set_State (Column => 5 * Char_Width + 10,
+                                     Row    => 7,
                                      State  => True);
 
       --  Force digits to all zero, so we have a defined state.

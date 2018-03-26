@@ -57,15 +57,13 @@ package Gtk.Gauge.Dot_Matrix is
    --    This          - The result
    --    On_Color      - The LED's color when on
    --    Off_Color     - The LED's color when off
-   --    Border_Shadow - Border shadow type
    --
    procedure Gtk_New
      (This          :    out Gtk_Gauge_Dot_Matrix;
       Columns       : in     Col_Index;
       Rows          : in     Row_Index;
-      On_Color      : in     Gdk.Color.Gdk_Color       := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Off_Color     : in     Gdk.Color.Gdk_Color       := Gtk.Missed.RGB (1.0, 1.0, 1.0);
-      Border_Shadow : in     Gtk.Enums.Gtk_Shadow_Type := Gtk.Enums.Shadow_In);
+      On_Color      : in     Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Off_Color     : in     Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 1.0, 1.0));
 
    --
    -- Initialize -- The widget initialization
@@ -73,15 +71,13 @@ package Gtk.Gauge.Dot_Matrix is
    --    This          - The widget to initialize
    --    On_Color      - The LED's color when on
    --    Off_Color     - The LED's color when off
-   --    Border_Shadow - Border shadow type
    --
    procedure Initialize
      (This          : not null access Gtk_Gauge_Dot_Matrix_Record'Class;
       Columns       : in              Col_Index;
       Rows          : in              Row_Index;
       On_Color      : in              Gdk.Color.Gdk_Color;
-      Off_Color     : in              Gdk.Color.Gdk_Color;
-      Border_Shadow : in              Gtk.Enums.Gtk_Shadow_Type);
+      Off_Color     : in              Gdk.Color.Gdk_Color);
 
    --
    -- Get_Background -- The display's background

@@ -20,8 +20,6 @@ package body Gtk.Gauge.Dot_Matrix is
 
    Class_Record : aliased Ada_GObject_Class := Uninitialized_Class;
 
-   Corner : constant := 1.0 / 10.0;
-
    protected Lock is
       function On_Color (LED : Gtk_Gauge_Dot_Matrix_Record'Class)
                          return Gdk.Color.Gdk_Color;
@@ -55,9 +53,9 @@ package body Gtk.Gauge.Dot_Matrix is
          use type Gdk.Color.Gdk_Color;
       begin
          if LED.On /= On or else LED.Off /= Off then
-            LED.Toggled := True;
             LED.On  := On;
             LED.Off := Off;
+            LED.Toggled := True;
          end if;
       end Set;
    end Lock;
@@ -126,17 +124,15 @@ package body Gtk.Gauge.Dot_Matrix is
      (This          :    out Gtk_Gauge_Dot_Matrix;
       Columns       : in     Col_Index;
       Rows          : in     Row_Index;
-      On_Color      : in     Gdk.Color.Gdk_Color       := Gtk.Missed.RGB (0.0, 0.0, 0.0);
-      Off_Color     : in     Gdk.Color.Gdk_Color       := Gtk.Missed.RGB (1.0, 1.0, 1.0);
-      Border_Shadow : in     Gtk.Enums.Gtk_Shadow_Type := Gtk.Enums.Shadow_In) is
+      On_Color      : in     Gdk.Color.Gdk_Color := Gtk.Missed.RGB (0.0, 0.0, 0.0);
+      Off_Color     : in     Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 1.0, 1.0)) is
    begin
       This := new Gtk_Gauge_Dot_Matrix_Record;
-      Initialize (This          => This,
-                  Rows          => Rows,
-                  Columns       => Columns,
-                  On_Color      => On_Color,
-                  Off_Color     => Off_Color,
-                  Border_Shadow => Border_Shadow);
+      Initialize (This      => This,
+                  Rows      => Rows,
+                  Columns   => Columns,
+                  On_Color  => On_Color,
+                  Off_Color => Off_Color);
    exception
       when others =>
          Glib.Object.Checked_Destroy (This);
@@ -149,8 +145,7 @@ package body Gtk.Gauge.Dot_Matrix is
       Columns       : in              Col_Index;
       Rows          : in              Row_Index;
       On_Color      : in              Gdk.Color.Gdk_Color;
-      Off_Color     : in              Gdk.Color.Gdk_Color;
-      Border_Shadow : in              Gtk.Enums.Gtk_Shadow_Type) is
+      Off_Color     : in              Gdk.Color.Gdk_Color) is
    begin
       G_New (This, Get_Type);
       Gtk.Layered.Initialize (This);
@@ -166,21 +161,11 @@ package body Gtk.Gauge.Dot_Matrix is
            Height        => 1.0,
            Width         => 1.0,
            Center        => (0.0, 0.0),
-           Corner_Radius => Corner,
+           Corner_Radius => 1.0 / 100.0,
            Color         => Off_Color,
-           Border_Width  => (case Border_Shadow is
-                                when Gtk.Enums.Shadow_None       => 0.0,
-                                when Gtk.Enums.Shadow_Etched_In |
-                                     Gtk.Enums.Shadow_Etched_Out => 0.025,
-                                when Gtk.Enums.Shadow_In |
-                                     Gtk.Enums.Shadow_Out        => 0.05),
-           Border_Depth  => (case Border_Shadow is
-                                when Gtk.Enums.Shadow_None       => 0.0,
-                                when Gtk.Enums.Shadow_Etched_In |
-                                     Gtk.Enums.Shadow_Etched_Out => 0.075,
-                                when Gtk.Enums.Shadow_In |
-                                     Gtk.Enums.Shadow_Out        => 0.15),
-           Border_Shadow => Border_Shadow,
+           Border_Width  => 0.0,
+           Border_Depth  => 0.0,
+           Border_Shadow => Gtk.Enums.Shadow_None,
            Deepened      => True,
            Widened       => True,
            Scaled        => True);
@@ -194,33 +179,53 @@ package body Gtk.Gauge.Dot_Matrix is
       This.all.State := new State_Array (1 .. Columns, 1 .. Rows);
 
       if This.all.Dots /= null then
+         for X in This.all.Dots.all'Range (1) loop
+            for Y in This.all.Dots.all'Range (2) loop
+               This.all.Dots.all (X, Y).all.Finalize;
+            end loop;
+         end loop;
+
          Free (This.all.Dots);
       end if;
 
       This.all.Dots := new Dotted_Matrix_Array (1 .. Columns, 1 .. Rows);
 
-      for X in This.all.Dots.all'Range (1) loop
-         for Y in This.all.Dots.all'Range (2) loop
-            pragma Compile_Time_Warning (True, "Ellipse parameters here.");
+      declare
+         Col_Double : constant Glib.Gdouble := Glib.Gdouble (Columns);
+         Row_Double : constant Glib.Gdouble := Glib.Gdouble (Rows);
+         Curvature  : constant Glib.Gdouble :=
+                        This.all.Get_Aspect_Ratio / 2.0 * Col_Double;
+      begin
+         for X in This.all.Dots.all'Range (1) loop
             declare
                X_Pos : constant Glib.Gdouble :=
-                         Glib.Gdouble (X) / Glib.Gdouble (Columns + 1);
-               Y_Pos : constant Glib.Gdouble :=
-                         Glib.Gdouble (Y) / Glib.Gdouble (Rows + 1);
+                         (Glib.Gdouble (X) / (Col_Double + 1.0)) - 0.5;
             begin
-               This.all.Dots.all (X, Y) :=
-                 Gtk.Layered.Arc.Add_Arc
-                   (Under         => This.all.Background.all.Get_Foreground,
-                    Ellipse       =>
-                      ((Cairo.Ellipses.Unit_Circle / Glib.Gdouble (Columns)) +
-                       (X_Pos - 0.5, Y_Pos - 0.5)),
-                    Width         => 1.0,
-                    Color         => On_Color,
-                    Scaled        => True,
-                    Widened       => False);
+               for Y in This.all.Dots.all'Range (2) loop
+                  declare
+                     Y_Pos : constant Glib.Gdouble :=
+                               ((Glib.Gdouble (Y) / (Row_Double + 1.0)) - 0.5) / This.all.Get_Aspect_Ratio;
+                     E     : constant Cairo.Ellipses.Ellipse_Parameters :=
+                               Cairo.Ellipses.Ellipse_Parameters'
+                                 (Center          => (X_Pos, Y_Pos),
+                                  Major_Curvature => Curvature,
+                                  Minor_Radius    => 1.0 / Curvature,
+                                  Angle           => 0.0);
+                  begin
+                     This.all.State.all (X, Y) := False;
+                     This.all.Dots.all (X, Y) :=
+                       Gtk.Layered.Arc.Add_Arc
+                         (Under         => This.all.Background.all.Get_Foreground,
+                          Ellipse       => E,
+                          Width         => 1.0 / Curvature,
+                          Color         => Off_Color,
+                          Scaled        => True,
+                          Widened       => True);
+                  end;
+               end loop;
             end;
          end loop;
-      end loop;
+      end;
 
       This.all.Cache :=
         Gtk.Layered.Cache.Add_Cache (This.all.Background.all.Get_Foreground);
