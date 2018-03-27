@@ -153,10 +153,10 @@ package body Gtk.Frame.Digital_Clock is
    end Gtk_New;
 
    procedure Initialize (This      : in out Gtk_Frame_Digital_Clock_Record;
-                         Label     : in Glib.UTF8_String;
-                         BG_Color  : in Gdk.Color.Gdk_Color;
-                         On_Color  : in Gdk.Color.Gdk_Color;
-                         Off_Color : in Gdk.Color.Gdk_Color) is
+                         Label     : in     Glib.UTF8_String;
+                         BG_Color  : in     Gdk.Color.Gdk_Color;
+                         On_Color  : in     Gdk.Color.Gdk_Color;
+                         Off_Color : in     Gdk.Color.Gdk_Color) is
    begin
       Gtk.Frame.Initialize (Frame => This'Access,
                             Label => Label);
