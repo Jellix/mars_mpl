@@ -1,7 +1,9 @@
+with Gdk.RGBA;
 with Gtk.Button;
 with Gtk.Button_Box;
 with Gtk.Frame;
 with Gtk.Label;
+with Gtk.Style_Context;
 with Gtk.Switch;
 with Shared_Parameters.Read;
 
@@ -117,14 +119,14 @@ begin
 
             function Labeled_Widget_With_Unit
               (Widget      : not null access Gtk.Widget.Gtk_Widget_Record'Class;
-               Description : in String;
-               Unit        : in String) return not null access
+               Description : in              String;
+               Unit        : in              String) return not null access
               Gtk.Widget.Gtk_Widget_Record'Class;
 
             function Labeled_Widget_With_Unit
               (Widget      : not null access Gtk.Widget.Gtk_Widget_Record'Class;
-               Description : in String;
-               Unit        : in String) return not null access
+               Description : in              String;
+               Unit        : in              String) return not null access
               Gtk.Widget.Gtk_Widget_Record'Class
             is
                Box : constant Gtk.Box.Gtk_Box :=
@@ -217,16 +219,28 @@ begin
 
          Add_Mission_Clock :
          declare
-            Mission_Clock : constant
-              Gtk.Box.Digital_Clock.Gtk_Box_Digital_Clock :=
-                Gtk.Box.Digital_Clock.Gtk_New (Label     => "Mission Clock",
-                                               BG_Color  => Colors.Light_Grey,
-                                               On_Color  => Colors.Black,
-                                               Off_Color => Colors.White);
+            Context : constant Gtk.Style_Context.Gtk_Style_Context :=
+                        Gtk.Style_Context.Get_Style_Context
+                          (Widget => Window'Access);
+            BG_RGBA : Gdk.RGBA.Gdk_RGBA;
+            FG_RGBA : Gdk.RGBA.Gdk_RGBA;
          begin
-            Window.Mission_Clock := Mission_Clock;
+            Context.all.Get_Background_Color
+              (State => Gtk.Enums.Gtk_State_Flag_Normal,
+               Color => BG_RGBA);
+            Context.all.Get_Color (State => Gtk.Enums.Gtk_State_Flag_Normal,
+                                   Color => FG_RGBA);
+
+            Window.Mission_Clock :=
+              Gtk.Frame.Digital_Clock.Gtk_New
+                (Label     => "Mission Clock",
+                 BG_Color  => Gtk.Missed.From_RGBA (Color => BG_RGBA),
+                 On_Color  => Gtk.Missed.From_RGBA (Color => FG_RGBA),
+                 Off_Color => Gtk.Missed.From_RGBA (Color => BG_RGBA));
+            --  Set background and off-color to the same value.
+
             Box.all.Pack_Start
-              (Child  => Mission_Clock,
+              (Child  => Window.Mission_Clock,
                Expand => False);
          end Add_Mission_Clock;
 

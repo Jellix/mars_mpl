@@ -1,7 +1,4 @@
-with Gtk.Enums;
-with Gtk.Frame;
-
-package body Gtk.Box.Digital_Clock is
+package body Gtk.Frame.Digital_Clock is
 
    use type Glib.Gdouble;
    use type Gtk.Gauge.Dot_Matrix.Col_Index;
@@ -142,10 +139,10 @@ package body Gtk.Box.Digital_Clock is
      (Label     : in Glib.UTF8_String;
       BG_Color  : in Gdk.Color.Gdk_Color;
       On_Color  : in Gdk.Color.Gdk_Color;
-      Off_Color : in Gdk.Color.Gdk_Color) return Gtk_Box_Digital_Clock
+      Off_Color : in Gdk.Color.Gdk_Color) return Gtk_Frame_Digital_Clock
    is
-      The_Clock : constant Gtk_Box_Digital_Clock :=
-                    new Gtk_Box_Digital_Clock_Record;
+      The_Clock : constant Gtk_Frame_Digital_Clock :=
+                    new Gtk_Frame_Digital_Clock_Record;
    begin
       Initialize (This      => The_Clock.all,
                   Label     => Label,
@@ -155,18 +152,14 @@ package body Gtk.Box.Digital_Clock is
       return The_Clock;
    end Gtk_New;
 
-   procedure Initialize (This      : in out Gtk_Box_Digital_Clock_Record;
+   procedure Initialize (This      : in out Gtk_Frame_Digital_Clock_Record;
                          Label     : in Glib.UTF8_String;
                          BG_Color  : in Gdk.Color.Gdk_Color;
                          On_Color  : in Gdk.Color.Gdk_Color;
-                         Off_Color : in Gdk.Color.Gdk_Color)
-   is
-      Clk_Frame : constant Gtk.Frame.Gtk_Frame   :=
-                    Gtk.Frame.Gtk_Frame_New (Label => Label);
+                         Off_Color : in Gdk.Color.Gdk_Color) is
    begin
-      Gtk.Box.Initialize (Box         => This'Access,
-                          Orientation => Gtk.Enums.Orientation_Vertical,
-                          Spacing     => 0);
+      Gtk.Frame.Initialize (Frame => This'Access,
+                            Label => Label);
       Gtk.Gauge.Dot_Matrix.Gtk_New (This      => This.LED_Matrix,
                                     Columns   => Matrix_Width'Last,
                                     Rows      => Matrix_Height'Last,
@@ -178,9 +171,7 @@ package body Gtk.Box.Digital_Clock is
         (Width  => Glib.Gint (Matrix_Width'Last * 5),
          Height => Glib.Gint (Matrix_Height'Last * 5));
 
-      This.Pack_Start (Child  => Clk_Frame,
-                       Expand => True);
-      Clk_Frame.all.Add (Widget => This.LED_Matrix);
+      This.Add (Widget => This.LED_Matrix);
 
       --  "h" between hour and minutes.
       Draw_H :
@@ -249,7 +240,7 @@ package body Gtk.Box.Digital_Clock is
       end loop;
    end Initialize;
 
-   procedure Set_Time (This : in out Gtk_Box_Digital_Clock_Record;
+   procedure Set_Time (This : in out Gtk_Frame_Digital_Clock_Record;
                        Time : in     Duration)
    is
       Temp       : constant Glib.Gdouble := Glib.Gdouble (Time);
@@ -268,7 +259,7 @@ package body Gtk.Box.Digital_Clock is
       end loop;
    end Set_Time;
 
-   procedure Write_Digit (This  : in out Gtk_Box_Digital_Clock_Record;
+   procedure Write_Digit (This  : in out Gtk_Frame_Digital_Clock_Record;
                           Digit : in     Digit_Index;
                           Num   : in     Valid_Digits)
    is
@@ -301,4 +292,4 @@ package body Gtk.Box.Digital_Clock is
       end if;
    end Write_Digit;
 
-end Gtk.Box.Digital_Clock;
+end Gtk.Frame.Digital_Clock;

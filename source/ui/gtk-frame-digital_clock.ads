@@ -1,28 +1,29 @@
 with Gdk.Color;
 with Glib;
-with Gtk.Box;
+with Gtk.Frame;
 with Gtk.Gauge.Dot_Matrix;
 
-package Gtk.Box.Digital_Clock is
+package Gtk.Frame.Digital_Clock is
 
-   type Gtk_Box_Digital_Clock_Record is new Gtk_Box_Record with
+   type Gtk_Frame_Digital_Clock_Record is new Gtk_Frame_Record with
      private;
 
-   type Gtk_Box_Digital_Clock is access all Gtk_Box_Digital_Clock_Record'Class;
+   type Gtk_Frame_Digital_Clock is
+     access all Gtk_Frame_Digital_Clock_Record'Class;
 
    function Gtk_New
      (Label     : in Glib.UTF8_String;
       BG_Color  : in Gdk.Color.Gdk_Color;
       On_Color  : in Gdk.Color.Gdk_Color;
-      Off_Color : in Gdk.Color.Gdk_Color) return Gtk_Box_Digital_Clock;
+      Off_Color : in Gdk.Color.Gdk_Color) return Gtk_Frame_Digital_Clock;
 
-   procedure Initialize (This      : in out Gtk_Box_Digital_Clock_Record;
-                         Label     : in Glib.UTF8_String;
-                         BG_Color  : in Gdk.Color.Gdk_Color;
-                         On_Color  : in Gdk.Color.Gdk_Color;
-                         Off_Color : in Gdk.Color.Gdk_Color);
+   procedure Initialize (This      : in out Gtk_Frame_Digital_Clock_Record;
+                         Label     : in     Glib.UTF8_String;
+                         BG_Color  : in     Gdk.Color.Gdk_Color;
+                         On_Color  : in     Gdk.Color.Gdk_Color;
+                         Off_Color : in     Gdk.Color.Gdk_Color);
 
-   procedure Set_Time (This : in out Gtk_Box_Digital_Clock_Record;
+   procedure Set_Time (This : in out Gtk_Frame_Digital_Clock_Record;
                        Time : in     Duration);
 
 private
@@ -40,13 +41,13 @@ private
    X_Dimension : constant := 1;
    Y_Dimension : constant := 2;
 
-   type Gtk_Box_Digital_Clock_Record is new Gtk_Box_Record with
+   type Gtk_Frame_Digital_Clock_Record is new Gtk_Frame_Record with
       record
          Old_Digits : Digits_Set;
          LED_Matrix : Gtk.Gauge.Dot_Matrix.Gtk_Gauge_Dot_Matrix;
       end record;
 
-   procedure Write_Digit (This  : in out Gtk_Box_Digital_Clock_Record;
+   procedure Write_Digit (This  : in out Gtk_Frame_Digital_Clock_Record;
                           Digit : in     Digit_Index;
                           Num   : in     Valid_Digits);
 
@@ -71,4 +72,4 @@ private
                                                        S_1    => 34,
                                                        S_10th => 42);
 
-end Gtk.Box.Digital_Clock;
+end Gtk.Frame.Digital_Clock;

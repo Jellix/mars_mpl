@@ -1,6 +1,6 @@
 with Global;
 with GNAT.Expect;
-with Gtk.Box.Digital_Clock;
+with Gtk.Frame.Digital_Clock;
 with Gtk.Frame.Log_Viewer;
 with Gtk.Gauge.Altimeter;
 with Gtk.Gauge.LED_Round;
@@ -49,7 +49,7 @@ private
          Abort_Button      : access Gtk.Widget.Gtk_Widget_Record'Class;
          Elements          : Dynamic_Elements;
          Plot              : Plot_Elements;
-         Mission_Clock     : Gtk.Box.Digital_Clock.Gtk_Box_Digital_Clock;
+         Mission_Clock     : Gtk.Frame.Digital_Clock.Gtk_Frame_Digital_Clock;
          Tachometer        : Gtk.Gauge.Round_270.Gtk_Gauge_Round_270;
          Altimeter         : Gtk.Gauge.Altimeter.Gtk_Gauge_Altimeter;
          Fuel_Scale        : Gtk.Meter.Angular_90.Gtk_Meter_Angular_90;
