@@ -61,22 +61,21 @@ package Gtk.Gauge.Dot_Matrix is
    --    On_Color      - The LED's color when on
    --    Off_Color     - The LED's color when off
    --
-   procedure Gtk_New
-     (This          :    out Gtk_Gauge_Dot_Matrix;
-      Columns       : in     Col_Index;
-      Rows          : in     Row_Index;
-      BG_Color      : in     Gdk.Color.Gdk_Color :=
-        Gtk.Missed.RGB (Red   => 0.8,
-                        Green => 0.8,
-                        Blue  => 0.8);
-      On_Color      : in     Gdk.Color.Gdk_Color :=
-        Gtk.Missed.RGB (Red   => 0.0,
-                        Green => 0.0,
-                        Blue  => 0.0);
-      Off_Color     : in     Gdk.Color.Gdk_Color :=
-        Gtk.Missed.RGB (Red   => 1.0,
-                        Green => 1.0,
-                        Blue  => 1.0));
+   procedure Gtk_New (This          :    out Gtk_Gauge_Dot_Matrix;
+                      Columns       : in     Col_Index;
+                      Rows          : in     Row_Index;
+                      BG_Color      : in     Gdk.Color.Gdk_Color :=
+                        Gtk.Missed.RGB (Red   => 0.8,
+                                        Green => 0.8,
+                                        Blue  => 0.8);
+                      On_Color      : in     Gdk.Color.Gdk_Color :=
+                        Gtk.Missed.RGB (Red   => 0.0,
+                                        Green => 0.0,
+                                        Blue  => 0.0);
+                      Off_Color     : in     Gdk.Color.Gdk_Color :=
+                        Gtk.Missed.RGB (Red   => 1.0,
+                                        Green => 1.0,
+                                        Blue  => 1.0));
 
    --
    -- Initialize -- The widget initialization
@@ -139,10 +138,9 @@ package Gtk.Gauge.Dot_Matrix is
    --
    --    The current state of the widget
    --
-   function Get_State
-     (This   : not null access Gtk_Gauge_Dot_Matrix_Record;
-      Column : in              Col_Index;
-      Row    : in              Row_Index) return Boolean;
+   function Get_State (This   : not null access Gtk_Gauge_Dot_Matrix_Record;
+                       Column : in              Col_Index;
+                       Row    : in              Row_Index) return Boolean;
 
    --
    -- Set_Colors -- Change the colors
@@ -168,18 +166,16 @@ package Gtk.Gauge.Dot_Matrix is
    -- Note that changing  state does not refresh the widget.  The operation
    -- is task safe.
    --
-   procedure Set_State
-     (This   : not null access Gtk_Gauge_Dot_Matrix_Record;
-      Column : in              Col_Index;
-      Row    : in              Row_Index;
-      State  : in              Boolean);
+   procedure Set_State (This   : not null access Gtk_Gauge_Dot_Matrix_Record;
+                        Column : in              Col_Index;
+                        Row    : in              Row_Index;
+                        State  : in              Boolean);
 
    overriding procedure Refresh
      (This    : not null access Gtk_Gauge_Dot_Matrix_Record;
       Context : in              Cairo.Cairo_Context);
 
-   overriding procedure Finalize
-     (This : in out Gtk_Gauge_Dot_Matrix_Record);
+   overriding procedure Finalize (This : in out Gtk_Gauge_Dot_Matrix_Record);
 
 private
 

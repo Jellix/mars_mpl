@@ -15,9 +15,8 @@ package body Gtk.Gauge.Dot_Matrix is
      new Ada.Unchecked_Deallocation (Object => Dotted_Matrix_Array,
                                      Name   => Dotted_Matrix);
 
-   procedure Free is
-     new Ada.Unchecked_Deallocation (Object => State_Array,
-                                     Name   => States);
+   procedure Free is new Ada.Unchecked_Deallocation (Object => State_Array,
+                                                     Name   => States);
 
    Class_Record : aliased Ada_GObject_Class := Uninitialized_Class;
 
@@ -28,10 +27,9 @@ package body Gtk.Gauge.Dot_Matrix is
       function Off_Color (DM : in Gtk_Gauge_Dot_Matrix_Record'Class)
                           return Gdk.Color.Gdk_Color;
 
-      procedure Set
-        (DM  : in out Gtk_Gauge_Dot_Matrix_Record'Class;
-         On  : in     Gdk.Color.Gdk_Color;
-         Off : in     Gdk.Color.Gdk_Color);
+      procedure Set (DM  : in out Gtk_Gauge_Dot_Matrix_Record'Class;
+                     On  : in     Gdk.Color.Gdk_Color;
+                     Off : in     Gdk.Color.Gdk_Color);
    end Lock;
 
    protected body Lock  is
@@ -61,8 +59,7 @@ package body Gtk.Gauge.Dot_Matrix is
       end Set;
    end Lock;
 
-   overriding procedure Finalize
-     (This : in out Gtk_Gauge_Dot_Matrix_Record) is
+   overriding procedure Finalize (This : in out Gtk_Gauge_Dot_Matrix_Record) is
    begin
       if This.Dots /= null then
          Free (This.Dots);
@@ -121,22 +118,21 @@ package body Gtk.Gauge.Dot_Matrix is
       return Class_Record.all.The_Type;
    end Get_Type;
 
-   procedure Gtk_New
-     (This          :    out Gtk_Gauge_Dot_Matrix;
-      Columns       : in     Col_Index;
-      Rows          : in     Row_Index;
-      BG_Color      : in     Gdk.Color.Gdk_Color :=
-        Gtk.Missed.RGB (Red   => 0.8,
-                        Green => 0.8,
-                        Blue  => 0.8);
-      On_Color      : in     Gdk.Color.Gdk_Color :=
-        Gtk.Missed.RGB (Red   => 0.0,
-                        Green => 0.0,
-                        Blue  => 0.0);
-      Off_Color     : in     Gdk.Color.Gdk_Color :=
-        Gtk.Missed.RGB (Red   => 1.0,
-                        Green => 1.0,
-                        Blue  => 1.0)) is
+   procedure Gtk_New (This          :    out Gtk_Gauge_Dot_Matrix;
+                      Columns       : in     Col_Index;
+                      Rows          : in     Row_Index;
+                      BG_Color      : in     Gdk.Color.Gdk_Color :=
+                        Gtk.Missed.RGB (Red   => 0.8,
+                                        Green => 0.8,
+                                        Blue  => 0.8);
+                      On_Color      : in     Gdk.Color.Gdk_Color :=
+                        Gtk.Missed.RGB (Red   => 0.0,
+                                        Green => 0.0,
+                                        Blue  => 0.0);
+                      Off_Color     : in     Gdk.Color.Gdk_Color :=
+                        Gtk.Missed.RGB (Red   => 1.0,
+                                        Green => 1.0,
+                                        Blue  => 1.0)) is
    begin
       This := new Gtk_Gauge_Dot_Matrix_Record;
       Initialize (This      => This,
@@ -213,8 +209,7 @@ package body Gtk.Gauge.Dot_Matrix is
       declare
          Col_Double : constant Glib.Gdouble := Glib.Gdouble (Columns);
          Row_Double : constant Glib.Gdouble := Glib.Gdouble (Rows);
-         Curvature  : constant Glib.Gdouble :=
-                        This.all.Get_Aspect_Ratio / 2.0 * Col_Double;
+         Curvature  : constant Glib.Gdouble := 5.0 * Col_Double;
       begin
          Column_Loop :
          for X in This.all.Dots.all'Range (1) loop
@@ -225,6 +220,8 @@ package body Gtk.Gauge.Dot_Matrix is
             begin
                Row_Loop :
                for Y in This.all.Dots.all'Range (2) loop
+                  This.all.State.all (X, Y) := False;
+
                   Set_Row :
                   declare
                      Y_Pos : constant Glib.Gdouble :=
@@ -238,12 +235,11 @@ package body Gtk.Gauge.Dot_Matrix is
                                   Minor_Radius    => 1.0 / Curvature,
                                   Angle           => 0.0);
                   begin
-                     This.all.State.all (X, Y) := False;
                      This.all.Dots.all (X, Y) :=
                        Gtk.Layered.Arc.Add_Arc
                          (Under         => This.all.Background.all.Get_Foreground,
                           Ellipse       => E,
-                          Width         => 1.0 / Curvature,
+                          Width         => 2.0 / Curvature,
                           Color         => Off_Color,
                           Scaled        => True,
                           Widened       => True);
@@ -290,14 +286,15 @@ package body Gtk.Gauge.Dot_Matrix is
          This.all.State.all (Column, Row) := State;
          This.all.Changed := True;
       end if;
+   exception
+      when Constraint_Error => null;
    end Set_State;
 
-   procedure Update_State
-     (This : not null access Gtk_Gauge_Dot_Matrix_Record)
+   procedure Update_State (This : not null access Gtk_Gauge_Dot_Matrix_Record)
    is
-      Value     : Glib.Values.GValue;
       On_Color  : constant Gdk.Color.Gdk_Color := Lock.On_Color (This.all);
       Off_Color : constant Gdk.Color.Gdk_Color := Lock.Off_Color (This.all);
+      Value     : Glib.Values.GValue;
    begin
       Column_Loop :
       for Column in This.all.Dots.all'Range (1) loop
