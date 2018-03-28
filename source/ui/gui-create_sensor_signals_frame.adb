@@ -17,9 +17,6 @@ is
               Gtk.Box.Gtk_Vbox_New (Homogeneous => False,
                                     Spacing     => 0);
    begin
-      Box.all.Set_Size_Request (Width  => 100,
-                                Height => 100);
-
       for Leg in Shared_Types.Legs_Index loop
          Add_Leg_LED :
          declare

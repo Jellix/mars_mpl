@@ -10,15 +10,13 @@ is
    Frame : constant Gtk.Frame.Gtk_Frame :=
              Gtk.Frame.Gtk_Frame_New (Label => "Velocity");
 begin
-   Frame.all.Set_Size_Request (Width  => 400,
-                               Height => 400);
-
    Add_Widgets_To_Frame :
    declare
       Box : constant Gtk.Box.Gtk_Box :=
               Gtk.Box.Gtk_Vbox_New (Homogeneous => False,
                                     Spacing     => 0);
    begin
+      Box.all.Set_Size_Request (Height => 200);
       Frame.all.Add (Widget => Box);
 
       Add_Velocity_Gauge :

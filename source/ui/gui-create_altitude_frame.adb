@@ -10,47 +10,36 @@ is
    Frame : constant Gtk.Frame.Gtk_Frame :=
              Gtk.Frame.Gtk_Frame_New (Label => "Altitude");
 begin
-   Frame.all.Set_Size_Request (Width  => 400,
-                               Height => 400);
-
    Add_Widgets_To_Box :
    declare
       Box : constant Gtk.Box.Gtk_Box :=
               Gtk.Box.Gtk_Vbox_New (Homogeneous => False,
                                     Spacing     => 0);
    begin
+      Box.all.Set_Size_Request (Height => 200);
       Frame.all.Add (Widget => Box);
 
-      Create_Altimeter_Gauge :
-      declare
-         Gauge : Gtk.Gauge.Altimeter.Gtk_Gauge_Altimeter;
-      begin
-         Gtk.Gauge.Altimeter.Gtk_New
-           (Widget  => Gauge,
-            Texts   => Altitude_Scale.Texts.all,
-            Sectors =>
-              Positive
-                (Gtk.Enums.String_List.Length
-                     (+Altitude_Scale.Texts.all)));
-         Gtk.Layered.Label.Add_Label
-           (Under    => Gauge.all.Get_Cache,
-            Text     => "x 1000 m",
-            Location => Cairo.Ellipses.Cairo_Tuple'(X => 0.0175,
-                                                    Y => 0.175),
-            Face     => Label_Font,
-            Height   => 0.04,
-            Stretch  => 1.0,
-            Mode     => Gtk.Layered.Moved_Centered,
-            Color    => Colors.White,
-            Angle    => 0.0,
-            Skew     => 0.0,
-            Markup   => False,
-            Scaled   => True);
-         Window.Altimeter := Gauge;
-
-         Box.all.Pack_Start (Child  => Gauge,
-                             Expand => True);
-      end Create_Altimeter_Gauge;
+      Gtk.Gauge.Altimeter.Gtk_New
+        (Widget  => Window.Altimeter,
+         Texts   => Altitude_Scale.Texts.all,
+         Sectors =>
+           Positive (Gtk.Enums.String_List.Length (+Altitude_Scale.Texts.all)));
+      Gtk.Layered.Label.Add_Label
+        (Under    => Window.Altimeter.all.Get_Cache,
+         Text     => "x 1000 m",
+         Location => Cairo.Ellipses.Cairo_Tuple'(X => 0.0175,
+                                                 Y => 0.175),
+         Face     => Label_Font,
+         Height   => 0.04,
+         Stretch  => 1.0,
+         Mode     => Gtk.Layered.Moved_Centered,
+         Color    => Colors.White,
+         Angle    => 0.0,
+         Skew     => 0.0,
+         Markup   => False,
+         Scaled   => True);
+      Box.all.Pack_Start (Child  => Window.Altimeter,
+                          Expand => True);
 
       Add_Text_Entry :
       declare

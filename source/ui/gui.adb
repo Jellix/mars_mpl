@@ -230,22 +230,22 @@ package body GUI is
 
       Feed_Data_Plots :
       declare
-         Plotter    : Gtk.Oscilloscope.Gtk_Oscilloscope_Record renames
-                        Gtk.Oscilloscope.Gtk_Oscilloscope_Record
-                          (Win.Plot.Oscilloscope.all);
          Time_Stamp : constant Glib.Gdouble :=
                         Glib.Gdouble (Update_State.Time_Stamp);
       begin
          -- Data plot
-         Plotter.Feed (Channel => Win.Plot.Altitude_Channel,
-                       V       => Glib.Gdouble (Update_State.Altitude),
-                       T       => Time_Stamp);
-         Plotter.Feed (Channel => Win.Plot.Fuel_Channel,
-                       V       => Glib.Gdouble (Update_State.Fuel),
-                       T       => Time_Stamp);
-         Plotter.Feed (Channel => Win.Plot.Velocity_Channel,
-                       V       => Glib.Gdouble (Update_State.Velocity),
-                       T       => Time_Stamp);
+         Win.Plot.Altitude_Plot.all.Feed
+           (Channel => Win.Plot.Altitude_Channel,
+            V       => Glib.Gdouble (Update_State.Altitude),
+            T       => Time_Stamp);
+         Win.Plot.Fuel_Plot.all.Feed
+           (Channel => Win.Plot.Fuel_Channel,
+            V       => Glib.Gdouble (Update_State.Fuel),
+            T       => Time_Stamp);
+         Win.Plot.Velocity_Plot.all.Feed
+           (Channel => Win.Plot.Velocity_Channel,
+            V       => Glib.Gdouble (Update_State.Velocity),
+            T       => Time_Stamp);
 
          for Leg in Shared_Types.Legs_Index loop
             Feed_Leg_Plot :
@@ -256,13 +256,14 @@ package body GUI is
                Active : constant Glib.Gdouble :=
                           0.2 * Glib.Gdouble (Boolean'Pos (Touched_Down (Leg)));
             begin
-               Plotter.Feed (Channel => Win.Plot.Touchdown_Channel (Leg),
-                             V       => Offset + Active,
-                             T       => Time_Stamp);
+               Win.Plot.Discretes_Plot.all.Feed
+                 (Channel => Win.Plot.Touchdown_Channel (Leg),
+                  V       => Offset + Active,
+                  T       => Time_Stamp);
             end Feed_Leg_Plot;
          end loop;
 
-         Plotter.Feed
+         Win.Plot.Discretes_Plot.all.Feed
            (Channel => Win.Plot.Thruster_Channel,
             V       =>
               Glib.Gdouble (Boolean'Pos (Update_State.Thruster_Enabled)),
@@ -341,33 +342,41 @@ package body GUI is
 
    --
    procedure Reset_Timeline (Plot : in Plot_Elements) is
-      procedure Erase (Channel : in Gtk.Oscilloscope.Channel_Number);
-      procedure Erase (Channel : in Gtk.Oscilloscope.Channel_Number) is
+      procedure Erase (Scope   : in Gtk.Oscilloscope.Gtk_Oscilloscope_Record'Class;
+                       Channel : in Gtk.Oscilloscope.Channel_Number);
+      procedure Erase (Scope   : in Gtk.Oscilloscope.Gtk_Oscilloscope_Record'Class;
+                       Channel : in Gtk.Oscilloscope.Channel_Number) is
       begin
-         Plot.Oscilloscope.all.Get_Buffer (Channel => Channel).all.Erase;
+         Scope.Get_Buffer (Channel => Channel).all.Erase;
       end Erase;
    begin
-      Plot.Oscilloscope.all.Get_Sweeper (Sweeper => Gtk.Oscilloscope.Lower).all.
-        Configure (Value          => 0.0,
-                   Lower          => 0.0,
-                   Upper          => 10.0,
-                   Step_Increment => 1.0,
-                   Page_Increment => 5.0,
-                   Page_Size      => 10.0);
-      Plot.Oscilloscope.all.Set_Time
+      Plot.Altitude_Plot.all.Get_Sweeper
+        (Sweeper => Gtk.Oscilloscope.Lower).all.Configure
+          (Value          => 0.0,
+           Lower          => 0.0,
+           Upper          => 10.0,
+           Step_Increment => 1.0,
+           Page_Increment => 5.0,
+           Page_Size      => 10.0);
+      Plot.Altitude_Plot.all.Set_Time
         (Sweeper => Gtk.Oscilloscope.Lower,
          Stamp   =>
            Ada.Real_Time.Time'(Gtk.Layered.Waveform.To_Time (Value => 10.0)));
 
-      Erase (Channel => Plot.Altitude_Channel);
-      Erase (Channel => Plot.Fuel_Channel);
-      Erase (Channel => Plot.Thruster_Channel);
+      Erase (Scope   => Plot.Altitude_Plot.all,
+             Channel => Plot.Altitude_Channel);
+      Erase (Scope   => Plot.Fuel_Plot.all,
+             Channel => Plot.Fuel_Channel);
+      Erase (Scope   => Plot.Discretes_Plot.all,
+             Channel => Plot.Thruster_Channel);
 
       for T in Plot.Touchdown_Channel'Range loop
-         Erase (Channel => Plot.Touchdown_Channel (T));
+         Erase (Scope   => Plot.Discretes_Plot.all,
+                Channel => Plot.Touchdown_Channel (T));
       end loop;
 
-      Erase (Channel => Plot.Velocity_Channel);
+      Erase (Scope   => Plot.Velocity_Plot.all,
+             Channel => Plot.Velocity_Channel);
    end Reset_Timeline;
 
    procedure Run is
@@ -403,7 +412,7 @@ package body GUI is
                Win.Feed_Values (Update_State => Update_State);
 
                --  Update right margin of sweeper.
-               Win.Plot.Oscilloscope.all.Set_Time
+               Win.Plot.Altitude_Plot.all.Set_Time
                  (Sweeper => Gtk.Oscilloscope.Lower,
                   Stamp   =>
                     Ada.Real_Time.Time'
