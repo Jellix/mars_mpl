@@ -438,7 +438,7 @@ package body GUI is
 
             Handle_Gtk_Events :
             while Gtk.Main.Events_Pending loop
-               if Gtk.Main.Main_Iteration_Do (Blocking => False) then
+               if Gtk.Main.Main_Iteration then
                   null;
                end if;
             end loop Handle_Gtk_Events;

@@ -261,6 +261,9 @@ begin
             Window.Start_Button := Start_Button;
             Window.Abort_Button := Abort_Button;
 
+            --  Initially, the Abort button is disabled.
+            Abort_Button.all.Set_Sensitive (Sensitive => False);
+
             Start_Button.all.On_Clicked (Call  => Callbacks.SIM_Start'Access,
                                          After => True);
             Abort_Button.all.On_Clicked (Call  => Callbacks.SIM_Abort'Access,

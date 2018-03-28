@@ -48,17 +48,17 @@ private
 
    type Main_Window_Record is new Gtk.Window.Gtk_Window_Record with
       record
-         Start_Button      : access Gtk.Widget.Gtk_Widget_Record'Class;
-         Abort_Button      : access Gtk.Widget.Gtk_Widget_Record'Class;
-         Elements          : Dynamic_Elements;
-         Plot              : Plot_Elements;
-         Mission_Clock     : Gtk.Frame.Digital_Clock.Gtk_Frame_Digital_Clock;
-         Tachometer        : Gtk.Gauge.Round_270.Gtk_Gauge_Round_270;
-         Altimeter         : Gtk.Gauge.Altimeter.Gtk_Gauge_Altimeter;
-         Fuel_Scale        : Gtk.Meter.Angular_90.Gtk_Meter_Angular_90;
-         SIMon_Says        : Gtk.Frame.Log_Viewer.Gtk_Frame_Log_Viewer;
-         Aborted           : Boolean;
-         SIM_Process       : GNAT.Expect.Process_Descriptor_Access;
+         Start_Button  : access Gtk.Widget.Gtk_Widget_Record'Class;
+         Abort_Button  : access Gtk.Widget.Gtk_Widget_Record'Class;
+         Elements      : Dynamic_Elements;
+         Plot          : Plot_Elements;
+         Mission_Clock : Gtk.Frame.Digital_Clock.Gtk_Frame_Digital_Clock;
+         Tachometer    : Gtk.Gauge.Round_270.Gtk_Gauge_Round_270;
+         Altimeter     : Gtk.Gauge.Altimeter.Gtk_Gauge_Altimeter;
+         Fuel_Scale    : Gtk.Meter.Angular_90.Gtk_Meter_Angular_90;
+         SIMon_Says    : Gtk.Frame.Log_Viewer.Gtk_Frame_Log_Viewer;
+         Aborted       : Boolean;
+         SIM_Process   : GNAT.Expect.Process_Descriptor_Access;
    end record;
    type Main_Window is access all Main_Window_Record'Class;
 
