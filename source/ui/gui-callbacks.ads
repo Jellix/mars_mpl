@@ -1,6 +1,7 @@
 with Gdk.Event;
 with Gtk.Button;
 with Gtk.Switch;
+with Gtk.Widget;
 
 private package GUI.Callbacks is
 

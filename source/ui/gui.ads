@@ -1,5 +1,6 @@
 with Global;
 with GNAT.Expect;
+with Gtk.Button;
 with Gtk.Frame.Digital_Clock;
 with Gtk.Frame.Log_Viewer;
 with Gtk.Gauge.Altimeter;
@@ -8,7 +9,6 @@ with Gtk.Gauge.Round_270;
 with Gtk.GEntry;
 with Gtk.Meter.Angular_90;
 with Gtk.Oscilloscope;
-with Gtk.Widget;
 with Gtk.Window;
 with Shared_Types.IO;
 
@@ -46,10 +46,13 @@ private
          Velocity_Channel  : Gtk.Oscilloscope.Channel_Number;
       end record;
 
+   type Buttons is (Start_Button, Abort_Button, Exit_Button);
+   type Button_List is array (Buttons) of
+     access Gtk.Button.Gtk_Button_Record'Class;
+
    type Main_Window_Record is new Gtk.Window.Gtk_Window_Record with
       record
-         Start_Button  : access Gtk.Widget.Gtk_Widget_Record'Class;
-         Abort_Button  : access Gtk.Widget.Gtk_Widget_Record'Class;
+         Buttons       : Button_List;
          Elements      : Dynamic_Elements;
          Plot          : Plot_Elements;
          Mission_Clock : Gtk.Frame.Digital_Clock.Gtk_Frame_Digital_Clock;

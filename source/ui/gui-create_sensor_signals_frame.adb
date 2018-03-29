@@ -13,10 +13,14 @@ is
    function Create_LEDs return not null access
      Gtk.Widget.Gtk_Widget_Record'Class
    is
+      Frame : constant Gtk.Frame.Gtk_Frame :=
+                Gtk.Frame.Gtk_Frame_New (Label => "Discrete Signals");
       Box : constant Gtk.Box.Gtk_Box :=
               Gtk.Box.Gtk_Vbox_New (Homogeneous => False,
                                     Spacing     => 0);
    begin
+      Frame.all.Add (Widget => Box);
+
       for Leg in Shared_Types.Legs_Index loop
          Add_Leg_LED :
          declare
@@ -54,21 +58,18 @@ is
          Window.Elements.Thruster_Led := Led;
       end Add_Thruster_LED;
 
-      return Box;
+      return Frame;
    end Create_LEDs;
 
-   Frame : constant Gtk.Frame.Gtk_Frame :=
-             Gtk.Frame.Gtk_Frame_New (Label => "Sensor Signals");
-   HBox  : constant Gtk.Box.Gtk_Box :=
-             Gtk.Box.Gtk_Hbox_New (Homogeneous => False,
-                                   Spacing     => 0);
+   HBox : constant Gtk.Box.Gtk_Box :=
+            Gtk.Box.Gtk_Hbox_New (Homogeneous => False,
+                                  Spacing     => 0);
 begin
-   Frame.all.Add (Widget => HBox);
    HBox.all.Pack_Start (Child  => Create_LEDs,
                         Expand => False);
    HBox.all.Pack_Start (Child => Window.Create_Fuel_Frame);
    HBox.all.Pack_Start (Child => Window.Create_Velocity_Frame);
    HBox.all.Pack_Start (Child => Window.Create_Altitude_Frame);
 
-   return Frame;
+   return HBox;
 end Create_Sensor_Signals_Frame;

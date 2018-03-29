@@ -11,6 +11,7 @@ with Gtk.Layered.Waveform;
 with Gtk.Main;
 with Gtk.Message_Dialog;
 with Gtk.Missed;
+with Gtk.Widget;
 with GUI.Callbacks;
 with Pango.Cairo.Fonts;
 with Shared_Parameters.Read;
@@ -425,12 +426,14 @@ package body GUI is
                SIM_Active : constant Boolean := Win.Simulator_Running;
                --  This call is rather expensive, so only do it once per check.
             begin
-               Win.Start_Button.all.Set_Sensitive (Sensitive => not SIM_Active);
+               Win.Buttons (Start_Button).all.Set_Sensitive
+                 (Sensitive => not SIM_Active);
 
                --  There might be a simulator running, but as we don't know its
                --  Process_Id at this point, we can't send it a kill signal
                --  anyway, thus there's no point in enabling the Abort button.
-               Win.Abort_Button.all.Set_Sensitive (Sensitive => SIM_Active);
+               Win.Buttons (Abort_Button).all.Set_Sensitive
+                 (Sensitive => SIM_Active);
             end Check_SIM_State;
 
             --  Update SIM log view.

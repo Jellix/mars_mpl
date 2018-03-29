@@ -73,7 +73,7 @@ package body GUI.Callbacks is
 
       --  Simulator should be aborted, hence disable "Abort" and enable "Start".
       Button.all.Set_Sensitive (Sensitive => False);
-      Win.all.Start_Button.all.Set_Sensitive (Sensitive => True);
+      Win.all.Buttons (Start_Button).all.Set_Sensitive (Sensitive => True);
    end SIM_Abort;
 
    procedure SIM_Start (Button : access Gtk.Button.Gtk_Button_Record'Class)
@@ -99,7 +99,7 @@ package body GUI.Callbacks is
 
          --  Simulator is running, hence disable "Start" and enable "Abort".
          Button.all.Set_Sensitive (Sensitive => False);
-         Win.all.Abort_Button.all.Set_Sensitive (Sensitive => True);
+         Win.all.Buttons (Abort_Button).all.Set_Sensitive (Sensitive => True);
       exception
          when GNAT.Expect.Invalid_Process =>
             Log.Trace (Message => "Failed to start simulator!");
