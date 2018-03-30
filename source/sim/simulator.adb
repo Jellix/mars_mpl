@@ -59,7 +59,7 @@ procedure Simulator is
    begin
       Landing_Legs.Read_State (State => All_Legs);
       Shared_Sensor_Data.Current_State.Set
-        (Data =>
+        (New_Value =>
            Shared_Sensor_Data.State'(Legs             => All_Legs,
                                      Thruster_Enabled => Thrust_On,
                                      Altitude         => Altitude,

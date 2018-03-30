@@ -1,4 +1,5 @@
 with Shared_Types;
+with Task_Safe_Store;
 
 --  @summary
 --  Provides the shared data from the sensors (i.e. monitoring and control
@@ -37,28 +38,17 @@ is
 
    pragma Annotate (GNATcheck, Exempt_Off, "Visible_Components");
 
-   protected Current_State is
+   package State_Store is new Task_Safe_Store
+     (Stored_Type => State,
+      Initial_Value => State'(Legs             =>
+                                Shared_Types.All_Legs_State'
+                                  (others => Shared_Types.In_Flight),
+                              Thruster_Enabled => False,
+                              Altitude         => 0.0,
+                              Velocity         => 0.0,
+                              Fuel             => 0.0,
+                              Time_Stamp       => 0.0));
 
-      procedure Set (Data : in State);
-      --  Sets a new state.
-      --  @param Data The new set of sensor data to be stored.
-
-      function Get return State;
-      --  Retrieves the latest state.
-      --  @return Latest state of space craft.
-
-   private
-      The_Blob : State
-        := State'(Legs             =>
-                    Shared_Types.All_Legs_State'
-                      (others => Shared_Types.In_Flight),
-                  Thruster_Enabled => False,
-                  Altitude         => 0.0,
-                  Velocity         => 0.0,
-                  Fuel             => 0.0,
-                  Time_Stamp       => 0.0);
-   end Current_State;
-   --  To ensure atsk safe access, the actual shared sensor data is wrapped in
-   --  this protected object.
+   Current_State : State_Store.Shelf;
 
 end Shared_Sensor_Data;
