@@ -1,6 +1,6 @@
 with Gdk.Event;
 with Gtk.Button;
-with Gtk.Switch;
+with Gtk.Toggle_Button;
 with Gtk.Widget;
 
 private package GUI.Callbacks is
@@ -13,8 +13,8 @@ private package GUI.Callbacks is
    procedure SIM_Abort (Button : access Gtk.Button.Gtk_Button_Record'Class);
    procedure SIM_Start (Button : access Gtk.Button.Gtk_Button_Record'Class);
 
-   function Switch_Bug (Self  : access Gtk.Switch.Gtk_Switch_Record'Class;
-                        State : in     Boolean) return Boolean;
+   procedure Switch_Bug
+     (Self : access Gtk.Toggle_Button.Gtk_Toggle_Button_Record'Class);
 
    generic
       type T is delta <>;

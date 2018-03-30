@@ -1,10 +1,10 @@
 with Gdk.RGBA;
 with Gtk.Button_Box;
+with Gtk.Check_Button;
 with Gtk.Frame;
 with Gtk.Grid;
 with Gtk.Label;
 with Gtk.Style_Context;
-with Gtk.Switch;
 with Shared_Parameters.Read;
 
 separate (GUI)
@@ -18,8 +18,8 @@ is
 begin
    Add_Controls :
    declare
-      Bug_Switch       : constant Gtk.Switch.Gtk_Switch :=
-                           Gtk.Switch.Gtk_Switch_New;
+      Bug_Switch       : constant Gtk.Check_Button.Gtk_Check_Button :=
+                           Gtk.Check_Button.Gtk_Check_Button_New_With_Label;
       V_Initial        : constant Gtk.GEntry.Gtk_Entry :=
                            Gtk.GEntry.Gtk_Entry_New;
       V_Safe_Landing   : constant Gtk.GEntry.Gtk_Entry :=
@@ -39,10 +39,10 @@ begin
       V_Thruster       : constant Gtk.GEntry.Gtk_Entry :=
                            Gtk.GEntry.Gtk_Entry_New;
    begin
-      Bug_Switch.all.Set_State
-        (State => Shared_Parameters.Read.TDM_Bug_Enabled);
-      Bug_Switch.all.On_State_Set (Call  => Callbacks.Switch_Bug'Access,
-                                   After => False);
+      Bug_Switch.all.Set_Active
+        (Is_Active => Shared_Parameters.Read.TDM_Bug_Enabled);
+      Bug_Switch.all.On_Toggled (Call  => Callbacks.Switch_Bug'Access,
+                                 After => False);
       V_Initial.all.Set_Text
         (Text => Image (Value     => Shared_Parameters.Read.Initial_Velocity,
                         With_Unit => False));

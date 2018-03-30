@@ -106,15 +106,14 @@ package body GUI.Callbacks is
       end Handle_Exception;
    end SIM_Start;
 
-   function Switch_Bug (Self  : access Gtk.Switch.Gtk_Switch_Record'Class;
-                        State : in     Boolean) return Boolean
+   procedure Switch_Bug
+     (Self : access Gtk.Toggle_Button.Gtk_Toggle_Button_Record'Class)
    is
-      pragma Unreferenced (Self);
+      State : constant Boolean := Self.all.Get_Active;
    begin
       Shared_Parameters.Write.TDM_Bug_Enabled (Value => State);
       Log.Trace (Message =>
                    "TDM bug " & (if State then "en" else "dis") & "abled.");
-      return False;
    end Switch_Bug;
 
 end GUI.Callbacks;

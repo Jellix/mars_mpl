@@ -1,6 +1,5 @@
 with Gtk.Frame;
 with Gtk.Label;
-with Gtk.Switch;
 
 separate (GUI)
 function Create_Sensor_Signals_Frame
