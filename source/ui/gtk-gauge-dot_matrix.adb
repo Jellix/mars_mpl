@@ -118,17 +118,13 @@ package body Gtk.Gauge.Dot_Matrix is
       return Class_Record.all.The_Type;
    end Get_Type;
 
-   procedure Gtk_New (This          :    out Gtk_Gauge_Dot_Matrix;
-                      Columns       : in     Col_Index;
-                      Rows          : in     Row_Index;
-                      BG_Color      : in     Gdk.Color.Gdk_Color :=
-                        Gtk.Missed.RGB (Red   => 0.8,
-                                        Green => 0.8,
-                                        Blue  => 0.8);
-                      On_Color      : in     Gdk.Color.Gdk_Color :=
-                        Gtk.Colors.Black;
-                      Off_Color     : in     Gdk.Color.Gdk_Color :=
-                        Gtk.Colors.White) is
+   procedure Gtk_New
+     (This      :    out Gtk_Gauge_Dot_Matrix;
+      Columns   : in     Col_Index;
+      Rows      : in     Row_Index;
+      BG_Color  : in     Gdk.Color.Gdk_Color := Gtk.Colors.Light_Grey;
+      On_Color  : in     Gdk.Color.Gdk_Color := Gtk.Colors.Black;
+      Off_Color : in     Gdk.Color.Gdk_Color := Gtk.Colors.White) is
    begin
       This := new Gtk_Gauge_Dot_Matrix_Record;
       Initialize (This      => This,
@@ -150,7 +146,10 @@ package body Gtk.Gauge.Dot_Matrix is
       Rows          : in              Row_Index;
       BG_Color      : in              Gdk.Color.Gdk_Color;
       On_Color      : in              Gdk.Color.Gdk_Color;
-      Off_Color     : in              Gdk.Color.Gdk_Color) is
+      Off_Color     : in              Gdk.Color.Gdk_Color)
+   is
+      Col_Double : constant Glib.Gdouble := Glib.Gdouble (Columns);
+      Row_Double : constant Glib.Gdouble := Glib.Gdouble (Rows);
    begin
       G_New (Object => This,
              Typ    => Get_Type);
@@ -178,8 +177,7 @@ package body Gtk.Gauge.Dot_Matrix is
            Deepened      => True,
            Widened       => True,
            Scaled        => True);
-      This.all.Set_Aspect_Ratio
-        (Aspect_Ratio => Glib.Gdouble (Columns) / Glib.Gdouble (Rows));
+      This.all.Set_Aspect_Ratio (Aspect_Ratio => Col_Double / Row_Double);
 
       if This.all.State /= null then
          Free (This.all.State);
@@ -203,9 +201,7 @@ package body Gtk.Gauge.Dot_Matrix is
 
       Setup_Dot_Matrix :
       declare
-         Col_Double : constant Glib.Gdouble := Glib.Gdouble (Columns);
-         Row_Double : constant Glib.Gdouble := Glib.Gdouble (Rows);
-         Curvature  : constant Glib.Gdouble := 5.0 * Col_Double;
+         Curvature : constant Glib.Gdouble := 5.0 * Col_Double;
       begin
          Column_Loop :
          for X in This.all.Dots.all'Range (1) loop
@@ -249,6 +245,7 @@ package body Gtk.Gauge.Dot_Matrix is
         Gtk.Layered.Cache.Add_Cache (This.all.Background.all.Get_Foreground);
 
       This.all.Update_State;
+      This.all.Changed := False;
    end Initialize;
 
    overriding procedure Refresh

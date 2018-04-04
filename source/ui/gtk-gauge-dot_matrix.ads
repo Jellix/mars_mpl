@@ -3,7 +3,6 @@ with Gdk.Color;
 with Gtk.Colors;
 with Gtk.Layered.Cache;
 with Gtk.Layered.Rectangular_Background;
-with Gtk.Missed;
 
 package Gtk.Gauge.Dot_Matrix is
 
@@ -59,25 +58,27 @@ package Gtk.Gauge.Dot_Matrix is
    -- Gtk_New -- Widget construction
    --
    --    This          - The result
+   --    Columns       - The number of columns in the dot matrix
+   --    Rows          - The number of rows in the dot matrix
+   --    BG_Color      - The color of the background
    --    On_Color      - The LED's color when on
    --    Off_Color     - The LED's color when off
    --
-   procedure Gtk_New (This          :    out Gtk_Gauge_Dot_Matrix;
-                      Columns       : in     Col_Index;
-                      Rows          : in     Row_Index;
-                      BG_Color      : in     Gdk.Color.Gdk_Color :=
-                        Gtk.Missed.RGB (Red   => 0.8,
-                                        Green => 0.8,
-                                        Blue  => 0.8);
-                      On_Color      : in     Gdk.Color.Gdk_Color :=
-                        Gtk.Colors.Black;
-                      Off_Color     : in     Gdk.Color.Gdk_Color :=
-                        Gtk.Colors.White);
+   procedure Gtk_New
+     (This      :    out Gtk_Gauge_Dot_Matrix;
+      Columns   : in     Col_Index;
+      Rows      : in     Row_Index;
+      BG_Color  : in     Gdk.Color.Gdk_Color := Gtk.Colors.Light_Grey;
+      On_Color  : in     Gdk.Color.Gdk_Color := Gtk.Colors.Black;
+      Off_Color : in     Gdk.Color.Gdk_Color := Gtk.Colors.White);
 
    --
    -- Initialize -- The widget initialization
    --
    --    This          - The widget to initialize
+   --    Columns       - The number of columns in the dot matrix
+   --    Rows          - The number of rows in the dot matrix
+   --    BG_Color      - The color of the background
    --    On_Color      - The LED's color when on
    --    Off_Color     - The LED's color when off
    --
@@ -193,7 +194,7 @@ private
          Cache      : access Gtk.Layered.Cache.Cache_Layer;
          Dots       : Dotted_Matrix;
          State      : States;
-         Changed    : Boolean := False;
+         Changed    : Boolean;
          On         : Gdk.Color.Gdk_Color;
          Off        : Gdk.Color.Gdk_Color;
          pragma Atomic (Changed);
