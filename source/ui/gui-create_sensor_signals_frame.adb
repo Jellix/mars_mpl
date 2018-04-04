@@ -1,3 +1,4 @@
+with Gtk.Colors;
 with Gtk.Frame;
 with Gtk.Label;
 
@@ -27,8 +28,8 @@ is
          begin
             Gtk.Gauge.LED_Round.Gtk_New
               (Widget        => Led,
-               On_Color      => Colors.Green,
-               Off_Color     => Colors.Grey,
+               On_Color      => Gtk.Colors.Green,
+               Off_Color     => Gtk.Colors.Grey,
                Border_Shadow => Gtk.Enums.Shadow_Etched_Out);
             Box.all.Pack_Start
               (Child =>
@@ -48,8 +49,8 @@ is
       begin
          Gtk.Gauge.LED_Round.Gtk_New
            (Widget        => Led,
-            On_Color      => Colors.Light_Yellow,
-            Off_Color     => Colors.Grey,
+            On_Color      => Gtk.Colors.Dark_Yellow,
+            Off_Color     => Gtk.Colors.Grey,
             Border_Shadow => Gtk.Enums.Shadow_Etched_Out);
          Box.all.Pack_Start
            (Child => Labeled_Widget (Widget     => Led,

@@ -1,3 +1,4 @@
+with Gtk.Colors;
 with Gtk.Frame;
 with Gtk.Layered.Refresh_Engine;
 with Gtk.Missed;
@@ -32,7 +33,7 @@ begin
       begin
          Gtk.Oscilloscope.Gtk_New
            (Widget         => Scope,
-            Background     => Colors.Light_Grey,
+            Background     => Gtk.Colors.Light_Grey,
             Lower_Sweeper  => (if Master /= null
                                then Master.all.Get_Sweeper (Sweeper => Gtk.Oscilloscope.Lower)
                                else null),
@@ -93,17 +94,17 @@ begin
       Plots : Plot_Elements renames Window.Plot;
    begin
       Plots.Altitude_Channel :=
-        Plots.Altitude_Plot.all.Add_Channel (Color   => Colors.Red,
+        Plots.Altitude_Plot.all.Add_Channel (Color   => Gtk.Colors.Red,
                                              Mode    => Gtk.Layered.Linear,
                                              Name    => "Altitude",
                                              Sweeper => Gtk.Oscilloscope.Lower);
       Plots.Fuel_Channel     :=
-        Plots.Fuel_Plot.all.Add_Channel (Color => Colors.Blue,
+        Plots.Fuel_Plot.all.Add_Channel (Color => Gtk.Colors.Blue,
                                          Mode  => Gtk.Layered.Linear,
                                          Name  => "Fuel",
                                          Sweeper => Gtk.Oscilloscope.Lower);
       Plots.Velocity_Channel :=
-        Plots.Velocity_Plot.all.Add_Channel (Color => Colors.Purple,
+        Plots.Velocity_Plot.all.Add_Channel (Color => Gtk.Colors.Purple,
                                              Mode  => Gtk.Layered.Linear,
                                              Name  => "Velocity",
                                              Sweeper => Gtk.Oscilloscope.Lower);
@@ -135,7 +136,7 @@ begin
          Plots.Thruster_Channel :=
            Plots.Discretes_Plot.all.Add_Channel
              (Group   => G,
-              Color   => Colors.Blue,
+              Color   => Gtk.Colors.Blue,
               Mode    => Gtk.Layered.Left,
               Name    => "Thruster",
               Sweeper => Gtk.Oscilloscope.Lower);

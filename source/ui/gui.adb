@@ -1,6 +1,5 @@
 with Ada.Real_Time;
 with Cairo;
-with Gdk.Color;
 with Glib;
 with GNAT.Regpat;
 with Gtk.Box;
@@ -39,27 +38,6 @@ package body GUI is
                            (Family => "arial",
                             Slant  => Cairo.Cairo_Font_Slant_Italic,
                             Weight => Cairo.Cairo_Font_Weight_Bold);
-
-   package Colors is
-
-      subtype Color is Gdk.Color.Gdk_Color;
-
-      function RGB (R : in Glib.Gdouble;
-                    G : in Glib.Gdouble;
-                    B : in Glib.Gdouble) return Color
-                    renames Gtk.Missed.RGB;
-
-      Black        : constant Color := RGB (R => 0.0, G => 0.0, B => 0.0);
-      Blue         : constant Color := RGB (R => 0.0, G => 0.0, B => 1.0);
-      Light_Yellow : constant Color := RGB (R => 1.0, G => 1.0, B => 0.5);
-      Green        : constant Color := RGB (R => 0.0, G => 1.0, B => 0.0);
-      Light_Grey   : constant Color := RGB (R => 0.9, G => 0.9, B => 0.9);
-      Grey         : constant Color := RGB (R => 0.5, G => 0.5, B => 0.5);
-      Purple       : constant Color := RGB (R => 1.0, G => 0.5, B => 0.5);
-      Red          : constant Color := RGB (R => 1.0, G => 0.0, B => 0.0);
-      White        : constant Color := RGB (R => 1.0, G => 1.0, B => 1.0);
-
-   end Colors;
 
    type Scaling is
       record

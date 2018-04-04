@@ -33,6 +33,7 @@ with Glib.Object.Checked_Destroy;
 with Glib.Properties.Creation;
 with Glib.Types;
 with Gtk.Layered.Abstract_Bordered;
+with Gtk.Colors;
 with Gtk.Missed;
 with Gtk.Widget.Styles.Line_Cap_Property;
 with Pango.Cairo.Fonts;
@@ -44,25 +45,18 @@ package body Gtk.Gauge.Altimeter is
 
    Pi : constant := Ada.Numerics.Pi;
 
-   Needle_Color_1    : constant Gdk.Color.Gdk_Color :=
-                         Gtk.Missed.RGB (Red => 1.00, Green => 0.00, Blue => 0.00);
-   Needle_Color_2    : constant Gdk.Color.Gdk_Color :=
-                         Gtk.Missed.RGB (Red => 1.00, Green => 1.00, Blue => 0.00);
-   Needle_Color_3    : constant Gdk.Color.Gdk_Color :=
-                         Gtk.Missed.RGB (Red => 0.00, Green => 1.00, Blue => 0.00);
+   Needle_Color_1    : constant Gdk.Color.Gdk_Color := Gtk.Colors.Red;
+   Needle_Color_2    : constant Gdk.Color.Gdk_Color := Gtk.Colors.Yellow;
+   Needle_Color_3    : constant Gdk.Color.Gdk_Color := Gtk.Colors.Green;
 
    Pin_Color         : constant Gdk.Color.Gdk_Color :=
                          Gtk.Missed.RGB (Red => 0.70, Green => 0.70, Blue => 0.70);
    Background_Color  : constant Gdk.Color.Gdk_Color :=
                          Gtk.Missed.RGB (Red => 0.17, Green => 0.12, Blue => 0.11);
-   Major_Tick_Color  : constant Gdk.Color.Gdk_Color :=
-                         Gtk.Missed.RGB (Red => 1.00, Green => 1.00, Blue => 1.00);
-   Middle_Tick_Color : constant Gdk.Color.Gdk_Color :=
-                         Gtk.Missed.RGB (Red => 1.00, Green => 1.00, Blue => 1.00);
-   Minor_Tick_Color  : constant Gdk.Color.Gdk_Color :=
-                         Gtk.Missed.RGB (Red => 1.00, Green => 1.00, Blue => 1.00);
-   Text_Color        : constant Gdk.Color.Gdk_Color :=
-                         Gtk.Missed.RGB (Red => 1.00, Green => 1.00, Blue => 1.00);
+   Major_Tick_Color  : constant Gdk.Color.Gdk_Color := Gtk.Colors.White;
+   Middle_Tick_Color : constant Gdk.Color.Gdk_Color := Gtk.Colors.White;
+   Minor_Tick_Color  : constant Gdk.Color.Gdk_Color := Gtk.Colors.White;
+   Text_Color        : constant Gdk.Color.Gdk_Color := Gtk.Colors.White;
 
    Class_Record : aliased Ada_GObject_Class := Uninitialized_Class;
 

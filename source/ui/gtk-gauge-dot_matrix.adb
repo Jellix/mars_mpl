@@ -126,13 +126,9 @@ package body Gtk.Gauge.Dot_Matrix is
                                         Green => 0.8,
                                         Blue  => 0.8);
                       On_Color      : in     Gdk.Color.Gdk_Color :=
-                        Gtk.Missed.RGB (Red   => 0.0,
-                                        Green => 0.0,
-                                        Blue  => 0.0);
+                        Gtk.Colors.Black;
                       Off_Color     : in     Gdk.Color.Gdk_Color :=
-                        Gtk.Missed.RGB (Red   => 1.0,
-                                        Green => 1.0,
-                                        Blue  => 1.0)) is
+                        Gtk.Colors.White) is
    begin
       This := new Gtk_Gauge_Dot_Matrix_Record;
       Initialize (This      => This,

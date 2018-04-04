@@ -1,4 +1,5 @@
 with Cairo.Ellipses;
+with Gtk.Colors;
 with Gtk.Frame;
 with Gtk.Layered.Label;
 
@@ -38,7 +39,7 @@ begin
                                       Height   => 0.03,
                                       Stretch  => 0.9,
                                       Mode     => Gtk.Layered.Moved_Centered,
-                                      Color    => Colors.Black,
+                                      Color    => Gtk.Colors.Black,
                                       Angle    => 0.0,
                                       Skew     => 0.0,
                                       Markup   => False,
