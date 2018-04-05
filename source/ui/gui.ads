@@ -50,9 +50,20 @@ private
    type Button_List is array (Buttons) of
      access Gtk.Button.Gtk_Button_Record'Class;
 
+   type Text_Entries is (Dry_Mass,
+                         Exhaust_Velocity,
+                         Fuel_Flow_Rate,
+                         Initial_Altitude,
+                         Initial_Fuel_Mass,
+                         Initial_Velocity,
+                         Shortest_On_Time);
+   type Text_Entry_List is array (Text_Entries) of
+     access Gtk.GEntry.Gtk_Entry_Record'Class;
+
    type Main_Window_Record is new Gtk.Window.Gtk_Window_Record with
       record
          Buttons       : Button_List;
+         Text_Entries  : Text_Entry_List;
          Elements      : Dynamic_Elements;
          Plot          : Plot_Elements;
          Mission_Clock : Gtk.Frame.Digital_Clock.Gtk_Frame_Digital_Clock;

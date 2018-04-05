@@ -13,6 +13,7 @@ with Gtk.Missed;
 with Gtk.Widget;
 with GUI.Callbacks;
 with Pango.Cairo.Fonts;
+with Shared_Parameters.Default;
 with Shared_Parameters.Read;
 with Shared_Parameters.Write;
 with Shared_Sensor_Data;
@@ -74,11 +75,23 @@ package body GUI is
       Write => Shared_Parameters.Write.Dry_Mass,
       Name  => "spacecraft dry mass");
 
+   procedure Reset_Dry_Mass is new Callbacks.Reset_Value
+     (T          => Shared_Types.Vehicle_Mass,
+      Write      => Shared_Parameters.Write.Dry_Mass,
+      Default    => Shared_Parameters.Default.Dry_Mass,
+      Text_Entry => Dry_Mass);
+
    function Set_Exhaust_Velocity is new Callbacks.Set_GEntry_Value
      (T     => Shared_Types.Velocity,
       Read  => Shared_Parameters.Read.Exhaust_Velocity,
       Write => Shared_Parameters.Write.Exhaust_Velocity,
       Name  => "exhaust velocity");
+
+   procedure Reset_Exhaust_Velocity is new Callbacks.Reset_Value
+     (T          => Shared_Types.Velocity,
+      Write      => Shared_Parameters.Write.Exhaust_Velocity,
+      Default    => Shared_Parameters.Default.Exhaust_Velocity,
+      Text_Entry => Exhaust_Velocity);
 
    function Set_Fuel_Flow_Rate is new Callbacks.Set_GEntry_Value
      (T     => Shared_Types.Flow_Rate,
@@ -86,11 +99,23 @@ package body GUI is
       Write => Shared_Parameters.Write.Fuel_Flow_Rate,
       Name  => "fuel flow rate");
 
+   procedure Reset_Fuel_Flow_Rate is new Callbacks.Reset_Value
+     (T          => Shared_Types.Flow_Rate,
+      Write      => Shared_Parameters.Write.Fuel_Flow_Rate,
+      Default    => Shared_Parameters.Default.Fuel_Flow_Rate,
+      Text_Entry => Fuel_Flow_Rate);
+
    function Set_Initial_Altitude is new Callbacks.Set_GEntry_Value
      (T     => Shared_Types.Altitude,
       Read  => Shared_Parameters.Read.Initial_Altitude,
       Write => Shared_Parameters.Write.Initial_Altitude,
       Name  => "initial altitude");
+
+   procedure Reset_Initial_Altitude is new Callbacks.Reset_Value
+     (T          => Shared_Types.Altitude,
+      Write      => Shared_Parameters.Write.Initial_Altitude,
+      Default    => Shared_Parameters.Default.Initial_Altitude,
+      Text_Entry => Initial_Altitude);
 
    function Set_Initial_Fuel_Mass is new Callbacks.Set_GEntry_Value
      (T     => Shared_Types.Fuel_Mass,
@@ -98,17 +123,35 @@ package body GUI is
       Write => Shared_Parameters.Write.Initial_Fuel_Mass,
       Name  => "initial fuel mass");
 
+   procedure Reset_Initial_Fuel_Mass is new Callbacks.Reset_Value
+     (T          => Shared_Types.Fuel_Mass,
+      Write      => Shared_Parameters.Write.Initial_Fuel_Mass,
+      Default    => Shared_Parameters.Default.Initial_Fuel_Mass,
+      Text_Entry => Initial_Fuel_Mass);
+
    function Set_Initial_Velocity is new Callbacks.Set_GEntry_Value
      (T     => Shared_Types.Velocity,
       Read  => Shared_Parameters.Read.Initial_Velocity,
       Write => Shared_Parameters.Write.Initial_Velocity,
       Name  => "initial velocity");
 
+   procedure Reset_Initial_Velocity is new Callbacks.Reset_Value
+     (T          => Shared_Types.Velocity,
+      Write      => Shared_Parameters.Write.Initial_Velocity,
+      Default    => Shared_Parameters.Default.Initial_Velocity,
+      Text_Entry => Initial_Velocity);
+
    function Set_Shortest_On_Time is new Callbacks.Set_GEntry_Value
      (T     => Shared_Types.On_Time,
       Read  => Shared_Parameters.Read.Shortest_On_Time,
       Write => Shared_Parameters.Write.Shortest_On_Time,
       Name  => "Shortest on-time");
+
+   procedure Reset_Shortest_On_Time is new Callbacks.Reset_Value
+     (T          => Shared_Types.On_Time,
+      Write      => Shared_Parameters.Write.Shortest_On_Time,
+      Default    => Shared_Parameters.Default.Shortest_On_Time,
+      Text_Entry => Shortest_On_Time);
 
    pragma Warnings (On, "instance does not use primitive operation ""*""");
 

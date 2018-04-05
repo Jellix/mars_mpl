@@ -16,174 +16,260 @@ is
                  Gtk.Box.Gtk_Hbox_New (Homogeneous => False,
                                        Spacing     => 0);
 begin
-   Add_Controls :
+   Add_Labeled_Text_Entries :
    declare
-      Bug_Switch       : constant Gtk.Check_Button.Gtk_Check_Button :=
-                           Gtk.Check_Button.Gtk_Check_Button_New_With_Label;
-      V_Initial        : constant Gtk.GEntry.Gtk_Entry :=
-                           Gtk.GEntry.Gtk_Entry_New;
-      V_Safe_Landing   : constant Gtk.GEntry.Gtk_Entry :=
-                           Gtk.GEntry.Gtk_Entry_New;
-      V_Target_Landing :  constant Gtk.GEntry.Gtk_Entry :=
-                           Gtk.GEntry.Gtk_Entry_New;
-      A_Initial        : constant Gtk.GEntry.Gtk_Entry :=
-                           Gtk.GEntry.Gtk_Entry_New;
-      M_Dry            : constant Gtk.GEntry.Gtk_Entry :=
-                           Gtk.GEntry.Gtk_Entry_New;
-      F_Initial        : constant Gtk.GEntry.Gtk_Entry :=
-                           Gtk.GEntry.Gtk_Entry_New;
-      F_Rate           : constant Gtk.GEntry.Gtk_Entry :=
-                           Gtk.GEntry.Gtk_Entry_New;
-      T_On             : constant Gtk.GEntry.Gtk_Entry :=
-                           Gtk.GEntry.Gtk_Entry_New;
-      V_Thruster       : constant Gtk.GEntry.Gtk_Entry :=
-                           Gtk.GEntry.Gtk_Entry_New;
+      use type Glib.Gint;
+
+      Grid : constant Gtk.Grid.Gtk_Grid := Gtk.Grid.Gtk_Grid_New;
+      Row  : Glib.Gint                  := 0;
+
+      procedure Grid_Add_Row
+        (Left   : in              Glib.UTF8_String := "";
+         Widget : not null access Gtk.Widget.Gtk_Widget_Record'Class;
+         Right  : in              Glib.UTF8_String := "";
+         Reset  :          access Gtk.Button.Gtk_Button_Record'Class := null);
+
+      procedure Grid_Add_Row
+        (Left   : in              Glib.UTF8_String := "";
+         Widget : not null access Gtk.Widget.Gtk_Widget_Record'Class;
+         Right  : in              Glib.UTF8_String := "";
+         Reset  :          access Gtk.Button.Gtk_Button_Record'Class := null) is
+      begin
+         Grid.all.Insert_Row (Position => Row);
+
+         if Left /= "" then
+            Grid.all.Attach (Child  => Gtk.Label.Gtk_Label_New (Str => Left),
+                             Left   => 0,
+                             Top    => Row);
+         end if;
+
+         Grid.all.Attach (Child => Widget,
+                          Left  => 1,
+                          Top   => Row);
+
+         if Right /= "" then
+            Grid.all.Attach (Child => Gtk.Label.Gtk_Label_New (Str => Right),
+                             Left  => 2,
+                             Top   => Row);
+         end if;
+
+         if Reset /= null then
+            Grid.all.Attach (Child => Reset,
+                             Left  => 3,
+                             Top   => Row);
+         end if;
+
+         Row := Row + 1;
+      end Grid_Add_Row;
    begin
-      Bug_Switch.all.Set_Active
-        (Is_Active => Shared_Parameters.Read.TDM_Bug_Enabled);
-      Bug_Switch.all.On_Toggled (Call  => Callbacks.Switch_Bug'Access,
-                                 After => False);
-      V_Initial.all.Set_Text
-        (Text => Image (Value     => Shared_Parameters.Read.Initial_Velocity,
-                        With_Unit => False));
-      V_Initial.all.On_Focus_Out_Event (Call  => Set_Initial_Velocity'Access,
-                                        After => True);
+      for I in Glib.Gint range 0 .. 3 loop
+         Grid.all.Insert_Column (Position => I);
+      end loop;
 
-      V_Safe_Landing.all.Set_Text
-        (Text =>
-           Image (Value     => Shared_Parameters.Read.Safe_Landing_Velocity,
-                  With_Unit => False));
-      V_Safe_Landing.all.Set_Editable (Is_Editable => False);
+      declare
+         B : constant Gtk.Check_Button.Gtk_Check_Button :=
+               Gtk.Check_Button.Gtk_Check_Button_New_With_Label;
+      begin
+         B.all.Set_Active (Is_Active => Shared_Parameters.Read.TDM_Bug_Enabled);
+         B.all.On_Toggled (Call  => Callbacks.Switch_Bug'Access,
+                           After => False);
+         Grid_Add_Row (Left   => "TDM Bug",
+                       Widget => B);
+      end;
 
-      V_Target_Landing.all.Set_Text
-        (Text =>
-           Image (Value     => Shared_Parameters.Read.Target_Landing_Velocity,
-                  With_Unit => False));
-      V_Target_Landing.all.Set_Editable (Is_Editable => False);
+      declare
+         B : constant Gtk.Button.Gtk_Button :=
+               Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
+         T : constant Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
+      begin
+         Window.Text_Entries (Initial_Velocity) := T;
 
-      A_Initial.all.Set_Text
-        (Text => Image (Value     => Shared_Parameters.Read.Initial_Altitude,
-                        With_Unit => False));
-      A_Initial.all.On_Focus_Out_Event (Call  => Set_Initial_Altitude'Access,
-                                        After => True);
-
-      M_Dry.all.Set_Text
-        (Text => Image (Value     => Shared_Parameters.Read.Dry_Mass,
-                        With_Unit => False));
-      M_Dry.all.On_Focus_Out_Event
-        (Call  => Set_Dry_Mass'Access,
-         After => True);
-
-      F_Initial.all.Set_Text
-        (Text => Image (Value     => Shared_Parameters.Read.Initial_Fuel_Mass,
-                        With_Unit => False));
-      F_Initial.all.On_Focus_Out_Event
-        (Call  => Set_Initial_Fuel_Mass'Access,
-         After => True);
-
-      F_Rate.all.Set_Text
-        (Text => Image (Value     => Shared_Parameters.Read.Fuel_Flow_Rate,
-                        With_Unit => False));
-      F_Rate.all.On_Focus_Out_Event (Call  => Set_Fuel_Flow_Rate'Access,
-                                     After => True);
-
-      T_On.all.Set_Text
-        (Text => Image (Value     => Shared_Parameters.Read.Shortest_On_Time,
-                        With_Unit => False));
-      T_On.all.On_Focus_Out_Event (Call  => Set_Shortest_On_Time'Access,
+         B.all.On_Clicked (Call  => Reset_Initial_Velocity'Access,
+                           After => True);
+         T.all.Set_Text
+           (Text => Image (Value     => Shared_Parameters.Read.Initial_Velocity,
+                           With_Unit => False));
+         T.all.On_Focus_Out_Event (Call  => Set_Initial_Velocity'Access,
                                    After => True);
 
-      V_Thruster.all.Set_Text
-        (Text => Image (Value     => Shared_Parameters.Read.Exhaust_Velocity,
-                        With_Unit => False));
-      V_Thruster.all.On_Focus_Out_Event
-        (Call  => Set_Exhaust_Velocity'Access,
-         After => True);
-
-      Add_Labeled_Text_Entries :
-      declare
-         Grid : constant Gtk.Grid.Gtk_Grid := Gtk.Grid.Gtk_Grid_New;
-         Row  : Glib.Gint                  := 0;
-
-         procedure Grid_Add_Row
-           (Left   : in              Glib.UTF8_String := "";
-            Widget : not null access Gtk.Widget.Gtk_Widget_Record'Class;
-            Right  : in              Glib.UTF8_String := "");
-
-         procedure Grid_Add_Row
-           (Left   : in              Glib.UTF8_String := "";
-            Widget : not null access Gtk.Widget.Gtk_Widget_Record'Class;
-            Right  : in              Glib.UTF8_String := "")
-         is
-            use type Glib.Gint;
-         begin
-            Grid.all.Insert_Row (Position => Row);
-
-            if Left /= "" then
-               Grid.all.Attach (Child  => Gtk.Label.Gtk_Label_New (Str => Left),
-                                Left   => 0,
-                                Top    => Row);
-            end if;
-
-            Grid.all.Attach (Child => Widget,
-                             Left  => 1,
-                             Top   => Row);
-
-            if Right /= "" then
-               Grid.all.Attach (Child => Gtk.Label.Gtk_Label_New (Str => Right),
-                                Left  => 2,
-                                Top   => Row);
-            end if;
-
-            Row := Row + 1;
-         end Grid_Add_Row;
-      begin
-         for I in Glib.Gint range 0 .. 2 loop
-            Grid.all.Insert_Column (Position => I);
-         end loop;
-
-         Grid_Add_Row (Left   => "TDM Bug",
-                       Widget => Bug_Switch);
          Grid_Add_Row (Left   => "Initial Velocity",
-                       Widget => V_Initial,
-                       Right  => "m/s");
-         Grid_Add_Row (Left   => "Safe Landing Velocity",
-                       Widget => V_Safe_Landing,
-                       Right  => "m/s");
-         Grid_Add_Row (Left   => "Target Landing Velocity",
-                       Widget => V_Target_Landing,
-                       Right  => "m/s");
-         Grid_Add_Row (Left   => "Initial Altitude",
-                       Widget => A_Initial,
-                       Right  => "m");
-         Grid_Add_Row (Left   => "Spacecraft Dry Mass",
-                       Widget => M_Dry,
-                       Right  => "kg");
-         Grid_Add_Row (Left   => "Initial Fuel Mass",
-                       Widget => F_Initial,
-                       Right  => "kg");
-         Grid_Add_Row (Left   => "Fuel Flow Rate",
-                       Widget => F_Rate,
-                       Right  => "kg/s");
-         Grid_Add_Row (Left   => "Shortest on-time",
-                       Widget => T_On,
-                       Right  => "ms");
-         Grid_Add_Row (Left   => "Exhaust Velocity",
-                       Widget => V_Thruster,
-                       Right  => "m/s");
+                       Widget => T,
+                       Right  => "m/s",
+                       Reset  => B);
+      end;
 
-         Add_Parameter_Frame :
-         declare
-            Parameter_Frame : constant Gtk.Frame.Gtk_Frame :=
-                                Gtk.Frame.Gtk_Frame_New
-                                  (Label => "Simulation Parameters");
-         begin
-            Parameter_Frame.all.Add (Widget => Grid);
-            Container.all.Pack_Start (Child  => Parameter_Frame,
-                                      Expand => False);
-         end Add_Parameter_Frame;
-      end Add_Labeled_Text_Entries;
-   end Add_Controls;
+      declare
+         T : constant Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
+      begin
+         T.all.Set_Text
+           (Text =>
+              Image (Value     => Shared_Parameters.Read.Safe_Landing_Velocity,
+                     With_Unit => False));
+         T.all.Set_Editable (Is_Editable => False);
+
+         Grid_Add_Row (Left   => "Safe Landing Velocity",
+                       Widget => T,
+                       Right  => "m/s");
+      end;
+
+      declare
+         T : constant Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
+      begin
+         T.all.Set_Text
+           (Text =>
+              Image (Value     => Shared_Parameters.Read.Target_Landing_Velocity,
+                     With_Unit => False));
+         T.all.Set_Editable (Is_Editable => False);
+
+         Grid_Add_Row (Left   => "Target Landing Velocity",
+                       Widget => T,
+                       Right  => "m/s");
+      end;
+
+      declare
+         B : constant Gtk.Button.Gtk_Button :=
+               Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
+         T : constant Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
+      begin
+         Window.Text_Entries (Initial_Altitude) := T;
+
+         B.all.On_Clicked (Call  => Reset_Initial_Altitude'Access,
+                           After => True);
+
+         T.all.Set_Text
+           (Text => Image (Value     => Shared_Parameters.Read.Initial_Altitude,
+                           With_Unit => False));
+         T.all.On_Focus_Out_Event (Call  => Set_Initial_Altitude'Access,
+                                   After => True);
+
+         Grid_Add_Row (Left   => "Initial Altitude",
+                       Widget => T,
+                       Right  => "m",
+                       Reset  => B);
+      end;
+
+      declare
+         B : constant Gtk.Button.Gtk_Button :=
+               Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
+         T : constant Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
+      begin
+         Window.Text_Entries (Dry_Mass) := T;
+
+         B.all.On_Clicked (Call  => Reset_Dry_Mass'Access,
+                           After => True);
+
+         T.all.Set_Text
+           (Text => Image (Value     => Shared_Parameters.Read.Dry_Mass,
+                           With_Unit => False));
+         T.all.On_Focus_Out_Event (Call  => Set_Dry_Mass'Access,
+                                   After => True);
+
+         Grid_Add_Row (Left   => "Spacecraft Dry Mass",
+                       Widget => T,
+                       Right  => "kg",
+                       Reset  => B);
+      end;
+
+      declare
+         B : constant Gtk.Button.Gtk_Button :=
+               Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
+         T : constant Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
+      begin
+         Window.Text_Entries (Initial_Fuel_Mass) := T;
+
+         B.all.On_Clicked (Call  => Reset_Initial_Fuel_Mass'Access,
+                           After => True);
+
+         T.all.Set_Text
+           (Text =>
+              Image (Value     => Shared_Parameters.Read.Initial_Fuel_Mass,
+                     With_Unit => False));
+         T.all.On_Focus_Out_Event (Call  => Set_Initial_Fuel_Mass'Access,
+                                   After => True);
+
+         Grid_Add_Row (Left   => "Initial Fuel Mass",
+                       Widget => T,
+                       Right  => "kg",
+                       Reset  => B);
+      end;
+
+      declare
+         B : constant Gtk.Button.Gtk_Button :=
+               Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
+         T : constant Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
+      begin
+         Window.Text_Entries (Fuel_Flow_Rate) := T;
+
+         B.all.On_Clicked (Call  => Reset_Fuel_Flow_Rate'Access,
+                           After => True);
+
+         T.all.Set_Text
+           (Text => Image (Value     => Shared_Parameters.Read.Fuel_Flow_Rate,
+                           With_Unit => False));
+         T.all.On_Focus_Out_Event (Call  => Set_Fuel_Flow_Rate'Access,
+                                   After => True);
+
+         Grid_Add_Row (Left   => "Fuel Flow Rate",
+                       Widget => T,
+                       Right  => "kg/s",
+                       Reset  => B);
+      end;
+
+      declare
+         B : constant Gtk.Button.Gtk_Button :=
+               Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
+         T : constant Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
+      begin
+         Window.Text_Entries (Shortest_On_Time) := T;
+
+         B.all.On_Clicked (Call  => Reset_Shortest_On_Time'Access,
+                           After => True);
+
+         T.all.Set_Text
+           (Text => Image (Value     => Shared_Parameters.Read.Shortest_On_Time,
+                           With_Unit => False));
+         T.all.On_Focus_Out_Event (Call  => Set_Shortest_On_Time'Access,
+                                   After => True);
+
+         Grid_Add_Row (Left   => "Shortest on-time",
+                       Widget => T,
+                       Right  => "ms",
+                       Reset  => B);
+      end;
+
+      declare
+         B : constant Gtk.Button.Gtk_Button :=
+               Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
+         T : constant Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
+      begin
+         Window.Text_Entries (Exhaust_Velocity) := T;
+
+         B.all.On_Clicked (Call  => Reset_Exhaust_Velocity'Access,
+                           After => True);
+
+         T.all.Set_Text
+           (Text => Image (Value     => Shared_Parameters.Read.Exhaust_Velocity,
+                           With_Unit => False));
+         T.all.On_Focus_Out_Event (Call  => Set_Exhaust_Velocity'Access,
+                                   After => True);
+
+         Grid_Add_Row (Left   => "Exhaust Velocity",
+                       Widget => T,
+                       Right  => "m/s",
+                       Reset  => B);
+      end;
+
+      Add_Parameter_Frame :
+      declare
+         Parameter_Frame : constant Gtk.Frame.Gtk_Frame :=
+                             Gtk.Frame.Gtk_Frame_New
+                               (Label => "Simulation Parameters");
+      begin
+         Parameter_Frame.all.Add (Widget => Grid);
+         Container.all.Pack_Start (Child  => Parameter_Frame,
+                                   Expand => False);
+      end Add_Parameter_Frame;
+   end Add_Labeled_Text_Entries;
 
    --  create SIM log viewer
    Window.SIMon_Says :=

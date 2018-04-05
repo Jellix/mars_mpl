@@ -19,9 +19,17 @@ package body GUI.Callbacks is
       return True; --  stop event processing chain
    end Exit_Main;
 
+   procedure Reset_Value (Button : access Gtk.Button.Gtk_Button_Record'Class) is
+   begin
+      Write (Value => Default);
+      Main_Window (Button.all.Get_Toplevel).all.Text_Entries (Text_Entry).all.
+        Set_Text (Text => Image (Value     => Default,
+                                 With_Unit => False));
+   end Reset_Value;
+
    function Set_GEntry_Value
      (Self  : access Gtk.Widget.Gtk_Widget_Record'Class;
-      Event : in Gdk.Event.Gdk_Event_Focus) return Boolean
+      Event : in     Gdk.Event.Gdk_Event_Focus) return Boolean
    is
       pragma Unreferenced (Event);
       GEntry : constant Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry (Self);

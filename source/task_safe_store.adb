@@ -1,5 +1,8 @@
 package body Task_Safe_Store is
 
+   function Default_Value return Stored_Type is
+     (Initial_Value);
+
    protected body Shelf is
 
       function Get return Stored_Type is

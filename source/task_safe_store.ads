@@ -18,6 +18,10 @@ generic
 package Task_Safe_Store is
    pragma Pure;
 
+   function Default_Value return Stored_Type
+     with Inline => True;
+   --  @return The Initial_Value given in instantation.
+
    protected type Shelf is
 
       procedure Set (New_Value : in Stored_Type);

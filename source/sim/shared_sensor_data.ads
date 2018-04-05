@@ -39,7 +39,7 @@ is
    pragma Annotate (GNATcheck, Exempt_Off, "Visible_Components");
 
    package State_Store is new Task_Safe_Store
-     (Stored_Type => State,
+     (Stored_Type   => State,
       Initial_Value => State'(Legs             =>
                                 Shared_Types.All_Legs_State'
                                   (others => Shared_Types.In_Flight),

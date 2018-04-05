@@ -25,6 +25,15 @@ private package GUI.Callbacks is
       Name   : String;
    function Set_GEntry_Value
      (Self  : access Gtk.Widget.Gtk_Widget_Record'Class;
-      Event : in Gdk.Event.Gdk_Event_Focus) return Boolean;
+      Event : in     Gdk.Event.Gdk_Event_Focus) return Boolean;
+
+   generic
+      type T is delta <>;
+      with procedure Write (Value : in T) is <>;
+      with function Default return T is <>;
+      with function Image (Value     : in T;
+                           With_Unit : in Boolean) return String is <>;
+      Text_Entry : in Text_Entries;
+   procedure Reset_Value (Button : access Gtk.Button.Gtk_Button_Record'Class);
 
 end GUI.Callbacks;
