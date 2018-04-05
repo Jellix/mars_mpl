@@ -9,6 +9,7 @@ with Gtk.Gauge.Round_270;
 with Gtk.GEntry;
 with Gtk.Meter.Angular_90;
 with Gtk.Oscilloscope;
+with Gtk.Spin_Button;
 with Gtk.Window;
 with Shared_Types.IO;
 
@@ -58,7 +59,7 @@ private
                          Initial_Velocity,
                          Shortest_On_Time);
    type Text_Entry_List is array (Text_Entries) of
-     access Gtk.GEntry.Gtk_Entry_Record'Class;
+     access Gtk.Spin_Button.Gtk_Spin_Button_Record'Class;
 
    type Main_Window_Record is new Gtk.Window.Gtk_Window_Record with
       record

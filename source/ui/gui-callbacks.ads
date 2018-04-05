@@ -23,7 +23,7 @@ private package GUI.Callbacks is
       with function Read return T;
       with procedure Write (Value : in T);
       Name   : String;
-   function Set_GEntry_Value
+   function Set_Spin_Button_Value
      (Self  : access Gtk.Widget.Gtk_Widget_Record'Class;
       Event : in     Gdk.Event.Gdk_Event_Focus) return Boolean;
 
@@ -31,8 +31,6 @@ private package GUI.Callbacks is
       type T is delta <>;
       with procedure Write (Value : in T) is <>;
       with function Default return T is <>;
-      with function Image (Value     : in T;
-                           With_Unit : in Boolean) return String is <>;
       Text_Entry : in Text_Entries;
    procedure Reset_Value (Button : access Gtk.Button.Gtk_Button_Record'Class);
 

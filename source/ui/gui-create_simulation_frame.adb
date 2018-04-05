@@ -1,9 +1,11 @@
 with Gdk.RGBA;
+with Gtk.Adjustment;
 with Gtk.Button_Box;
 with Gtk.Check_Button;
 with Gtk.Frame;
 with Gtk.Grid;
 with Gtk.Label;
+with Gtk.Spin_Button;
 with Gtk.Style_Context;
 with Shared_Parameters.Read;
 
@@ -80,15 +82,24 @@ begin
       declare
          B : constant Gtk.Button.Gtk_Button :=
                Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
-         T : constant Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
+         T : constant Gtk.Spin_Button.Gtk_Spin_Button :=
+               Gtk.Spin_Button.Gtk_Spin_Button_New
+                 (Adjustment => Gtk.Adjustment.Gtk_Adjustment_New
+                    (Value          => Glib.Gdouble (Shared_Parameters.Read.Initial_Velocity),
+                     Lower          => Glib.Gdouble (Shared_Types.Velocity'First),
+                     Upper          => Glib.Gdouble (Shared_Types.Velocity'Last),
+                     Step_Increment => 0.001,
+                     Page_Increment => 1.0,
+                     Page_Size      => 0.0),
+                  Climb_Rate => 1.0,
+                  The_Digits => 3);
       begin
          Window.Text_Entries (Initial_Velocity) := T;
 
          B.all.On_Clicked (Call  => Reset_Initial_Velocity'Access,
                            After => True);
-         T.all.Set_Text
-           (Text => Image (Value     => Shared_Parameters.Read.Initial_Velocity,
-                           With_Unit => False));
+
+         T.all.Set_Numeric (Numeric => True);
          T.all.On_Focus_Out_Event (Call  => Set_Initial_Velocity'Access,
                                    After => True);
 
@@ -117,8 +128,9 @@ begin
       begin
          T.all.Set_Text
            (Text =>
-              Image (Value     => Shared_Parameters.Read.Target_Landing_Velocity,
-                     With_Unit => False));
+              Image
+                (Value     => Shared_Parameters.Read.Target_Landing_Velocity,
+                 With_Unit => False));
          T.all.Set_Editable (Is_Editable => False);
 
          Grid_Add_Row (Left   => "Target Landing Velocity",
@@ -129,16 +141,25 @@ begin
       declare
          B : constant Gtk.Button.Gtk_Button :=
                Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
-         T : constant Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
+         T : constant Gtk.Spin_Button.Gtk_Spin_Button :=
+               Gtk.Spin_Button.Gtk_Spin_Button_New
+                 (Adjustment =>
+                    Gtk.Adjustment.Gtk_Adjustment_New
+                      (Value          => Glib.Gdouble (Shared_Parameters.Read.Initial_Altitude),
+                       Lower          => Glib.Gdouble (Shared_Types.Altitude'First),
+                       Upper          => Glib.Gdouble (Shared_Types.Altitude'Last),
+                       Step_Increment => 0.001,
+                       Page_Increment => 1.0,
+                       Page_Size      => 0.0),
+                  Climb_Rate => 1.0,
+                  The_Digits => 3);
       begin
          Window.Text_Entries (Initial_Altitude) := T;
 
          B.all.On_Clicked (Call  => Reset_Initial_Altitude'Access,
                            After => True);
 
-         T.all.Set_Text
-           (Text => Image (Value     => Shared_Parameters.Read.Initial_Altitude,
-                           With_Unit => False));
+         T.all.Set_Numeric (Numeric => True);
          T.all.On_Focus_Out_Event (Call  => Set_Initial_Altitude'Access,
                                    After => True);
 
@@ -151,16 +172,25 @@ begin
       declare
          B : constant Gtk.Button.Gtk_Button :=
                Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
-         T : constant Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
+         T : constant Gtk.Spin_Button.Gtk_Spin_Button :=
+               Gtk.Spin_Button.Gtk_Spin_Button_New
+                 (Adjustment =>
+                    Gtk.Adjustment.Gtk_Adjustment_New
+                      (Value          => Glib.Gdouble (Shared_Parameters.Read.Dry_Mass),
+                       Lower          => Glib.Gdouble (Shared_Types.Vehicle_Mass'First),
+                       Upper          => Glib.Gdouble (Shared_Types.Vehicle_Mass'Last),
+                       Step_Increment => 0.001,
+                       Page_Increment => 1.0,
+                       Page_Size      => 0.0),
+                  Climb_Rate => 1.0,
+                  The_Digits => 3);
       begin
          Window.Text_Entries (Dry_Mass) := T;
 
          B.all.On_Clicked (Call  => Reset_Dry_Mass'Access,
                            After => True);
 
-         T.all.Set_Text
-           (Text => Image (Value     => Shared_Parameters.Read.Dry_Mass,
-                           With_Unit => False));
+         T.all.Set_Numeric (Numeric => True);
          T.all.On_Focus_Out_Event (Call  => Set_Dry_Mass'Access,
                                    After => True);
 
@@ -173,17 +203,25 @@ begin
       declare
          B : constant Gtk.Button.Gtk_Button :=
                Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
-         T : constant Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
+         T : constant Gtk.Spin_Button.Gtk_Spin_Button :=
+               Gtk.Spin_Button.Gtk_Spin_Button_New
+                 (Adjustment =>
+                    Gtk.Adjustment.Gtk_Adjustment_New
+                      (Value          => Glib.Gdouble (Shared_Parameters.Read.Initial_Fuel_Mass),
+                       Lower          => Glib.Gdouble (Shared_Types.Fuel_Mass'First),
+                       Upper          => Glib.Gdouble (Shared_Types.Fuel_Mass'Last),
+                       Step_Increment => 0.001,
+                       Page_Increment => 1.0,
+                       Page_Size      => 0.0),
+                  Climb_Rate => 1.0,
+                  The_Digits => 3);
       begin
          Window.Text_Entries (Initial_Fuel_Mass) := T;
 
          B.all.On_Clicked (Call  => Reset_Initial_Fuel_Mass'Access,
                            After => True);
 
-         T.all.Set_Text
-           (Text =>
-              Image (Value     => Shared_Parameters.Read.Initial_Fuel_Mass,
-                     With_Unit => False));
+         T.all.Set_Numeric (Numeric => True);
          T.all.On_Focus_Out_Event (Call  => Set_Initial_Fuel_Mass'Access,
                                    After => True);
 
@@ -196,16 +234,25 @@ begin
       declare
          B : constant Gtk.Button.Gtk_Button :=
                Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
-         T : constant Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
+         T : constant Gtk.Spin_Button.Gtk_Spin_Button :=
+               Gtk.Spin_Button.Gtk_Spin_Button_New
+                 (Adjustment =>
+                    Gtk.Adjustment.Gtk_Adjustment_New
+                      (Value          => Glib.Gdouble (Shared_Parameters.Read.Fuel_Flow_Rate),
+                       Lower          => Glib.Gdouble (Shared_Types.Flow_Rate'First),
+                       Upper          => Glib.Gdouble (Shared_Types.Flow_Rate'Last),
+                       Step_Increment => 0.001,
+                       Page_Increment => 1.0,
+                       Page_Size      => 0.0),
+                  Climb_Rate => 1.0,
+                  The_Digits => 3);
       begin
          Window.Text_Entries (Fuel_Flow_Rate) := T;
 
          B.all.On_Clicked (Call  => Reset_Fuel_Flow_Rate'Access,
                            After => True);
 
-         T.all.Set_Text
-           (Text => Image (Value     => Shared_Parameters.Read.Fuel_Flow_Rate,
-                           With_Unit => False));
+         T.all.Set_Numeric (Numeric => True);
          T.all.On_Focus_Out_Event (Call  => Set_Fuel_Flow_Rate'Access,
                                    After => True);
 
@@ -218,16 +265,25 @@ begin
       declare
          B : constant Gtk.Button.Gtk_Button :=
                Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
-         T : constant Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
+         T : constant Gtk.Spin_Button.Gtk_Spin_Button :=
+               Gtk.Spin_Button.Gtk_Spin_Button_New
+                 (Adjustment =>
+                    Gtk.Adjustment.Gtk_Adjustment_New
+                      (Value          => Glib.Gdouble (Shared_Parameters.Read.Shortest_On_Time),
+                       Lower          => Glib.Gdouble (Shared_Types.On_Time'First),
+                       Upper          => Glib.Gdouble (Shared_Types.On_Time'Last),
+                       Step_Increment => 0.001,
+                       Page_Increment => 1.0,
+                       Page_Size      => 0.0),
+                  Climb_Rate => 1.0,
+                  The_Digits => 3);
       begin
          Window.Text_Entries (Shortest_On_Time) := T;
 
          B.all.On_Clicked (Call  => Reset_Shortest_On_Time'Access,
                            After => True);
 
-         T.all.Set_Text
-           (Text => Image (Value     => Shared_Parameters.Read.Shortest_On_Time,
-                           With_Unit => False));
+         T.all.Set_Numeric (Numeric => True);
          T.all.On_Focus_Out_Event (Call  => Set_Shortest_On_Time'Access,
                                    After => True);
 
@@ -240,16 +296,25 @@ begin
       declare
          B : constant Gtk.Button.Gtk_Button :=
                Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
-         T : constant Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
+         T : constant Gtk.Spin_Button.Gtk_Spin_Button :=
+               Gtk.Spin_Button.Gtk_Spin_Button_New
+                 (Adjustment =>
+                    Gtk.Adjustment.Gtk_Adjustment_New
+                      (Value          => Glib.Gdouble (Shared_Parameters.Read.Exhaust_Velocity),
+                       Lower          => Glib.Gdouble (Shared_Types.Velocity'First),
+                       Upper          => Glib.Gdouble (Shared_Types.Velocity'Last),
+                       Step_Increment => 0.001,
+                       Page_Increment => 1.0,
+                       Page_Size      => 0.0),
+                  Climb_Rate => 1.0,
+                  The_Digits => 3);
       begin
          Window.Text_Entries (Exhaust_Velocity) := T;
 
          B.all.On_Clicked (Call  => Reset_Exhaust_Velocity'Access,
                            After => True);
 
-         T.all.Set_Text
-           (Text => Image (Value     => Shared_Parameters.Read.Exhaust_Velocity,
-                           With_Unit => False));
+         T.all.Set_Numeric (Numeric => True);
          T.all.On_Focus_Out_Event (Call  => Set_Exhaust_Velocity'Access,
                                    After => True);
 

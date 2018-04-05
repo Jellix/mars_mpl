@@ -1,6 +1,5 @@
+with Glib;
 with GNAT.OS_Lib;
-
-with Gtk.GEntry;
 with Shared_Parameters.Write;
 
 package body GUI.Callbacks is
@@ -23,16 +22,16 @@ package body GUI.Callbacks is
    begin
       Write (Value => Default);
       Main_Window (Button.all.Get_Toplevel).all.Text_Entries (Text_Entry).all.
-        Set_Text (Text => Image (Value     => Default,
-                                 With_Unit => False));
+        Set_Value (Value => Glib.Gdouble (Default));
    end Reset_Value;
 
-   function Set_GEntry_Value
+   function Set_Spin_Button_Value
      (Self  : access Gtk.Widget.Gtk_Widget_Record'Class;
       Event : in     Gdk.Event.Gdk_Event_Focus) return Boolean
    is
       pragma Unreferenced (Event);
-      GEntry : constant Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry (Self);
+      SB : constant Gtk.Spin_Button.Gtk_Spin_Button :=
+             Gtk.Spin_Button.Gtk_Spin_Button (Self);
 
       function Range_Image return String;
       function Range_Image return String is
@@ -47,7 +46,7 @@ package body GUI.Callbacks is
    begin
       Handle_Invalid_Data :
       begin
-         Write (Value => T'Value (GEntry.all.Get_Text));
+         Write (Value => T (SB.all.Get_Value));
       exception
          when Constraint_Error =>
             Log.Trace (Message =>
@@ -55,11 +54,10 @@ package body GUI.Callbacks is
                        & Range_Image & ".");
       end Handle_Invalid_Data;
 
-      GEntry.all.Set_Text (Image (Value        => Read,
-                                  Include_Unit => False));
+      SB.all.Set_Value (Glib.Gdouble (Read));
 
       return False;
-   end Set_GEntry_Value;
+   end Set_Spin_Button_Value;
 
    procedure SIM_Abort (Button : access Gtk.Button.Gtk_Button_Record'Class)
    is
