@@ -15,16 +15,21 @@ package body Global is
    function Clock_Image
      (Time : in Ada.Real_Time.Time := Ada.Real_Time.Clock) return String
    is
-      Duration_Image : String := "XXXX.XXX";
+      Duration_Image : String := "XXXXX.XXX"; -- Enough digits to run for a day.
    begin
       Duration_IO.Put
         (Item => Ada.Real_Time.To_Duration (TS => Time - Start_Time),
          To   => Duration_Image,
          Aft  => 3,
          Exp  => 0);
-
       return Ada.Strings.Fixed.Translate (Source  => Duration_Image,
                                           Mapping => Space_To_Zero);
+   exception
+      when Ada.Text_IO.Layout_Error =>
+         --  Most likely overflow in the Duration_IO.Put due to running much
+         --  longer than expected. Don't crash, but return something to indicate
+         --  this conversion error.
+         return "TIME_OVERFLOW";
    end Clock_Image;
 
    protected Logger is
@@ -36,6 +41,19 @@ package body Global is
       begin
          Ada.Text_IO.Put_Line (File => Ada.Text_IO.Standard_Output,
                                Item => Msg);
+      exception
+         when E : others =>
+            begin
+               -- Handle output errors.
+               Ada.Text_IO.Put_Line
+                 (File => Ada.Text_IO.Standard_Error,
+                  Item => Ada.Exceptions.Exception_Information (E));
+            exception
+               when others =>
+                  --  Error logging failed, too. Can't do much about it, but we
+                  --  do not want to crash.
+                  null;
+            end;
       end Write;
    end Logger;
 
