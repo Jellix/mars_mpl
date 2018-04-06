@@ -49,6 +49,15 @@ is
                               Fuel             => 0.0,
                               Time_Stamp       => 0.0));
 
+   pragma Annotate (GNATcheck,
+                    Exempt_On,
+                    "Global_Variables",
+                    "Protected type, outside access is properly restricted.");
+
    Current_State : State_Store.Shelf;
+
+   pragma Annotate (GNATcheck,
+                    Exempt_Off,
+                    "Global_Variables");
 
 end Shared_Sensor_Data;

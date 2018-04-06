@@ -68,6 +68,7 @@ begin
          Grid.all.Insert_Column (Position => I);
       end loop;
 
+      Bug_Switch_Fields :
       declare
          B : constant Gtk.Check_Button.Gtk_Check_Button :=
                Gtk.Check_Button.Gtk_Check_Button_New_With_Label;
@@ -77,8 +78,9 @@ begin
                            After => False);
          Grid_Add_Row (Left   => "TDM Bug",
                        Widget => B);
-      end;
+      end Bug_Switch_Fields;
 
+      Initial_Velocity_Fields :
       declare
          B : constant Gtk.Button.Gtk_Button :=
                Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
@@ -107,8 +109,9 @@ begin
                        Widget => T,
                        Right  => "m/s",
                        Reset  => B);
-      end;
+      end Initial_Velocity_Fields;
 
+      Safe_Landing_Velocity_Fields :
       declare
          T : constant Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
       begin
@@ -121,8 +124,9 @@ begin
          Grid_Add_Row (Left   => "Safe Landing Velocity",
                        Widget => T,
                        Right  => "m/s");
-      end;
+      end Safe_Landing_Velocity_Fields;
 
+      Target_Landing_Velocity_Fields :
       declare
          T : constant Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
       begin
@@ -136,8 +140,9 @@ begin
          Grid_Add_Row (Left   => "Target Landing Velocity",
                        Widget => T,
                        Right  => "m/s");
-      end;
+      end Target_Landing_Velocity_Fields;
 
+      Initial_Altitude_Fields :
       declare
          B : constant Gtk.Button.Gtk_Button :=
                Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
@@ -167,8 +172,9 @@ begin
                        Widget => T,
                        Right  => "m",
                        Reset  => B);
-      end;
+      end Initial_Altitude_Fields;
 
+      Dry_Mass_Fields :
       declare
          B : constant Gtk.Button.Gtk_Button :=
                Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
@@ -198,8 +204,9 @@ begin
                        Widget => T,
                        Right  => "kg",
                        Reset  => B);
-      end;
+      end Dry_Mass_Fields;
 
+      Initial_Fuel_Mass_Fields :
       declare
          B : constant Gtk.Button.Gtk_Button :=
                Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
@@ -229,8 +236,9 @@ begin
                        Widget => T,
                        Right  => "kg",
                        Reset  => B);
-      end;
+      end Initial_Fuel_Mass_Fields;
 
+      Fuel_Flow_Rate_Fields :
       declare
          B : constant Gtk.Button.Gtk_Button :=
                Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
@@ -260,8 +268,9 @@ begin
                        Widget => T,
                        Right  => "kg/s",
                        Reset  => B);
-      end;
+      end Fuel_Flow_Rate_Fields;
 
+      Shortest_On_Time_Fields :
       declare
          B : constant Gtk.Button.Gtk_Button :=
                Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
@@ -291,8 +300,9 @@ begin
                        Widget => T,
                        Right  => "ms",
                        Reset  => B);
-      end;
+      end Shortest_On_Time_Fields;
 
+      Exhaust_Velocity_Fields :
       declare
          B : constant Gtk.Button.Gtk_Button :=
                Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
@@ -322,7 +332,7 @@ begin
                        Widget => T,
                        Right  => "m/s",
                        Reset  => B);
-      end;
+      end Exhaust_Velocity_Fields;
 
       Add_Parameter_Frame :
       declare
