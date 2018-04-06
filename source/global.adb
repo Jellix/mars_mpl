@@ -15,7 +15,10 @@ package body Global is
    function Clock_Image
      (Time : in Ada.Real_Time.Time := Ada.Real_Time.Clock) return String
    is
-      Duration_Image    : String  := "XXXXX.XXX"; -- Enough digits for a day.
+      Fore : constant := 5; -- Enough digits to run for a day.
+      Aft  : constant := 3; -- Millisecond resolution.
+      Exp  : constant := 0; -- No exponent ever.
+      Duration_Image    : String (1 .. Fore + 1 + Aft);
       Exception_Occured : Boolean := False;
    begin
       Handle_Conversion_Exception :
@@ -23,8 +26,8 @@ package body Global is
          Duration_IO.Put
            (Item => Ada.Real_Time.To_Duration (TS => Time - Start_Time),
             To   => Duration_Image,
-            Aft  => 3,
-            Exp  => 0);
+            Aft  => Aft,
+            Exp  => Exp);
          Ada.Strings.Fixed.Translate (Source  => Duration_Image,
                                       Mapping => Space_To_Zero);
       exception
