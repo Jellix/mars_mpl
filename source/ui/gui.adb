@@ -414,6 +414,9 @@ package body GUI is
       Initialize (Window => Win);
       Win.On_Delete_Event (Call  => Callbacks.Exit_Main'Access,
                            After => True);
+      Win.Set_Default_Size (Width  => 1024,
+                            Height => 768);
+
       Win.Show_All;
 
       Main_Block :
