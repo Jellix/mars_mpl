@@ -1,7 +1,7 @@
-with Ada.Numerics.Elementary_Functions;
 with Ada.Real_Time;
 with Configuration.Cycle_Times;
 with Configuration.Task_Offsets;
+with Rocket_Science;
 with Shared_Parameters.Read;
 with Task_Safe_Store;
 
@@ -34,9 +34,8 @@ package body Thrusters is
      := Shared_Parameters.Read.Initial_Fuel_Mass;
    --  Parametrized initial fuel mass, read once at startup.
 
-   Initial_Wet_Mass : constant Float
-     := Float (Shared_Types.Mass'Base (Dry_Mass) +
-                 Shared_Types.Mass'Base (Initial_Fuel_Mass));
+   Initial_Wet_Mass : constant Shared_Types.Mass
+     := Shared_Types.Mass (Dry_Mass) + Shared_Types.Mass (Initial_Fuel_Mass);
 
    Shortest_On_Time : constant Ada.Real_Time.Time_Span :=
                         Ada.Real_Time.To_Time_Span
@@ -175,16 +174,14 @@ package body Thrusters is
    function Current_Fuel_Mass return Shared_Types.Fuel_Mass is
      (Fuel_State.Get);
 
-   function Delta_V return Shared_Types.Velocity
-   is
-      function Ln (X : in Float) return Float renames
-        Ada.Numerics.Elementary_Functions.Log;
-
-      Current_Wet_Mass : constant Float
-        := Float (Shared_Types.Mass'Base (Dry_Mass) +
-                    Shared_Types.Mass'Base (Fuel_State.Get));
+   function Delta_V return Shared_Types.Velocity is
    begin
-      return Exhaust_Velocity * Ln (X => Initial_Wet_Mass / Current_Wet_Mass);
+      return
+        Rocket_Science.Delta_V
+          (Initial_Wet_Mass => Initial_Wet_Mass,
+           Current_Wet_Mass =>
+             Shared_Types.Mass (Dry_Mass) + Shared_Types.Mass (Fuel_State.Get),
+           Exhaust_Velocity => Exhaust_Velocity);
    end Delta_V;
 
    procedure Disable is
