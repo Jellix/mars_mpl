@@ -17,7 +17,6 @@ begin
               Gtk.Box.Gtk_Vbox_New (Homogeneous => False,
                                     Spacing     => 0);
    begin
-      Box.all.Set_Size_Request (Height => 200);
       Frame.all.Add (Widget => Box);
 
       Add_Fuel_Gauge :

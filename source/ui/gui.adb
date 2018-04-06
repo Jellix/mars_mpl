@@ -313,9 +313,12 @@ package body GUI is
                                        Spacing     => 0);
       begin
          Window.Add (Widget => Box);
-         Box.all.Pack_Start (Child => Window.Create_Sensor_Signals_Frame);
-         Box.all.Pack_Start (Child => Window.Create_Timeline_Frame);
-         Box.all.Pack_Start (Child => Window.Create_Simulation_Frame);
+         Box.all.Pack_Start (Child  => Window.Create_Sensor_Signals_Frame,
+                             Expand => True);
+         Box.all.Pack_Start (Child  => Window.Create_Timeline_Frame,
+                             Expand => False);
+         Box.all.Pack_Start (Child  => Window.Create_Simulation_Frame,
+                             Expand => False);
       end Add_Widgets_To_Box;
    end Initialize;
 

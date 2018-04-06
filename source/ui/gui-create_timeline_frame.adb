@@ -45,8 +45,6 @@ begin
          --  amounts to roughly 7000 distinct data points, thus the default
          --  buffer size of ~60_000 should easily be enough.
 
-         Scope.all.Set_Size_Request (Height => 50);
-
          if Master = null then
             Scope.all.Set_Manual_Sweep (Enable => False);
 

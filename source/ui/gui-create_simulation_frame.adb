@@ -351,7 +351,6 @@ begin
      Gtk.Frame.Log_Viewer.Gtk_Frame_Log_Viewer_New
        (Label   => "SIMon says",
         Process => Window.SIM_Process);
-   Window.SIMon_Says.all.Set_Size_Request (Width => 200);
 
    Container.all.Pack_Start (Child  => Window.SIMon_Says,
                              Expand => True);
