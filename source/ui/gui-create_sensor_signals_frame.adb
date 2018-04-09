@@ -13,9 +13,9 @@ is
    function Create_LEDs return not null access
      Gtk.Widget.Gtk_Widget_Record'Class
    is
-      Frame : constant Gtk.Frame.Gtk_Frame :=
+      Frame : constant not null Gtk.Frame.Gtk_Frame :=
                 Gtk.Frame.Gtk_Frame_New (Label => "Discrete Signals");
-      Box : constant Gtk.Box.Gtk_Box :=
+      Box : constant not null Gtk.Box.Gtk_Box :=
               Gtk.Box.Gtk_Vbox_New (Homogeneous => False,
                                     Spacing     => 0);
    begin
@@ -61,7 +61,7 @@ is
       return Frame;
    end Create_LEDs;
 
-   HBox : constant Gtk.Box.Gtk_Box :=
+   HBox : constant not null Gtk.Box.Gtk_Box :=
             Gtk.Box.Gtk_Hbox_New (Homogeneous => False,
                                   Spacing     => 0);
 begin

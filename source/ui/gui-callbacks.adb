@@ -30,7 +30,7 @@ package body GUI.Callbacks is
       Event : in     Gdk.Event.Gdk_Event_Focus) return Boolean
    is
       pragma Unreferenced (Event);
-      SB : constant Gtk.Spin_Button.Gtk_Spin_Button :=
+      SB : constant not null Gtk.Spin_Button.Gtk_Spin_Button :=
              Gtk.Spin_Button.Gtk_Spin_Button (Self);
 
       function Range_Image return String;
@@ -61,8 +61,9 @@ package body GUI.Callbacks is
 
    procedure SIM_Abort (Button : access Gtk.Button.Gtk_Button_Record'Class)
    is
-      Win     : constant Main_Window := Main_Window (Button.all.Get_Toplevel);
-      Process : constant GNAT.Expect.Process_Descriptor_Access :=
+      Win     : constant not null Main_Window :=
+                  Main_Window (Button.all.Get_Toplevel);
+      Process : constant not null GNAT.Expect.Process_Descriptor_Access :=
                   Win.all.SIM_Process;
    begin
       Log.Trace
@@ -84,8 +85,9 @@ package body GUI.Callbacks is
 
    procedure SIM_Start (Button : access Gtk.Button.Gtk_Button_Record'Class)
    is
-      Win     : constant Main_Window := Main_Window (Button.all.Get_Toplevel);
-      Process : constant GNAT.Expect.Process_Descriptor_Access :=
+      Win     : constant not null Main_Window :=
+                  Main_Window (Button.all.Get_Toplevel);
+      Process : constant not null GNAT.Expect.Process_Descriptor_Access :=
                   Win.all.SIM_Process;
    begin
       Handle_Exception :

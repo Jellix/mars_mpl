@@ -14,7 +14,7 @@ function Create_Simulation_Frame
   (Window : in out Main_Window_Record) return not null access
   Gtk.Widget.Gtk_Widget_Record'Class
 is
-   Container : constant Gtk.Box.Gtk_Box :=
+   Container : constant not null Gtk.Box.Gtk_Box :=
                  Gtk.Box.Gtk_Hbox_New (Homogeneous => False,
                                        Spacing     => 0);
 begin
@@ -22,8 +22,8 @@ begin
    declare
       use type Glib.Gint;
 
-      Grid : constant Gtk.Grid.Gtk_Grid := Gtk.Grid.Gtk_Grid_New;
-      Row  : Glib.Gint                  := 0;
+      Grid : constant not null Gtk.Grid.Gtk_Grid := Gtk.Grid.Gtk_Grid_New;
+      Row  : Glib.Gint                           := 0;
 
       procedure Grid_Add_Row
         (Left   : in              Glib.UTF8_String := "";
@@ -70,7 +70,7 @@ begin
 
       Bug_Switch_Fields :
       declare
-         B : constant Gtk.Check_Button.Gtk_Check_Button :=
+         B : constant not null Gtk.Check_Button.Gtk_Check_Button :=
                Gtk.Check_Button.Gtk_Check_Button_New_With_Label;
       begin
          B.all.Set_Active (Is_Active => Shared_Parameters.Read.TDM_Bug_Enabled);
@@ -82,9 +82,9 @@ begin
 
       Initial_Velocity_Fields :
       declare
-         B : constant Gtk.Button.Gtk_Button :=
+         B : constant not null Gtk.Button.Gtk_Button :=
                Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
-         T : constant Gtk.Spin_Button.Gtk_Spin_Button :=
+         T : constant not null Gtk.Spin_Button.Gtk_Spin_Button :=
                Gtk.Spin_Button.Gtk_Spin_Button_New
                  (Adjustment => Gtk.Adjustment.Gtk_Adjustment_New
                     (Value          => Glib.Gdouble (Shared_Parameters.Read.Initial_Velocity),
@@ -113,7 +113,7 @@ begin
 
       Safe_Landing_Velocity_Fields :
       declare
-         T : constant Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
+         T : constant not null Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
       begin
          T.all.Set_Text
            (Text =>
@@ -128,7 +128,7 @@ begin
 
       Target_Landing_Velocity_Fields :
       declare
-         T : constant Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
+         T : constant not null Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
       begin
          T.all.Set_Text
            (Text =>
@@ -144,9 +144,9 @@ begin
 
       Initial_Altitude_Fields :
       declare
-         B : constant Gtk.Button.Gtk_Button :=
+         B : constant not null Gtk.Button.Gtk_Button :=
                Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
-         T : constant Gtk.Spin_Button.Gtk_Spin_Button :=
+         T : constant not null Gtk.Spin_Button.Gtk_Spin_Button :=
                Gtk.Spin_Button.Gtk_Spin_Button_New
                  (Adjustment =>
                     Gtk.Adjustment.Gtk_Adjustment_New
@@ -176,9 +176,9 @@ begin
 
       Dry_Mass_Fields :
       declare
-         B : constant Gtk.Button.Gtk_Button :=
+         B : constant not null Gtk.Button.Gtk_Button :=
                Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
-         T : constant Gtk.Spin_Button.Gtk_Spin_Button :=
+         T : constant not null Gtk.Spin_Button.Gtk_Spin_Button :=
                Gtk.Spin_Button.Gtk_Spin_Button_New
                  (Adjustment =>
                     Gtk.Adjustment.Gtk_Adjustment_New
@@ -208,9 +208,9 @@ begin
 
       Initial_Fuel_Mass_Fields :
       declare
-         B : constant Gtk.Button.Gtk_Button :=
+         B : constant not null Gtk.Button.Gtk_Button :=
                Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
-         T : constant Gtk.Spin_Button.Gtk_Spin_Button :=
+         T : constant not null Gtk.Spin_Button.Gtk_Spin_Button :=
                Gtk.Spin_Button.Gtk_Spin_Button_New
                  (Adjustment =>
                     Gtk.Adjustment.Gtk_Adjustment_New
@@ -240,9 +240,9 @@ begin
 
       Fuel_Flow_Rate_Fields :
       declare
-         B : constant Gtk.Button.Gtk_Button :=
+         B : constant not null Gtk.Button.Gtk_Button :=
                Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
-         T : constant Gtk.Spin_Button.Gtk_Spin_Button :=
+         T : constant not null Gtk.Spin_Button.Gtk_Spin_Button :=
                Gtk.Spin_Button.Gtk_Spin_Button_New
                  (Adjustment =>
                     Gtk.Adjustment.Gtk_Adjustment_New
@@ -272,9 +272,9 @@ begin
 
       Shortest_On_Time_Fields :
       declare
-         B : constant Gtk.Button.Gtk_Button :=
+         B : constant not null Gtk.Button.Gtk_Button :=
                Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
-         T : constant Gtk.Spin_Button.Gtk_Spin_Button :=
+         T : constant not null Gtk.Spin_Button.Gtk_Spin_Button :=
                Gtk.Spin_Button.Gtk_Spin_Button_New
                  (Adjustment =>
                     Gtk.Adjustment.Gtk_Adjustment_New
@@ -304,9 +304,9 @@ begin
 
       Exhaust_Velocity_Fields :
       declare
-         B : constant Gtk.Button.Gtk_Button :=
+         B : constant not null Gtk.Button.Gtk_Button :=
                Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
-         T : constant Gtk.Spin_Button.Gtk_Spin_Button :=
+         T : constant not null Gtk.Spin_Button.Gtk_Spin_Button :=
                Gtk.Spin_Button.Gtk_Spin_Button_New
                  (Adjustment =>
                     Gtk.Adjustment.Gtk_Adjustment_New
@@ -336,7 +336,7 @@ begin
 
       Add_Parameter_Frame :
       declare
-         Parameter_Frame : constant Gtk.Frame.Gtk_Frame :=
+         Parameter_Frame : constant not null Gtk.Frame.Gtk_Frame :=
                              Gtk.Frame.Gtk_Frame_New
                                (Label => "Simulation Parameters");
       begin
@@ -357,7 +357,7 @@ begin
 
    Add_Time_And_Sim_Control :
    declare
-      Box : constant Gtk.Box.Gtk_Vbox :=
+      Box : constant not null Gtk.Box.Gtk_Vbox :=
               Gtk.Box.Gtk_Vbox_New (Homogeneous => False,
                                     Spacing     => 0);
    begin
@@ -366,7 +366,7 @@ begin
 
       Add_Mission_Clock :
       declare
-         Context : constant Gtk.Style_Context.Gtk_Style_Context :=
+         Context : constant not null Gtk.Style_Context.Gtk_Style_Context :=
                      Gtk.Style_Context.Get_Style_Context
                        (Widget => Window'Access);
          BG_RGBA : Gdk.RGBA.Gdk_RGBA;
@@ -419,7 +419,7 @@ begin
 
          Add_Buttons :
          declare
-            Button_Box : constant Gtk.Button_Box.Gtk_Button_Box :=
+            Button_Box : constant not null Gtk.Button_Box.Gtk_Button_Box :=
                            Gtk.Button_Box.Gtk_Button_Box_New
                              (Orientation => Gtk.Enums.Orientation_Horizontal);
          begin

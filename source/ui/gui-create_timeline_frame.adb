@@ -8,9 +8,9 @@ function Create_Timeline_Frame
   (Window : in out Main_Window_Record) return not null access
   Gtk.Widget.Gtk_Widget_Record'Class
 is
-   Frame    : constant Gtk.Frame.Gtk_Frame :=
+   Frame    : constant not null Gtk.Frame.Gtk_Frame :=
                 Gtk.Frame.Gtk_Frame_New (Label => "Timeline");
-   Plot_Box : constant Gtk.Box.Gtk_Vbox :=
+   Plot_Box : constant not null Gtk.Box.Gtk_Vbox :=
                 Gtk.Box.Gtk_Vbox_New (Homogeneous => True,
                                       Spacing     => 0);
 begin
@@ -19,13 +19,13 @@ begin
    Add_Scopes :
    declare
       function New_Scope
-        (Master         : in     Gtk.Oscilloscope.Gtk_Oscilloscope;
-         Refresh_Engine : access Gtk.Layered.Refresh_Engine.Layered_Refresh_Engine)
+        (Master         : in              Gtk.Oscilloscope.Gtk_Oscilloscope;
+         Refresh_Engine : not null access Gtk.Layered.Refresh_Engine.Layered_Refresh_Engine)
          return not null Gtk.Oscilloscope.Gtk_Oscilloscope;
 
       function New_Scope
-        (Master         : in     Gtk.Oscilloscope.Gtk_Oscilloscope;
-         Refresh_Engine : access Gtk.Layered.Refresh_Engine.Layered_Refresh_Engine)
+        (Master         : in              Gtk.Oscilloscope.Gtk_Oscilloscope;
+         Refresh_Engine : not null access Gtk.Layered.Refresh_Engine.Layered_Refresh_Engine)
          return not null Gtk.Oscilloscope.Gtk_Oscilloscope
       is
          use type Gtk.Oscilloscope.Gtk_Oscilloscope;

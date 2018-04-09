@@ -42,7 +42,7 @@ package body GUI is
 
    type Scaling is
       record
-         Texts  : access Gtk.Enums.String_Lists.Controlled_String_List;
+         Texts  : not null access Gtk.Enums.String_Lists.Controlled_String_List;
          Factor : Glib.Gdouble;
       end record;
 
@@ -308,7 +308,7 @@ package body GUI is
 
       Add_Widgets_To_Box :
       declare
-         Box : constant Gtk.Box.Gtk_Box :=
+         Box : constant not null Gtk.Box.Gtk_Box :=
                  Gtk.Box.Gtk_Vbox_New (Homogeneous => False,
                                        Spacing     => 0);
       begin
@@ -327,10 +327,10 @@ package body GUI is
       Description : in              String) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class
    is
-      Widget_Box : constant Gtk.Box.Gtk_Box :=
+      Widget_Box : constant not null Gtk.Box.Gtk_Box :=
                      Gtk.Box.Gtk_Hbox_New (Homogeneous => True,
                                            Spacing     => 0);
-      Label      : constant Gtk.Label.Gtk_Label :=
+      Label      : constant not null Gtk.Label.Gtk_Label :=
                      Gtk.Label.Gtk_Label_New (Str => Description);
    begin
       Widget_Box.all.Pack_Start (Child => Label);
@@ -345,7 +345,7 @@ package body GUI is
       if Win.all.Simulator_Running and then Do_Abort then
          User_Confirm :
          declare
-            Confirm : constant Gtk.Message_Dialog.Gtk_Message_Dialog :=
+            Confirm : constant not null Gtk.Message_Dialog.Gtk_Message_Dialog :=
                         Gtk.Message_Dialog.Gtk_Message_Dialog_New
                           (Parent   => Win,
                            Flags    => Gtk.Dialog.Modal,

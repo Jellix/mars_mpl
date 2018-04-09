@@ -8,12 +8,12 @@ function Create_Fuel_Frame
   (Window : in out Main_Window_Record) return not null access
   Gtk.Widget.Gtk_Widget_Record'Class
 is
-   Frame : constant Gtk.Frame.Gtk_Frame :=
+   Frame : constant not null Gtk.Frame.Gtk_Frame :=
              Gtk.Frame.Gtk_Frame_New (Label => "Fuel");
 begin
    Add_Widgets_To_Box :
    declare
-      Box : constant Gtk.Box.Gtk_Box :=
+      Box : constant not null Gtk.Box.Gtk_Box :=
               Gtk.Box.Gtk_Vbox_New (Homogeneous => False,
                                     Spacing     => 0);
    begin

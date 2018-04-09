@@ -141,7 +141,7 @@ package body Gtk.Frame.Digital_Clock is
       On_Color  : in Gdk.Color.Gdk_Color;
       Off_Color : in Gdk.Color.Gdk_Color) return Gtk_Frame_Digital_Clock
    is
-      The_Clock : constant Gtk_Frame_Digital_Clock :=
+      The_Clock : constant not null Gtk_Frame_Digital_Clock :=
                     new Gtk_Frame_Digital_Clock_Record;
    begin
       Initialize (This      => The_Clock.all,

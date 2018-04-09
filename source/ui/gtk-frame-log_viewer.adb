@@ -10,7 +10,8 @@ package body Gtk.Frame.Log_Viewer is
       Process : in GNAT.Expect.Process_Descriptor_Access) return not null access
      Gtk_Frame_Log_Viewer_Record'Class
    is
-      This : constant Gtk_Frame_Log_Viewer := new Gtk_Frame_Log_Viewer_Record;
+      This : constant not null Gtk_Frame_Log_Viewer :=
+               new Gtk_Frame_Log_Viewer_Record;
    begin
       This.all.Initialize (Label   => Label,
                            Process => Process);
@@ -23,9 +24,9 @@ package body Gtk.Frame.Log_Viewer is
       Label   : in     String;
       Process : in     GNAT.Expect.Process_Descriptor_Access)
    is
-      Log_Window : constant Gtk.Scrolled_Window.Gtk_Scrolled_Window :=
+      Log_Window : constant not null Gtk.Scrolled_Window.Gtk_Scrolled_Window :=
                      Gtk.Scrolled_Window.Gtk_Scrolled_Window_New;
-      Log_View   : constant Gtk.Text_View.Gtk_Text_View :=
+      Log_View   : constant not null Gtk.Text_View.Gtk_Text_View :=
                      Gtk.Text_View.Gtk_Text_View_New;
    begin
       Gtk.Frame.Initialize (Frame => This'Access,
