@@ -258,18 +258,19 @@ package body GUI is
       Win.Fuel_Scale.all.Queue_Draw;
       declare
          Dry_Mass         : constant Shared_Types.Mass :=
-                              Shared_Types.Mass (Shared_Parameters.Read.Dry_Mass);
+                              Shared_Types.Mass
+                                (Shared_Parameters.Read.Dry_Mass);
          Current_Wet_Mass : constant Shared_Types.Mass :=
                               Dry_Mass + Shared_Types.Mass (Update_State.Fuel);
+         Max_Delta_V      : constant Shared_Types.Velocity :=
+                              Rocket_Science.Delta_V
+                                (Initial_Wet_Mass => Current_Wet_Mass,
+                                 Current_Wet_Mass => Dry_Mass,
+                                 Exhaust_Velocity =>
+                                   Shared_Parameters.Read.Exhaust_Velocity);
       begin
          Win.Delta_V_Scale.all.Set_Value
-           (Value =>
-              Glib.Gdouble
-                (Rocket_Science.Delta_V
-                   (Initial_Wet_Mass => Current_Wet_Mass,
-                    Current_Wet_Mass => Dry_Mass,
-                    Exhaust_Velocity => Shared_Parameters.Read.Exhaust_Velocity)) /
-              Delta_V_Scale.Factor);
+           (Value => Glib.Gdouble (Max_Delta_V) / Delta_V_Scale.Factor);
       end;
 
       Win.Delta_V_Scale.all.Queue_Draw;
