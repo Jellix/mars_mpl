@@ -1,6 +1,7 @@
 with Cairo.Ellipses;
 with Gtk.Colors;
 with Gtk.Frame;
+with Gtk.Gauge.Flat_Vertical;
 with Gtk.Layered.Label;
 
 separate (GUI)
@@ -16,8 +17,13 @@ begin
       Box : constant not null Gtk.Box.Gtk_Box :=
               Gtk.Box.Gtk_Vbox_New (Homogeneous => False,
                                     Spacing     => 0);
+      HBox : constant not null Gtk.Box.Gtk_Box :=
+               Gtk.Box.Gtk_Hbox_New (Homogeneous => False,
+                                     Spacing     => 0);
    begin
       Frame.all.Add (Widget => Box);
+      Box.all.Pack_Start (Child  => HBox,
+                          Expand => True);
 
       Add_Fuel_Gauge :
       declare
@@ -43,10 +49,25 @@ begin
                                       Skew     => 0.0,
                                       Markup   => False,
                                       Scaled   => True);
-         Box.all.Pack_Start (Child  => Gauge,
-                             Expand => True);
+         HBox.all.Pack_Start (Child  => Gauge,
+                              Expand => True);
          Window.Fuel_Scale := Gauge;
       end Add_Fuel_Gauge;
+
+      Add_Delta_V_Gauge :
+      declare
+         Gauge : Gtk.Gauge.Flat_Vertical.Gtk_Gauge_Flat_Vertical;
+      begin
+         Gtk.Gauge.Flat_Vertical.Gtk_New
+           (Widget  => Gauge,
+            Texts   => Delta_V_Scale.Texts.all,
+            Sectors => Positive
+                         (Gtk.Enums.String_List.Length
+                            (+Delta_V_Scale.Texts.all)) - 1);
+         HBox.all.Pack_Start (Child  => Gauge,
+                              Expand => True);
+         Window.Delta_V_Scale := Gauge;
+      end Add_Delta_V_Gauge;
 
       Add_Text_Entry :
       declare

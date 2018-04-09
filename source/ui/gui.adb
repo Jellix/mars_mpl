@@ -13,6 +13,7 @@ with Gtk.Missed;
 with Gtk.Widget;
 with GUI.Callbacks;
 with Pango.Cairo.Fonts;
+with Rocket_Science;
 with Shared_Parameters.Default;
 with Shared_Parameters.Read;
 with Shared_Parameters.Write;
@@ -26,6 +27,7 @@ package body GUI is
    use type Gtk.Enums.String_Lists.Controlled_String_List;
    use type Shared_Types.Altitude;
    use type Shared_Types.Leg_State;
+   use type Shared_Types.Mass;
    use type Shared_Types.Velocity;
 
    Label_Font        : constant Pango.Cairo.Fonts.Pango_Cairo_Font :=
@@ -46,24 +48,29 @@ package body GUI is
          Factor : Glib.Gdouble;
       end record;
 
-   Altitude_Scale : constant Scaling
+   Altitude_Scale   : constant Scaling
      := Scaling'(Texts  =>
-                    new Gtk.Enums.String_Lists.Controlled_String_List'
-                   ("0" / "1" / "2" / "3" / "4" / "5" / "6" / "7" / "8" / "9"),
+                   new Gtk.Enums.String_Lists.Controlled_String_List'
+                     ("0" / "1" / "2" / "3" / "4" / "5" / "6" / "7" / "8" / "9"),
                  Factor => 10000.0);
-   Fuel_Scale     : constant Scaling
+   Fuel_Scale       : constant Scaling
      := Scaling'(Texts  =>
-                    new Gtk.Enums.String_Lists.Controlled_String_List'
-                   ("0" / "20" / "40" / "60" / "80"),
+                   new Gtk.Enums.String_Lists.Controlled_String_List'
+                     ("0" / "20" / "40" / "60" / "80"),
                  Factor => 80.0);
-   Velocity_Scale : constant Scaling
+   Delta_V_Scale    : constant Scaling
+     := Scaling'(Texts =>
+                   new Gtk.Enums.String_Lists.Controlled_String_List'
+                     ("0" / "100" / "200" / "300" / "400" / "500"),
+                 Factor => 500.0);
+   Velocity_Scale   : constant Scaling
      := Scaling'(Texts  =>
-                    new Gtk.Enums.String_Lists.Controlled_String_List'
-                   ("0" / "20" / "40" / "60" / "80" / "100"),
+                   new Gtk.Enums.String_Lists.Controlled_String_List'
+                     ("0" / "20" / "40" / "60" / "80" / "100"),
                  Factor => 100.0);
 
-   Update_Interval : constant Ada.Real_Time.Time_Span :=
-                       Ada.Real_Time.Milliseconds (10);
+   Update_Interval  : constant Ada.Real_Time.Time_Span :=
+                        Ada.Real_Time.Milliseconds (10);
    -- GUI update frequency, 100/s ought to be enough.
 
    --  Callbacks for entry fields
@@ -249,6 +256,23 @@ package body GUI is
       Win.Fuel_Scale.all.Set_Value
         (Value => Glib.Gdouble (Update_State.Fuel) / Fuel_Scale.Factor);
       Win.Fuel_Scale.all.Queue_Draw;
+      declare
+         Dry_Mass         : constant Shared_Types.Mass :=
+                              Shared_Types.Mass (Shared_Parameters.Read.Dry_Mass);
+         Current_Wet_Mass : constant Shared_Types.Mass :=
+                              Dry_Mass + Shared_Types.Mass (Update_State.Fuel);
+      begin
+         Win.Delta_V_Scale.all.Set_Value
+           (Value =>
+              Glib.Gdouble
+                (Rocket_Science.Delta_V
+                   (Initial_Wet_Mass => Current_Wet_Mass,
+                    Current_Wet_Mass => Dry_Mass,
+                    Exhaust_Velocity => Shared_Parameters.Read.Exhaust_Velocity)) /
+              Delta_V_Scale.Factor);
+      end;
+
+      Win.Delta_V_Scale.all.Queue_Draw;
 
       Feed_Data_Plots :
       declare

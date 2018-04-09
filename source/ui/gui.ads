@@ -4,6 +4,7 @@ with Gtk.Button;
 with Gtk.Frame.Digital_Clock;
 with Gtk.Frame.Log_Viewer;
 with Gtk.Gauge.Altimeter;
+with Gtk.Gauge.Flat_Vertical;
 with Gtk.Gauge.LED_Round;
 with Gtk.Gauge.Round_270;
 with Gtk.GEntry;
@@ -71,6 +72,7 @@ private
          Tachometer    : Gtk.Gauge.Round_270.Gtk_Gauge_Round_270;
          Altimeter     : Gtk.Gauge.Altimeter.Gtk_Gauge_Altimeter;
          Fuel_Scale    : Gtk.Meter.Angular_90.Gtk_Meter_Angular_90;
+         Delta_V_Scale : Gtk.Gauge.Flat_Vertical.Gtk_Gauge_Flat_Vertical;
          SIMon_Says    : Gtk.Frame.Log_Viewer.Gtk_Frame_Log_Viewer;
          Aborted       : Boolean;
          SIM_Process   : GNAT.Expect.Process_Descriptor_Access;
