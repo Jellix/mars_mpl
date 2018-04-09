@@ -43,6 +43,9 @@ with Pango.Cairo.Fonts;
 
 package body Gtk.Gauge.Flat_Vertical is
 
+   pragma Warnings (Off, "declaration hides ""Adjustment""");
+   pragma Warnings (Off, "declaration hides ""Widget""");
+
    Pi : constant := Ada.Numerics.Pi;
 
    Needle_Color      : constant Gdk.Color.Gdk_Color := Gtk.Missed.RGB (1.0, 0.0, 0.0);
@@ -58,6 +61,129 @@ package body Gtk.Gauge.Flat_Vertical is
    Length : constant := 2.8;
    First  : constant := Length * 0.5;
    Offset : constant := 0.13;
+
+   procedure Create_Background
+     (Widget  : not null access Gtk_Gauge_Flat_Vertical_Record'Class;
+      Sectors : in              Positive);
+
+   procedure Create_Background
+     (Widget  : not null access Gtk_Gauge_Flat_Vertical_Record'Class;
+      Sectors : in              Positive) is
+   begin
+      G_New (Widget, Get_Type);
+      Gtk.Layered.Initialize (Widget);
+      Widget.all.Sectors := Sectors;
+      Set_Aspect_Ratio (Widget, 1.0 / 3.0);
+      Widget.all.Background :=
+        Gtk.Layered.Rectangular_Background.Add_Rectangular_Background
+          (Under         => Widget,
+           Height        => 3.0,
+           Width         => 1.0,
+           Center        => (0.0, 0.0),
+           Corner_Radius => Corner,
+           Color         => Background_Color,
+           Border_Width  => 0.03,
+           Border_Depth  => 0.01,
+           Border_Shadow => Gtk.Enums.Shadow_Etched_Out,
+           Deepened      => True,
+           Widened       => True,
+           Scaled        => True);
+      Widget.all.Major_Ticks :=
+        Gtk.Layered.Flat_Scale.Add_Flat_Scale
+          (Under   => Widget.all.Background.all.Get_Foreground,
+           From    => (Offset, First),
+           Length  => Length,
+           Angle   => 3.0 * Pi / 2.0,
+           Breadth => 0.24,
+           Color   => Major_Tick_Color,
+           Width   => 4.0 / 600.0,
+           Step    => Length / Gdouble (Sectors),
+           Scaled  => True,
+           Widened => True);
+      Widget.all.Middle_Ticks :=
+        Gtk.Layered.Flat_Scale.Add_Flat_Scale
+          (Under   => Widget.all.Background.all.Get_Foreground,
+           From    => (Offset, First),
+           Length  => Length,
+           Angle   => 3.0 * Pi / 2.0,
+           Breadth => 0.16,
+           Color   => Middle_Tick_Color,
+           Width   => 2.0 / 600.0,
+           Step    => 0.5 * Length / Gdouble (Sectors),
+           Skipped => 2,
+           Scaled  => True,
+           Widened => True);
+      Widget.all.Minor_Ticks :=
+        Gtk.Layered.Flat_Scale.Add_Flat_Scale
+          (Under   => Widget.all.Background.all.Get_Foreground,
+           From    => (Offset, First),
+           Length  => Length,
+           Angle   => 3.0 * Pi / 2.0,
+           Breadth => 0.08,
+           Color   => Minor_Tick_Color,
+           Width   => 1.0 / 600.0,
+           Step    => 0.1 * Length / Gdouble (Sectors),
+           Skipped => 5,
+           Scaled  => True,
+           Widened => True);
+      Widget.all.Cache :=
+        Gtk.Layered.Cache.Add_Cache (Widget.all.Background.all.Get_Foreground);
+   end Create_Background;
+
+   procedure Create_Foreground
+     (Widget     : not null access Gtk_Gauge_Flat_Vertical_Record'Class;
+      Adjustment : in              Gtk.Adjustment.Gtk_Adjustment);
+
+   procedure Create_Foreground
+     (Widget     : not null access Gtk_Gauge_Flat_Vertical_Record'Class;
+      Adjustment : in              Gtk.Adjustment.Gtk_Adjustment) is
+   begin
+      Widget.all.Needle :=
+        Gtk.Layered.Flat_Needle.Add_Flat_Needle
+          (Under       => Widget.all.Background.all.Get_Foreground,
+           From        => (Offset, First),
+           Length      => Length,
+           Angle       => 3.0 * Pi / 2.0,
+           Adjustment  => Adjustment,
+           Tip_Cap     => Cairo.Cairo_Line_Cap_Round,
+           Tip_Length  => 0.15,
+           Tip_Width   => 0.03,
+           Rear_Cap    => Cairo.Cairo_Line_Cap_Round,
+           Rear_Length => 0.15,
+           Rear_Width  => 0.03,
+           Color       => Needle_Color,
+           Scaled      => True);
+   end Create_Foreground;
+
+   function Get_Annotation
+     (Widget : not null access Gtk_Gauge_Flat_Vertical_Record)
+      return not null access Gtk.Layered.Flat_Annotation.Flat_Annotation_Layer
+   is
+   begin
+      return Widget.all.Annotation;
+   end Get_Annotation;
+
+   function Get_Background
+     (Widget : not null access Gtk_Gauge_Flat_Vertical_Record)
+      return not null access Gtk.Layered.Rectangular_Background.Rectangular_Background_Layer
+   is
+   begin
+      return Widget.all.Background;
+   end Get_Background;
+
+   function Get_Cache
+     (Widget : not null access Gtk_Gauge_Flat_Vertical_Record)
+      return not null access Gtk.Layered.Cache.Cache_Layer is
+   begin
+      return Widget.all.Cache;
+   end Get_Cache;
+
+   function Get_Needle
+     (Widget : not null access Gtk_Gauge_Flat_Vertical_Record)
+      return not null access Gtk.Layered.Flat_Needle.Flat_Needle_Layer is
+   begin
+      return Widget.all.Needle;
+   end Get_Needle;
 
    function Get_Type return GType is
    begin
@@ -161,121 +287,6 @@ package body Gtk.Gauge.Flat_Vertical is
       end if;
       return Class_Record.all.The_Type;
    end Get_Type;
-
-   procedure Create_Background
-     (Widget  : not null access Gtk_Gauge_Flat_Vertical_Record'Class;
-      Sectors : Positive) is
-   begin
-      G_New (Widget, Get_Type);
-      Gtk.Layered.Initialize (Widget);
-      Widget.all.Sectors := Sectors;
-      Set_Aspect_Ratio (Widget, 1.0 / 3.0);
-      Widget.all.Background :=
-        Gtk.Layered.Rectangular_Background.Add_Rectangular_Background
-          (Under         => Widget,
-           Height        => 3.0,
-           Width         => 1.0,
-           Center        => (0.0, 0.0),
-           Corner_Radius => Corner,
-           Color         => Background_Color,
-           Border_Width  => 0.03,
-           Border_Depth  => 0.01,
-           Border_Shadow => Gtk.Enums.Shadow_Etched_Out,
-           Deepened      => True,
-           Widened       => True,
-           Scaled        => True);
-      Widget.all.Major_Ticks :=
-        Gtk.Layered.Flat_Scale.Add_Flat_Scale
-          (Under   => Widget.all.Background.all.Get_Foreground,
-           From    => (Offset, First),
-           Length  => Length,
-           Angle   => 3.0 * Pi / 2.0,
-           Breadth => 0.24,
-           Color   => Major_Tick_Color,
-           Width   => 4.0 / 600.0,
-           Step    => Length / Gdouble (Sectors),
-           Scaled  => True,
-           Widened => True);
-      Widget.all.Middle_Ticks :=
-        Gtk.Layered.Flat_Scale.Add_Flat_Scale
-          (Under   => Widget.all.Background.all.Get_Foreground,
-           From    => (Offset, First),
-           Length  => Length,
-           Angle   => 3.0 * Pi / 2.0,
-           Breadth => 0.16,
-           Color   => Middle_Tick_Color,
-           Width   => 2.0 / 600.0,
-           Step    => 0.5 * Length / Gdouble (Sectors),
-           Skipped => 2,
-           Scaled  => True,
-           Widened => True);
-      Widget.all.Minor_Ticks :=
-        Gtk.Layered.Flat_Scale.Add_Flat_Scale
-          (Under   => Widget.all.Background.all.Get_Foreground,
-           From    => (Offset, First),
-           Length  => Length,
-           Angle   => 3.0 * Pi / 2.0,
-           Breadth => 0.08,
-           Color   => Minor_Tick_Color,
-           Width   => 1.0 / 600.0,
-           Step    => 0.1 * Length / Gdouble (Sectors),
-           Skipped => 5,
-           Scaled  => True,
-           Widened => True);
-      Widget.all.Cache :=
-        Gtk.Layered.Cache.Add_Cache (Widget.all.Background.all.Get_Foreground);
-   end Create_Background;
-
-   procedure Create_Foreground
-     (Widget : not null access Gtk_Gauge_Flat_Vertical_Record'Class;
-      Adjustment : Gtk.Adjustment.Gtk_Adjustment) is
-   begin
-      Widget.all.Needle :=
-        Gtk.Layered.Flat_Needle.Add_Flat_Needle
-          (Under       => Widget.all.Background.all.Get_Foreground,
-           From        => (Offset, First),
-           Length      => Length,
-           Angle       => 3.0 * Pi / 2.0,
-           Adjustment  => Adjustment,
-           Tip_Cap     => Cairo.Cairo_Line_Cap_Round,
-           Tip_Length  => 0.15,
-           Tip_Width   => 0.03,
-           Rear_Cap    => Cairo.Cairo_Line_Cap_Round,
-           Rear_Length => 0.15,
-           Rear_Width  => 0.03,
-           Color       => Needle_Color,
-           Scaled      => True);
-   end Create_Foreground;
-
-   function Get_Annotation
-     (Widget : not null access Gtk_Gauge_Flat_Vertical_Record)
-      return not null access Gtk.Layered.Flat_Annotation.Flat_Annotation_Layer
-   is
-   begin
-      return Widget.all.Annotation;
-   end Get_Annotation;
-
-   function Get_Needle
-     (Widget : not null access Gtk_Gauge_Flat_Vertical_Record)
-      return not null access Gtk.Layered.Flat_Needle.Flat_Needle_Layer is
-   begin
-      return Widget.all.Needle;
-   end Get_Needle;
-
-   function Get_Background
-     (Widget : not null access Gtk_Gauge_Flat_Vertical_Record)
-      return not null access Gtk.Layered.Rectangular_Background.Rectangular_Background_Layer
-   is
-   begin
-      return Widget.all.Background;
-   end Get_Background;
-
-   function Get_Cache
-     (Widget : not null access Gtk_Gauge_Flat_Vertical_Record)
-      return not null access Gtk.Layered.Cache.Cache_Layer is
-   begin
-      return Widget.all.Cache;
-   end Get_Cache;
 
    procedure Gtk_New
      (Widget     : out Gtk_Gauge_Flat_Vertical;
@@ -477,5 +488,8 @@ package body Gtk.Gauge.Flat_Vertical is
          Color       =>
            Gtk.Widget.Styles.Style_Get (Widget, "text-color", Text_Color));
    end Style_Changed;
+
+   pragma Warnings (On, "declaration hides ""Widget""");
+   pragma Warnings (On, "declaration hides ""Adjustment""");
 
 end Gtk.Gauge.Flat_Vertical;

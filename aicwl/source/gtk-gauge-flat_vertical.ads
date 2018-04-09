@@ -35,6 +35,8 @@ with Gtk.Layered.Rectangular_Background;
 
 package Gtk.Gauge.Flat_Vertical is
 
+   pragma Warnings (Off, "declaration hides ""Adjustment""");
+
    --
    -- Class_Name - Of the widget
    --
@@ -188,6 +190,8 @@ package Gtk.Gauge.Flat_Vertical is
 
    overriding procedure Style_Changed
      (Widget : not null access Gtk_Gauge_Flat_Vertical_Record);
+
+   pragma Warnings (On, "declaration hides ""Adjustment""");
 
 private
 
