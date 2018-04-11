@@ -1,4 +1,5 @@
 with Cairo.Ellipses;
+with Gdk.Color;
 with Gtk.Colors;
 with Gtk.Grid;
 with Gtk.Label;
@@ -38,6 +39,45 @@ is
                        Height => 1);
    end Add_Heading;
 
+   procedure Add_Labeled_LED
+     (Widget    :    out Gtk.Gauge.LED_Round.Gtk_Gauge_LED_Round;
+      Label     : in     Glib.UTF8_String;
+      On_Color  : in     Gdk.Color.Gdk_Color;
+      Off_Color : in     Gdk.Color.Gdk_Color;
+      Column    : in     Glib.Gint;
+      Row       : in     Glib.Gint);
+
+   procedure Add_Labeled_LED
+     (Widget    :    out Gtk.Gauge.LED_Round.Gtk_Gauge_LED_Round;
+      Label     : in     Glib.UTF8_String;
+      On_Color  : in     Gdk.Color.Gdk_Color;
+      Off_Color : in     Gdk.Color.Gdk_Color;
+      Column    : in     Glib.Gint;
+      Row       : in     Glib.Gint)
+   is
+      L : constant not null Gtk.Label.Gtk_Label :=
+            Gtk.Label.Gtk_Label_New (Str => Label);
+   begin
+      L.all.Set_Halign (Align => Gtk.Widget.Align_Start);
+      Grid.all.Attach (Child  => L,
+                       Left   => Column,
+                       Top    => Row,
+                       Width  => 1,
+                       Height => 1);
+
+      Gtk.Gauge.LED_Round.Gtk_New
+        (Widget        => Widget,
+         On_Color      => On_Color,
+         Off_Color     => Off_Color,
+         Border_Shadow => Gtk.Enums.Shadow_Etched_Out);
+
+      Grid.all.Attach (Child  => Widget,
+                       Left   => Column + 1,
+                       Top    => Row,
+                       Width  => 1,
+                       Height => 1);
+   end Add_Labeled_LED;
+
    Current_Column : Glib.Gint := 0;
 begin
    Grid.all.Set_Column_Homogeneous (Homogeneous => True);
@@ -48,73 +88,36 @@ begin
                 Column => Current_Column,
                 Width  => 2);
 
+   Add_Leg_LEDs :
    for Leg in Shared_Types.Legs_Index loop
-      Add_Leg_LED :
+      Add_Row :
       declare
-         Led : Gtk.Gauge.LED_Round.Gtk_Gauge_LED_Round;
+         Row_Offset : constant Glib.Gint :=
+                        Glib.Gint (Shared_Types.Legs_Index'Pos (Leg));
       begin
-         Gtk.Gauge.LED_Round.Gtk_New
-           (Widget        => Led,
-            On_Color      => Gtk.Colors.Green,
-            Off_Color     => Gtk.Colors.Grey,
-            Border_Shadow => Gtk.Enums.Shadow_Etched_Out);
-
-         Add_Leg_Label :
-         declare
-            L : constant not null Gtk.Label.Gtk_Label :=
-                  Gtk.Label.Gtk_Label_New
-                    (Str => "Landing Leg"
-                     & Natural'Image (Shared_Types.Legs_Index'Pos (Leg) + 1));
-         begin
-            L.all.Set_Halign (Align => Gtk.Widget.Align_Start);
-            Grid.all.Attach
-              (Child  => L,
-               Left   => Current_Column,
-               Top    =>
-                 Gauge_Row + Glib.Gint (Shared_Types.Legs_Index'Pos (Leg)),
-               Width  => 1,
-               Height => 1);
-         end Add_Leg_Label;
-
-         Grid.all.Attach
-           (Child  => Led,
-            Left   => Current_Column + 1,
-            Top    => Gauge_Row + Glib.Gint (Shared_Types.Legs_Index'Pos (Leg)),
-            Width  => 1,
-            Height => 1);
-         Window.Elements.Leg_Led (Leg) := Led;
-      end Add_Leg_LED;
-   end loop;
+         Add_Labeled_LED
+           (Widget    => Window.Elements.Leg_Led (Leg),
+            Label     => "Landing Leg" & Glib.Gint'Image (Row_Offset + 1),
+            On_Color  => Gtk.Colors.Green,
+            Off_Color => Gtk.Colors.Grey,
+            Column    => Current_Column,
+            Row       => Gauge_Row + Row_Offset);
+      end Add_Row;
+   end loop Add_Leg_LEDs;
 
    Add_Thruster_LED :
    declare
-      Led : Gtk.Gauge.LED_Round.Gtk_Gauge_LED_Round;
+      Row_Offset : constant Glib.Gint :=
+                     Glib.Gint
+                       (Shared_Types.Legs_Index'Pos
+                          (Shared_Types.Legs_Index'Last)) + 1;
    begin
-      Gtk.Gauge.LED_Round.Gtk_New
-        (Widget        => Led,
-         On_Color      => Gtk.Colors.Dark_Yellow,
-         Off_Color     => Gtk.Colors.Grey,
-         Border_Shadow => Gtk.Enums.Shadow_Etched_Out);
-
-      Add_Thruster_Label :
-      declare
-         L : constant not null Gtk.Label.Gtk_Label :=
-               Gtk.Label.Gtk_Label_New (Str => "Thruster");
-      begin
-         L.all.Set_Halign (Align => Gtk.Widget.Align_Start);
-         Grid.all.Attach (Child  => L,
-                          Left   => Current_Column,
-                          Top    => Gauge_Row + 3,
-                          Width  => 1,
-                          Height => 1);
-      end Add_Thruster_Label;
-
-      Grid.all.Attach (Child  => Led,
-                       Left   => Current_Column + 1,
-                       Top    => Gauge_Row + 3,
-                       Width  => 1,
-                       Height => 1);
-      Window.Elements.Thruster_Led := Led;
+      Add_Labeled_LED (Widget    => Window.Elements.Thruster_Led,
+                       Label     => "Thruster",
+                       On_Color  => Gtk.Colors.Dark_Yellow,
+                       Off_Color => Gtk.Colors.Grey,
+                       Column    => Current_Column,
+                       Row       => Gauge_Row + Row_Offset);
    end Add_Thruster_LED;
 
    --  Fuel Mass
@@ -124,51 +127,40 @@ begin
                 Column => Current_Column,
                 Width  => Gauge_Size);
 
-   Add_Fuel_Gauge :
-   declare
-      Gauge : Gtk.Meter.Angular_90.Gtk_Meter_Angular_90;
-   begin
-      Gtk.Meter.Angular_90.Gtk_New (Widget  => Gauge,
-                                    Texts   => Fuel_Scale.Texts.all,
-                                    Sectors =>
-                                      Positive
-                                        (Gtk.Enums.String_List.Length
-                                           (+Fuel_Scale.Texts.all)) - 1);
-      Gtk.Layered.Label.Add_Label (Under    => Gauge.all.Get_Cache,
-                                   Text     => "kg",
-                                   Location =>
-                                     Cairo.Ellipses.Cairo_Tuple'(X => 0.0175,
-                                                                 Y => 0.1),
-                                   Face     => Label_Font_Italic,
-                                   Height   => 0.03,
-                                   Stretch  => 0.9,
-                                   Mode     => Gtk.Layered.Moved_Centered,
-                                   Color    => Gtk.Colors.Black,
-                                   Angle    => 0.0,
-                                   Skew     => 0.0,
-                                   Markup   => False,
-                                   Scaled   => True);
-      Grid.all.Attach (Child  => Gauge,
-                       Left   => Current_Column,
-                       Top    => Gauge_Row,
-                       Width  => Gauge_Size,
-                       Height => Gauge_Size);
-      Window.Fuel_Scale := Gauge;
-   end Add_Fuel_Gauge;
+   Gtk.Meter.Angular_90.Gtk_New
+     (Widget  => Window.Fuel_Scale,
+      Texts   => Fuel_Scale.Texts.all,
+      Sectors =>
+        Positive (Gtk.Enums.String_List.Length (+Fuel_Scale.Texts.all)) - 1);
+   Gtk.Layered.Label.Add_Label
+     (Under    => Window.Fuel_Scale.all.Get_Cache,
+      Text     => "kg",
+      Location => Cairo.Ellipses.Cairo_Tuple'(X => 0.0175,
+                                              Y => 0.1),
+      Face     => Label_Font_Italic,
+      Height   => 0.03,
+      Stretch  => 0.9,
+      Mode     => Gtk.Layered.Moved_Centered,
+      Color    => Gtk.Colors.Black,
+      Angle    => 0.0,
+      Skew     => 0.0,
+      Markup   => False,
+      Scaled   => True);
 
-   Add_Fuel_Text :
-   declare
-      Text : Gtk.GEntry.Gtk_Entry;
-   begin
-      Gtk.GEntry.Gtk_New (The_Entry => Text);
-      Grid.all.Attach (Child  => Text,
-                       Left   => Current_Column + 1,
-                       Top    => Text_Row,
-                       Width  => Gauge_Size - 2,
-                       Height => 1);
-      Window.Elements.Fuel := Text;
-      Text.all.Set_Editable (Is_Editable => False);
-   end Add_Fuel_Text;
+   Grid.all.Attach (Child  => Window.Fuel_Scale,
+                    Left   => Current_Column,
+                    Top    => Gauge_Row,
+                    Width  => Gauge_Size,
+                    Height => Gauge_Size);
+
+   Gtk.GEntry.Gtk_New (The_Entry => Window.Elements.Fuel);
+   Window.Elements.Fuel.all.Set_Editable (Is_Editable => False);
+
+   Grid.all.Attach (Child  => Window.Elements.Fuel,
+                    Left   => Current_Column + 1,
+                    Top    => Text_Row,
+                    Width  => Gauge_Size - 2,
+                    Height => 1);
 
    --  Delta V gauge.
    Current_Column := Current_Column + Gauge_Size;
@@ -177,23 +169,16 @@ begin
                 Column => Current_Column,
                 Width  => 2);
 
-   Add_Delta_V_Gauge :
-   declare
-      Gauge : Gtk.Gauge.Flat_Vertical.Gtk_Gauge_Flat_Vertical;
-   begin
-      Gtk.Gauge.Flat_Vertical.Gtk_New
-        (Widget  => Gauge,
-         Texts   => Delta_V_Scale.Texts.all,
-         Sectors => Positive
-           (Gtk.Enums.String_List.Length
-                (+Delta_V_Scale.Texts.all)) - 1);
-      Grid.all.Attach (Child  => Gauge,
-                       Left   => Current_Column,
-                       Top    => Gauge_Row,
-                       Width  => Glib.Gint'Max (1, Gauge_Size / 3),
-                       Height => Text_Row);
-      Window.Delta_V_Scale := Gauge;
-   end Add_Delta_V_Gauge;
+   Gtk.Gauge.Flat_Vertical.Gtk_New
+     (Widget  => Window.Delta_V_Scale,
+      Texts   => Delta_V_Scale.Texts.all,
+      Sectors =>
+        Positive (Gtk.Enums.String_List.Length (+Delta_V_Scale.Texts.all)) - 1);
+   Grid.all.Attach (Child  => Window.Delta_V_Scale,
+                    Left   => Current_Column,
+                    Top    => Gauge_Row,
+                    Width  => Glib.Gint'Max (1, Gauge_Size / 3),
+                    Height => Text_Row);
 
    --  Velocity Gauge
    Current_Column := Current_Column + Glib.Gint'Max (1, Gauge_Size / 3);
@@ -202,52 +187,39 @@ begin
                 Column => Current_Column,
                 Width  => Gauge_Size);
 
-   Add_Velocity_Gauge :
-   declare
-      Gauge : Gtk.Gauge.Round_270.Gtk_Gauge_Round_270;
-   begin
-      Gtk.Gauge.Round_270.Gtk_New
-        (Widget  => Gauge,
-         Texts   => Velocity_Scale.Texts.all,
-         Sectors =>
-           Positive
-             (Gtk.Enums.String_List.Length
-                  (+Velocity_Scale.Texts.all)) - 1);
-      Gtk.Layered.Label.Add_Label
-        (Under    => Gauge.all.Get_Cache,
-         Text     => "m/s",
-         Location => Cairo.Ellipses.Cairo_Tuple'(X => 0.01,
-                                                 Y => 0.15),
-         Face     => Label_Font,
-         Height   => 0.03,
-         Stretch  => 0.9,
-         Mode     => Gtk.Layered.Moved_Centered,
-         Color    => Gtk.Colors.White,
-         Angle    => 0.0,
-         Skew     => 0.0,
-         Markup   => False,
-         Scaled   => True);
-      Grid.all.Attach (Child  => Gauge,
-                       Left   => Current_Column,
-                       Top    => Gauge_Row,
-                       Width  => Gauge_Size,
-                       Height => Gauge_Size);
-      Window.Tachometer := Gauge;
-   end Add_Velocity_Gauge;
+   Gtk.Gauge.Round_270.Gtk_New
+     (Widget  => Window.Tachometer,
+      Texts   => Velocity_Scale.Texts.all,
+      Sectors =>
+        Positive
+          (Gtk.Enums.String_List.Length (+Velocity_Scale.Texts.all)) - 1);
+   Gtk.Layered.Label.Add_Label
+     (Under    => Window.Tachometer.all.Get_Cache,
+      Text     => "m/s",
+      Location => Cairo.Ellipses.Cairo_Tuple'(X => 0.01,
+                                              Y => 0.15),
+      Face     => Label_Font,
+      Height   => 0.03,
+      Stretch  => 0.9,
+      Mode     => Gtk.Layered.Moved_Centered,
+      Color    => Gtk.Colors.White,
+      Angle    => 0.0,
+      Skew     => 0.0,
+      Markup   => False,
+      Scaled   => True);
+   Grid.all.Attach (Child  => Window.Tachometer,
+                    Left   => Current_Column,
+                    Top    => Gauge_Row,
+                    Width  => Gauge_Size,
+                    Height => Gauge_Size);
 
-   Add_Velocity_Text :
-   declare
-      Text : Gtk.GEntry.Gtk_Entry;
-   begin
-      Gtk.GEntry.Gtk_New (The_Entry => Text);
-      Grid.all.Attach (Child  => Text,
-                       Left   => Current_Column + 1,
-                       Top    => Text_Row,
-                       Width  => Gauge_Size - 2,
-                       Height => 1);
-      Window.Elements.Velocity := Text;
-      Text.all.Set_Editable (Is_Editable => False);
-   end Add_Velocity_Text;
+   Gtk.GEntry.Gtk_New (The_Entry => Window.Elements.Velocity);
+   Window.Elements.Velocity.all.Set_Editable (Is_Editable => False);
+   Grid.all.Attach (Child  => Window.Elements.Velocity,
+                    Left   => Current_Column + 1,
+                    Top    => Text_Row,
+                    Width  => Gauge_Size - 2,
+                    Height => 1);
 
    --  Altitude gauge.
    Current_Column := Current_Column + Gauge_Size;
@@ -282,19 +254,13 @@ begin
                     Width  => Gauge_Size,
                     Height => Gauge_Size);
 
-   Add_Altitude_Text :
-   declare
-      Text : Gtk.GEntry.Gtk_Entry;
-   begin
-      Gtk.GEntry.Gtk_New (The_Entry => Text);
-      Grid.all.Attach (Child  => Text,
-                       Left   => Current_Column + 1,
-                       Top    => Text_Row,
-                       Width  => Gauge_Size - 2,
-                       Height => 1);
-      Window.Elements.Altitude := Text;
-      Text.all.Set_Editable (Is_Editable => False);
-   end Add_Altitude_Text;
+   Gtk.GEntry.Gtk_New (The_Entry => Window.Elements.Altitude);
+   Window.Elements.Altitude.all.Set_Editable (Is_Editable => False);
+   Grid.all.Attach (Child  => Window.Elements.Altitude,
+                    Left   => Current_Column + 1,
+                    Top    => Text_Row,
+                    Width  => Gauge_Size - 2,
+                    Height => 1);
 
    return Grid;
 end Create_Sensor_Signals_Frame;
