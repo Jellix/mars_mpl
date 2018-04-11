@@ -37,12 +37,17 @@ begin
          Right  : in              Glib.UTF8_String := "";
          Reset  :          access Gtk.Button.Gtk_Button_Record'Class := null) is
       begin
-         Grid.all.Insert_Row (Position => Row);
-
          if Left /= "" then
-            Grid.all.Attach (Child  => Gtk.Label.Gtk_Label_New (Str => Left),
-                             Left   => 0,
-                             Top    => Row);
+            Add_Left_Label :
+            declare
+               L : constant not null Gtk.Label.Gtk_Label :=
+                     Gtk.Label.Gtk_Label_New (Str => Left);
+            begin
+               L.all.Set_Halign (Align => Gtk.Widget.Align_Start);
+               Grid.all.Attach (Child  => L,
+                                Left   => 0,
+                                Top    => Row);
+            end Add_Left_Label;
          end if;
 
          Grid.all.Attach (Child => Widget,
@@ -50,9 +55,16 @@ begin
                           Top   => Row);
 
          if Right /= "" then
-            Grid.all.Attach (Child => Gtk.Label.Gtk_Label_New (Str => Right),
-                             Left  => 2,
-                             Top   => Row);
+            Add_Right_Label :
+            declare
+               L : constant not null Gtk.Label.Gtk_Label :=
+                     Gtk.Label.Gtk_Label_New (Str => Right);
+            begin
+               L.all.Set_Halign (Align => Gtk.Widget.Align_Start);
+               Grid.all.Attach (Child => L,
+                                Left  => 2,
+                                Top   => Row);
+            end Add_Right_Label;
          end if;
 
          if Reset /= null then
@@ -64,10 +76,6 @@ begin
          Row := Row + 1;
       end Grid_Add_Row;
    begin
-      for I in Glib.Gint range 0 .. 3 loop
-         Grid.all.Insert_Column (Position => I);
-      end loop;
-
       Bug_Switch_Fields :
       declare
          B : constant not null Gtk.Check_Button.Gtk_Check_Button :=

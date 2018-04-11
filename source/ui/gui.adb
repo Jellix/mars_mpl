@@ -162,22 +162,10 @@ package body GUI is
 
    pragma Warnings (On, "instance does not use primitive operation ""*""");
 
-   function Labeled_Widget
-     (Widget      : not null access Gtk.Widget.Gtk_Widget_Record'Class;
-      Description : in              String) return not null access
-     Gtk.Widget.Gtk_Widget_Record'Class;
-
    --  Prototypes
-   function Create_Altitude_Frame
-     (Window : in out Main_Window_Record) return not null access
-     Gtk.Widget.Gtk_Widget_Record'Class;
-
-   function Create_Fuel_Frame
-     (Window : in out Main_Window_Record) return not null access
-     Gtk.Widget.Gtk_Widget_Record'Class;
-
    function Create_Sensor_Signals_Frame
-     (Window : in out Main_Window_Record) return not null access
+     (Window     : in out Main_Window_Record;
+      Gauge_Size : in     Glib.Gint) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class;
 
    function Create_Simulation_Frame
@@ -185,24 +173,13 @@ package body GUI is
      Gtk.Widget.Gtk_Widget_Record'Class;
 
    function Create_Timeline_Frame
-     (Window : in out Main_Window_Record) return not null access
-     Gtk.Widget.Gtk_Widget_Record'Class;
-
-   function Create_Velocity_Frame
      (Window : in out Main_Window_Record) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class;
 
    --  Stubs
-   function Create_Altitude_Frame
-     (Window : in out Main_Window_Record) return not null access
-     Gtk.Widget.Gtk_Widget_Record'Class is separate;
-
-   function Create_Fuel_Frame
-     (Window : in out Main_Window_Record) return not null access
-     Gtk.Widget.Gtk_Widget_Record'Class is separate;
-
    function Create_Sensor_Signals_Frame
-     (Window : in out Main_Window_Record) return not null access
+     (Window     : in out Main_Window_Record;
+      Gauge_Size : in     Glib.Gint) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class is separate;
 
    function Create_Simulation_Frame
@@ -210,10 +187,6 @@ package body GUI is
      Gtk.Widget.Gtk_Widget_Record'Class is separate;
 
    function Create_Timeline_Frame
-     (Window : in out Main_Window_Record) return not null access
-     Gtk.Widget.Gtk_Widget_Record'Class is separate;
-
-   function Create_Velocity_Frame
      (Window : in out Main_Window_Record) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class is separate;
 
@@ -338,31 +311,15 @@ package body GUI is
                                        Spacing     => 0);
       begin
          Window.Add (Widget => Box);
-         Box.all.Pack_Start (Child  => Window.Create_Sensor_Signals_Frame,
-                             Expand => True);
+         Box.all.Pack_Start
+           (Child  => Window.Create_Sensor_Signals_Frame (Gauge_Size => 6),
+            Expand => True);
          Box.all.Pack_Start (Child  => Window.Create_Timeline_Frame,
                              Expand => False);
          Box.all.Pack_Start (Child  => Window.Create_Simulation_Frame,
                              Expand => False);
       end Add_Widgets_To_Box;
    end Initialize;
-
-   function Labeled_Widget
-     (Widget      : not null access Gtk.Widget.Gtk_Widget_Record'Class;
-      Description : in              String) return not null access
-     Gtk.Widget.Gtk_Widget_Record'Class
-   is
-      Widget_Box : constant not null Gtk.Box.Gtk_Box :=
-                     Gtk.Box.Gtk_Hbox_New (Homogeneous => True,
-                                           Spacing     => 0);
-      Label      : constant not null Gtk.Label.Gtk_Label :=
-                     Gtk.Label.Gtk_Label_New (Str => Description);
-   begin
-      Widget_Box.all.Pack_Start (Child => Label);
-      Widget_Box.all.Pack_Start (Child => Widget);
-
-      return Widget_Box;
-   end Labeled_Widget;
 
    procedure Quit_GUI (Win : not null access Main_Window_Record) is
       Do_Abort : Boolean := not Win.all.Aborted;
