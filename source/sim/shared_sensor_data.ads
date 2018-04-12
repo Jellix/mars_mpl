@@ -23,6 +23,7 @@ is
          Altitude         : Shared_Types.Altitude;
          Velocity         : Shared_Types.Velocity;
          Fuel             : Shared_Types.Fuel_Mass;
+         Drag             : Shared_Types.Acceleration;
          Time_Stamp       : Duration;
       end record;
    --  The full space craft sensor state.
@@ -47,6 +48,7 @@ is
                               Altitude         => 0.0,
                               Velocity         => 0.0,
                               Fuel             => 0.0,
+                              Drag             => 0.0,
                               Time_Stamp       => 0.0));
 
    pragma Annotate (GNATcheck,

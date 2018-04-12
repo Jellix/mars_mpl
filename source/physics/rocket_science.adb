@@ -29,17 +29,14 @@ package body Rocket_Science is
    --  F = D - W
    --  a = F / m
    function Drag (Current_Wet_Mass : in Shared_Types.Mass;
-                  Gravitation      : in Shared_Types.Acceleration;
                   Velocity         : in Shared_Types.Velocity;
                   Drag_Constant    : in Float) return Shared_Types.Acceleration
    is
-      Upwards_Drag    : Float;
-      Downwards_Force : Float;
+      Upwards_Drag : Float;
    begin
-      Upwards_Drag    := Drag_Constant * Float (Velocity) * Float (Velocity) / 2.0;
-      Downwards_Force := Upwards_Drag - Float (Current_Wet_Mass * Gravitation);
+      Upwards_Drag := Drag_Constant * Float (Velocity) * Float (Velocity) / 2.0;
 
-      return Shared_Types.Acceleration (Downwards_Force / Float (Current_Wet_Mass));
+      return Shared_Types.Acceleration (Upwards_Drag / Float (Current_Wet_Mass));
    end Drag;
 
 end Rocket_Science;

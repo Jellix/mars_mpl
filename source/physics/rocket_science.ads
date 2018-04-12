@@ -1,6 +1,8 @@
 with Shared_Types;
 
-package Rocket_Science is
+package Rocket_Science
+  with Pure => True
+is
 
    --  Tsiolkovsky rocket equation.
    --  Returns the delta V for given fuel masses and exhaust velocity.
@@ -21,7 +23,6 @@ package Rocket_Science is
    --  F = D - W
    --  a = F / m
    function Drag (Current_Wet_Mass : in Shared_Types.Mass;
-                  Gravitation      : in Shared_Types.Acceleration;
                   Velocity         : in Shared_Types.Velocity;
                   Drag_Constant    : in Float) return Shared_Types.Acceleration;
 

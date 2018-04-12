@@ -244,6 +244,9 @@ package body GUI is
       begin
          Win.Delta_V_Scale.all.Set_Value
            (Value => Glib.Gdouble (Max_Delta_V) / Delta_V_Scale.Factor);
+
+         --  Drag
+         DE.Drag.all.Set_Text (Text => Image (Value => Update_State.Drag));
       end;
 
       Win.Delta_V_Scale.all.Queue_Draw;

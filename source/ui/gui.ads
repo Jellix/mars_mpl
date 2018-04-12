@@ -30,6 +30,7 @@ private
          Altitude     : Gtk.GEntry.Gtk_Entry;
          Velocity     : Gtk.GEntry.Gtk_Entry;
          Fuel         : Gtk.GEntry.Gtk_Entry;
+         Drag         : Gtk.GEntry.Gtk_Entry;
       end record;
 
    type Legs_Channels is array (Shared_Types.Legs_Index) of

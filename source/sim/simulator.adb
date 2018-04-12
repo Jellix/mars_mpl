@@ -51,10 +51,11 @@ procedure Simulator is
       Offset    : constant Duration :=
                     Ada.Real_Time.To_Duration
                       (TS => Ada.Real_Time.Clock - Global.Start_Time);
-      Thrust_On : constant Boolean                := Thrusters.Is_Enabled;
-      Altitude  : constant Shared_Types.Altitude  := Altimeter.Current_Altitude;
-      Velocity  : constant Shared_Types.Velocity  := Altimeter.Current_Velocity;
-      Fuel      : constant Shared_Types.Fuel_Mass := Thrusters.Current_Fuel_Mass;
+      Thrust_On : constant Boolean                   := Thrusters.Is_Enabled;
+      Altitude  : constant Shared_Types.Altitude     := Altimeter.Current_Altitude;
+      Velocity  : constant Shared_Types.Velocity     := Altimeter.Current_Velocity;
+      Fuel      : constant Shared_Types.Fuel_Mass    := Thrusters.Current_Fuel_Mass;
+      Drag      : constant Shared_Types.Acceleration := Altimeter.Current_Drag;
       All_Legs  : Shared_Types.All_Legs_State;
    begin
       Landing_Legs.Read_State (State => All_Legs);
@@ -65,6 +66,7 @@ procedure Simulator is
                                      Altitude         => Altitude,
                                      Velocity         => Velocity,
                                      Fuel             => Fuel,
+                                     Drag             => Drag,
                                      Time_Stamp       => Offset));
    end Update_Shared_Data;
 

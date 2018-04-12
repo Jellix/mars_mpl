@@ -21,6 +21,11 @@ package Altimeter is
    --  Provides the current altitude.
    --  @return The current altitude.
 
+   function Current_Drag return Shared_Types.Acceleration
+     with Volatile_Function;
+   --  Provides the current drag acting on the space craft.
+   --  @return The current drag.
+
    function Current_Velocity return Shared_Types.Velocity
      with Volatile_Function;
    --  Provides the current velocity.

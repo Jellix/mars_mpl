@@ -120,6 +120,14 @@ begin
                        Row       => Gauge_Row + Row_Offset);
    end Add_Thruster_LED;
 
+   Gtk.GEntry.Gtk_New (The_Entry => Window.Elements.Drag);
+   Window.Elements.Drag.all.Set_Editable (Is_Editable => False);
+   Grid.all.Attach (Child  => Window.Elements.Drag,
+                    Left   => Current_Column,
+                    Top    => Text_Row,
+                    Width  => 2,
+                    Height => 1);
+
    --  Fuel Mass
    Current_Column := Current_Column + 2;
 

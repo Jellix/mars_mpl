@@ -3,6 +3,7 @@ with Configuration.Task_Offsets;
 with Landing_Legs;
 with Planets.Parameters;
 with Shared_Parameters.Read;
+with Rocket_Science;
 with Task_Safe_Store;
 with Thrusters;
 
@@ -10,6 +11,7 @@ package body Altimeter is
 
    use type Ada.Real_Time.Time;
    use type Shared_Types.Altitude;
+   use type Shared_Types.Mass;
    use type Shared_Types.Velocity;
 
    Gravity : constant Shared_Types.Acceleration
@@ -25,6 +27,11 @@ package body Altimeter is
                       Initial_Value => Shared_Parameters.Read.Initial_Altitude);
    Altimeter_State : Altimeter_Store.Shelf;
 
+   package Drag_Store is new
+     Task_Safe_Store (Stored_Type   => Shared_Types.Acceleration,
+                      Initial_Value => 0.0);
+   Drag_State : Drag_Store.Shelf;
+
    package Velocity_Store  is new
      Task_Safe_Store (Stored_Type   => Shared_Types.Velocity,
                       Initial_Value => Shared_Parameters.Read.Initial_Velocity);
@@ -34,6 +41,9 @@ package body Altimeter is
 
    function Current_Altitude return Shared_Types.Altitude is
      (Altimeter_State.Get);
+
+   function Current_Drag return Shared_Types.Acceleration is
+      (Drag_State.Get);
 
    function Current_Velocity return Shared_Types.Velocity is
      (Velocity_State.Get);
@@ -136,6 +146,15 @@ package body Altimeter is
                end Calculate_Delta_V;
             end if;
          end Check_Descent_Phase;
+
+         Drag_State.Set
+           (New_Value =>
+              Rocket_Science.Drag
+                (Current_Wet_Mass =>
+                     Shared_Types.Mass (Shared_Parameters.Read.Dry_Mass) +
+                       Shared_Types.Mass (Thrusters.Current_Fuel_Mass),
+                 Velocity         => Velocity_Now,
+                 Drag_Constant    => 1.0));
 
          if Altitude_Now = 0.0 then
             Landing_Legs.Touchdown;
