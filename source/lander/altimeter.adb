@@ -10,6 +10,7 @@ with Thrusters;
 package body Altimeter is
 
    use type Ada.Real_Time.Time;
+   use type Shared_Types.Acceleration;
    use type Shared_Types.Altitude;
    use type Shared_Types.Mass;
    use type Shared_Types.Velocity;
@@ -107,11 +108,14 @@ package body Altimeter is
       T             : constant Duration
         := Ada.Real_Time.To_Duration (Configuration.Cycle_Times.Altitude_Task);
       --  Duration of a single task cycle.
+      Dry_Mass      : constant Shared_Types.Mass :=
+                        Shared_Types.Mass (Shared_Parameters.Read.Dry_Mass);
 
       Next_Cycle    : Ada.Real_Time.Time
         := Global.Start_Time + Configuration.Task_Offsets.Altitude_Task;
       Altitude_Now  : Shared_Types.Altitude := Altimeter_State.Get;
       Velocity_Now  : Shared_Types.Velocity := Velocity_State.Get;
+      Drag_Delta_V  : Shared_Types.Velocity := 0.0; --  accumulated delta v due to drag effects.
    begin
       Log.Trace (Message => "Altitude control monitor started.");
 
@@ -128,6 +132,20 @@ package body Altimeter is
             Altimeter_State.Set (New_Value => Altitude_Now);
          end Calculate_Delta_A;
 
+         Calculate_Drag :
+         declare
+            Fuel_Mass : constant Shared_Types.Mass :=
+                          Shared_Types.Mass (Thrusters.Current_Fuel_Mass);
+            Drag_Now  : constant Shared_Types.Acceleration :=
+                          Rocket_Science.Drag
+                            (Current_Wet_Mass => Dry_Mass + Fuel_Mass,
+                             Velocity         => Velocity_Now,
+                             Drag_Constant    => 1.0);
+         begin
+            Drag_State.Set (New_Value => Drag_Now);
+            Drag_Delta_V := Drag_Delta_V - (Drag_Now * T);
+         end Calculate_Drag;
+
          Check_Descent_Phase :
          declare
             Current_Phase : constant Descent_Phase := Descent_State.Get;
@@ -141,20 +159,14 @@ package body Altimeter is
                   Delta_V      : constant Shared_Types.Velocity
                     := (Gravity * Descent_Time) - Thrusters.Delta_V;
                begin
-                  Velocity_Now := Initial_Velocity + Delta_V;
-                  Velocity_State.Set (New_Value => Velocity_Now);
+                  Velocity_Now := Initial_Velocity + Delta_V + Drag_Delta_V;
                end Calculate_Delta_V;
+            else
+               Velocity_Now := Initial_Velocity + Drag_Delta_V;
             end if;
-         end Check_Descent_Phase;
 
-         Drag_State.Set
-           (New_Value =>
-              Rocket_Science.Drag
-                (Current_Wet_Mass =>
-                     Shared_Types.Mass (Shared_Parameters.Read.Dry_Mass) +
-                       Shared_Types.Mass (Thrusters.Current_Fuel_Mass),
-                 Velocity         => Velocity_Now,
-                 Drag_Constant    => 1.0));
+            Velocity_State.Set (New_Value => Velocity_Now);
+         end Check_Descent_Phase;
 
          if Altitude_Now = 0.0 then
             Landing_Legs.Touchdown;
