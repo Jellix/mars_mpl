@@ -259,16 +259,20 @@ package body GUI is
          -- Data plot
          Win.Plot.Altitude_Plot.all.Feed
            (Channel => Win.Plot.Altitude_Channel,
-            V       => Glib.Gdouble (Update_State.Altitude),
-            T       => Time_Stamp);
+            T       => Time_Stamp,
+            V       => Glib.Gdouble (Update_State.Altitude));
+         Win.Plot.Drag_Plot.all.Feed
+           (Channel => Win.Plot.Drag_Channel,
+            T       => Time_Stamp,
+            V       => Glib.Gdouble (Update_State.Drag));
          Win.Plot.Fuel_Plot.all.Feed
            (Channel => Win.Plot.Fuel_Channel,
-            V       => Glib.Gdouble (Update_State.Fuel),
-            T       => Time_Stamp);
+            T       => Time_Stamp,
+            V       => Glib.Gdouble (Update_State.Fuel));
          Win.Plot.Velocity_Plot.all.Feed
            (Channel => Win.Plot.Velocity_Channel,
-            V       => Glib.Gdouble (Update_State.Velocity),
-            T       => Time_Stamp);
+            T       => Time_Stamp,
+            V       => Glib.Gdouble (Update_State.Velocity));
 
          for Leg in Shared_Types.Legs_Index loop
             Feed_Leg_Plot :
@@ -281,16 +285,16 @@ package body GUI is
             begin
                Win.Plot.Discretes_Plot.all.Feed
                  (Channel => Win.Plot.Touchdown_Channel (Leg),
-                  V       => Offset + Active,
-                  T       => Time_Stamp);
+                  T       => Time_Stamp,
+                  V       => Offset + Active);
             end Feed_Leg_Plot;
          end loop;
 
          Win.Plot.Discretes_Plot.all.Feed
            (Channel => Win.Plot.Thruster_Channel,
+            T       => Time_Stamp,
             V       =>
-              Glib.Gdouble (Boolean'Pos (Update_State.Thruster_Enabled)),
-            T       => Time_Stamp);
+              Glib.Gdouble (Boolean'Pos (Update_State.Thruster_Enabled)));
       end Feed_Data_Plots;
 
       --  Advance mission clock.

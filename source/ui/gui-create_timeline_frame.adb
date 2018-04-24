@@ -76,6 +76,10 @@ begin
                                                Refresh_Engine => Refresh_Engine);
       Plot_Box.all.Pack_Start (Child => Window.Plot.Discretes_Plot);
 
+      Window.Plot.Drag_Plot := New_Scope (Master         => Master,
+                                          Refresh_Engine => Refresh_Engine);
+      Plot_Box.all.Pack_Start (Child => Window.Plot.Drag_Plot);
+
       Window.Plot.Fuel_Plot := New_Scope (Master         => Master,
                                           Refresh_Engine => Refresh_Engine);
       Plot_Box.all.Pack_Start (Child => Window.Plot.Fuel_Plot);
@@ -96,6 +100,12 @@ begin
                                              Mode    => Gtk.Layered.Linear,
                                              Name    => "Altitude",
                                              Sweeper => Gtk.Oscilloscope.Lower);
+      Plots.Drag_Channel :=
+        Plots.Drag_Plot.all.Add_Channel (Color   => Gtk.Colors.Dark_Yellow,
+                                         Mode    => Gtk.Layered.Linear,
+                                         Name    => "Drag",
+                                         Sweeper => Gtk.Oscilloscope.Lower);
+
       Plots.Fuel_Channel     :=
         Plots.Fuel_Plot.all.Add_Channel (Color => Gtk.Colors.Blue,
                                          Mode  => Gtk.Layered.Linear,

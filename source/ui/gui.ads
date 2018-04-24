@@ -40,9 +40,11 @@ private
       record
          Altitude_Plot     : Gtk.Oscilloscope.Gtk_Oscilloscope;
          Altitude_Channel  : Gtk.Oscilloscope.Channel_Number;
+         Discretes_Plot    : Gtk.Oscilloscope.Gtk_Oscilloscope;
+         Drag_Plot         : Gtk.Oscilloscope.Gtk_Oscilloscope;
+         Drag_Channel      : Gtk.Oscilloscope.Channel_Number;
          Fuel_Plot         : Gtk.Oscilloscope.Gtk_Oscilloscope;
          Fuel_Channel      : Gtk.Oscilloscope.Channel_Number;
-         Discretes_Plot    : Gtk.Oscilloscope.Gtk_Oscilloscope;
          Thruster_Channel  : Gtk.Oscilloscope.Channel_Number;
          Touchdown_Channel : Legs_Channels;
          Velocity_Plot     : Gtk.Oscilloscope.Gtk_Oscilloscope;
