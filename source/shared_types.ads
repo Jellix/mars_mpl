@@ -65,10 +65,10 @@ is
    --  @summary
    --  Provides an acceleration type.
    package Meter_Per_Square_Second is
-      F : constant := -2.0 ** 10;
-      L : constant := 2.0 ** 10;
-      R : constant := 1.0 / 2.0 ** 20;
-      S : constant := 32;
+      F : constant := -2.0 ** 32;
+      L : constant := 2.0 ** 32;
+      R : constant := 1.0 / 2.0 ** 31;
+      S : constant := 64;
 
       type T is delta R range F .. L - R with
         Size  => S,

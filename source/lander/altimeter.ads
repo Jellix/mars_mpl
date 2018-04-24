@@ -31,12 +31,23 @@ package Altimeter is
    --  Provides the current velocity.
    --  @return The current velocity.
 
-   procedure Lander_Separation (Separated_At : in Ada.Real_Time.Time);
+   procedure Lander (Separated_At : in Ada.Real_Time.Time);
    --  Tells the altimeter simulation that and when the lander has been
    --  separated and the powered descent phase started (where we actively
    --  monitor thruster and fuel state).
    --  @param Separated_At The time at which the lander stage has been
-   --         separated.
+   --                      separated.
+
+   procedure Parachute (Deployed_At : in Ada.Real_Time.Time);
+   --  Tells the altimeter simulation that and when the parachute has been
+   --  deployed.
+   --  @param Deployed_At The time at which the parachute has been deployed.
+
+   procedure Heatshield (Jettisoned_At : in Ada.Real_Time.Time);
+   --  Tells the altimeter simulation that and when the heatshield has been
+   --  jettisoned.
+   --  @param Jettisoned_At The time at which the heatshield has been
+   --                       jettisoned.
 
    procedure Shutdown;
    --  Signals the altitude control monitor to terminate.

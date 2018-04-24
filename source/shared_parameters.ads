@@ -58,13 +58,13 @@ private
 
    package Initial_Altitude_Store is
      new Task_Safe_Store (Stored_Type   => Shared_Types.Altitude,
-                          Initial_Value => 3_000.0);
+                          Initial_Value => 10_000.0);
    Shared_Initial_Altitude : Initial_Altitude_Store.Shelf;
    -- Altitude at which the simulation starts in m.
 
    package Initial_Velocity_Store is
      new Task_Safe_Store (Stored_Type   => Shared_Types.Velocity,
-                          Initial_Value => 80.000);
+                          Initial_Value => 480.000);
    Shared_Initial_Velocity : Initial_Velocity_Store.Shelf;
    --  Initial velocity at simulation start in m/s.
 

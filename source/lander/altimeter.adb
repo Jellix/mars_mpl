@@ -51,6 +51,8 @@ package body Altimeter is
 
    type Descent_Phase is (Start,
                           -- ... some more, not supported/relevant
+                          Parachute_Deployed,
+                          Heatshield_Jettisoned,
                           Lander_Separation);
 
    protected Descent_State is
@@ -85,11 +87,23 @@ package body Altimeter is
 
    end Descent_State;
 
-   procedure Lander_Separation (Separated_At : in Ada.Real_Time.Time) is
+   procedure Heatshield (Jettisoned_At : in Ada.Real_Time.Time) is
+   begin
+      Descent_State.Set (New_Phase => Heatshield_Jettisoned,
+                         Change_At => Jettisoned_At);
+   end Heatshield;
+
+   procedure Lander (Separated_At : in Ada.Real_Time.Time) is
    begin
       Descent_State.Set (New_Phase => Lander_Separation,
                          Change_At => Separated_At);
-   end Lander_Separation;
+   end Lander;
+
+   procedure Parachute (Deployed_At : in Ada.Real_Time.Time) is
+   begin
+      Descent_State.Set (New_Phase => Parachute_Deployed,
+                         Change_At => Deployed_At);
+   end Parachute;
 
    Aborted : Boolean := False
      with Atomic;
@@ -104,12 +118,22 @@ package body Altimeter is
 
    task Radar_Simulator;
 
+   type Drag_Lookup is array (Descent_Phase) of Float;
+   type Mass_Lookup is array (Descent_Phase) of Shared_Types.Mass;
+
+   Drag_Table : constant Drag_Lookup := (Start                 => 0.015,
+                                         Parachute_Deployed    => 0.410,
+                                         Heatshield_Jettisoned => 0.410,
+                                         Lander_Separation     => 0.100);
+
+   Mass_Table : constant Mass_Lookup := (Start .. Parachute_Deployed => 140.0,
+                                         Heatshield_Jettisoned       =>   0.0,
+                                         Lander_Separation           =>   0.0);
+
    task body Radar_Simulator is
       T             : constant Duration
         := Ada.Real_Time.To_Duration (Configuration.Cycle_Times.Altitude_Task);
       --  Duration of a single task cycle.
-      Dry_Mass      : constant Shared_Types.Mass :=
-                        Shared_Types.Mass (Shared_Parameters.Read.Dry_Mass);
 
       Next_Cycle    : Ada.Real_Time.Time
         := Global.Start_Time + Configuration.Task_Offsets.Altitude_Task;
@@ -134,39 +158,36 @@ package body Altimeter is
 
          Calculate_Drag :
          declare
-            Fuel_Mass : constant Shared_Types.Mass :=
-                          Shared_Types.Mass (Thrusters.Current_Fuel_Mass);
-            Drag_Now  : constant Shared_Types.Acceleration :=
-                          Rocket_Science.Drag
-                            (Current_Wet_Mass => Dry_Mass + Fuel_Mass,
-                             Velocity         => Velocity_Now,
-                             Drag_Constant    => 1.0);
+            Current_Phase : constant Descent_Phase     := Descent_State.Get;
+            Drag_Constant : constant Float             :=
+                              Drag_Table (Current_Phase);
+            Dry_Mass      : constant Shared_Types.Mass :=
+                              Shared_Types.Mass (Shared_Parameters.Read.Dry_Mass) + Mass_Table (Current_Phase);
+            Fuel_Mass     : constant Shared_Types.Mass :=
+                              Shared_Types.Mass (Thrusters.Current_Fuel_Mass);
+            Drag_Now      : constant Shared_Types.Acceleration :=
+                              Rocket_Science.Drag
+                                (Current_Wet_Mass => Dry_Mass + Fuel_Mass,
+                                 Velocity         => Velocity_Now,
+                                 Drag_Constant    => Drag_Constant);
          begin
             Drag_State.Set (New_Value => Drag_Now);
-            Drag_Delta_V := Drag_Delta_V - (Drag_Now * T);
+            Drag_Delta_V := Drag_Delta_V + (Drag_Now * T);
          end Calculate_Drag;
 
-         Check_Descent_Phase :
+         Calculate_Delta_V :
          declare
-            Current_Phase : constant Descent_Phase := Descent_State.Get;
+            Descent_Time : constant Duration :=
+                             Ada.Real_Time.To_Duration
+                               (Next_Cycle - Global.Start_Time);
+            Delta_V      : constant Shared_Types.Velocity :=
+                             Gravity * Descent_Time;
          begin
-            if Current_Phase = Lander_Separation then
-               Calculate_Delta_V :
-               declare
-                  Descent_Time : constant Duration :=
-                                   Ada.Real_Time.To_Duration
-                                     (Next_Cycle - Descent_State.Separation_Time);
-                  Delta_V      : constant Shared_Types.Velocity
-                    := (Gravity * Descent_Time) - Thrusters.Delta_V;
-               begin
-                  Velocity_Now := Initial_Velocity + Delta_V + Drag_Delta_V;
-               end Calculate_Delta_V;
-            else
-               Velocity_Now := Initial_Velocity + Drag_Delta_V;
-            end if;
+            Velocity_Now :=
+              Initial_Velocity + Delta_V - Thrusters.Delta_V - Drag_Delta_V;
+         end Calculate_Delta_V;
 
-            Velocity_State.Set (New_Value => Velocity_Now);
-         end Check_Descent_Phase;
+         Velocity_State.Set (New_Value => Velocity_Now);
 
          if Altitude_Now = 0.0 then
             Landing_Legs.Touchdown;

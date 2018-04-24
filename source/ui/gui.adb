@@ -66,8 +66,8 @@ package body GUI is
    Velocity_Scale   : constant Scaling
      := Scaling'(Texts  =>
                    new Gtk.Enums.String_Lists.Controlled_String_List'
-                     ("0" / "20" / "40" / "60" / "80" / "100"),
-                 Factor => 100.0);
+                     ("0" / "100" / "200" / "300" / "400" / "500"),
+                 Factor => 500.0);
 
    Update_Interval  : constant Ada.Real_Time.Time_Span :=
                         Ada.Real_Time.Milliseconds (10);

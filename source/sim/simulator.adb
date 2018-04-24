@@ -82,21 +82,39 @@ begin
 
    Main_Block :
    declare
-      Next_Cycle         : Ada.Real_Time.Time
-        := Global.Start_Time + Configuration.Task_Offsets.SIM_Task;
+      Next_Cycle : Ada.Real_Time.Time :=
+                     Global.Start_Time + Configuration.Task_Offsets.SIM_Task;
+
+      Parachute_Deployed    : Boolean := False;
+      Heatshield_Jettisoned : Boolean := False;
+      Lander_Separated      : Boolean := False;
+      Legs_Deployed         : Boolean := False;
+      Powered_Descent       : Boolean := False;
 
       Current_Altitude   : Shared_Types.Altitude := Altimeter.Current_Altitude;
-      Legs_Deployed      : Boolean               := False;
-      Powered_Descent    : Boolean               := False;
-      Lander_Separated   : Boolean               := False;
       Powered_Descent_At : Ada.Real_Time.Time    := Ada.Real_Time.Time_Last;
-      Current_Velocity   : Shared_Types.Velocity;
+
+      Current_Velocity : Shared_Types.Velocity;
    begin
       while Current_Altitude > 0.0 loop
          delay until Next_Cycle;
 
          Current_Altitude := Altimeter.Current_Altitude;
          Current_Velocity := Altimeter.Current_Velocity;
+
+         --  Parachute deployment at 8800 m.
+         if not Parachute_Deployed and then Current_Altitude <= 8800.0 then
+            Altimeter.Parachute (Deployed_At => Next_Cycle);
+            Parachute_Deployed := True;
+            Log.Trace (Message => "Parachute deployed.");
+         end if;
+
+         --  Heatshield jettison at 7500 m.
+         if not Heatshield_Jettisoned and then Current_Altitude <= 7500.0 then
+            Altimeter.Heatshield (Jettisoned_At => Next_Cycle);
+            Heatshield_Jettisoned := True;
+            Log.Trace (Message => "Heatshield jettisoned.");
+         end if;
 
          --  EDL sequence:
          --    [...] the lander legs will be deployed; 1.5 seconds after that,
@@ -116,7 +134,7 @@ begin
          --    1.4 kilometers [...] above the surface, the [...] descent engines
          --    will be turned on one-half second later [...]
          if not Lander_Separated and then Current_Altitude <= 1300.0 then
-            Altimeter.Lander_Separation (Separated_At => Next_Cycle);
+            Altimeter.Lander (Separated_At => Next_Cycle);
             Lander_Separated   := True;
             Powered_Descent_At := Next_Cycle + Ada.Real_Time.Milliseconds (500);
             Log.Trace (Message => "Lander separated.");
