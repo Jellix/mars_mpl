@@ -377,18 +377,27 @@ package body GUI is
          Stamp   =>
            Ada.Real_Time.Time'(Gtk.Layered.Waveform.To_Time (Value => 10.0)));
 
+      --  Clear Altitude plot
       Erase (Scope   => Plot.Altitude_Plot.all,
              Channel => Plot.Altitude_Channel);
-      Erase (Scope   => Plot.Fuel_Plot.all,
-             Channel => Plot.Fuel_Channel);
+
+      --  Clear Drag plot.
+      Erase (Scope   => Plot.Drag_Plot.all,
+             Channel => Plot.Drag_Channel);
+
+      --  Clear Discretes plots.
       Erase (Scope   => Plot.Discretes_Plot.all,
              Channel => Plot.Thruster_Channel);
-
       for T in Plot.Touchdown_Channel'Range loop
          Erase (Scope   => Plot.Discretes_Plot.all,
                 Channel => Plot.Touchdown_Channel (T));
       end loop;
 
+      --  Clear fuel plot.
+      Erase (Scope   => Plot.Fuel_Plot.all,
+             Channel => Plot.Fuel_Channel);
+
+      --  Clear velocity plot.
       Erase (Scope   => Plot.Velocity_Plot.all,
              Channel => Plot.Velocity_Channel);
    end Reset_Timeline;
