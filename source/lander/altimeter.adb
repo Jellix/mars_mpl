@@ -21,6 +21,9 @@ package body Altimeter is
    Initial_Velocity : constant Shared_Types.Velocity
      := Shared_Parameters.Read.Initial_Velocity;
 
+   Dry_Mass : constant Shared_Types.Mass
+     := Shared_Types.Mass (Shared_Parameters.Read.Dry_Mass);
+
    pragma Warnings (Off, "instance does not use primitive operation ""*""");
 
    package Altimeter_Store is new
@@ -161,13 +164,13 @@ package body Altimeter is
             Current_Phase : constant Descent_Phase     := Descent_State.Get;
             Drag_Constant : constant Float             :=
                               Drag_Table (Current_Phase);
-            Dry_Mass      : constant Shared_Types.Mass :=
-                              Shared_Types.Mass (Shared_Parameters.Read.Dry_Mass) + Mass_Table (Current_Phase);
             Fuel_Mass     : constant Shared_Types.Mass :=
                               Shared_Types.Mass (Thrusters.Current_Fuel_Mass);
+            Current_Mass  : constant Shared_Types.Mass :=
+                              Dry_Mass + Mass_Table (Current_Phase) + Fuel_Mass;
             Drag_Now      : constant Shared_Types.Acceleration :=
                               Rocket_Science.Drag
-                                (Current_Wet_Mass => Dry_Mass + Fuel_Mass,
+                                (Current_Wet_Mass => Current_Mass,
                                  Velocity         => Velocity_Now,
                                  Drag_Constant    => Drag_Constant);
          begin

@@ -8,7 +8,6 @@ with Gtk.Gauge.Flat_Vertical;
 with Gtk.Gauge.LED_Round;
 with Gtk.Gauge.Round_270;
 with Gtk.GEntry;
-with Gtk.Meter.Angular_90;
 with Gtk.Oscilloscope;
 with Gtk.Spin_Button;
 with Gtk.Window;
@@ -25,12 +24,13 @@ private
 
    type Dynamic_Elements is
       record
+         Altitude     : Gtk.GEntry.Gtk_Entry;
+         Delta_V      : Gtk.GEntry.Gtk_Entry;
+         Drag         : Gtk.GEntry.Gtk_Entry;
+         Fuel         : Gtk.GEntry.Gtk_Entry;
          Leg_Led      : Leg_Switches;
          Thruster_Led : Gtk.Gauge.LED_Round.Gtk_Gauge_LED_Round;
-         Altitude     : Gtk.GEntry.Gtk_Entry;
          Velocity     : Gtk.GEntry.Gtk_Entry;
-         Fuel         : Gtk.GEntry.Gtk_Entry;
-         Drag         : Gtk.GEntry.Gtk_Entry;
       end record;
 
    type Legs_Channels is array (Shared_Types.Legs_Index) of
@@ -74,8 +74,9 @@ private
          Mission_Clock : Gtk.Frame.Digital_Clock.Gtk_Frame_Digital_Clock;
          Tachometer    : Gtk.Gauge.Round_270.Gtk_Gauge_Round_270;
          Altimeter     : Gtk.Gauge.Altimeter.Gtk_Gauge_Altimeter;
-         Fuel_Scale    : Gtk.Meter.Angular_90.Gtk_Meter_Angular_90;
+         Fuel_Scale    : Gtk.Gauge.Flat_Vertical.Gtk_Gauge_Flat_Vertical;
          Delta_V_Scale : Gtk.Gauge.Flat_Vertical.Gtk_Gauge_Flat_Vertical;
+         Drag_Scale    : Gtk.Gauge.Flat_Vertical.Gtk_Gauge_Flat_Vertical;
          SIMon_Says    : Gtk.Frame.Log_Viewer.Gtk_Frame_Log_Viewer;
          Aborted       : Boolean;
          SIM_Process   : GNAT.Expect.Process_Descriptor_Access;

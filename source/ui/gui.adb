@@ -36,12 +36,6 @@ package body GUI is
                             Slant  => Cairo.Cairo_Font_Slant_Normal,
                             Weight => Cairo.Cairo_Font_Weight_Bold);
 
-   Label_Font_Italic : constant Pango.Cairo.Fonts.Pango_Cairo_Font :=
-                         Pango.Cairo.Fonts.Create_Toy
-                           (Family => "arial",
-                            Slant  => Cairo.Cairo_Font_Slant_Italic,
-                            Weight => Cairo.Cairo_Font_Weight_Bold);
-
    type Scaling is
       record
          Texts  : not null access Gtk.Enums.String_Lists.Controlled_String_List;
@@ -53,16 +47,21 @@ package body GUI is
                    new Gtk.Enums.String_Lists.Controlled_String_List'
                      ("0" / "1" / "2" / "3" / "4" / "5" / "6" / "7" / "8" / "9"),
                  Factor => 10000.0);
-   Fuel_Scale       : constant Scaling
-     := Scaling'(Texts  =>
-                   new Gtk.Enums.String_Lists.Controlled_String_List'
-                     ("0" / "20" / "40" / "60" / "80"),
-                 Factor => 80.0);
    Delta_V_Scale    : constant Scaling
      := Scaling'(Texts =>
                    new Gtk.Enums.String_Lists.Controlled_String_List'
                      ("0" / "100" / "200" / "300" / "400" / "500"),
                  Factor => 500.0);
+   Drag_Scale       : constant Scaling
+     := Scaling'(Texts  =>
+                    new Gtk.Enums.String_Lists.Controlled_String_List'
+                      ("0" / "20" / "40" / "60" / "80" / "100"),
+                 Factor => 100.0);
+   Fuel_Scale       : constant Scaling
+     := Scaling'(Texts  =>
+                   new Gtk.Enums.String_Lists.Controlled_String_List'
+                     ("0" / "20" / "40" / "60" / "80"),
+                 Factor => 80.0);
    Velocity_Scale   : constant Scaling
      := Scaling'(Texts  =>
                    new Gtk.Enums.String_Lists.Controlled_String_List'
@@ -224,15 +223,13 @@ package body GUI is
            Glib.Gdouble (abs Update_State.Velocity) / Velocity_Scale.Factor);
       Win.Tachometer.all.Queue_Draw;
 
-      --  Fuel
-      DE.Fuel.all.Set_Text (Text => Image (Value => Update_State.Fuel));
-      Win.Fuel_Scale.all.Set_Value
-        (Value => Glib.Gdouble (Update_State.Fuel) / Fuel_Scale.Factor);
-      Win.Fuel_Scale.all.Queue_Draw;
+      --  Delta_V
       declare
          Dry_Mass         : constant Shared_Types.Mass :=
                               Shared_Types.Mass
                                 (Shared_Parameters.Read.Dry_Mass);
+         -- FIXME: Due to heatshield jettison this is not constant anymore, so
+         --        it should become part of the Update_State.
          Current_Wet_Mass : constant Shared_Types.Mass :=
                               Dry_Mass + Shared_Types.Mass (Update_State.Fuel);
          Max_Delta_V      : constant Shared_Types.Velocity :=
@@ -242,14 +239,23 @@ package body GUI is
                                  Exhaust_Velocity =>
                                    Shared_Parameters.Read.Exhaust_Velocity);
       begin
+         DE.Delta_V.all.Set_Text (Text => Image (Value => Max_Delta_V));
          Win.Delta_V_Scale.all.Set_Value
            (Value => Glib.Gdouble (Max_Delta_V) / Delta_V_Scale.Factor);
-
-         --  Drag
-         DE.Drag.all.Set_Text (Text => Image (Value => Update_State.Drag));
+         Win.Delta_V_Scale.all.Queue_Draw;
       end;
 
-      Win.Delta_V_Scale.all.Queue_Draw;
+      --  Drag
+      DE.Drag.all.Set_Text (Text => Image (Value => Update_State.Drag));
+      Win.Drag_Scale.all.Set_Value
+        (Value => Glib.Gdouble (Update_State.Drag) / Drag_Scale.Factor);
+      Win.Drag_Scale.all.Queue_Draw;
+
+      --  Fuel
+      DE.Fuel.all.Set_Text (Text => Image (Value => Update_State.Fuel));
+      Win.Fuel_Scale.all.Set_Value
+        (Value => Glib.Gdouble (Update_State.Fuel) / Fuel_Scale.Factor);
+      Win.Fuel_Scale.all.Queue_Draw;
 
       Feed_Data_Plots :
       declare

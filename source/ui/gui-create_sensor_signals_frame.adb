@@ -120,77 +120,100 @@ begin
                        Row       => Gauge_Row + Row_Offset);
    end Add_Thruster_LED;
 
-   Gtk.GEntry.Gtk_New (The_Entry => Window.Elements.Drag);
-   Window.Elements.Drag.all.Set_Editable (Is_Editable => False);
-   Grid.all.Attach (Child  => Window.Elements.Drag,
-                    Left   => Current_Column,
-                    Top    => Text_Row,
-                    Width  => 2,
-                    Height => 1);
-
-   --  Fuel Mass
    Current_Column := Current_Column + 2;
 
-   Add_Heading (Title  => "Fuel Mass",
-                Column => Current_Column,
-                Width  => Gauge_Size);
+   Add_Fuel_Gauge :
+   declare
+      Gauge_Width : constant Glib.Gint := Glib.Gint'Max (2, Gauge_Size / 3);
+   begin
+      Add_Heading (Title  => "Fuel Mass",
+                   Column => Current_Column,
+                   Width  => Gauge_Width);
 
-   Gtk.Meter.Angular_90.Gtk_New
-     (Widget  => Window.Fuel_Scale,
-      Texts   => Fuel_Scale.Texts.all,
-      Sectors =>
-        Positive (Gtk.Enums.String_List.Length (+Fuel_Scale.Texts.all)) - 1);
-   Gtk.Layered.Label.Add_Label
-     (Under    => Window.Fuel_Scale.all.Get_Cache,
-      Text     => "kg",
-      Location => Cairo.Ellipses.Cairo_Tuple'(X => 0.0175,
-                                              Y => 0.1),
-      Face     => Label_Font_Italic,
-      Height   => 0.03,
-      Stretch  => 0.9,
-      Mode     => Gtk.Layered.Moved_Centered,
-      Color    => Gtk.Colors.Black,
-      Angle    => 0.0,
-      Skew     => 0.0,
-      Markup   => False,
-      Scaled   => True);
+      Gtk.Gauge.Flat_Vertical.Gtk_New
+        (Widget  => Window.Fuel_Scale,
+         Texts   => Fuel_Scale.Texts.all,
+         Sectors =>
+           Positive (Gtk.Enums.String_List.Length (+Fuel_Scale.Texts.all)) - 1);
+      Grid.all.Attach (Child  => Window.Fuel_Scale,
+                       Left   => Current_Column,
+                       Top    => Gauge_Row,
+                       Width  => Gauge_Width,
+                       Height => Gauge_Size);
 
-   Grid.all.Attach (Child  => Window.Fuel_Scale,
-                    Left   => Current_Column,
-                    Top    => Gauge_Row,
-                    Width  => Gauge_Size,
-                    Height => Gauge_Size);
+      Gtk.GEntry.Gtk_New (The_Entry => Window.Elements.Fuel);
+      Window.Elements.Fuel.all.Set_Editable (Is_Editable => False);
 
-   Gtk.GEntry.Gtk_New (The_Entry => Window.Elements.Fuel);
-   Window.Elements.Fuel.all.Set_Editable (Is_Editable => False);
+      Grid.all.Attach (Child  => Window.Elements.Fuel,
+                       Left   => Current_Column,
+                       Top    => Text_Row,
+                       Width  => Gauge_Width,
+                       Height => 1);
 
-   Grid.all.Attach (Child  => Window.Elements.Fuel,
-                    Left   => Current_Column + 1,
-                    Top    => Text_Row,
-                    Width  => Gauge_Size - 2,
-                    Height => 1);
+      Current_Column := Current_Column + Gauge_Width;
+   end Add_Fuel_Gauge;
 
-   --  Delta V gauge.
-   Current_Column := Current_Column + Gauge_Size;
+   Add_Delta_V_Gauge :
+   declare
+      Gauge_Width : constant Glib.Gint := Glib.Gint'Max (2, Gauge_Size / 3);
+   begin
+      Add_Heading (Title  => "Delta V",
+                   Column => Current_Column,
+                   Width  => Gauge_Width);
 
-   Add_Heading (Title  => "Delta V",
-                Column => Current_Column,
-                Width  => 2);
+      Gtk.Gauge.Flat_Vertical.Gtk_New
+        (Widget  => Window.Delta_V_Scale,
+         Texts   => Delta_V_Scale.Texts.all,
+         Sectors =>
+           Positive
+             (Gtk.Enums.String_List.Length (+Delta_V_Scale.Texts.all)) - 1);
+      Grid.all.Attach (Child  => Window.Delta_V_Scale,
+                       Left   => Current_Column,
+                       Top    => Gauge_Row,
+                       Width  => Gauge_Width,
+                       Height => Gauge_Size);
+      Gtk.GEntry.Gtk_New (The_Entry => Window.Elements.Delta_V);
+      Window.Elements.Delta_V.all.Set_Editable (Is_Editable => False);
 
-   Gtk.Gauge.Flat_Vertical.Gtk_New
-     (Widget  => Window.Delta_V_Scale,
-      Texts   => Delta_V_Scale.Texts.all,
-      Sectors =>
-        Positive (Gtk.Enums.String_List.Length (+Delta_V_Scale.Texts.all)) - 1);
-   Grid.all.Attach (Child  => Window.Delta_V_Scale,
-                    Left   => Current_Column,
-                    Top    => Gauge_Row,
-                    Width  => Glib.Gint'Max (1, Gauge_Size / 3),
-                    Height => Text_Row);
+      Grid.all.Attach (Child  => Window.Elements.Delta_V,
+                       Left   => Current_Column,
+                       Top    => Text_Row,
+                       Width  => Gauge_Width,
+                       Height => 1);
+      Current_Column := Current_Column + Gauge_Width;
+   end Add_Delta_V_Gauge;
+
+   Add_Drag_Gauge :
+   declare
+      Gauge_Width : constant Glib.Gint := Glib.Gint'Max (2, Gauge_Size / 3);
+   begin
+      Add_Heading (Title  => "Drag",
+                   Column => Current_Column,
+                   Width  => Gauge_Width);
+
+      Gtk.Gauge.Flat_Vertical.Gtk_New
+        (Widget  => Window.Drag_Scale,
+         Texts   => Drag_Scale.Texts.all,
+         Sectors =>
+           Positive
+             (Gtk.Enums.String_List.Length (+Delta_V_Scale.Texts.all)) - 1);
+      Grid.all.Attach (Child  => Window.Drag_Scale,
+                       Left   => Current_Column,
+                       Top    => Gauge_Row,
+                       Width  => Gauge_Width,
+                       Height => Gauge_Size);
+
+      Gtk.GEntry.Gtk_New (The_Entry => Window.Elements.Drag);
+      Window.Elements.Drag.all.Set_Editable (Is_Editable => False);
+      Grid.all.Attach (Child  => Window.Elements.Drag,
+                       Left   => Current_Column,
+                       Top    => Text_Row,
+                       Width  => Gauge_Width,
+                       Height => 1);
+      Current_Column := Current_Column + Gauge_Width;
+   end Add_Drag_Gauge;
 
    --  Velocity Gauge
-   Current_Column := Current_Column + Glib.Gint'Max (1, Gauge_Size / 3);
-
    Add_Heading (Title  => "Velocity",
                 Column => Current_Column,
                 Width  => Gauge_Size);
@@ -229,9 +252,9 @@ begin
                     Width  => Gauge_Size - 2,
                     Height => 1);
 
-   --  Altitude gauge.
    Current_Column := Current_Column + Gauge_Size;
 
+   --  Altitude gauge.
    Add_Heading (Title  => "Altitude",
                 Column => Current_Column,
                 Width  => Gauge_Size);
