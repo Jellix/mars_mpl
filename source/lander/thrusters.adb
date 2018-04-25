@@ -35,7 +35,7 @@ package body Thrusters is
    --  Parametrized initial fuel mass, read once at startup.
 
    Initial_Wet_Mass : constant Shared_Types.Mass
-     := Shared_Types.Mass (Dry_Mass) + Shared_Types.Mass (Initial_Fuel_Mass);
+     := Dry_Mass + Initial_Fuel_Mass;
 
    Shortest_On_Time : constant Ada.Real_Time.Time_Span :=
                         Ada.Real_Time.To_Time_Span
@@ -179,8 +179,7 @@ package body Thrusters is
       return
         Rocket_Science.Delta_V
           (Initial_Wet_Mass => Initial_Wet_Mass,
-           Current_Wet_Mass =>
-             Shared_Types.Mass (Dry_Mass) + Shared_Types.Mass (Fuel_State.Get),
+           Current_Wet_Mass => Dry_Mass + Fuel_State.Get,
            Exhaust_Velocity => Exhaust_Velocity);
    end Delta_V;
 

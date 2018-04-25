@@ -21,8 +21,8 @@ package body Altimeter is
    Initial_Velocity : constant Shared_Types.Velocity
      := Shared_Parameters.Read.Initial_Velocity;
 
-   Dry_Mass : constant Shared_Types.Mass
-     := Shared_Types.Mass (Shared_Parameters.Read.Dry_Mass);
+   Initial_Dry_Mass : constant Shared_Types.Vehicle_Mass
+     := Shared_Parameters.Read.Dry_Mass;
 
    pragma Warnings (Off, "instance does not use primitive operation ""*""");
 
@@ -43,20 +43,23 @@ package body Altimeter is
 
    pragma Warnings (On, "instance does not use primitive operation ""*""");
 
-   function Current_Altitude return Shared_Types.Altitude is
-     (Altimeter_State.Get);
-
-   function Current_Drag return Shared_Types.Acceleration is
-      (Drag_State.Get);
-
-   function Current_Velocity return Shared_Types.Velocity is
-     (Velocity_State.Get);
-
    type Descent_Phase is (Start,
                           -- ... some more, not supported/relevant
                           Parachute_Deployed,
                           Heatshield_Jettisoned,
                           Lander_Separation);
+
+   type Drag_Lookup is array (Descent_Phase) of Float;
+   type Mass_Lookup is array (Descent_Phase) of Shared_Types.Mass;
+
+   Drag_Table : constant Drag_Lookup := (Start                 => 0.015,
+                                         Parachute_Deployed    => 0.410,
+                                         Heatshield_Jettisoned => 0.410,
+                                         Lander_Separation     => 0.100);
+
+   Mass_Table : constant Mass_Lookup := (Start .. Parachute_Deployed => 140.0,
+                                         Heatshield_Jettisoned       =>   0.0,
+                                         Lander_Separation           =>   0.0);
 
    protected Descent_State is
       procedure Set (New_Phase : in Descent_Phase;
@@ -90,6 +93,19 @@ package body Altimeter is
 
    end Descent_State;
 
+   function Current_Altitude return Shared_Types.Altitude is
+     (Altimeter_State.Get);
+
+   function Current_Drag return Shared_Types.Acceleration is
+      (Drag_State.Get);
+
+   function Current_Dry_Mass return Shared_Types.Vehicle_Mass is
+     (Shared_Types.Vehicle_Mass
+        (Initial_Dry_Mass + Mass_Table (Descent_State.Get)));
+
+   function Current_Velocity return Shared_Types.Velocity is
+     (Velocity_State.Get);
+
    procedure Heatshield (Jettisoned_At : in Ada.Real_Time.Time) is
    begin
       Descent_State.Set (New_Phase => Heatshield_Jettisoned,
@@ -120,18 +136,6 @@ package body Altimeter is
    end Shutdown;
 
    task Radar_Simulator;
-
-   type Drag_Lookup is array (Descent_Phase) of Float;
-   type Mass_Lookup is array (Descent_Phase) of Shared_Types.Mass;
-
-   Drag_Table : constant Drag_Lookup := (Start                 => 0.015,
-                                         Parachute_Deployed    => 0.410,
-                                         Heatshield_Jettisoned => 0.410,
-                                         Lander_Separation     => 0.100);
-
-   Mass_Table : constant Mass_Lookup := (Start .. Parachute_Deployed => 140.0,
-                                         Heatshield_Jettisoned       =>   0.0,
-                                         Lander_Separation           =>   0.0);
 
    task body Radar_Simulator is
       T             : constant Duration
@@ -164,10 +168,11 @@ package body Altimeter is
             Current_Phase : constant Descent_Phase     := Descent_State.Get;
             Drag_Constant : constant Float             :=
                               Drag_Table (Current_Phase);
-            Fuel_Mass     : constant Shared_Types.Mass :=
-                              Shared_Types.Mass (Thrusters.Current_Fuel_Mass);
+            Fuel_Mass     : constant Shared_Types.Fuel_Mass :=
+                              Thrusters.Current_Fuel_Mass;
             Current_Mass  : constant Shared_Types.Mass :=
-                              Dry_Mass + Mass_Table (Current_Phase) + Fuel_Mass;
+                              Initial_Dry_Mass + Fuel_Mass +
+                              Mass_Table (Current_Phase);
             Drag_Now      : constant Shared_Types.Acceleration :=
                               Rocket_Science.Drag
                                 (Current_Wet_Mass => Current_Mass,

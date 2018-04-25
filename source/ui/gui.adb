@@ -225,17 +225,15 @@ package body GUI is
 
       --  Delta_V
       declare
-         Dry_Mass         : constant Shared_Types.Mass :=
-                              Shared_Types.Mass
-                                (Shared_Parameters.Read.Dry_Mass);
-         -- FIXME: Due to heatshield jettison this is not constant anymore, so
-         --        it should become part of the Update_State.
+         Dry_Mass         : constant Shared_Types.Vehicle_Mass :=
+                              Update_State.Dry_Mass;
          Current_Wet_Mass : constant Shared_Types.Mass :=
-                              Dry_Mass + Shared_Types.Mass (Update_State.Fuel);
+                              Dry_Mass + Update_State.Fuel;
          Max_Delta_V      : constant Shared_Types.Velocity :=
                               Rocket_Science.Delta_V
                                 (Initial_Wet_Mass => Current_Wet_Mass,
-                                 Current_Wet_Mass => Dry_Mass,
+                                 Current_Wet_Mass =>
+                                   Shared_Types.Mass (Dry_Mass),
                                  Exhaust_Velocity =>
                                    Shared_Parameters.Read.Exhaust_Velocity);
       begin

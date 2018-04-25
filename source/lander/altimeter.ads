@@ -26,6 +26,11 @@ package Altimeter is
    --  Provides the current drag acting on the space craft.
    --  @return The current drag.
 
+   function Current_Dry_Mass return Shared_Types.Vehicle_Mass with
+     Volatile_Function;
+   --  Provides the current dry mass of the space craft.
+   --  @return The current dry mass.
+
    function Current_Velocity return Shared_Types.Velocity
      with Volatile_Function;
    --  Provides the current velocity.

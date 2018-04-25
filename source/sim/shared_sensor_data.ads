@@ -18,38 +18,41 @@ is
 
    type State is
       record
+         Altitude         : Shared_Types.Altitude;
+         Drag             : Shared_Types.Acceleration;
+         Dry_Mass         : Shared_Types.Vehicle_Mass;
+         Fuel             : Shared_Types.Fuel_Mass;
          Legs             : Shared_Types.All_Legs_State;
          Thruster_Enabled : Boolean;
-         Altitude         : Shared_Types.Altitude;
-         Velocity         : Shared_Types.Velocity;
-         Fuel             : Shared_Types.Fuel_Mass;
-         Drag             : Shared_Types.Acceleration;
          Time_Stamp       : Duration;
+         Velocity         : Shared_Types.Velocity;
       end record;
    --  The full space craft sensor state.
+   --  @field Altitude         Current altitude of space craft.
+   --  @field Drag             Currently experienced acceleration due to drag.
+   --  @field Dry_Mass         The current dry mass of the spacecraft.
+   --  @field Fuel             Fuel mass left in tank.
    --  @field Legs             State of all landing legs.
    --  @field Thruster_Enabled State of thruster.
-   --  @field Altitude         Current altitude of space craft.
-   --  @field Velocity         Current velocity of space craft.
-   --  @field Fuel             Fuel mass left in tank.
    --  @field Time_Stamp       (Relative) time since simulation start. Denotes
    --                          the (rough) sampling time of all of the above.
-   --  @field Terminated       Indicates that the simulation has been finished
-   --                          and no more updates will be incoming.
+   --  @field Velocity         Current velocity of space craft.
 
    pragma Annotate (GNATcheck, Exempt_Off, "Visible_Components");
 
    package State_Store is new Task_Safe_Store
      (Stored_Type   => State,
-      Initial_Value => State'(Legs             =>
-                                Shared_Types.All_Legs_State'
-                                  (others => Shared_Types.In_Flight),
-                              Thruster_Enabled => False,
-                              Altitude         => 0.0,
-                              Velocity         => 0.0,
-                              Fuel             => 0.0,
-                              Drag             => 0.0,
-                              Time_Stamp       => 0.0));
+      Initial_Value =>
+        State'(Altitude         => 0.0,
+               Drag             => 0.0,
+               Dry_Mass         => Shared_Types.Vehicle_Mass'First,
+               Fuel             => 0.0,
+               Legs             =>
+                 Shared_Types.All_Legs_State'
+                   (others => Shared_Types.In_Flight),
+               Thruster_Enabled => False,
+               Time_Stamp       => 0.0,
+               Velocity         => 0.0));
 
    pragma Annotate (GNATcheck,
                     Exempt_On,

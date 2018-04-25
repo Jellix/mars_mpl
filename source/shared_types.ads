@@ -62,6 +62,23 @@ is
    type Velocity is new Meter_Per_Second.T;
    --  Velocity expressed in m/s.
 
+   function "*" (V : in Velocity;
+                 T : in Duration) return Altitude
+     with Inline => True;
+   --  Multiplies a velocity with a duration to calculate the distance being
+   --  covered during that time at the given speed.
+   --  @param V The velocity.
+   --  @param T The length of time.
+   --  @return The resulting distance (here, expressed as altitude).
+
+   function "*" (V     : in Velocity;
+                 Scale : in Float) return Velocity
+     with Inline => True;
+   --  Multiplies a velocity with a scale factor.
+   --  @param V     The velocity.
+   --  @param Scale The scaling factor.
+   --  @return The new velocity V'Old scaled by Scale.
+
    --  @summary
    --  Provides an acceleration type.
    package Meter_Per_Square_Second is
@@ -88,23 +105,6 @@ is
    --  @param T The length of time the acceleration is being applied.
    --  @return The resulting delta velocity.
 
-   function "*" (V : in Velocity;
-                 T : in Duration) return Altitude
-     with Inline => True;
-   --  Multiplies a velocity with a duration to calculate the distance being
-   --  covered during that time at the given speed.
-   --  @param V The velocity.
-   --  @param T The length of time.
-   --  @return The resulting distance (here, expressed as altitude).
-
-   function "*" (V     : in Velocity;
-                 Scale : in Float) return Velocity
-     with Inline => True;
-   --  Multiplies a velocity with a scale factor.
-   --  @param V     The velocity.
-   --  @param Scale The scaling factor.
-   --  @return The new velocity V'Old scaled by Scale.
-
    --  @summary
    --  Provides a mass type.
    package Kilogram is
@@ -125,6 +125,30 @@ is
    type Vehicle_Mass is new Mass range       10.0 .. Mass'Last;
    type Fuel_Mass    is new Mass range Mass'First ..     100.0;
    type Flow_Rate    is new Mass range Mass'First ..      10.0;
+
+   function "+" (Left  : in Mass;
+                 Right : in Fuel_Mass) return Mass
+     with Inline => True;
+
+   function "+" (Left  : in Fuel_Mass;
+                 Right : in Mass) return Mass
+     with Inline => True;
+
+   function "+" (Left  : in Mass;
+                 Right : in Vehicle_Mass) return Mass
+     with Inline => True;
+
+   function "+" (Left  : in Vehicle_Mass;
+                 Right : in Mass) return Mass
+     with Inline => True;
+
+   function "+" (Left  : in Vehicle_Mass;
+                 Right : in Fuel_Mass) return Mass
+     with Inline => True;
+
+   function "+" (Left  : in Fuel_Mass;
+                 Right : in Vehicle_Mass) return Mass
+     with Inline => True;
 
    function "*" (Left  : in Flow_Rate;
                  Right : in Duration) return Fuel_Mass
@@ -154,14 +178,6 @@ is
 
 private
 
-   function "*" (A : in Acceleration;
-                 T : in Duration) return Velocity is
-     (Velocity (Acceleration'Base (A) * Acceleration'Base (T)));
-
-   function "*" (Left  : in Flow_Rate;
-                 Right : in Duration) return Fuel_Mass is
-     (Fuel_Mass (Flow_Rate'Base (Left) * Flow_Rate'Base (Right)));
-
    function "*" (V : in Velocity;
                  T : in Duration) return Altitude is
      (Altitude (Velocity'Base (V) * Velocity'Base (T)));
@@ -169,6 +185,38 @@ private
    function "*" (V     : in Velocity;
                  Scale : in Float) return Velocity is
      (Velocity (Float (V) * Scale));
+
+   function "*" (A : in Acceleration;
+                 T : in Duration) return Velocity is
+     (Velocity (Acceleration'Base (A) * Acceleration'Base (T)));
+
+   function "+" (Left  : in Mass;
+                 Right : in Fuel_Mass) return Mass is
+     (Left + Mass'Base (Right));
+
+   function "+" (Left  : in Fuel_Mass;
+                 Right : in Mass) return Mass is
+     (Mass'Base (Left) + Right);
+
+   function "+" (Left  : in Mass;
+                 Right : in Vehicle_Mass) return Mass is
+     (Left + Mass'Base (Right));
+
+   function "+" (Left  : in Vehicle_Mass;
+                 Right : in Mass) return Mass is
+     (Mass'Base (Left) + Right);
+
+   function "+" (Left  : in Vehicle_Mass;
+                 Right : in Fuel_Mass) return Mass is
+     (Mass'Base (Left) + Mass'Base (Right));
+
+   function "+" (Left  : in Fuel_Mass;
+                 Right : in Vehicle_Mass) return Mass is
+     (Mass'Base (Left) + Mass'Base (Right));
+
+   function "*" (Left  : in Flow_Rate;
+                 Right : in Duration) return Fuel_Mass is
+     (Fuel_Mass (Flow_Rate'Base (Left) * Flow_Rate'Base (Right)));
 
    function To_Duration (T : in On_Time) return Duration is
       (Duration (T / 1000.0));

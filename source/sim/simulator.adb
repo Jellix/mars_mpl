@@ -51,23 +51,25 @@ procedure Simulator is
       Offset    : constant Duration :=
                     Ada.Real_Time.To_Duration
                       (TS => Ada.Real_Time.Clock - Global.Start_Time);
-      Thrust_On : constant Boolean                   := Thrusters.Is_Enabled;
       Altitude  : constant Shared_Types.Altitude     := Altimeter.Current_Altitude;
-      Velocity  : constant Shared_Types.Velocity     := Altimeter.Current_Velocity;
-      Fuel      : constant Shared_Types.Fuel_Mass    := Thrusters.Current_Fuel_Mass;
       Drag      : constant Shared_Types.Acceleration := Altimeter.Current_Drag;
+      Dry_Mass  : constant Shared_Types.Vehicle_Mass := Altimeter.Current_Dry_Mass;
+      Fuel      : constant Shared_Types.Fuel_Mass    := Thrusters.Current_Fuel_Mass;
       All_Legs  : Shared_Types.All_Legs_State;
+      Thrust_On : constant Boolean                   := Thrusters.Is_Enabled;
+      Velocity  : constant Shared_Types.Velocity     := Altimeter.Current_Velocity;
    begin
       Landing_Legs.Read_State (State => All_Legs);
       Shared_Sensor_Data.Current_State.Set
         (New_Value =>
-           Shared_Sensor_Data.State'(Legs             => All_Legs,
-                                     Thruster_Enabled => Thrust_On,
-                                     Altitude         => Altitude,
-                                     Velocity         => Velocity,
-                                     Fuel             => Fuel,
+           Shared_Sensor_Data.State'(Altitude         => Altitude,
                                      Drag             => Drag,
-                                     Time_Stamp       => Offset));
+                                     Dry_Mass         => Dry_Mass,
+                                     Fuel             => Fuel,
+                                     Legs             => All_Legs,
+                                     Thruster_Enabled => Thrust_On,
+                                     Time_Stamp       => Offset,
+                                     Velocity         => Velocity));
    end Update_Shared_Data;
 
    Target_Landing_Velocity : constant Shared_Types.Velocity :=
