@@ -534,7 +534,13 @@ package body Gtk.Gauge.Altimeter is
      (Widget : not null access Gtk_Gauge_Altimeter_Record;
       Value  : in              Gdouble) is
    begin
-      Widget.all.Needle_Main.all.Set_Value (Value);
+      Set_1s_Needle :
+      declare
+         Ones : constant Glib.Gdouble := Glib.Gdouble'Remainder (Value, 1.0);
+      begin
+         Widget.all.Needle_Main.all.Set_Value
+           (Value => (if Ones < 0.0 then 1.0 + Ones else Ones));
+      end Set_1s_Needle;
 
       Set_Tenths_Needle :
       declare
