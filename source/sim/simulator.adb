@@ -106,14 +106,14 @@ begin
 
          --  Parachute deployment at 8800 m.
          if not Parachute_Deployed and then Current_Altitude <= 8800.0 then
-            Altimeter.Parachute (Deployed_At => Next_Cycle);
+            Altimeter.Deploy_Parachute;
             Parachute_Deployed := True;
             Log.Trace (Message => "Parachute deployed.");
          end if;
 
          --  Heatshield jettison at 7500 m.
          if not Heatshield_Jettisoned and then Current_Altitude <= 7500.0 then
-            Altimeter.Heatshield (Jettisoned_At => Next_Cycle);
+            Altimeter.Jettison_Heatshield;
             Heatshield_Jettisoned := True;
             Log.Trace (Message => "Heatshield jettisoned.");
          end if;
@@ -136,7 +136,7 @@ begin
          --    1.4 kilometers [...] above the surface, the [...] descent engines
          --    will be turned on one-half second later [...]
          if not Lander_Separated and then Current_Altitude <= 1300.0 then
-            Altimeter.Lander (Separated_At => Next_Cycle);
+            Altimeter.Separate_Lander;
             Lander_Separated   := True;
             Powered_Descent_At := Next_Cycle + Ada.Real_Time.Milliseconds (500);
             Log.Trace (Message => "Lander separated.");

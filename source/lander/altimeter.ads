@@ -1,7 +1,6 @@
 --  pragma Profile (Ravenscar);
 --  pragma Partition_Elaboration_Policy (Sequential);
 
-with Ada.Real_Time;
 with Global;
 with Shared_Types;
 
@@ -36,21 +35,16 @@ package Altimeter is
    --  Provides the current velocity.
    --  @return The current velocity.
 
-   procedure Lander (Separated_At : in Ada.Real_Time.Time);
-   --  Tells the altimeter simulation that and when the lander has been
-   --  separated and the powered descent phase started (where we actively
-   --  monitor thruster and fuel state).
-   --  @param Separated_At The time at which the lander stage has been
-   --                      separated.
+   procedure Separate_Lander;
+   --  Tells the altimeter simulation that the lander has been separated and the
+   --  powered descent phase started (where we actively monitor thruster and
+   --  fuel state).
 
-   procedure Parachute (Deployed_At : in Ada.Real_Time.Time);
-   --  Tells the altimeter simulation that and when the parachute has been
-   --  deployed.
-   --  @param Deployed_At The time at which the parachute has been deployed.
+   procedure Deploy_Parachute;
+   --  Tells the altimeter simulation that the parachute has been deployed.
 
-   procedure Heatshield (Jettisoned_At : in Ada.Real_Time.Time);
-   --  Tells the altimeter simulation that and when the heatshield has been
-   --  jettisoned.
+   procedure Jettison_Heatshield;
+   --  Tells the altimeter simulation that the heatshield has been jettisoned.
    --  @param Jettisoned_At The time at which the heatshield has been
    --                       jettisoned.
 

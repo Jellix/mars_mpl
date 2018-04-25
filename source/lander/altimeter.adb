@@ -1,3 +1,4 @@
+with Ada.Real_Time;
 with Configuration.Cycle_Times;
 with Configuration.Task_Offsets;
 with Landing_Legs;
@@ -61,37 +62,10 @@ package body Altimeter is
                                          Heatshield_Jettisoned       =>   0.0,
                                          Lander_Separation           =>   0.0);
 
-   protected Descent_State is
-      procedure Set (New_Phase : in Descent_Phase;
-                     Change_At : in Ada.Real_Time.Time);
-      function Get return Descent_Phase;
-      function Separation_Time return Ada.Real_Time.Time;
-   private
-      Phase        : Descent_Phase      := Start;
-      Separated_At : Ada.Real_Time.Time := Global.Start_Time;
-   end Descent_State;
-
-   protected body Descent_State is
-
-      function Get return Descent_Phase is
-        (Phase);
-
-      function Separation_Time return Ada.Real_Time.Time is
-        (Separated_At);
-
-      procedure Set (New_Phase : in Descent_Phase;
-                     Change_At : in Ada.Real_Time.Time) is
-      begin
-         if Phase /= New_Phase then
-            if New_Phase = Lander_Separation then
-               Separated_At := Change_At;
-            end if;
-
-            Phase := New_Phase;
-         end if;
-      end Set;
-
-   end Descent_State;
+   package Descent_Phase_Store is
+     new Task_Safe_Store (Stored_Type   => Descent_Phase,
+                          Initial_Value => Start);
+   Descent_State : Descent_Phase_Store.Shelf;
 
    function Current_Altitude return Shared_Types.Altitude is
      (Altimeter_State.Get);
@@ -106,23 +80,20 @@ package body Altimeter is
    function Current_Velocity return Shared_Types.Velocity is
      (Velocity_State.Get);
 
-   procedure Heatshield (Jettisoned_At : in Ada.Real_Time.Time) is
+   procedure Deploy_Parachute is
    begin
-      Descent_State.Set (New_Phase => Heatshield_Jettisoned,
-                         Change_At => Jettisoned_At);
-   end Heatshield;
+      Descent_State.Set (New_Value => Parachute_Deployed);
+   end Deploy_Parachute;
 
-   procedure Lander (Separated_At : in Ada.Real_Time.Time) is
+   procedure Jettison_Heatshield is
    begin
-      Descent_State.Set (New_Phase => Lander_Separation,
-                         Change_At => Separated_At);
-   end Lander;
+      Descent_State.Set (New_Value => Heatshield_Jettisoned);
+   end Jettison_Heatshield;
 
-   procedure Parachute (Deployed_At : in Ada.Real_Time.Time) is
+   procedure Separate_Lander is
    begin
-      Descent_State.Set (New_Phase => Parachute_Deployed,
-                         Change_At => Deployed_At);
-   end Parachute;
+      Descent_State.Set (New_Value => Lander_Separation);
+   end Separate_Lander;
 
    Aborted : Boolean := False
      with Atomic;
