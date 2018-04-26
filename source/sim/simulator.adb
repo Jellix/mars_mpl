@@ -42,9 +42,29 @@ procedure Simulator is
    use type Shared_Types.Velocity;
    use type Touchdown_Monitor.Run_State;
 
-   Monitor_Enabled   : Boolean := False;
-   Cycle             : constant Ada.Real_Time.Time_Span :=
-                         Ada.Real_Time.Milliseconds (MS => 10);
+   type EDL_Phase is (EDL_Started,
+                      Guidance_System_Initialized,
+                      Turned_To_Entry_Attitude,
+                      Cruise_Ring_Separated,
+                      Atmosphere_Entered,
+                      Parachute_Deployed,
+                      Heatshield_Jettisoned,
+                      Legs_Deployed,
+                      Lander_Separated,
+                      Powered_Descent);
+
+   Altitude_For_Guidance_System_Initialization : constant := 4_600_000.0;
+   Altitude_For_Turn_To_Entry_Attitude         : constant := 3_000_000.0;
+   Altitude_For_Cruise_Ring_Separation         : constant := 2_300_000.0;
+   Altitude_For_Atmospheric_Entry              : constant :=   125_000.0;
+   Altitude_For_Parachute_Deployment           : constant :=     8_800.0;
+   Altitude_For_Heatshield_Jettison            : constant :=     7_500.0;
+   Altitude_For_Leg_Deployment                 : constant :=     2_500.0;
+   Altitude_For_Lander_Separation              : constant :=     1_300.0;
+   Altitude_For_Arming_Touchdown_Monitor       : constant :=        40.0;
+
+   Cycle : constant Ada.Real_Time.Time_Span :=
+             Ada.Real_Time.Milliseconds (MS => 10);
 
    procedure Update_Shared_Data;
    procedure Update_Shared_Data is
@@ -87,22 +107,12 @@ begin
       Next_Cycle : Ada.Real_Time.Time :=
                      Global.Start_Time + Configuration.Task_Offsets.SIM_Task;
 
-      type Phase is (EDL_Started,
-                     Guidance_System_Initialized,
-                     Turned_To_Entry_Attitude,
-                     Cruise_Ring_Separated,
-                     Atmosphere_Entered,
-                     Parachute_Deployed,
-                     Heatshield_Jettisoned,
-                     Legs_Deployed,
-                     Lander_Separated,
-                     Powered_Descent);
-
-      Current_Phase      : Phase := EDL_Started;
+      Current_Phase      : EDL_Phase             := EDL_Started;
+      Monitor_Enabled    : Boolean               := False;
       Current_Altitude   : Shared_Types.Altitude := Altimeter.Current_Altitude;
       Powered_Descent_At : Ada.Real_Time.Time    := Ada.Real_Time.Time_Last;
 
-      Current_Velocity : Shared_Types.Velocity;
+      Current_Velocity   : Shared_Types.Velocity;
    begin
       while Current_Altitude > 0.0 loop
          delay until Next_Cycle;
@@ -113,7 +123,7 @@ begin
          --  | -15 min | 4600 km | 5700   m/s | Guidance system initialization
          if
            Current_Phase = EDL_Started and then
-           Current_Altitude <= 4_600_000.0
+           Current_Altitude <= Altitude_For_Guidance_System_Initialization
          then
             Current_Phase := Guidance_System_Initialized;
             Log.Trace (Message => "Guidance system initialized.");
@@ -122,7 +132,7 @@ begin
          --  | -12 min | 3000 km | 5900   m/s | Turn to entry attitude
          if
            Current_Phase = Guidance_System_Initialized and then
-           Current_Altitude <= 3_000_000.0
+           Current_Altitude <= Altitude_For_Turn_To_Entry_Attitude
          then
             Current_Phase := Turned_To_Entry_Attitude;
             Log.Trace (Message => "Turn to entry attitude.");
@@ -131,7 +141,7 @@ begin
          --  | -10 min | 2300 km | 6200   m/s | Cruise ring separation
          if
            Current_Phase = Turned_To_Entry_Attitude and then
-           Current_Altitude <= 2_300_000.0
+           Current_Altitude <= Altitude_For_Cruise_Ring_Separation
          then
             Current_Phase := Cruise_Ring_Separated;
             Log.Trace (Message => "Cruise ring and probes separated.");
@@ -140,7 +150,7 @@ begin
          --  |  -5 min |  125 km | 6900   m/s | Atmospheric entry
          if
            Current_Phase = Cruise_Ring_Separated and then
-           Current_Altitude <= 125_000.0
+           Current_Altitude <= Altitude_For_Atmospheric_Entry
          then
             Current_Phase := Atmosphere_Entered;
             Log.Trace (Message => "Entered atmosphere.");
@@ -149,20 +159,20 @@ begin
          --  |  -2 min | 8800  m |  490   m/s | Parachute deployment
          if
            Current_Phase = Atmosphere_Entered and then
-           Current_Altitude <= 8800.0
+           Current_Altitude <= Altitude_For_Parachute_Deployment
          then
-            Altimeter.Deploy_Parachute;
             Current_Phase := Parachute_Deployed;
+            Altimeter.Deploy_Parachute;
             Log.Trace (Message => "Parachute deployed.");
          end if;
 
          --  | -110  s | 7500  m |  250   m/s | Heatshield jettison
          if
            Current_Phase = Parachute_Deployed and then
-           Current_Altitude <= 7500.0
+           Current_Altitude <= Altitude_For_Heatshield_Jettison
          then
-            Altimeter.Jettison_Heatshield;
             Current_Phase := Heatshield_Jettisoned;
+            Altimeter.Jettison_Heatshield;
             Log.Trace (Message => "Heatshield jettisoned.");
          end if;
 
@@ -174,11 +184,11 @@ begin
          --    surface.
          if
            Current_Phase = Heatshield_Jettisoned and then
-           Current_Altitude <= 2500.0
+           Current_Altitude <= Altitude_For_Leg_Deployment
          then
+            Current_Phase := Legs_Deployed;
             Log.Trace (Message => "Deploying landing legs...");
             Landing_Legs.Deploy;
-            Current_Phase := Legs_Deployed;
          end if;
 
          --  Entering powered descent.
@@ -189,10 +199,10 @@ begin
          --    will be turned on one-half second later [...]
          if
            Current_Phase = Legs_Deployed and then
-           Current_Altitude <= 1300.0
+           Current_Altitude <= Altitude_For_Lander_Separation
          then
-            Altimeter.Separate_Lander;
             Current_Phase := Lander_Separated;
+            Altimeter.Separate_Lander;
             Powered_Descent_At := Next_Cycle + Ada.Real_Time.Milliseconds (500);
             Log.Trace (Message => "Lander separated.");
          end if;
@@ -201,8 +211,8 @@ begin
            Current_Phase = Lander_Separated and then
            Next_Cycle >= Powered_Descent_At
          then
-            Thrusters.Enable;
             Current_Phase := Powered_Descent;
+            Thrusters.Enable;
             Log.Trace (Message => "Entered powered descent flight mode.");
          end if;
 
@@ -222,7 +232,10 @@ begin
             end if;
          end if;
 
-         if not Monitor_Enabled and then Current_Altitude <= 40.0 then
+         if
+           not Monitor_Enabled and then
+           Current_Altitude <= Altitude_For_Arming_Touchdown_Monitor
+         then
             Log.Trace (Message => "Enabling touchdown monitors...");
             Touchdown_Monitor.Enable;
             Monitor_Enabled := True;
