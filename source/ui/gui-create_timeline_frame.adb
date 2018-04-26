@@ -41,9 +41,9 @@ begin
                                then Master.all.Get_Sweeper (Sweeper => Gtk.Oscilloscope.Upper)
                                else null),
             Refresh_Engine => Refresh_Engine);
-         --  A typical simulation runs about 70s. With 100 datapoints/s this
-         --  amounts to roughly 7000 distinct data points, thus the default
-         --  buffer size of ~60_000 should easily be enough.
+         --  A standard simulation runs about 5 minutes. With 100 datapoints/s
+         --  this amounts to roughly 30000 distinct data points, thus the
+         --  default buffer size of ~60_000 should still be enough.
 
          if Master = null then
             Scope.all.Set_Manual_Sweep (Enable => False);
