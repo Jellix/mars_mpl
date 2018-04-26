@@ -199,12 +199,14 @@ package body GUI is
       function Touched_Down (Leg : in Shared_Types.Legs_Index) return Boolean is
          (Update_State.Legs (Leg) = Shared_Types.Touched_Down);
    begin
-      --  LEDs
+      --  Leg LEDs
       for Leg in DE.Leg_Led'Range loop
          DE.Leg_Led (Leg).all.Set_State
            (State => Update_State.Legs (Leg) = Shared_Types.Touched_Down);
          DE.Leg_Led (Leg).all.Queue_Draw;
       end loop;
+
+      --  Thruster LED
       DE.Thruster_Led.all.Set_State
         (State => Update_State.Thruster_Enabled);
       DE.Thruster_Led.all.Queue_Draw;
@@ -223,7 +225,7 @@ package body GUI is
            Glib.Gdouble (abs Update_State.Velocity) / Velocity_Scale.Factor);
       Win.Tachometer.all.Queue_Draw;
 
-      --  Delta_V
+      Update_Delta_V :
       declare
          Dry_Mass         : constant Shared_Types.Vehicle_Mass :=
                               Update_State.Dry_Mass;
@@ -241,7 +243,7 @@ package body GUI is
          Win.Delta_V_Scale.all.Set_Value
            (Value => Glib.Gdouble (Max_Delta_V) / Delta_V_Scale.Factor);
          Win.Delta_V_Scale.all.Queue_Draw;
-      end;
+      end Update_Delta_V;
 
       --  Drag
       DE.Drag.all.Set_Text (Text => Image (Value => Update_State.Drag));

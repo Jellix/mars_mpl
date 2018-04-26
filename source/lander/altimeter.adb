@@ -53,14 +53,16 @@ package body Altimeter is
    type Drag_Lookup is array (Descent_Phase) of Float;
    type Mass_Lookup is array (Descent_Phase) of Shared_Types.Mass;
 
-   Drag_Table : constant Drag_Lookup := (Start                 => 0.026,
-                                         Parachute_Deployed    => 0.410,
-                                         Heatshield_Jettisoned => 0.410,
-                                         Lander_Separation     => 0.100);
+   Drag_Table : constant Drag_Lookup :=
+                  Drag_Lookup'(Start                 => 0.026,
+                               Parachute_Deployed    => 0.410,
+                               Heatshield_Jettisoned => 0.410,
+                               Lander_Separation     => 0.100);
 
-   Mass_Table : constant Mass_Lookup := (Start .. Parachute_Deployed => 140.0,
-                                         Heatshield_Jettisoned       =>   0.0,
-                                         Lander_Separation           =>   0.0);
+   Mass_Table : constant Mass_Lookup :=
+                  Mass_Lookup'(Start .. Parachute_Deployed => 140.0,
+                               Heatshield_Jettisoned       =>   0.0,
+                               Lander_Separation           =>   0.0);
 
    package Descent_Phase_Store is
      new Task_Safe_Store (Stored_Type   => Descent_Phase,
