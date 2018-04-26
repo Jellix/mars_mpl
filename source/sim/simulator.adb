@@ -227,15 +227,12 @@ begin
                --  We want a steadily decelerating descent until drop distance,
                --  then a constant velocity at the target landing velocity.
 
-               Drop_Distance   : constant Shared_Types.Altitude := 12.0;
+               Drop_Distance   : constant := 12.0;
                --  Distance from ground when we drop straight down at constant
                --  velocity.
 
-               pragma Warnings (Off, "value is not a multiple of Small");
-               Velocity_Factor : constant Shared_Types.Altitude :=
-                                   80.0 / (Altitude_For_Lander_Separation -
-                                           Drop_Distance);
-               pragma Warnings (On, "value is not a multiple of Small");
+               Velocity_Factor : constant
+                 := 80.0 / (Altitude_For_Lander_Separation - Drop_Distance);
                --  At 1300 m, we expect to be at ~80 m/s, so use this as a
                --  factor to derive a target velocity from the current altitude
                --  until we match the target landing velocity at Drop_Distance.
