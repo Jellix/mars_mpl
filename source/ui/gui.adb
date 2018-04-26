@@ -419,10 +419,8 @@ package body GUI is
       Win.On_Delete_Event (Call  => Callbacks.Exit_Main'Access,
                            After => True);
 
-      --  Make window full screen by default.
-      --  As an (unintended) side effect this also seem to make the window lose
-      --  all of its decorations (title bar etc.).
-      Win.Fullscreen;
+      --  Make window use full screen by default.
+      Win.Maximize;
       Win.Show_All;
 
       Main_Block :
