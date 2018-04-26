@@ -532,11 +532,15 @@ package body Gtk.Gauge.Altimeter is
 
    procedure Set_Value
      (Widget : not null access Gtk_Gauge_Altimeter_Record;
-      Value  : in              Gdouble) is
+      Value  : in              Gdouble)
+   is
+      Clamped_Value : constant Gdouble :=
+                        Gdouble'Min (1.0, Gdouble'Max (0.0, Value));
    begin
       Set_1s_Needle :
       declare
-         Ones : constant Glib.Gdouble := Glib.Gdouble'Remainder (Value, 1.0);
+         Ones : constant Glib.Gdouble :=
+                  Glib.Gdouble'Remainder (Clamped_Value, 1.0);
       begin
          Widget.all.Needle_Main.all.Set_Value
            (Value => (if Ones < 0.0 then 1.0 + Ones else Ones));
@@ -545,7 +549,7 @@ package body Gtk.Gauge.Altimeter is
       Set_Tenths_Needle :
       declare
          Tenths : constant Glib.Gdouble :=
-                    Glib.Gdouble'Remainder (Value, 0.1);
+                    Glib.Gdouble'Remainder (Clamped_Value, 0.1);
       begin
          Widget.all.Needle_10ths.all.Set_Value
            (Value =>
@@ -555,7 +559,7 @@ package body Gtk.Gauge.Altimeter is
       Set_Hundreths_Needle :
       declare
          Hundreths : constant Glib.Gdouble :=
-                       Glib.Gdouble'Remainder (Value, 0.01);
+                       Glib.Gdouble'Remainder (Clamped_Value, 0.01);
       begin
          Widget.all.Needle_100ths.all.Set_Value
            (Value =>
