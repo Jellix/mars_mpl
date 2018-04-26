@@ -212,7 +212,6 @@ begin
            Next_Cycle >= Powered_Descent_At
          then
             Current_Phase := Powered_Descent;
-            Thrusters.Enable;
             Log.Trace (Message => "Entered powered descent flight mode.");
          end if;
 
@@ -223,13 +222,39 @@ begin
          --    be turned off when touchdown is detected by sensors in the
          --    footpads.
          if Current_Phase = Powered_Descent then
-            if Current_Velocity < Target_Landing_Velocity then
-               Thrusters.Disable;
-            elsif
-              Current_Velocity > Shared_Types.Velocity (Current_Altitude * 0.2)
-            then
-               Thrusters.Enable;
-            end if;
+            Approach_Landing_Velocity :
+            declare
+               --  We want a steadily decelerating descent until drop distance,
+               --  then a constant velocity at the target landing velocity.
+
+               Drop_Distance   : constant Shared_Types.Altitude := 12.0;
+               --  Distance from ground when we drop straight down at constant
+               --  velocity.
+
+               pragma Warnings (Off, "value is not a multiple of Small");
+               Velocity_Factor : constant Shared_Types.Altitude :=
+                                   80.0 / (Altitude_For_Lander_Separation -
+                                           Drop_Distance);
+               pragma Warnings (On, "value is not a multiple of Small");
+               --  At 1300 m, we expect to be at ~80 m/s, so use this as a
+               --  factor to derive a target velocity from the current altitude
+               --  until we match the target landing velocity at Drop_Distance.
+
+               Corrected_Altitude : constant Shared_Types.Altitude :=
+                                      Shared_Types.Altitude'Max
+                                        (0.0, Current_Altitude - Drop_Distance);
+               --  Altitude until constant drop speed.
+
+               Current_Target_Velocity : constant Shared_Types.Velocity
+                 := Shared_Types.Velocity (Corrected_Altitude * Velocity_Factor)
+                                           + Target_Landing_Velocity;
+            begin
+               if Current_Velocity < Current_Target_Velocity then
+                  Thrusters.Disable;
+               else
+                  Thrusters.Enable;
+               end if;
+            end Approach_Landing_Velocity;
          end if;
 
          if
