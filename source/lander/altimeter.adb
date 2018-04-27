@@ -46,6 +46,8 @@ package body Altimeter is
 
    type Descent_Phase is (Start,
                           -- ... some more, not supported/relevant
+                          Cruise_Ring_Separated,
+                          Atmosphere_Entered,
                           Parachute_Deployed,
                           Heatshield_Jettisoned,
                           Lander_Separation);
@@ -54,15 +56,23 @@ package body Altimeter is
    type Mass_Lookup is array (Descent_Phase) of Shared_Types.Mass;
 
    Drag_Table : constant Drag_Lookup :=
-                  Drag_Lookup'(Start                 => 0.026,
+                  Drag_Lookup'(Start                 => 0.000,
+                               Cruise_Ring_Separated => 0.000,
+                               Atmosphere_Entered    => 0.026,
                                Parachute_Deployed    => 0.410,
                                Heatshield_Jettisoned => 0.410,
                                Lander_Separation     => 0.100);
 
-   Mass_Table : constant Mass_Lookup :=
-                  Mass_Lookup'(Start .. Parachute_Deployed => 140.0,
-                               Heatshield_Jettisoned       =>   0.0,
-                               Lander_Separation           =>   0.0);
+   Heatshield_Mass   : constant Shared_Types.Mass := 140.0;
+   Cruise_Stage_Mass : constant Shared_Types.Mass :=  82.0;
+
+   Mass_Table : constant Mass_Lookup
+     := Mass_Lookup'(Start                 => Heatshield_Mass + Cruise_Stage_Mass,
+                     Cruise_Ring_Separated => Heatshield_Mass,
+                     Atmosphere_Entered    => Heatshield_Mass,
+                     Parachute_Deployed    => Heatshield_Mass,
+                     Heatshield_Jettisoned => 0.0,
+                     Lander_Separation     => 0.0);
 
    package Descent_Phase_Store is
      new Task_Safe_Store (Stored_Type   => Descent_Phase,
@@ -87,10 +97,20 @@ package body Altimeter is
       Descent_State.Set (New_Value => Parachute_Deployed);
    end Deploy_Parachute;
 
+   procedure Enter_Atmosphere is
+   begin
+      Descent_State.Set (New_Value => Atmosphere_Entered);
+   end Enter_Atmosphere;
+
    procedure Jettison_Heatshield is
    begin
       Descent_State.Set (New_Value => Heatshield_Jettisoned);
    end Jettison_Heatshield;
+
+   procedure Separate_Cruise_Stage is
+   begin
+      Descent_State.Set (New_Value => Cruise_Ring_Separated);
+   end Separate_Cruise_Stage;
 
    procedure Separate_Lander is
    begin

@@ -35,18 +35,24 @@ package Altimeter is
    --  Provides the current velocity.
    --  @return The current velocity.
 
-   procedure Separate_Lander;
-   --  Tells the altimeter simulation that the lander has been separated and the
-   --  powered descent phase started (where we actively monitor thruster and
-   --  fuel state).
+   procedure Separate_Cruise_Stage;
+   --  Tells the altimeter simulation that the cruise ring and the impact probes
+   --  have been separated.
+
+   procedure Enter_Atmosphere;
+   --  Tells the altimeter simulation that the upper atmosphere has been
+   --  entered.
 
    procedure Deploy_Parachute;
    --  Tells the altimeter simulation that the parachute has been deployed.
 
    procedure Jettison_Heatshield;
    --  Tells the altimeter simulation that the heatshield has been jettisoned.
-   --  @param Jettisoned_At The time at which the heatshield has been
-   --                       jettisoned.
+
+   procedure Separate_Lander;
+   --  Tells the altimeter simulation that the lander has been separated and the
+   --  powered descent phase started (where we actively monitor thruster and
+   --  fuel state).
 
    procedure Shutdown;
    --  Signals the altitude control monitor to terminate.

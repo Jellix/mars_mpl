@@ -99,8 +99,8 @@ procedure Simulator is
 
    package Log is new Global.Log (Unit_Name => "SIM");
 begin
-   Log.Trace (Message => "Starting touchdown monitors...");
    Touchdown_Monitor.Start;
+   Log.Trace (Message => "Touchdown monitors started.");
 
    Main_Block :
    declare
@@ -144,6 +144,7 @@ begin
            Current_Altitude <= Altitude_For_Cruise_Ring_Separation
          then
             Current_Phase := Cruise_Ring_Separated;
+            Altimeter.Separate_Cruise_Stage;
             Log.Trace (Message => "Cruise ring and probes separated.");
          end if;
 
@@ -153,6 +154,7 @@ begin
            Current_Altitude <= Altitude_For_Atmospheric_Entry
          then
             Current_Phase := Atmosphere_Entered;
+            Altimeter.Enter_Atmosphere;
             Log.Trace (Message => "Entered atmosphere.");
          end if;
 
