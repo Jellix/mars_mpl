@@ -36,23 +36,26 @@ package Altimeter is
    --  @return The current velocity.
 
    procedure Separate_Cruise_Stage;
-   --  Tells the altimeter simulation that the cruise ring and the impact probes
-   --  have been separated.
+   --  Tells the altimeter simulation that lander and cruise stage have been
+   --  separated.
+   --  Changes the dry mass of the vehicle.
 
    procedure Enter_Atmosphere;
    --  Tells the altimeter simulation that the upper atmosphere has been
    --  entered.
+   --  Changes the drag coefficient
 
    procedure Deploy_Parachute;
    --  Tells the altimeter simulation that the parachute has been deployed.
+   --  Changed the drag coefficient.
 
    procedure Jettison_Heatshield;
    --  Tells the altimeter simulation that the heatshield has been jettisoned.
+   --  Changes the dry mass of the vehicle.
 
    procedure Separate_Lander;
-   --  Tells the altimeter simulation that the lander has been separated and the
-   --  powered descent phase started (where we actively monitor thruster and
-   --  fuel state).
+   --  Tells the altimeter simulation that the lander has been separated.
+   --  Changes the drag coefficent.
 
    procedure Shutdown;
    --  Signals the altitude control monitor to terminate.
