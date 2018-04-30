@@ -68,16 +68,17 @@ procedure Simulator is
 
    procedure Update_Shared_Data;
    procedure Update_Shared_Data is
-      Offset    : constant Duration :=
-                    Ada.Real_Time.To_Duration
-                      (TS => Ada.Real_Time.Clock - Global.Start_Time);
-      Altitude  : constant Shared_Types.Altitude     := Altimeter.Current_Altitude;
-      Drag      : constant Shared_Types.Acceleration := Altimeter.Current_Drag;
-      Dry_Mass  : constant Shared_Types.Vehicle_Mass := Altimeter.Current_Dry_Mass;
-      Fuel      : constant Shared_Types.Fuel_Mass    := Thrusters.Current_Fuel_Mass;
-      All_Legs  : Shared_Types.All_Legs_State;
-      Thrust_On : constant Boolean                   := Thrusters.Is_Enabled;
-      Velocity  : constant Shared_Types.Velocity     := Altimeter.Current_Velocity;
+      Offset      : constant Duration :=
+                      Ada.Real_Time.To_Duration
+                        (TS => Ada.Real_Time.Clock - Global.Start_Time);
+      Altitude    : constant Shared_Types.Altitude     := Altimeter.Current_Altitude;
+      Drag        : constant Shared_Types.Acceleration := Altimeter.Current_Drag;
+      Dry_Mass    : constant Shared_Types.Vehicle_Mass := Altimeter.Current_Dry_Mass;
+      Fuel        : constant Shared_Types.Fuel_Mass    := Thrusters.Current_Fuel_Mass;
+      All_Legs    : Shared_Types.All_Legs_State;
+      Temperature : constant Shared_Types.Kelvin       := Altimeter.Current_Surface_Temperature;
+      Thrust_On   : constant Boolean                   := Thrusters.Is_Enabled;
+      Velocity    : constant Shared_Types.Velocity     := Altimeter.Current_Velocity;
    begin
       Landing_Legs.Read_State (State => All_Legs);
       Shared_Sensor_Data.Current_State.Set
@@ -87,6 +88,7 @@ procedure Simulator is
                                      Dry_Mass         => Dry_Mass,
                                      Fuel             => Fuel,
                                      Legs             => All_Legs,
+                                     Temperature      => Temperature,
                                      Thruster_Enabled => Thrust_On,
                                      Time_Stamp       => Offset,
                                      Velocity         => Velocity));

@@ -8,6 +8,7 @@ with Gtk.Gauge.Flat_Vertical;
 with Gtk.Gauge.LED_Round;
 with Gtk.Gauge.Round_270;
 with Gtk.GEntry;
+with Gtk.Meter.Thermo;
 with Gtk.Oscilloscope;
 with Gtk.Spin_Button;
 with Gtk.Window;
@@ -29,6 +30,7 @@ private
          Drag         : Gtk.GEntry.Gtk_Entry;
          Fuel         : Gtk.GEntry.Gtk_Entry;
          Leg_Led      : Leg_Switches;
+         Temperature  : Gtk.GEntry.Gtk_Entry;
          Thruster_Led : Gtk.Gauge.LED_Round.Gtk_Gauge_LED_Round;
          Velocity     : Gtk.GEntry.Gtk_Entry;
       end record;
@@ -77,6 +79,7 @@ private
          Fuel_Scale    : Gtk.Gauge.Flat_Vertical.Gtk_Gauge_Flat_Vertical;
          Delta_V_Scale : Gtk.Gauge.Flat_Vertical.Gtk_Gauge_Flat_Vertical;
          Drag_Scale    : Gtk.Gauge.Flat_Vertical.Gtk_Gauge_Flat_Vertical;
+         Thermometer   : Gtk.Meter.Thermo.Gtk_Meter_Thermo;
          SIMon_Says    : Gtk.Frame.Log_Viewer.Gtk_Frame_Log_Viewer;
          Aborted       : Boolean;
          SIM_Process   : GNAT.Expect.Process_Descriptor_Access;
@@ -112,6 +115,10 @@ private
    function Image is new
      Shared_Types.IO.Generic_Image (T    => Shared_Types.On_Time,
                                     Unit => "ms");
+
+   function Image is new
+     Shared_Types.IO.Generic_Image (T    => Shared_Types.Kelvin,
+                                    Unit => "K");
 
    function Image is new
      Shared_Types.IO.Generic_Image (T    => Shared_Types.Vehicle_Mass,

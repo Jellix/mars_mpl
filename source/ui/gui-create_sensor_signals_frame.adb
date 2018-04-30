@@ -213,6 +213,37 @@ begin
       Current_Column := Current_Column + Gauge_Width;
    end Add_Drag_Gauge;
 
+   Add_Temperature_Gauge :
+   declare
+      Gauge_Width : constant Glib.Gint := Glib.Gint'Max (2, Gauge_Size / 3);
+   begin
+      Add_Heading (Title  => "Surface Temperature",
+                   Column => Current_Column,
+                   Width  => Gauge_Width);
+
+      Gtk.Meter.Thermo.Gtk_New
+        (Widget  => Window.Thermometer,
+         Texts   => Temperature_Scale.Texts.all,
+         Sectors =>
+           Positive
+             (Gtk.Enums.String_List.Length (+Temperature_Scale.Texts.all)) - 1,
+         Label   => "x100 K");
+      Grid.all.Attach (Child  => Window.Thermometer,
+                       Left   => Current_Column,
+                       Top    => Gauge_Row,
+                       Width  => Gauge_Width,
+                       Height => Gauge_Size);
+
+      Gtk.GEntry.Gtk_New (The_Entry => Window.Elements.Temperature);
+      Window.Elements.Temperature.all.Set_Editable (Is_Editable => False);
+      Grid.all.Attach (Child  => Window.Elements.Temperature,
+                       Left   => Current_Column,
+                       Top    => Text_Row,
+                       Width  => Gauge_Width,
+                       Height => 1);
+      Current_Column := Current_Column + Gauge_Width;
+   end Add_Temperature_Gauge;
+
    --  Velocity Gauge
    Add_Heading (Title  => "Velocity",
                 Column => Current_Column,

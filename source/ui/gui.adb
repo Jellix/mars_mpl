@@ -30,11 +30,11 @@ package body GUI is
    use type Shared_Types.Mass;
    use type Shared_Types.Velocity;
 
-   Label_Font        : constant Pango.Cairo.Fonts.Pango_Cairo_Font :=
-                         Pango.Cairo.Fonts.Create_Toy
-                           (Family => "arial",
-                            Slant  => Cairo.Cairo_Font_Slant_Normal,
-                            Weight => Cairo.Cairo_Font_Weight_Bold);
+   Label_Font : constant Pango.Cairo.Fonts.Pango_Cairo_Font :=
+                  Pango.Cairo.Fonts.Create_Toy
+                    (Family => "arial",
+                     Slant  => Cairo.Cairo_Font_Slant_Normal,
+                     Weight => Cairo.Cairo_Font_Weight_Bold);
 
    type Scaling is
       record
@@ -62,6 +62,13 @@ package body GUI is
                    new Gtk.Enums.String_Lists.Controlled_String_List'
                      ("0" / "20" / "40" / "60" / "80"),
                  Factor => 80.0);
+
+   Temperature_Scale : constant Scaling
+     := Scaling'(Texts  =>
+                   new Gtk.Enums.String_Lists.Controlled_String_List'
+                      ("0" / "5" / "10" / "15" / "20"),
+                 Factor => 2000.0);
+
    Velocity_Scale   : constant Scaling
      := Scaling'(Texts  =>
                    new Gtk.Enums.String_Lists.Controlled_String_List'
@@ -217,6 +224,14 @@ package body GUI is
         (Value =>
            Glib.Gdouble (abs Update_State.Altitude) / Altitude_Scale.Factor);
       Win.Altimeter.all.Queue_Draw;
+
+      --  Temperature
+      DE.Temperature.all.Set_Text
+        (Text => Image (Value => Update_State.Temperature));
+      Win.Thermometer.all.Set_Value
+        (Value =>
+           Glib.Gdouble (Update_State.Temperature) / Temperature_Scale.Factor);
+      Win.Thermometer.all.Queue_Draw;
 
       -- Velocity
       DE.Velocity.all.Set_Text (Text => Image (Value => Update_State.Velocity));

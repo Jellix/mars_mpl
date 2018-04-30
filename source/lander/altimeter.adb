@@ -53,10 +53,20 @@ package body Altimeter is
                       Initial_Value => 0.0);
    Drag_State : Drag_Store.Shelf;
 
+   package Energy_Store is new
+     Task_Safe_Store (Stored_Type   => Float,
+                      Initial_Value => 0.0);
+   Energy_State : Energy_Store.Shelf;
+
    package Spacecraft_Mass_Store is
      new Task_Safe_Store (Stored_Type   => Shared_Types.Mass,
                           Initial_Value => Dry_Mass_Before_EDL);
    Spacecraft_Dry_Mass : Spacecraft_Mass_Store.Shelf;
+
+   package Temperature_Store is
+     new Task_Safe_Store (Stored_Type   => Shared_Types.Kelvin,
+                          Initial_Value => 3.0);
+   Surface_Temperature : Temperature_Store.Shelf;
 
    package Velocity_Store  is new
      Task_Safe_Store (Stored_Type   => Shared_Types.Velocity,
@@ -73,6 +83,9 @@ package body Altimeter is
 
    function Current_Dry_Mass return Shared_Types.Vehicle_Mass is
      (Shared_Types.Vehicle_Mass (Spacecraft_Dry_Mass.Get));
+
+   function Current_Surface_Temperature return Shared_Types.Kelvin is
+      (Surface_Temperature.Get);
 
    function Current_Velocity return Shared_Types.Velocity is
      (Velocity_State.Get);
@@ -91,6 +104,7 @@ package body Altimeter is
    begin
       Spacecraft_Dry_Mass.Set
         (New_Value => Dry_Mass_After_Heatshield_Separation);
+      Energy_State.Set (0.0);
    end Jettison_Heatshield;
 
    procedure Separate_Cruise_Stage is
@@ -118,15 +132,15 @@ package body Altimeter is
    task Radar_Simulator;
 
    task body Radar_Simulator is
-      T             : constant Duration
+      T              : constant Duration
         := Ada.Real_Time.To_Duration (Configuration.Cycle_Times.Altitude_Task);
       --  Duration of a single task cycle.
 
-      Next_Cycle    : Ada.Real_Time.Time
+      Next_Cycle     : Ada.Real_Time.Time
         := Global.Start_Time + Configuration.Task_Offsets.Altitude_Task;
-      Altitude_Now  : Shared_Types.Altitude := Altimeter_State.Get;
-      Velocity_Now  : Shared_Types.Velocity := Velocity_State.Get;
-      Drag_Delta_V  : Shared_Types.Velocity := 0.0; --  accumulated delta v due to drag effects.
+      Altitude_Now   : Shared_Types.Altitude := Altimeter_State.Get;
+      Velocity_Now   : Shared_Types.Velocity := Velocity_State.Get;
+      Drag_Delta_V   : Shared_Types.Velocity := 0.0; --  accumulated delta v due to drag effects.
    begin
       Log.Trace (Message => "Altitude control monitor started.");
 
@@ -156,9 +170,22 @@ package body Altimeter is
                                 (Current_Wet_Mass => Current_Mass,
                                  Velocity         => Velocity_Now,
                                  Drag_Constant    => Drag_Constant);
+            Cycle_Delta_V : constant Shared_Types.Velocity := Drag_Now * T;
+            E_Kin         : constant Float :=
+                              Float (Current_Mass) * Float (Cycle_Delta_V) * Float (Cycle_Delta_V) / 2.0;
          begin
             Drag_State.Set (New_Value => Drag_Now);
-            Drag_Delta_V := Drag_Delta_V + (Drag_Now * T);
+            Drag_Delta_V := Drag_Delta_V + Cycle_Delta_V;
+
+            Update_Kinetic_Energy :
+            declare
+               Kinetic_Energy : Float := Energy_State.Get;
+            begin
+               Kinetic_Energy := Kinetic_Energy + E_Kin;
+               Energy_State.Set (New_Value => Kinetic_Energy);
+               Surface_Temperature.Set
+                 (New_Value => Shared_Types.Kelvin (Kinetic_Energy / 38.50 / Float (Heatshield_Mass)));
+            end Update_Kinetic_Energy;
          end Calculate_Drag;
 
          Calculate_Delta_V :

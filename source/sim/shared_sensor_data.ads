@@ -23,6 +23,7 @@ is
          Dry_Mass         : Shared_Types.Vehicle_Mass;
          Fuel             : Shared_Types.Fuel_Mass;
          Legs             : Shared_Types.All_Legs_State;
+         Temperature      : Shared_Types.Kelvin;
          Thruster_Enabled : Boolean;
          Time_Stamp       : Duration;
          Velocity         : Shared_Types.Velocity;
@@ -33,6 +34,7 @@ is
    --  @field Dry_Mass         The current dry mass of the spacecraft.
    --  @field Fuel             Fuel mass left in tank.
    --  @field Legs             State of all landing legs.
+   --  #field Temperature      Surface temperature.
    --  @field Thruster_Enabled State of thruster.
    --  @field Time_Stamp       (Relative) time since simulation start. Denotes
    --                          the (rough) sampling time of all of the above.
@@ -50,6 +52,7 @@ is
                Legs             =>
                  Shared_Types.All_Legs_State'
                    (others => Shared_Types.In_Flight),
+               Temperature      => 3.0,
                Thruster_Enabled => False,
                Time_Stamp       => 0.0,
                Velocity         => 0.0));
