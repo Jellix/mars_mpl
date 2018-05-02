@@ -8,8 +8,8 @@ with Shared_Types;
 package Configuration.Cycle_Times is
 
    Altitude_Task : constant Ada.Real_Time.Time_Span := Milliseconds (MS => 10);
-
-   Fuel_Monitor : constant Ada.Real_Time.Time_Span := Milliseconds (MS => 10);
+   Engine_Task   : constant Ada.Real_Time.Time_Span := Milliseconds (MS => 10);
+   Fuel_Monitor  : constant Ada.Real_Time.Time_Span := Milliseconds (MS => 10);
 
    type TDM_Cycles is
      array (Shared_Types.Legs_Index) of Ada.Real_Time.Time_Span;

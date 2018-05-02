@@ -12,8 +12,11 @@ package Configuration.Task_Offsets is
    Altitude_Task : constant Ada.Real_Time.Time_Span := Microseconds (0);
    --  Altitude task runs at exactly activation time.
 
+   Engine_Task : constant Ada.Real_Time.Time_Span   := Microseconds (750);
+   --  The engine task runs with an offset of 1.5 millisecond.
+
    Fuel_Monitor  : constant Ada.Real_Time.Time_Span := Microseconds (1500);
-   --  The engine task runs with an offset of 2 millisecond.
+   --  The engine task runs with an offset of 1.5 millisecond.
 
    type TDM_Offsets is
      array (Shared_Types.Legs_Index) of Ada.Real_Time.Time_Span;

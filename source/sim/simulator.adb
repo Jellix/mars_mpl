@@ -27,6 +27,7 @@
 with Ada.Real_Time;
 with Altimeter;
 with Configuration.Task_Offsets;
+with Engines;
 with Global;
 with Landing_Legs;
 with Shared_Parameters.Read;
@@ -94,8 +95,6 @@ procedure Simulator is
                                      Velocity         => Velocity));
    end Update_Shared_Data;
 
-   Target_Landing_Velocity : constant Shared_Types.Velocity :=
-                               Shared_Parameters.Read.Target_Landing_Velocity;
    Safe_Landing_Velocity   : constant Shared_Types.Velocity :=
                                Shared_Parameters.Read.Safe_Landing_Velocity;
 
@@ -113,14 +112,11 @@ begin
       Monitor_Enabled    : Boolean               := False;
       Current_Altitude   : Shared_Types.Altitude := Altimeter.Current_Altitude;
       Powered_Descent_At : Ada.Real_Time.Time    := Ada.Real_Time.Time_Last;
-
-      Current_Velocity   : Shared_Types.Velocity;
    begin
       while Current_Altitude > 0.0 loop
          delay until Next_Cycle;
 
          Current_Altitude := Altimeter.Current_Altitude;
-         Current_Velocity := Altimeter.Current_Velocity;
 
          --  | -15 min | 4600 km | 5700   m/s | Guidance system initialization
          if
@@ -216,46 +212,8 @@ begin
            Next_Cycle >= Powered_Descent_At
          then
             Current_Phase := Powered_Descent;
+            Engines.Start_Descent;
             Log.Trace (Message => "Entered powered descent flight mode.");
-         end if;
-
-         --  EDL sequence:
-         --    Once the spacecraft reaches either an altitude of 12 meters [...]
-         --    or a velocity of 2.4 meters per second [...], the lander will
-         --    drop straight down at a constant speed. The descent engines will
-         --    be turned off when touchdown is detected by sensors in the
-         --    footpads.
-         if Current_Phase = Powered_Descent then
-            Approach_Landing_Velocity :
-            declare
-               --  We want a steadily decelerating descent until drop distance,
-               --  then a constant velocity at the target landing velocity.
-
-               Drop_Distance   : constant := 12.0;
-               --  Distance from ground when we drop straight down at constant
-               --  velocity.
-
-               Velocity_Factor : constant
-                 := 80.0 / (Altitude_For_Lander_Separation - Drop_Distance);
-               --  At 1300 m, we expect to be at ~80 m/s, so use this as a
-               --  factor to derive a target velocity from the current altitude
-               --  until we match the target landing velocity at Drop_Distance.
-
-               Corrected_Altitude : constant Shared_Types.Altitude :=
-                                      Shared_Types.Altitude'Max
-                                        (0.0, Current_Altitude - Drop_Distance);
-               --  Altitude until constant drop speed.
-
-               Current_Target_Velocity : constant Shared_Types.Velocity
-                 := Shared_Types.Velocity (Corrected_Altitude * Velocity_Factor)
-                                           + Target_Landing_Velocity;
-            begin
-               if Current_Velocity < Current_Target_Velocity then
-                  Thrusters.Disable;
-               else
-                  Thrusters.Enable;
-               end if;
-            end Approach_Landing_Velocity;
          end if;
 
          if
@@ -289,9 +247,10 @@ begin
    Update_Shared_Data;
 
    Altimeter.Shutdown;
-   Touchdown_Monitor.Shutdown;
+   Engines.Shutdown;
    Landing_Legs.Shutdown;
    Thrusters.Shutdown;
+   Touchdown_Monitor.Shutdown;
 
    Wait_For_Monitors :
    declare
