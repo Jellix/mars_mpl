@@ -52,7 +52,7 @@ is
                Legs             =>
                  Shared_Types.All_Legs_State'
                    (others => Shared_Types.In_Flight),
-               Temperature      => 3.0,
+               Temperature      => 0.0,
                Thruster_Enabled => False,
                Time_Stamp       => 0.0,
                Velocity         => 0.0));
