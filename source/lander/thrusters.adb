@@ -64,6 +64,7 @@ package body Thrusters is
          Fuel_Flow  : State;                   --  Current state of fuel flow.
          Flow_Since : Ada.Real_Time.Time;      --  Time at which the flow was enabled.
          Flow_Total : Ada.Real_Time.Time_Span; --  Accumulated flow duration.
+         Burns      : Max_Burn_Cycles;
       end record
      with
        Dynamic_Predicate =>
@@ -71,6 +72,7 @@ package body Thrusters is
 
    protected Engine_State is
       function Get_Total return Duration;
+      function Get_Burns return Max_Burn_Cycles;
       function Get return State;
       procedure Set (Value : in State);
       procedure No_More_Fuel;
@@ -79,7 +81,8 @@ package body Thrusters is
       Valve_State     : Valve_Info
         := Valve_Info'(Fuel_Flow  => Disabled,
                        Flow_Since => Global.Start_Time,
-                       Flow_Total => Ada.Real_Time.Time_Span_Zero);
+                       Flow_Total => Ada.Real_Time.Time_Span_Zero,
+                       Burns      => 0);
    end Engine_State;
 
    package Valve_Timing is
@@ -98,6 +101,9 @@ package body Thrusters is
         (if Fuel_Tank_Empty
            then Disabled
            else Valve_State.Fuel_Flow);
+
+      function Get_Burns return Max_Burn_Cycles is
+        (Valve_State.Burns);
 
       function Get_Total return Duration is
          Result : Ada.Real_Time.Time_Span;
@@ -160,6 +166,7 @@ package body Thrusters is
 
                      Valve_State.Fuel_Flow  := Enabled;
                      Valve_State.Flow_Since := Now;
+                     Valve_State.Burns      := Valve_State.Burns + 1;
                   end if;
                end if;
             end Recalculate_Valve_State;
@@ -167,6 +174,9 @@ package body Thrusters is
       end Set;
 
    end Engine_State;
+
+   function Burn_Cycles return Max_Burn_Cycles is
+     (Engine_State.Get_Burns);
 
    function Burn_Time return Duration is
      (Engine_State.Get_Total);

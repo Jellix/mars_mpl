@@ -315,7 +315,9 @@ begin
       function Image is new Shared_Types.IO.Generic_Image (T    => Duration,
                                                            Unit => "s");
    begin
-      Log.Trace (Message => "Thrusters burned for a total of "
+      Log.Trace (Message => "Thrusters have been fired"
+                 & Thrusters.Max_Burn_Cycles'Image (Thrusters.Burn_Cycles)
+                 & " times, and burned for a total of "
                  & Image (Value     => Thrusters.Burn_Time,
                           With_Unit => True)
                  & ".");

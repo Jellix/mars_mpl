@@ -16,6 +16,13 @@ with Shared_Types;
 --  thrusters are signalled to keep disabled, regardless of thruster commands.
 package Thrusters is
 
+   type Max_Burn_Cycles is range 0 .. 10_000;
+
+   function Burn_Cycles return Max_Burn_Cycles with
+     Volatile_Function => True;
+   --  Number of burn cycles.
+   --  @return The number of times the thruster has been fired.
+
    function Burn_Time return Duration with
      Volatile_Function;
    --  Total burn time of thrusters.
