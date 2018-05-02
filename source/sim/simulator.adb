@@ -123,8 +123,8 @@ begin
            Current_Phase = EDL_Started and then
            Current_Altitude <= Altitude_For_Guidance_System_Initialization
          then
+            Log.Trace (Message => "Initializing guidance system...");
             Current_Phase := Guidance_System_Initialized;
-            Log.Trace (Message => "Guidance system initialized.");
          end if;
 
          --  | -12 min | 3000 km | 5900   m/s | Turn to entry attitude
@@ -132,8 +132,8 @@ begin
            Current_Phase = Guidance_System_Initialized and then
            Current_Altitude <= Altitude_For_Turn_To_Entry_Attitude
          then
+            Log.Trace (Message => "Turning to entry attitude...");
             Current_Phase := Turned_To_Entry_Attitude;
-            Log.Trace (Message => "Turn to entry attitude.");
          end if;
 
          --  | -10 min | 2300 km | 6200   m/s | Cruise ring separation
@@ -141,9 +141,9 @@ begin
            Current_Phase = Turned_To_Entry_Attitude and then
            Current_Altitude <= Altitude_For_Cruise_Ring_Separation
          then
+            Log.Trace (Message => "Separating cruise ring and probes...");
             Current_Phase := Cruise_Ring_Separated;
             Altimeter.Separate_Cruise_Stage;
-            Log.Trace (Message => "Cruise ring and probes separated.");
          end if;
 
          --  |  -5 min |  125 km | 6900   m/s | Atmospheric entry
@@ -151,9 +151,9 @@ begin
            Current_Phase = Cruise_Ring_Separated and then
            Current_Altitude <= Altitude_For_Atmospheric_Entry
          then
+            Log.Trace (Message => "Entering atmosphere...");
             Current_Phase := Atmosphere_Entered;
             Altimeter.Enter_Atmosphere;
-            Log.Trace (Message => "Entered atmosphere.");
          end if;
 
          --  |  -2 min | 8800  m |  490   m/s | Parachute deployment
@@ -161,9 +161,9 @@ begin
            Current_Phase = Atmosphere_Entered and then
            Current_Altitude <= Altitude_For_Parachute_Deployment
          then
+            Log.Trace (Message => "Deploying parachute...");
             Current_Phase := Parachute_Deployed;
             Altimeter.Deploy_Parachute;
-            Log.Trace (Message => "Parachute deployed.");
          end if;
 
          --  | -110  s | 7500  m |  250   m/s | Heatshield jettison
@@ -171,9 +171,9 @@ begin
            Current_Phase = Parachute_Deployed and then
            Current_Altitude <= Altitude_For_Heatshield_Jettison
          then
+            Log.Trace (Message => "Jettisoning heatshield...");
             Current_Phase := Heatshield_Jettisoned;
             Altimeter.Jettison_Heatshield;
-            Log.Trace (Message => "Heatshield jettisoned.");
          end if;
 
          --  EDL sequence:
@@ -186,8 +186,8 @@ begin
            Current_Phase = Heatshield_Jettisoned and then
            Current_Altitude <= Altitude_For_Leg_Deployment
          then
-            Current_Phase := Legs_Deployed;
             Log.Trace (Message => "Deploying landing legs...");
+            Current_Phase := Legs_Deployed;
             Landing_Legs.Deploy;
          end if;
 
@@ -201,19 +201,19 @@ begin
            Current_Phase = Legs_Deployed and then
            Current_Altitude <= Altitude_For_Lander_Separation
          then
+            Log.Trace (Message => "Separating lander...");
             Current_Phase := Lander_Separated;
             Altimeter.Separate_Lander;
             Powered_Descent_At := Next_Cycle + Ada.Real_Time.Milliseconds (500);
-            Log.Trace (Message => "Lander separated.");
          end if;
 
          if
            Current_Phase = Lander_Separated and then
            Next_Cycle >= Powered_Descent_At
          then
+            Log.Trace (Message => "Entering powered descent flight mode...");
             Current_Phase := Powered_Descent;
             Engines.Start_Descent;
-            Log.Trace (Message => "Entered powered descent flight mode.");
          end if;
 
          if
