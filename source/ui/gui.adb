@@ -66,7 +66,7 @@ package body GUI is
    Temperature_Scale : constant Scaling
      := Scaling'(Texts  =>
                    new Gtk.Enums.String_Lists.Controlled_String_List'
-                      ("0" / "5" / "10" / "15" / "20"),
+                      ("0" / "500" / "1000" / "1500" / "2000"),
                  Factor => 2000.0);
 
    Velocity_Scale   : constant Scaling

@@ -227,7 +227,7 @@ begin
          Sectors =>
            Positive
              (Gtk.Enums.String_List.Length (+Temperature_Scale.Texts.all)) - 1,
-         Label   => "x100 K");
+         Label   => "K");
       Grid.all.Attach (Child  => Window.Thermometer,
                        Left   => Current_Column,
                        Top    => Gauge_Row,

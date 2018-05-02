@@ -13,6 +13,7 @@ package body Altimeter is
    use type Ada.Real_Time.Time;
    use type Shared_Types.Acceleration;
    use type Shared_Types.Altitude;
+   use type Shared_Types.Kelvin;
    use type Shared_Types.Mass;
    use type Shared_Types.Velocity;
 
@@ -65,7 +66,7 @@ package body Altimeter is
 
    package Temperature_Store is
      new Task_Safe_Store (Stored_Type   => Shared_Types.Kelvin,
-                          Initial_Value => 3.0);
+                          Initial_Value => 3.1999969482421875);
    Surface_Temperature : Temperature_Store.Shelf;
 
    package Velocity_Store  is new
@@ -171,8 +172,10 @@ package body Altimeter is
                                  Velocity         => Velocity_Now,
                                  Drag_Constant    => Drag_Constant);
             Cycle_Delta_V : constant Shared_Types.Velocity := Drag_Now * T;
+            V_Squared     : constant Float :=
+                              Float (Cycle_Delta_V) * Float (Cycle_Delta_V);
             E_Kin         : constant Float :=
-                              Float (Current_Mass) * Float (Cycle_Delta_V) * Float (Cycle_Delta_V) / 2.0;
+                              Float (Current_Mass) * V_Squared / 2.0;
          begin
             Drag_State.Set (New_Value => Drag_Now);
             Drag_Delta_V := Drag_Delta_V + Cycle_Delta_V;
@@ -184,7 +187,10 @@ package body Altimeter is
                Kinetic_Energy := Kinetic_Energy + E_Kin;
                Energy_State.Set (New_Value => Kinetic_Energy);
                Surface_Temperature.Set
-                 (New_Value => Shared_Types.Kelvin (Kinetic_Energy / 38.50 / Float (Heatshield_Mass)));
+                 (New_Value =>
+                    Temperature_Store.Default_Value +
+                      Shared_Types.Kelvin
+                        (Kinetic_Energy / 38.50 / Float (Heatshield_Mass)));
             end Update_Kinetic_Energy;
          end Calculate_Drag;
 
