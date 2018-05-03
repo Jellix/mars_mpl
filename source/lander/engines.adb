@@ -17,21 +17,15 @@ package body Engines is
 
    Aborted : Boolean := False
      with Atomic => True;
+   pragma Warnings (Off,
+                    Aborted,
+                    Reason => "Do not warn about atomic synchronization");
 
    Descent_Started : Boolean := False
      with Atomic => True;
-
-   pragma Warnings (Off, "atomic synchronization set");
-
-   function Is_Aborted return Boolean is
-     (Aborted)
-   with Inline            => True,
-        Volatile_Function => True;
-
-   function Is_Descent_Started return Boolean is
-     (Descent_Started)
-   with Inline            => True,
-        Volatile_Function => True;
+   pragma Warnings (Off,
+                    Descent_Started,
+                    Reason => "Do not warn about atomic synchronization");
 
    procedure Shutdown is
    begin
@@ -43,8 +37,6 @@ package body Engines is
       Descent_Started := True;
    end Start_Descent;
 
-   pragma Warnings (On, "atomic synchronization set");
-
    task Engine_Control;
 
    task body Engine_Control is
@@ -54,11 +46,11 @@ package body Engines is
       Log.Trace ("Engine control task started.");
 
       Main_Loop :
-      while not Is_Aborted loop
+      while not Aborted loop
          delay until Next_Cycle;
          Next_Cycle := Next_Cycle + Configuration.Cycle_Times.Engine_Task;
 
-         if Is_Descent_Started then
+         if Descent_Started then
             --  EDL sequence:
             --    Once the spacecraft reaches either an altitude of 12 meters
             --    [...] or a velocity of 2.4 meters per second [...], the lander
