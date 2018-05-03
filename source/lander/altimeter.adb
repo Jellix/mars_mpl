@@ -180,12 +180,12 @@ package body Altimeter is
             Drag_State.Set (New_Value => Drag_Now);
             Drag_Delta_V := Drag_Delta_V + Cycle_Delta_V;
 
+            Energy_State.Add (X => E_Kin);
+
             Update_Kinetic_Energy :
             declare
-               Kinetic_Energy : Float := Energy_State.Get;
+               Kinetic_Energy : constant Float := Energy_State.Get;
             begin
-               Kinetic_Energy := Kinetic_Energy + E_Kin;
-               Energy_State.Set (New_Value => Kinetic_Energy);
                Surface_Temperature.Set
                  (New_Value =>
                     Temperature_Store.Default_Value +

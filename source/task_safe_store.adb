@@ -5,6 +5,11 @@ package body Task_Safe_Store is
 
    protected body Shelf is
 
+      procedure Add (X : in Stored_Type) is
+      begin
+         Value := Value + X;
+      end Add;
+
       function Get return Stored_Type is
       begin
          return Value;

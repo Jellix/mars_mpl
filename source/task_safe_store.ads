@@ -5,6 +5,9 @@ generic
    type Stored_Type is private;
    --  The type of value to be stored.
 
+   with function "+" (Left  : in Stored_Type;
+                      Right : in Stored_Type) return Stored_Type is <>;
+
    Initial_Value : in Stored_Type;
    --  The initial value.
 
@@ -31,6 +34,10 @@ package Task_Safe_Store is
       function Get return Stored_Type;
       --  Retrieves the last set value.
       --  @return The stored value.
+
+      procedure Add (X : in Stored_Type);
+      --  Adds X to the currently stored value.
+      --  @param X The value to be added.
 
    private
 

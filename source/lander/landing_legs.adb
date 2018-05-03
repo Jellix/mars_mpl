@@ -9,6 +9,10 @@ package body Landing_Legs is
    type Task_State is (Running, Deployed, Touched_Down, Terminated);
    subtype Events is Task_State range Deployed .. Terminated;
 
+   function "+" (L, R : in Shared_Types.Leg_State)
+                 return Shared_Types.Leg_State is
+     (raise Program_Error);
+
    package Leg_Store is new Task_Safe_Store
      (Stored_Type   => Shared_Types.Leg_State,
       Initial_Value => Shared_Types.In_Flight);
