@@ -226,12 +226,19 @@ package body GUI is
       Win.Altimeter.all.Queue_Draw;
 
       --  Temperature
-      DE.Temperature.all.Set_Text
-        (Text => Image (Value => Update_State.Temperature));
-      Win.Thermometer.all.Set_Value
+      DE.Core_Temp.all.Set_Text
+        (Text => Image (Value => Update_State.Core_Temperature));
+      Win.Core_Temp.all.Set_Value
         (Value =>
-           Glib.Gdouble (Update_State.Temperature) / Temperature_Scale.Factor);
-      Win.Thermometer.all.Queue_Draw;
+           Glib.Gdouble (Update_State.Core_Temperature) / Temperature_Scale.Factor);
+      Win.Core_Temp.all.Queue_Draw;
+
+      DE.Surface_Temp.all.Set_Text
+        (Text => Image (Value => Update_State.Surface_Temperature));
+      Win.Surface_Temp.all.Set_Value
+        (Value =>
+           Glib.Gdouble (Update_State.Surface_Temperature) / Temperature_Scale.Factor);
+      Win.Surface_Temp.all.Queue_Draw;
 
       -- Velocity
       DE.Velocity.all.Set_Text (Text => Image (Value => Update_State.Velocity));

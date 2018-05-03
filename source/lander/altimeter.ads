@@ -30,9 +30,14 @@ package Altimeter is
    --  Provides the current dry mass of the space craft.
    --  @return The current dry mass.
 
+   function Current_Core_Temperature return Shared_Types.Kelvin with
+     Volatile_Function => True;
+   --  Provides the current core temperature of the space craft.
+   --  @return The current core temperature.
+
    function Current_Surface_Temperature return Shared_Types.Kelvin with
      Volatile_Function => True;
-   --  Provides the current surface temperature of the space craftś heatshield.
+   --  Provides the current surface temperature of the space craft's heatshield.
    --  @return The current surface temperature.
 
    function Current_Velocity return Shared_Types.Velocity

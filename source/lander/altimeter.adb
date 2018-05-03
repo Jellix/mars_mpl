@@ -28,6 +28,8 @@ package body Altimeter is
 
    Heatshield_Mass     : constant Shared_Types.Mass := 140.0;
    Cruise_Stage_Mass   : constant Shared_Types.Mass :=  82.0;
+   Heat_Capacity       : constant := 3840.0000;
+   Heat_Flow           : constant :=    0.0001;
 
    --  Relevant spacecraft masses during EDL.
    Dry_Mass_Before_EDL                    : constant Shared_Types.Mass
@@ -54,11 +56,6 @@ package body Altimeter is
                       Initial_Value => 0.0);
    Drag_State : Drag_Store.Shelf;
 
-   package Energy_Store is new
-     Task_Safe_Store (Stored_Type   => Float,
-                      Initial_Value => 0.0);
-   Energy_State : Energy_Store.Shelf;
-
    package Spacecraft_Mass_Store is
      new Task_Safe_Store (Stored_Type   => Shared_Types.Mass,
                           Initial_Value => Dry_Mass_Before_EDL);
@@ -67,6 +64,7 @@ package body Altimeter is
    package Temperature_Store is
      new Task_Safe_Store (Stored_Type   => Shared_Types.Kelvin,
                           Initial_Value => 3.1999969482421875);
+   Core_Temperature    : Temperature_Store.Shelf;
    Surface_Temperature : Temperature_Store.Shelf;
 
    package Velocity_Store  is new
@@ -78,6 +76,9 @@ package body Altimeter is
 
    function Current_Altitude return Shared_Types.Altitude is
      (Altimeter_State.Get);
+
+   function Current_Core_Temperature return Shared_Types.Kelvin is
+      (Core_Temperature.Get);
 
    function Current_Drag return Shared_Types.Acceleration is
       (Drag_State.Get);
@@ -105,7 +106,8 @@ package body Altimeter is
    begin
       Spacecraft_Dry_Mass.Set
         (New_Value => Dry_Mass_After_Heatshield_Separation);
-      Energy_State.Set (0.0);
+      Core_Temperature.Set (New_Value => 293.0);
+      Surface_Temperature.Set (New_Value => 293.0);
    end Jettison_Heatshield;
 
    procedure Separate_Cruise_Stage is
@@ -179,19 +181,19 @@ package body Altimeter is
          begin
             Drag_State.Set (New_Value => Drag_Now);
             Drag_Delta_V := Drag_Delta_V + Cycle_Delta_V;
+            Surface_Temperature.Add
+              (X => Shared_Types.Kelvin (E_Kin / Heat_Capacity));
 
-            Energy_State.Add (X => E_Kin);
-
-            Update_Kinetic_Energy :
+            Calculate_Heat_Flow :
             declare
-               Kinetic_Energy : constant Float := Energy_State.Get;
+               Surface  : constant Shared_Types.Kelvin := Surface_Temperature.Get;
+               Core     : constant Shared_Types.Kelvin := Core_Temperature.Get;
+               Gradient : constant Shared_Types.Kelvin := Surface - Core;
+               Delta_T  : constant Shared_Types.Kelvin := Gradient * Heat_Flow;
             begin
-               Surface_Temperature.Set
-                 (New_Value =>
-                    Temperature_Store.Default_Value +
-                      Shared_Types.Kelvin
-                        (Kinetic_Energy / 38.50 / Float (Heatshield_Mass)));
-            end Update_Kinetic_Energy;
+               Core_Temperature.Add (X => Delta_T);
+               Surface_Temperature.Add (X => -Delta_T);
+            end Calculate_Heat_Flow;
          end Calculate_Drag;
 
          Calculate_Delta_V :

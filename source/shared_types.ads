@@ -177,10 +177,10 @@ is
    function To_Duration (T : in On_Time) return Duration;
 
    package Temperature is
-      F : constant := 0.0;
-      L : constant := 2.0 ** 16;
-      R : constant := 1.0 / 2.0 ** 16;
-      S : constant := 32;
+      F : constant := -2.0 ** 31; --  We need temperature differences as well.
+      L : constant := 2.0 ** 31;
+      R : constant := 1.0 / 2.0 ** 32;
+      S : constant := 64;
 
       type T is delta R range F .. L - R with
         Size  => S,

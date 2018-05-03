@@ -18,15 +18,16 @@ is
 
    type State is
       record
-         Altitude         : Shared_Types.Altitude;
-         Drag             : Shared_Types.Acceleration;
-         Dry_Mass         : Shared_Types.Vehicle_Mass;
-         Fuel             : Shared_Types.Fuel_Mass;
-         Legs             : Shared_Types.All_Legs_State;
-         Temperature      : Shared_Types.Kelvin;
-         Thruster_Enabled : Boolean;
-         Time_Stamp       : Duration;
-         Velocity         : Shared_Types.Velocity;
+         Altitude            : Shared_Types.Altitude;
+         Core_Temperature    : Shared_Types.Kelvin;
+         Drag                : Shared_Types.Acceleration;
+         Dry_Mass            : Shared_Types.Vehicle_Mass;
+         Fuel                : Shared_Types.Fuel_Mass;
+         Legs                : Shared_Types.All_Legs_State;
+         Surface_Temperature : Shared_Types.Kelvin;
+         Thruster_Enabled    : Boolean;
+         Time_Stamp          : Duration;
+         Velocity            : Shared_Types.Velocity;
       end record;
    --  The full space craft sensor state.
    --  @field Altitude         Current altitude of space craft.
@@ -48,17 +49,18 @@ is
    package State_Store is new Task_Safe_Store
      (Stored_Type   => State,
       Initial_Value =>
-        State'(Altitude         => 0.0,
-               Drag             => 0.0,
-               Dry_Mass         => Shared_Types.Vehicle_Mass'First,
-               Fuel             => 0.0,
-               Legs             =>
-                 Shared_Types.All_Legs_State'
-                   (others => Shared_Types.In_Flight),
-               Temperature      => 0.0,
-               Thruster_Enabled => False,
-               Time_Stamp       => 0.0,
-               Velocity         => 0.0));
+         State'(Altitude            => 0.0,
+                Core_Temperature    => 0.0,
+                Drag                => 0.0,
+                Dry_Mass            => Shared_Types.Vehicle_Mass'First,
+                Fuel                => 0.0,
+                Legs                =>
+                   Shared_Types.All_Legs_State'
+                  (others => Shared_Types.In_Flight),
+                Surface_Temperature => 0.0,
+                Thruster_Enabled    => False,
+                Time_Stamp          => 0.0,
+                Velocity            => 0.0));
 
    pragma Annotate (GNATcheck,
                     Exempt_On,

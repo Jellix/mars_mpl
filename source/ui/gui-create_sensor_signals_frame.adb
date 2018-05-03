@@ -213,7 +213,38 @@ begin
       Current_Column := Current_Column + Gauge_Width;
    end Add_Drag_Gauge;
 
-   Add_Temperature_Gauge :
+   Add_Core_Temperature_Gauge :
+   declare
+      Gauge_Width : constant Glib.Gint := Glib.Gint'Max (2, Gauge_Size / 3);
+   begin
+      Add_Heading (Title  => "Core Temperature",
+                   Column => Current_Column,
+                   Width  => Gauge_Width);
+
+      Gtk.Meter.Thermo.Gtk_New
+        (Widget  => Window.Core_Temp,
+         Texts   => Temperature_Scale.Texts.all,
+         Sectors =>
+           Positive
+             (Gtk.Enums.String_List.Length (+Temperature_Scale.Texts.all)) - 1,
+         Label   => "K");
+      Grid.all.Attach (Child  => Window.Core_Temp,
+                       Left   => Current_Column,
+                       Top    => Gauge_Row,
+                       Width  => Gauge_Width,
+                       Height => Gauge_Size);
+
+      Gtk.GEntry.Gtk_New (The_Entry => Window.Elements.Core_Temp);
+      Window.Elements.Core_Temp.all.Set_Editable (Is_Editable => False);
+      Grid.all.Attach (Child  => Window.Elements.Core_Temp,
+                       Left   => Current_Column,
+                       Top    => Text_Row,
+                       Width  => Gauge_Width,
+                       Height => 1);
+      Current_Column := Current_Column + Gauge_Width;
+   end Add_Core_Temperature_Gauge;
+
+   Add_Surface_Temperature_Gauge :
    declare
       Gauge_Width : constant Glib.Gint := Glib.Gint'Max (2, Gauge_Size / 3);
    begin
@@ -222,27 +253,27 @@ begin
                    Width  => Gauge_Width);
 
       Gtk.Meter.Thermo.Gtk_New
-        (Widget  => Window.Thermometer,
+        (Widget  => Window.Surface_Temp,
          Texts   => Temperature_Scale.Texts.all,
          Sectors =>
            Positive
              (Gtk.Enums.String_List.Length (+Temperature_Scale.Texts.all)) - 1,
          Label   => "K");
-      Grid.all.Attach (Child  => Window.Thermometer,
+      Grid.all.Attach (Child  => Window.Surface_Temp,
                        Left   => Current_Column,
                        Top    => Gauge_Row,
                        Width  => Gauge_Width,
                        Height => Gauge_Size);
 
-      Gtk.GEntry.Gtk_New (The_Entry => Window.Elements.Temperature);
-      Window.Elements.Temperature.all.Set_Editable (Is_Editable => False);
-      Grid.all.Attach (Child  => Window.Elements.Temperature,
+      Gtk.GEntry.Gtk_New (The_Entry => Window.Elements.Surface_Temp);
+      Window.Elements.Surface_Temp.all.Set_Editable (Is_Editable => False);
+      Grid.all.Attach (Child  => Window.Elements.Surface_Temp,
                        Left   => Current_Column,
                        Top    => Text_Row,
                        Width  => Gauge_Width,
                        Height => 1);
       Current_Column := Current_Column + Gauge_Width;
-   end Add_Temperature_Gauge;
+   end Add_Surface_Temperature_Gauge;
 
    --  Velocity Gauge
    Add_Heading (Title  => "Velocity",

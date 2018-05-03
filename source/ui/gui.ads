@@ -26,11 +26,12 @@ private
    type Dynamic_Elements is
       record
          Altitude     : Gtk.GEntry.Gtk_Entry;
+         Core_Temp    : Gtk.GEntry.Gtk_Entry;
          Delta_V      : Gtk.GEntry.Gtk_Entry;
          Drag         : Gtk.GEntry.Gtk_Entry;
          Fuel         : Gtk.GEntry.Gtk_Entry;
          Leg_Led      : Leg_Switches;
-         Temperature  : Gtk.GEntry.Gtk_Entry;
+         Surface_Temp : Gtk.GEntry.Gtk_Entry;
          Thruster_Led : Gtk.Gauge.LED_Round.Gtk_Gauge_LED_Round;
          Velocity     : Gtk.GEntry.Gtk_Entry;
       end record;
@@ -79,7 +80,8 @@ private
          Fuel_Scale    : Gtk.Gauge.Flat_Vertical.Gtk_Gauge_Flat_Vertical;
          Delta_V_Scale : Gtk.Gauge.Flat_Vertical.Gtk_Gauge_Flat_Vertical;
          Drag_Scale    : Gtk.Gauge.Flat_Vertical.Gtk_Gauge_Flat_Vertical;
-         Thermometer   : Gtk.Meter.Thermo.Gtk_Meter_Thermo;
+         Core_Temp     : Gtk.Meter.Thermo.Gtk_Meter_Thermo;
+         Surface_Temp  : Gtk.Meter.Thermo.Gtk_Meter_Thermo;
          SIMon_Says    : Gtk.Frame.Log_Viewer.Gtk_Frame_Log_Viewer;
          Aborted       : Boolean;
          SIM_Process   : GNAT.Expect.Process_Descriptor_Access;
