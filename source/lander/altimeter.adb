@@ -1,3 +1,4 @@
+with Ada.Numerics.Elementary_Functions;
 with Ada.Real_Time;
 with Configuration.Cycle_Times;
 with Configuration.Task_Offsets;
@@ -26,8 +27,11 @@ package body Altimeter is
    Initial_Lander_Mass : constant Shared_Types.Vehicle_Mass
      := Shared_Parameters.Read.Dry_Mass;
 
+   Upper_Atmosphere    : constant Shared_Types.Altitude := 125_000.0;
+
    Heatshield_Mass     : constant Shared_Types.Mass := 140.0;
    Cruise_Stage_Mass   : constant Shared_Types.Mass :=  82.0;
+
    Heat_Capacity       : constant := Heatshield_Mass * 15.4; -- 13.6, 15.4, 17.1
    Heat_Flow           : constant := 0.0000325; -- 0.0000100, 0.0000325, 0.0000550
 
@@ -94,19 +98,19 @@ package body Altimeter is
 
    procedure Deploy_Parachute is
    begin
-      Drag_Coefficient.Set (New_Value => 0.588); -- 0.575, 0.588, 0.600
+      Drag_Coefficient.Set (New_Value => 0.732); -- 0.725, 0.732, 0.738
    end Deploy_Parachute;
 
    procedure Enter_Atmosphere is
    begin
-      Drag_Coefficient.Set (New_Value => 0.0525); -- 0.0500, 0.0525, 0.0550
+      Drag_Coefficient.Set (New_Value => 0.0813); -- 0.0750, 0.0813, 0.0875
    end Enter_Atmosphere;
 
    procedure Jettison_Heatshield is
    begin
       Spacecraft_Dry_Mass.Set
         (New_Value => Dry_Mass_After_Heatshield_Separation);
-      Drag_Coefficient.Set (New_Value => 0.413); -- 0.375, 0.413, 0.450
+      Drag_Coefficient.Set (New_Value => 0.457); -- 0.450, 0.457, 0.463
       Core_Temperature.Set (New_Value => 293.0);
       Surface_Temperature.Set (New_Value => 293.0);
    end Jettison_Heatshield;
@@ -119,7 +123,7 @@ package body Altimeter is
 
    procedure Separate_Lander is
    begin
-      Drag_Coefficient.Set (New_Value => 0.325); -- 0.100, 0.325, 0.550
+      Drag_Coefficient.Set (New_Value => 0.457); -- 0.450, 0.457, 0.463
    end Separate_Lander;
 
    Aborted : Boolean := False
@@ -163,13 +167,27 @@ package body Altimeter is
 
          Calculate_Drag :
          declare
-            Air_Density   : constant Float := (125_000.0 - Float (Altitude_Now)) / 125_000.0; -- very simple linear dependence.
+            --  Retrieve dynamic parameters.
             Drag_Constant : constant Float                     :=
                               Drag_Coefficient.Get;
             Fuel_Mass     : constant Shared_Types.Fuel_Mass    :=
                               Thrusters.Current_Fuel_Mass;
             Current_Mass  : constant Shared_Types.Mass         :=
                               Spacecraft_Dry_Mass.Get + Fuel_Mass;
+
+            --  Drag calculation including depth in atmosphere, velocity loss
+            --  and corresponding energy dissipation due to the drag (aka. aero
+            --  braking).
+            --  Air density is a normalized value denoting the inverse of the
+            --  entry depth and is used to alter the drag coefficient depending
+            --  on the current altitude.
+            Entry_Depth   : constant Float :=
+                              Float'Min
+                                (1.0, Float (Altitude_Now / Upper_Atmosphere));
+            Air_Density   : constant Float :=
+                              1.0 - Ada.Numerics.Elementary_Functions.Sqrt (Entry_Depth);
+            -- Assume an inverse quadratic relationship (gravity).
+
             Drag_Now      : constant Shared_Types.Acceleration :=
                               Rocket_Science.Drag
                                 (Current_Wet_Mass => Current_Mass,
