@@ -20,6 +20,11 @@ package body Task_Safe_Store is
          Value := New_Value;
       end Set;
 
+      procedure Subtract (X : in Stored_Type) is
+      begin
+         Value := Value - X;
+      end Subtract;
+
    end Shelf;
 
 end Task_Safe_Store;

@@ -36,12 +36,8 @@ package body Altimeter is
    Heat_Flow           : constant := 0.0000325; -- 0.0000100, 0.0000325, 0.0000550
 
    --  Relevant spacecraft masses during EDL.
-   Dry_Mass_Before_EDL                    : constant Shared_Types.Mass
+   Dry_Mass_Before_EDL : constant Shared_Types.Mass
      := Cruise_Stage_Mass + Heatshield_Mass + Initial_Lander_Mass;
-   Dry_Mass_After_Cruise_Stage_Separation : constant Shared_Types.Mass
-     := Heatshield_Mass + Initial_Lander_Mass;
-   Dry_Mass_After_Heatshield_Separation   : constant Shared_Types.Mass
-     := Shared_Types.Mass (Initial_Lander_Mass);
 
    pragma Warnings (Off, "instance does not use primitive operation ""*""");
 
@@ -108,8 +104,7 @@ package body Altimeter is
 
    procedure Jettison_Heatshield is
    begin
-      Spacecraft_Dry_Mass.Set
-        (New_Value => Dry_Mass_After_Heatshield_Separation);
+      Spacecraft_Dry_Mass.Subtract (X => Heatshield_Mass);
       Drag_Coefficient.Set (New_Value => 0.457); -- 0.450, 0.457, 0.463
       Core_Temperature.Set (New_Value => 293.0);
       Surface_Temperature.Set (New_Value => 293.0);
@@ -117,8 +112,7 @@ package body Altimeter is
 
    procedure Separate_Cruise_Stage is
    begin
-      Spacecraft_Dry_Mass.Set
-        (New_Value => Dry_Mass_After_Cruise_Stage_Separation);
+      Spacecraft_Dry_Mass.Subtract (X => Cruise_Stage_Mass);
    end Separate_Cruise_Stage;
 
    procedure Separate_Lander is

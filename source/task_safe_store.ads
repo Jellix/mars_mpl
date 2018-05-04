@@ -7,6 +7,8 @@ generic
 
    with function "+" (Left  : in Stored_Type;
                       Right : in Stored_Type) return Stored_Type is <>;
+   with function "-" (Left  : in Stored_Type;
+                      Right : in Stored_Type) return Stored_Type is <>;
 
    Initial_Value : in Stored_Type;
    --  The initial value.
@@ -38,6 +40,10 @@ package Task_Safe_Store is
       procedure Add (X : in Stored_Type);
       --  Adds X to the currently stored value.
       --  @param X The value to be added.
+
+      procedure Subtract (X : in Stored_Type);
+      --  Subtracts X from the currently stored value.
+      --  @param X The value to be subtracted.
 
    private
 

@@ -21,6 +21,7 @@ private
                     "These shared variables are intentional");
 
    package Bug_Enabled_Store is new Task_Safe_Store ("+" => "or",
+                                                     "-" => "xor",
                                                      Stored_Type   => Boolean,
                                                      Initial_Value => False);
    Shared_Bug_Enabled : Bug_Enabled_Store.Shelf;
@@ -31,6 +32,7 @@ private
 
    package Dry_Mass_Store is
      new Task_Safe_Store ("+"           => Shared_Types."+",
+                          "-"           => Shared_Types."-",
                           Stored_Type   => Shared_Types.Vehicle_Mass,
                           Initial_Value => 290.0);
    Shared_Dry_Mass : Dry_Mass_Store.Shelf;
@@ -45,6 +47,7 @@ private
 
    package Exhaust_Velocity_Store is
      new Task_Safe_Store ("+"           => Shared_Types."+",
+                          "-"           => Shared_Types."-",
                           Stored_Type   => Shared_Types.Velocity,
                           Initial_Value => 2300.0);
    Shared_Exhaust_Velocity : Exhaust_Velocity_Store.Shelf;
@@ -55,6 +58,7 @@ private
 
    package Fuel_Flow_Rate_Store is
      new Task_Safe_Store ("+"           => Shared_Types."+",
+                          "-"           => Shared_Types."-",
                           Stored_Type   => Shared_Types.Flow_Rate,
                           Initial_Value => 1.500);
    Shared_Fuel_Flow_Rate : Fuel_Flow_Rate_Store.Shelf;
@@ -62,6 +66,7 @@ private
 
    package Initial_Altitude_Store is
      new Task_Safe_Store ("+"           => Shared_Types."+",
+                          "-"           => Shared_Types."-",
                           Stored_Type   => Shared_Types.Altitude,
                           Initial_Value => 125_000.0);
    Shared_Initial_Altitude : Initial_Altitude_Store.Shelf;
@@ -69,6 +74,7 @@ private
 
    package Initial_Velocity_Store is
      new Task_Safe_Store ("+"           => Shared_Types."+",
+                          "-"           => Shared_Types."-",
                           Stored_Type   => Shared_Types.Velocity,
                           Initial_Value => 6900.000);
    Shared_Initial_Velocity : Initial_Velocity_Store.Shelf;
@@ -76,6 +82,7 @@ private
 
    package Initial_Fuel_Mass_Store is
      new Task_Safe_Store ("+"           => Shared_Types."+",
+                          "-"           => Shared_Types."-",
                           Stored_Type   => Shared_Types.Fuel_Mass,
                           Initial_Value => 64.000);
    Shared_Initial_Fuel_Mass : Initial_Fuel_Mass_Store.Shelf;
@@ -83,22 +90,25 @@ private
 
    package Safe_Landing_Velocity_Store is
      new Task_Safe_Store ("+"           => Shared_Types."+",
+                          "-"           => Shared_Types."-",
                           Stored_Type   => Shared_Types.Velocity,
                           Initial_Value => 2.500);
    Shared_Safe_Landing_Velocity : Safe_Landing_Velocity_Store.Shelf;
    --  The velocity considered safe for landing in m/s.
 
    package Shortest_On_Time_Store is
-      new Task_Safe_Store ("+"           => Shared_Types."+",
-                           Stored_Type   => Shared_Types.On_Time,
-                           Initial_Value => 16.0);
+     new Task_Safe_Store ("+"           => Shared_Types."+",
+                          "-"           => Shared_Types."-",
+                          Stored_Type   => Shared_Types.On_Time,
+                          Initial_Value => 16.0);
    Shared_Shortest_On_Time : Shortest_On_Time_Store.Shelf;
    --  Shortest possible on-time for thruster in ms.
 
    package Target_Landing_Velocity_Store is
-      new Task_Safe_Store ("+"           => Shared_Types."+",
-                           Stored_Type   => Shared_Types.Velocity,
-                           Initial_Value => 2.375);
+     new Task_Safe_Store ("+"           => Shared_Types."+",
+                          "-"           => Shared_Types."-",
+                          Stored_Type   => Shared_Types.Velocity,
+                          Initial_Value => 2.375);
    Shared_Target_Landing_Velocity : Target_Landing_Velocity_Store.Shelf;
    --  Target landing velocity for thruster control in m/s.
 

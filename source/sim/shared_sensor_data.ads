@@ -46,6 +46,9 @@ is
    function "+" (L, R : in State) return State is
      (raise Program_Error);
 
+   function "-" (L, R : in State) return State is
+     (raise Program_Error);
+
    package State_Store is new Task_Safe_Store
      (Stored_Type   => State,
       Initial_Value =>
