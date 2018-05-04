@@ -67,7 +67,35 @@ procedure Simulator is
    Cycle : constant Ada.Real_Time.Time_Span :=
              Ada.Real_Time.Milliseconds (MS => 10);
 
+   package Log is new Global.Log (Unit_Name => "SIM");
+
+   function Image is new Shared_Types.IO.Generic_Image (T    => Duration,
+                                                        Unit => "s");
+
+   pragma Warnings (Off, "instance does not use primitive operation");
+   function Image is
+     new Shared_Types.IO.Generic_Image (T    => Shared_Types.Altitude,
+                                        Unit => "m");
+
+   function Image is
+     new Shared_Types.IO.Generic_Image (T    => Shared_Types.Velocity,
+                                        Unit => "m/s");
+   pragma Warnings (On, "instance does not use primitive operation");
+
+   procedure Log_Position (A : in Shared_Types.Altitude;
+                           V : in Shared_Types.Velocity);
+
    procedure Update_Shared_Data;
+
+   procedure Log_Position (A : in Shared_Types.Altitude;
+                           V : in Shared_Types.Velocity) is
+   begin
+      Log.Trace
+        (Message =>
+           "Spacecraft at altitude " & Image (Value => A, With_Unit => True)
+         & ", current velocity " & Image (Value => V, With_Unit => True) & ".");
+   end Log_Position;
+
    procedure Update_Shared_Data is
       Offset      : constant Duration :=
                       Ada.Real_Time.To_Duration
@@ -99,8 +127,6 @@ procedure Simulator is
 
    Safe_Landing_Velocity   : constant Shared_Types.Velocity :=
                                Shared_Parameters.Read.Safe_Landing_Velocity;
-
-   package Log is new Global.Log (Unit_Name => "SIM");
 begin
    Touchdown_Monitor.Start;
    Log.Trace (Message => "Touchdown monitors started.");
@@ -114,11 +140,13 @@ begin
       Monitor_Enabled    : Boolean               := False;
       Current_Altitude   : Shared_Types.Altitude := Altimeter.Current_Altitude;
       Powered_Descent_At : Ada.Real_Time.Time    := Ada.Real_Time.Time_Last;
+      Current_Velocity   : Shared_Types.Velocity;
    begin
       while Current_Altitude > 0.0 loop
          delay until Next_Cycle;
 
          Current_Altitude := Altimeter.Current_Altitude;
+         Current_Velocity := Altimeter.Current_Velocity;
 
          --  | -15 min | 4600 km | 5700   m/s | Guidance system initialization
          if
@@ -127,6 +155,8 @@ begin
          then
             Log.Trace (Message => "Initializing guidance system...");
             Current_Phase := Guidance_System_Initialized;
+            Log_Position (A => Current_Altitude,
+                          V => Current_Velocity);
          end if;
 
          --  | -12 min | 3000 km | 5900   m/s | Turn to entry attitude
@@ -136,6 +166,8 @@ begin
          then
             Log.Trace (Message => "Turning to entry attitude...");
             Current_Phase := Turned_To_Entry_Attitude;
+            Log_Position (A => Current_Altitude,
+                          V => Current_Velocity);
          end if;
 
          --  | -10 min | 2300 km | 6200   m/s | Cruise ring separation
@@ -146,6 +178,8 @@ begin
             Log.Trace (Message => "Separating cruise ring and probes...");
             Current_Phase := Cruise_Ring_Separated;
             Altimeter.Separate_Cruise_Stage;
+            Log_Position (A => Current_Altitude,
+                          V => Current_Velocity);
          end if;
 
          --  |  -5 min |  125 km | 6900   m/s | Atmospheric entry
@@ -156,6 +190,8 @@ begin
             Log.Trace (Message => "Entering atmosphere...");
             Current_Phase := Atmosphere_Entered;
             Altimeter.Enter_Atmosphere;
+            Log_Position (A => Current_Altitude,
+                          V => Current_Velocity);
          end if;
 
          --  |  -2 min | 8800  m |  490   m/s | Parachute deployment
@@ -166,6 +202,8 @@ begin
             Log.Trace (Message => "Deploying parachute...");
             Current_Phase := Parachute_Deployed;
             Altimeter.Deploy_Parachute;
+            Log_Position (A => Current_Altitude,
+                          V => Current_Velocity);
          end if;
 
          --  | -110  s | 7500  m |  250   m/s | Heatshield jettison
@@ -176,6 +214,8 @@ begin
             Log.Trace (Message => "Jettisoning heatshield...");
             Current_Phase := Heatshield_Jettisoned;
             Altimeter.Jettison_Heatshield;
+            Log_Position (A => Current_Altitude,
+                          V => Current_Velocity);
          end if;
 
          --  EDL sequence:
@@ -191,6 +231,8 @@ begin
             Log.Trace (Message => "Deploying landing legs...");
             Current_Phase := Legs_Deployed;
             Landing_Legs.Deploy;
+            Log_Position (A => Current_Altitude,
+                          V => Current_Velocity);
          end if;
 
          --  Entering powered descent.
@@ -207,6 +249,8 @@ begin
             Current_Phase := Lander_Separated;
             Altimeter.Separate_Lander;
             Powered_Descent_At := Next_Cycle + Ada.Real_Time.Milliseconds (500);
+            Log_Position (A => Current_Altitude,
+                          V => Current_Velocity);
          end if;
 
          if
@@ -216,6 +260,8 @@ begin
             Log.Trace (Message => "Entering powered descent flight mode...");
             Current_Phase := Powered_Descent;
             Engines.Start_Descent;
+            Log_Position (A => Current_Altitude,
+                          V => Current_Velocity);
          end if;
 
          if
@@ -225,6 +271,8 @@ begin
             Log.Trace (Message => "Enabling touchdown monitors...");
             Touchdown_Monitor.Enable;
             Monitor_Enabled := True;
+            Log_Position (A => Current_Altitude,
+                          V => Current_Velocity);
          end if;
 
          Update_Shared_Data;
@@ -271,18 +319,12 @@ begin
       end loop;
    end Wait_For_Monitors;
 
-   Output_Statistics :
-   declare
-      function Image is new Shared_Types.IO.Generic_Image (T    => Duration,
-                                                           Unit => "s");
-   begin
-      Log.Trace (Message => "Thrusters have been fired"
-                 & Thrusters.Max_Burn_Cycles'Image (Thrusters.Burn_Cycles)
-                 & " times, and burned for a total of "
-                 & Image (Value     => Thrusters.Burn_Time,
-                          With_Unit => True)
-                 & ".");
-   end Output_Statistics;
+   Log.Trace (Message => "Thrusters have been fired"
+              & Thrusters.Max_Burn_Cycles'Image (Thrusters.Burn_Cycles)
+              & " times, and burned for a total of "
+              & Image (Value     => Thrusters.Burn_Time,
+                       With_Unit => True)
+              & ".");
 
    --  Give the data generating task time to terminate.
    delay until Ada.Real_Time.Clock + Ada.Real_Time.Milliseconds (100);
