@@ -28,8 +28,8 @@ package body Altimeter is
 
    Heatshield_Mass     : constant Shared_Types.Mass := 140.0;
    Cruise_Stage_Mass   : constant Shared_Types.Mass :=  82.0;
-   Heat_Capacity       : constant := 3840.0000;
-   Heat_Flow           : constant :=    0.0001;
+   Heat_Capacity       : constant := Heatshield_Mass * 15.4; -- 13.6, 15.4, 17.1
+   Heat_Flow           : constant := 0.0000325; -- 0.0000100, 0.0000325, 0.0000550
 
    --  Relevant spacecraft masses during EDL.
    Dry_Mass_Before_EDL                    : constant Shared_Types.Mass
@@ -94,18 +94,19 @@ package body Altimeter is
 
    procedure Deploy_Parachute is
    begin
-      Drag_Coefficient.Set (New_Value => 0.410);
+      Drag_Coefficient.Set (New_Value => 0.588); -- 0.575, 0.588, 0.600
    end Deploy_Parachute;
 
    procedure Enter_Atmosphere is
    begin
-      Drag_Coefficient.Set (New_Value => 0.026);
+      Drag_Coefficient.Set (New_Value => 0.0525); -- 0.0500, 0.0525, 0.0550
    end Enter_Atmosphere;
 
    procedure Jettison_Heatshield is
    begin
       Spacecraft_Dry_Mass.Set
         (New_Value => Dry_Mass_After_Heatshield_Separation);
+      Drag_Coefficient.Set (New_Value => 0.413); -- 0.375, 0.413, 0.450
       Core_Temperature.Set (New_Value => 293.0);
       Surface_Temperature.Set (New_Value => 293.0);
    end Jettison_Heatshield;
@@ -118,7 +119,7 @@ package body Altimeter is
 
    procedure Separate_Lander is
    begin
-      Drag_Coefficient.Set (New_Value => 0.100);
+      Drag_Coefficient.Set (New_Value => 0.325); -- 0.100, 0.325, 0.550
    end Separate_Lander;
 
    Aborted : Boolean := False
@@ -162,6 +163,7 @@ package body Altimeter is
 
          Calculate_Drag :
          declare
+            Air_Density   : constant Float := (125_000.0 - Float (Altitude_Now)) / 125_000.0; -- very simple linear dependence.
             Drag_Constant : constant Float                     :=
                               Drag_Coefficient.Get;
             Fuel_Mass     : constant Shared_Types.Fuel_Mass    :=
@@ -172,7 +174,7 @@ package body Altimeter is
                               Rocket_Science.Drag
                                 (Current_Wet_Mass => Current_Mass,
                                  Velocity         => Velocity_Now,
-                                 Drag_Constant    => Drag_Constant);
+                                 Drag_Constant    => Drag_Constant * Air_Density);
             Cycle_Delta_V : constant Shared_Types.Velocity := Drag_Now * T;
             V_Squared     : constant Float :=
                               Float (Cycle_Delta_V) * Float (Cycle_Delta_V);
