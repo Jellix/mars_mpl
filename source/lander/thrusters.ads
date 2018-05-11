@@ -52,11 +52,6 @@ package Thrusters is
    --  Tells if the thruster is currently enabled.
    --  @return True if the thruster is currently enabled, False otherwise.
 
-   function Is_Disabled return Boolean
-     with Volatile_Function;
-   --  Tells if the thruster is currently disabled.
-   --  @return True if the thruster is currently disabled, False otherwise.
-
    procedure Shutdown (Source : in Shared_Types.Legs_Index);
    --  Shutdown thrusters terminally due to touchdown signal from the given leg.
    --  @param Source The landing leg which detected the touchdown signal.

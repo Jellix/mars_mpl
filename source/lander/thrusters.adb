@@ -203,9 +203,6 @@ package body Thrusters is
       Engine_State.Set (Value => Enabled);
    end Enable;
 
-   function Is_Disabled return Boolean is
-     (Engine_State.Get = Disabled);
-
    function Is_Enabled return Boolean is
      (Engine_State.Get = Enabled);
 
