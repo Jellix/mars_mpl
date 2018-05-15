@@ -127,8 +127,8 @@ procedure Simulator is
                                      Velocity_Y          => Velocity));
    end Update_Shared_Data;
 
-   Safe_Landing_Velocity   : constant Shared_Types.Meter_Per_Second :=
-                               Shared_Parameters.Read.Safe_Landing_Velocity;
+   Safe_Landing_Velocity : constant Shared_Types.Meter_Per_Second :=
+                             Shared_Parameters.Read.Safe_Landing_Velocity;
 begin
    Touchdown_Monitor.Start;
    Log.Trace (Message => "Touchdown monitors started.");
