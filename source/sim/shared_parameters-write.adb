@@ -5,7 +5,7 @@ package body Shared_Parameters.Write is
       Shared_Dry_Mass.Set (New_Value => Value);
    end Dry_Mass;
 
-   procedure Exhaust_Velocity (Value : in Shared_Types.Velocity) is
+   procedure Exhaust_Velocity (Value : in Shared_Types.Meter_Per_Second) is
    begin
       Shared_Exhaust_Velocity.Set (New_Value => Value);
    end Exhaust_Velocity;
@@ -15,7 +15,7 @@ package body Shared_Parameters.Write is
       Shared_Fuel_Flow_Rate.Set (New_Value => Value);
    end Fuel_Flow_Rate;
 
-   procedure Initial_Altitude (Value : in Shared_Types.Altitude) is
+   procedure Initial_Altitude (Value : in Shared_Types.Meter) is
    begin
       Shared_Initial_Altitude.Set (New_Value => Value);
    end Initial_Altitude;
@@ -25,7 +25,7 @@ package body Shared_Parameters.Write is
       Shared_Initial_Fuel_Mass.Set (New_Value => Value);
    end Initial_Fuel_Mass;
 
-   procedure Initial_Velocity (Value : in Shared_Types.Velocity) is
+   procedure Initial_Velocity (Value : in Shared_Types.Meter_Per_Second) is
    begin
       Shared_Initial_Velocity.Set (New_Value => Value);
    end Initial_Velocity;

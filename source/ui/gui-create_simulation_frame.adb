@@ -96,8 +96,8 @@ begin
                Gtk.Spin_Button.Gtk_Spin_Button_New
                  (Adjustment => Gtk.Adjustment.Gtk_Adjustment_New
                     (Value          => Glib.Gdouble (Shared_Parameters.Read.Initial_Velocity),
-                     Lower          => Glib.Gdouble (Shared_Types.Velocity'First),
-                     Upper          => Glib.Gdouble (Shared_Types.Velocity'Last),
+                     Lower          => Glib.Gdouble (Shared_Types.Meter_Per_Second'First),
+                     Upper          => Glib.Gdouble (Shared_Types.Meter_Per_Second'Last),
                      Step_Increment => 0.001,
                      Page_Increment => 1.0,
                      Page_Size      => 0.0),
@@ -159,8 +159,8 @@ begin
                  (Adjustment =>
                     Gtk.Adjustment.Gtk_Adjustment_New
                       (Value          => Glib.Gdouble (Shared_Parameters.Read.Initial_Altitude),
-                       Lower          => Glib.Gdouble (Shared_Types.Altitude'First),
-                       Upper          => Glib.Gdouble (Shared_Types.Altitude'Last),
+                       Lower          => Glib.Gdouble (Shared_Types.Meter'First),
+                       Upper          => Glib.Gdouble (Shared_Types.Meter'Last),
                        Step_Increment => 0.001,
                        Page_Increment => 1.0,
                        Page_Size      => 0.0),
@@ -319,8 +319,8 @@ begin
                  (Adjustment =>
                     Gtk.Adjustment.Gtk_Adjustment_New
                       (Value          => Glib.Gdouble (Shared_Parameters.Read.Exhaust_Velocity),
-                       Lower          => Glib.Gdouble (Shared_Types.Velocity'First),
-                       Upper          => Glib.Gdouble (Shared_Types.Velocity'Last),
+                       Lower          => Glib.Gdouble (Shared_Types.Meter_Per_Second'First),
+                       Upper          => Glib.Gdouble (Shared_Types.Meter_Per_Second'Last),
                        Step_Increment => 0.001,
                        Page_Increment => 1.0,
                        Page_Size      => 0.0),

@@ -9,10 +9,10 @@ with Thrusters;
 package body Engines is
 
    use type Ada.Real_Time.Time;
-   use type Shared_Types.Altitude;
-   use type Shared_Types.Velocity;
+   use type Shared_Types.Meter;
+   use type Shared_Types.Meter_Per_Second;
 
-   Target_Landing_Velocity : constant Shared_Types.Velocity :=
+   Target_Landing_Velocity : constant Shared_Types.Meter_Per_Second :=
                                Shared_Parameters.Read.Target_Landing_Velocity;
 
    Aborted : Boolean := False
@@ -59,10 +59,10 @@ package body Engines is
             --    sensors in the footpads.
             Approach_Landing_Velocity :
             declare
-               Current_Altitude : constant Shared_Types.Altitude
+               Current_Altitude : constant Shared_Types.Meter
                  := Altimeter.Current_Altitude;
 
-               Current_Velocity : constant Shared_Types.Velocity
+               Current_Velocity : constant Shared_Types.Meter_Per_Second
                  := Altimeter.Current_Velocity;
 
                --  We want a steadily decelerating descent until drop distance,
@@ -77,13 +77,13 @@ package body Engines is
                --  factor to derive a target velocity from the current altitude
                --  until we match the target landing velocity at Drop_Distance.
 
-               Corrected_Altitude : constant Shared_Types.Altitude :=
-                                      Shared_Types.Altitude'Max
+               Corrected_Altitude : constant Shared_Types.Meter :=
+                                      Shared_Types.Meter'Max
                                         (0.0, Current_Altitude - Drop_Distance);
                --  Altitude until constant drop speed.
 
-               Current_Target_Velocity : constant Shared_Types.Velocity
-                 := Shared_Types.Velocity (Corrected_Altitude * Velocity_Factor)
+               Current_Target_Velocity : constant Shared_Types.Meter_Per_Second
+                 := Shared_Types.Meter_Per_Second (Corrected_Altitude * Velocity_Factor)
                                            + Target_Landing_Velocity;
             begin
                if Current_Velocity > Current_Target_Velocity then

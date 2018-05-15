@@ -12,37 +12,38 @@ with Thrusters;
 package body Altimeter is
 
    use type Ada.Real_Time.Time;
-   use type Shared_Types.Acceleration;
-   use type Shared_Types.Altitude;
    use type Shared_Types.Kelvin;
-   use type Shared_Types.Mass;
-   use type Shared_Types.Velocity;
+   use type Shared_Types.Kilogram;
+   use type Shared_Types.Meter;
+   use type Shared_Types.Meter_Per_Second;
+   use type Shared_Types.Meter_Per_Square_Second;
 
-   Gravity             : constant Shared_Types.Acceleration
-     := Shared_Types.Acceleration (Planets.Parameters.Gravity (Planets.Mars));
+   Gravity             : constant Shared_Types.Meter_Per_Square_Second :=
+                           Shared_Types.Meter_Per_Square_Second
+                             (Planets.Parameters.Gravity (Planets.Mars));
 
-   Initial_Velocity    : constant Shared_Types.Velocity
+   Initial_Velocity    : constant Shared_Types.Meter_Per_Second
      := Shared_Parameters.Read.Initial_Velocity;
 
    Initial_Lander_Mass : constant Shared_Types.Vehicle_Mass
      := Shared_Parameters.Read.Dry_Mass;
 
-   Upper_Atmosphere    : constant Shared_Types.Altitude := 125_000.0;
+   Upper_Atmosphere    : constant Shared_Types.Meter := 125_000.0;
 
-   Heatshield_Mass     : constant Shared_Types.Mass := 140.0;
-   Cruise_Stage_Mass   : constant Shared_Types.Mass :=  82.0;
+   Heatshield_Mass     : constant Shared_Types.Kilogram := 140.0;
+   Cruise_Stage_Mass   : constant Shared_Types.Kilogram :=  82.0;
 
    Heat_Capacity       : constant := Heatshield_Mass * 15.4; -- 13.6, 15.4, 17.1
    Heat_Flow           : constant := 0.0000325; -- 0.0000100, 0.0000325, 0.0000550
 
    --  Relevant spacecraft masses during EDL.
-   Dry_Mass_Before_EDL : constant Shared_Types.Mass
+   Dry_Mass_Before_EDL : constant Shared_Types.Kilogram
      := Cruise_Stage_Mass + Heatshield_Mass + Initial_Lander_Mass;
 
    pragma Warnings (Off, "instance does not use primitive operation ""*""");
 
    package Altimeter_Store is new
-     Task_Safe_Store (Stored_Type   => Shared_Types.Altitude,
+     Task_Safe_Store (Stored_Type   => Shared_Types.Meter,
                       Initial_Value => Shared_Parameters.Read.Initial_Altitude);
    Altimeter_State : Altimeter_Store.Shelf;
 
@@ -52,12 +53,12 @@ package body Altimeter is
    Drag_Coefficient : Drag_Coefficient_Store.Shelf;
 
    package Drag_Store is new
-     Task_Safe_Store (Stored_Type   => Shared_Types.Acceleration,
+     Task_Safe_Store (Stored_Type   => Shared_Types.Meter_Per_Square_Second,
                       Initial_Value => 0.0);
    Drag_State : Drag_Store.Shelf;
 
    package Spacecraft_Mass_Store is
-     new Task_Safe_Store (Stored_Type   => Shared_Types.Mass,
+     new Task_Safe_Store (Stored_Type   => Shared_Types.Kilogram,
                           Initial_Value => Dry_Mass_Before_EDL);
    Spacecraft_Dry_Mass : Spacecraft_Mass_Store.Shelf;
 
@@ -68,19 +69,19 @@ package body Altimeter is
    Surface_Temperature : Temperature_Store.Shelf;
 
    package Velocity_Store  is new
-     Task_Safe_Store (Stored_Type   => Shared_Types.Velocity,
+     Task_Safe_Store (Stored_Type   => Shared_Types.Meter_Per_Second,
                       Initial_Value => Shared_Parameters.Read.Initial_Velocity);
    Velocity_State : Velocity_Store.Shelf;
 
    pragma Warnings (On, "instance does not use primitive operation ""*""");
 
-   function Current_Altitude return Shared_Types.Altitude is
+   function Current_Altitude return Shared_Types.Meter is
      (Altimeter_State.Get);
 
    function Current_Core_Temperature return Shared_Types.Kelvin is
       (Core_Temperature.Get);
 
-   function Current_Drag return Shared_Types.Acceleration is
+   function Current_Drag return Shared_Types.Meter_Per_Square_Second is
       (Drag_State.Get);
 
    function Current_Dry_Mass return Shared_Types.Vehicle_Mass is
@@ -89,7 +90,7 @@ package body Altimeter is
    function Current_Surface_Temperature return Shared_Types.Kelvin is
       (Surface_Temperature.Get);
 
-   function Current_Velocity return Shared_Types.Velocity is
+   function Current_Velocity return Shared_Types.Meter_Per_Second is
      (Velocity_State.Get);
 
    procedure Deploy_Parachute is
@@ -140,9 +141,9 @@ package body Altimeter is
 
       Next_Cycle     : Ada.Real_Time.Time
         := Global.Start_Time + Configuration.Task_Offsets.Altitude_Task;
-      Altitude_Now   : Shared_Types.Altitude := Altimeter_State.Get;
-      Velocity_Now   : Shared_Types.Velocity := Velocity_State.Get;
-      Drag_Delta_V   : Shared_Types.Velocity := 0.0; --  accumulated delta v due to drag effects.
+      Altitude_Now   : Shared_Types.Meter            := Altimeter_State.Get;
+      Velocity_Now   : Shared_Types.Meter_Per_Second := Velocity_State.Get;
+      Drag_Delta_V   : Shared_Types.Meter_Per_Second := 0.0; --  accumulated delta v due to drag effects.
    begin
       Log.Trace (Message => "Altitude control monitor started.");
 
@@ -152,21 +153,21 @@ package body Altimeter is
          --  Calculate change in altitude according to current velocity.
          Calculate_Delta_A :
          declare
-            Delta_A : constant Shared_Types.Altitude := Velocity_Now * T;
+            Delta_A : constant Shared_Types.Meter := Velocity_Now * T;
          begin
             Altitude_Now :=
-              Altitude_Now - Shared_Types.Altitude'Min (Altitude_Now, Delta_A);
+              Altitude_Now - Shared_Types.Meter'Min (Altitude_Now, Delta_A);
             Altimeter_State.Set (New_Value => Altitude_Now);
          end Calculate_Delta_A;
 
          Calculate_Drag :
          declare
             --  Retrieve dynamic parameters.
-            Drag_Constant : constant Float                     :=
+            Drag_Constant : constant Float                  :=
                               Drag_Coefficient.Get;
-            Fuel_Mass     : constant Shared_Types.Fuel_Mass    :=
+            Fuel_Mass     : constant Shared_Types.Fuel_Mass :=
                               Thrusters.Current_Fuel_Mass;
-            Current_Mass  : constant Shared_Types.Mass         :=
+            Current_Mass  : constant Shared_Types.Kilogram :=
                               Spacecraft_Dry_Mass.Get + Fuel_Mass;
 
             --  Drag calculation including depth in atmosphere, velocity loss
@@ -182,12 +183,13 @@ package body Altimeter is
                               1.0 - Ada.Numerics.Elementary_Functions.Sqrt (Entry_Depth);
             -- Assume an inverse quadratic relationship (gravity).
 
-            Drag_Now      : constant Shared_Types.Acceleration :=
+            Drag_Now      : constant Shared_Types.Meter_Per_Square_Second :=
                               Rocket_Science.Drag
                                 (Current_Wet_Mass => Current_Mass,
                                  Velocity         => Velocity_Now,
                                  Drag_Constant    => Drag_Constant * Air_Density);
-            Cycle_Delta_V : constant Shared_Types.Velocity := Drag_Now * T;
+            Cycle_Delta_V : constant Shared_Types.Meter_Per_Second :=
+                              Drag_Now * T;
             V_Squared     : constant Float :=
                               Float (Cycle_Delta_V) * Float (Cycle_Delta_V);
             E_Kin         : constant Float :=
@@ -215,7 +217,7 @@ package body Altimeter is
             Descent_Time : constant Duration :=
                              Ada.Real_Time.To_Duration
                                (Next_Cycle - Global.Start_Time);
-            Delta_V      : constant Shared_Types.Velocity :=
+            Delta_V      : constant Shared_Types.Meter_Per_Second :=
                              Gravity * Descent_Time;
          begin
             Velocity_Now :=

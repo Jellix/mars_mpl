@@ -10,8 +10,8 @@ package body Thrusters is
    use type Ada.Real_Time.Time;
    use type Ada.Real_Time.Time_Span;
    use type Shared_Types.Fuel_Mass;
-   use type Shared_Types.Mass;
-   use type Shared_Types.Velocity;
+   use type Shared_Types.Kilogram;
+   use type Shared_Types.Meter_Per_Second;
 
    type State is (Disabled, Enabled);
    --  State of thruster.
@@ -22,7 +22,7 @@ package body Thrusters is
      := Shared_Parameters.Read.Dry_Mass;
    --  Parametrized dry mass of the space craft.
 
-   Exhaust_Velocity : constant Shared_Types.Velocity
+   Exhaust_Velocity : constant Shared_Types.Meter_Per_Second
      := Shared_Parameters.Read.Exhaust_Velocity;
    --  Parametrized effective exhaust velocity, read once at startup.
 
@@ -34,7 +34,7 @@ package body Thrusters is
      := Shared_Parameters.Read.Initial_Fuel_Mass;
    --  Parametrized initial fuel mass, read once at startup.
 
-   Initial_Wet_Mass : constant Shared_Types.Mass
+   Initial_Wet_Mass : constant Shared_Types.Kilogram
      := Dry_Mass + Initial_Fuel_Mass;
 
    Shortest_On_Time : constant Ada.Real_Time.Time_Span :=
@@ -184,7 +184,7 @@ package body Thrusters is
    function Current_Fuel_Mass return Shared_Types.Fuel_Mass is
      (Fuel_State.Get);
 
-   function Delta_V return Shared_Types.Velocity is
+   function Delta_V return Shared_Types.Meter_Per_Second is
    begin
       return
         Rocket_Science.Delta_V

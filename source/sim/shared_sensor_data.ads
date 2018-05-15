@@ -18,16 +18,18 @@ is
 
    type State is
       record
-         Altitude            : Shared_Types.Altitude;
+         Attitude            : Shared_Types.Degree;
+         Altitude            : Shared_Types.Meter;
          Core_Temperature    : Shared_Types.Kelvin;
-         Drag                : Shared_Types.Acceleration;
+         Drag                : Shared_Types.Meter_Per_Square_Second;
          Dry_Mass            : Shared_Types.Vehicle_Mass;
          Fuel                : Shared_Types.Fuel_Mass;
          Legs                : Shared_Types.All_Legs_State;
          Surface_Temperature : Shared_Types.Kelvin;
          Thruster_Enabled    : Boolean;
          Time_Stamp          : Duration;
-         Velocity            : Shared_Types.Velocity;
+         Velocity_X          : Shared_Types.Meter_Per_Second;
+         Velocity_Y          : Shared_Types.Meter_Per_Second;
       end record;
    --  The full space craft sensor state.
    --  @field Altitude         Current altitude of space craft.
@@ -52,7 +54,8 @@ is
    package State_Store is new Task_Safe_Store
      (Stored_Type   => State,
       Initial_Value =>
-         State'(Altitude            => 0.0,
+         State'(Attitude            => 0.0,
+                Altitude            => 0.0,
                 Core_Temperature    => 0.0,
                 Drag                => 0.0,
                 Dry_Mass            => Shared_Types.Vehicle_Mass'First,
@@ -63,7 +66,8 @@ is
                 Surface_Temperature => 0.0,
                 Thruster_Enabled    => False,
                 Time_Stamp          => 0.0,
-                Velocity            => 0.0));
+                Velocity_X          => 0.0,
+                Velocity_Y          => 0.0));
 
    pragma Annotate (GNATcheck,
                     Exempt_On,

@@ -33,7 +33,7 @@ package Thrusters is
    --  The remaining fuel.
    --  @return The remaining fuel mass.
 
-   function Delta_V return Shared_Types.Velocity
+   function Delta_V return Shared_Types.Meter_Per_Second
      with Volatile_Function;
    --  Calculates the V(delta) of the spacecraft due to thruster effects.
    --  This is a implementation of the basic rocket equation by Tsiolkovski.

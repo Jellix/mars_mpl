@@ -15,12 +15,12 @@ with Shared_Types;
 --  contact.
 package Altimeter is
 
-   function Current_Altitude return Shared_Types.Altitude
+   function Current_Altitude return Shared_Types.Meter
      with Volatile_Function;
    --  Provides the current altitude.
    --  @return The current altitude.
 
-   function Current_Drag return Shared_Types.Acceleration
+   function Current_Drag return Shared_Types.Meter_Per_Square_Second
      with Volatile_Function;
    --  Provides the current drag acting on the space craft.
    --  @return The current drag.
@@ -40,7 +40,7 @@ package Altimeter is
    --  Provides the current surface temperature of the space craft's heatshield.
    --  @return The current surface temperature.
 
-   function Current_Velocity return Shared_Types.Velocity
+   function Current_Velocity return Shared_Types.Meter_Per_Second
      with Volatile_Function;
    --  Provides the current velocity.
    --  @return The current velocity.

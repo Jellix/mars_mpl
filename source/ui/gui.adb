@@ -25,10 +25,10 @@ package body GUI is
    use type Glib.Gdouble;
    use type Gtk.Dialog.Gtk_Response_Type;
    use type Gtk.Enums.String_Lists.Controlled_String_List;
-   use type Shared_Types.Altitude;
    use type Shared_Types.Leg_State;
-   use type Shared_Types.Mass;
-   use type Shared_Types.Velocity;
+   use type Shared_Types.Kilogram;
+   use type Shared_Types.Meter;
+   use type Shared_Types.Meter_Per_Second;
 
    Label_Font : constant Pango.Cairo.Fonts.Pango_Cairo_Font :=
                   Pango.Cairo.Fonts.Create_Toy
@@ -95,13 +95,13 @@ package body GUI is
       Text_Entry => Dry_Mass);
 
    function Set_Exhaust_Velocity is new Callbacks.Set_Spin_Button_Value
-     (T     => Shared_Types.Velocity,
+     (T     => Shared_Types.Meter_Per_Second,
       Read  => Shared_Parameters.Read.Exhaust_Velocity,
       Write => Shared_Parameters.Write.Exhaust_Velocity,
       Name  => "exhaust velocity");
 
    procedure Reset_Exhaust_Velocity is new Callbacks.Reset_Value
-     (T          => Shared_Types.Velocity,
+     (T          => Shared_Types.Meter_Per_Second,
       Write      => Shared_Parameters.Write.Exhaust_Velocity,
       Default    => Shared_Parameters.Default.Exhaust_Velocity,
       Text_Entry => Exhaust_Velocity);
@@ -119,13 +119,13 @@ package body GUI is
       Text_Entry => Fuel_Flow_Rate);
 
    function Set_Initial_Altitude is new Callbacks.Set_Spin_Button_Value
-     (T     => Shared_Types.Altitude,
+     (T     => Shared_Types.Meter,
       Read  => Shared_Parameters.Read.Initial_Altitude,
       Write => Shared_Parameters.Write.Initial_Altitude,
       Name  => "initial altitude");
 
    procedure Reset_Initial_Altitude is new Callbacks.Reset_Value
-     (T          => Shared_Types.Altitude,
+     (T          => Shared_Types.Meter,
       Write      => Shared_Parameters.Write.Initial_Altitude,
       Default    => Shared_Parameters.Default.Initial_Altitude,
       Text_Entry => Initial_Altitude);
@@ -143,13 +143,13 @@ package body GUI is
       Text_Entry => Initial_Fuel_Mass);
 
    function Set_Initial_Velocity is new Callbacks.Set_Spin_Button_Value
-     (T     => Shared_Types.Velocity,
+     (T     => Shared_Types.Meter_Per_Second,
       Read  => Shared_Parameters.Read.Initial_Velocity,
       Write => Shared_Parameters.Write.Initial_Velocity,
       Name  => "initial velocity");
 
    procedure Reset_Initial_Velocity is new Callbacks.Reset_Value
-     (T          => Shared_Types.Velocity,
+     (T          => Shared_Types.Meter_Per_Second,
       Write      => Shared_Parameters.Write.Initial_Velocity,
       Default    => Shared_Parameters.Default.Initial_Velocity,
       Text_Entry => Initial_Velocity);
@@ -241,23 +241,23 @@ package body GUI is
       Win.Surface_Temp.all.Queue_Draw;
 
       -- Velocity
-      DE.Velocity.all.Set_Text (Text => Image (Value => Update_State.Velocity));
+      DE.Velocity.all.Set_Text (Text => Image (Value => Update_State.Velocity_Y));
       Win.Tachometer.all.Set_Value
         (Value =>
-           Glib.Gdouble (abs Update_State.Velocity) / Velocity_Scale.Factor);
+           Glib.Gdouble (abs Update_State.Velocity_Y) / Velocity_Scale.Factor);
       Win.Tachometer.all.Queue_Draw;
 
       Update_Delta_V :
       declare
          Dry_Mass         : constant Shared_Types.Vehicle_Mass :=
                               Update_State.Dry_Mass;
-         Current_Wet_Mass : constant Shared_Types.Mass :=
+         Current_Wet_Mass : constant Shared_Types.Kilogram :=
                               Dry_Mass + Update_State.Fuel;
-         Max_Delta_V      : constant Shared_Types.Velocity :=
+         Max_Delta_V      : constant Shared_Types.Meter_Per_Second :=
                               Rocket_Science.Delta_V
                                 (Initial_Wet_Mass => Current_Wet_Mass,
                                  Current_Wet_Mass =>
-                                   Shared_Types.Mass (Dry_Mass),
+                                   Shared_Types.Kilogram (Dry_Mass),
                                  Exhaust_Velocity =>
                                    Shared_Parameters.Read.Exhaust_Velocity);
       begin
@@ -300,7 +300,7 @@ package body GUI is
          Win.Plot.Velocity_Plot.all.Feed
            (Channel => Win.Plot.Velocity_Channel,
             T       => Time_Stamp,
-            V       => Glib.Gdouble (Update_State.Velocity));
+            V       => Glib.Gdouble (Update_State.Velocity_Y));
 
          for Leg in Shared_Types.Legs_Index loop
             Feed_Leg_Plot :

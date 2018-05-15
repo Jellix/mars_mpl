@@ -7,7 +7,7 @@ package Shared_Parameters.Default is
    --  dry mass).
    --  @return The default dry mass.
 
-   function Exhaust_Velocity return Shared_Types.Velocity
+   function Exhaust_Velocity return Shared_Types.Meter_Per_Second
      with Inline => True;
    --  Parametrized thruster exhaust velocity.
    --  This is the exhaust velocity of fuel through the thruster when the
@@ -19,7 +19,7 @@ package Shared_Parameters.Default is
    --  Parametrized fuel flow rate.
    --  @return The default fuel flow rate.
 
-   function Initial_Altitude return Shared_Types.Altitude
+   function Initial_Altitude return Shared_Types.Meter
      with Inline => True;
    --  Parametrized initial altitude.
    --  This is the altitide at which the simulation starts.
@@ -30,13 +30,13 @@ package Shared_Parameters.Default is
    --  Parametrized initial fuel mass.
    --  @return The default initial fuel mass.
 
-   function Initial_Velocity return Shared_Types.Velocity
+   function Initial_Velocity return Shared_Types.Meter_Per_Second
      with Inline => True;
    --  Parametrized initial velocity.
    --  This is the velocity at which the simulation starts.
    --  @return The default initial velocity.
 
-   function Safe_Landing_Velocity return Shared_Types.Velocity
+   function Safe_Landing_Velocity return Shared_Types.Meter_Per_Second
      with Inline => True;
    --  Parametrized safe landing velocity.
    --  This is the velocity at which a touchdown is deemed survivable.
@@ -49,7 +49,7 @@ package Shared_Parameters.Default is
    --  been fired.
    --  @return The default shortest on-time for thrusters.
 
-   function Target_Landing_Velocity return Shared_Types.Velocity
+   function Target_Landing_Velocity return Shared_Types.Meter_Per_Second
      with Inline => True;
    --  Parametrized target landing velocity.
    --  This is the target velocity for a touchdown (it should be slightly
@@ -66,28 +66,28 @@ private
    function Dry_Mass return Shared_Types.Vehicle_Mass is
      (Dry_Mass_Store.Default_Value);
 
-   function Exhaust_Velocity return Shared_Types.Velocity is
+   function Exhaust_Velocity return Shared_Types.Meter_Per_Second is
      (Exhaust_Velocity_Store.Default_Value);
 
    function Fuel_Flow_Rate return Shared_Types.Flow_Rate is
      (Fuel_Flow_Rate_Store.Default_Value);
 
-   function Initial_Altitude return Shared_Types.Altitude is
+   function Initial_Altitude return Shared_Types.Meter is
      (Initial_Altitude_Store.Default_Value);
 
-   function Initial_Velocity return Shared_Types.Velocity is
+   function Initial_Velocity return Shared_Types.Meter_Per_Second is
      (Initial_Velocity_Store.Default_Value);
 
    function Initial_Fuel_Mass return Shared_Types.Fuel_Mass is
      (Initial_Fuel_Mass_Store.Default_Value);
 
-   function Safe_Landing_Velocity return Shared_Types.Velocity is
+   function Safe_Landing_Velocity return Shared_Types.Meter_Per_Second is
      (Safe_Landing_Velocity_Store.Default_Value);
 
    function Shortest_On_Time return Shared_Types.On_Time is
      (Shortest_On_Time_Store.Default_Value);
 
-   function Target_Landing_Velocity return Shared_Types.Velocity is
+   function Target_Landing_Velocity return Shared_Types.Meter_Per_Second is
      (Target_Landing_Velocity_Store.Default_Value);
 
    function TDM_Bug_Enabled return Boolean is

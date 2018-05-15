@@ -10,7 +10,7 @@ package Shared_Parameters.Write is
    --  Set a new value for the space craft dry mass.
    --  @param Value The new dry mass to be set.
 
-   procedure Exhaust_Velocity (Value : in Shared_Types.Velocity)
+   procedure Exhaust_Velocity (Value : in Shared_Types.Meter_Per_Second)
      with Inline => False;
    --  Set a new value for the thruster exhaust velocity.
    --  @param Value The new thruster exhaust velocity to be set.
@@ -20,7 +20,7 @@ package Shared_Parameters.Write is
    --  Set a new value for the fuel flow rate.
    --  @param Value The new fuel flow rate to be set.
 
-   procedure Initial_Altitude (Value : in Shared_Types.Altitude)
+   procedure Initial_Altitude (Value : in Shared_Types.Meter)
      with Inline => False;
    --  Set a new value for the initial altitude.
    --  @param Value The new initial altitude to be set.
@@ -30,7 +30,7 @@ package Shared_Parameters.Write is
    --  Set a new value for the initial fuel mass.
    --  @param Value The new initial fuel mass to be set.
 
-   procedure Initial_Velocity (Value : in Shared_Types.Velocity)
+   procedure Initial_Velocity (Value : in Shared_Types.Meter_Per_Second)
      with Inline => False;
    --  Set a new value for the initial velocity.
    --  @param Value The new initial velocity to be set.

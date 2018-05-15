@@ -14,7 +14,7 @@ package Shared_Parameters.Read is
    --  dry mass).
    --  @return The set dry mass.
 
-   function Exhaust_Velocity return Shared_Types.Velocity
+   function Exhaust_Velocity return Shared_Types.Meter_Per_Second
      with
        Inline            => False,
        Volatile_Function => True;
@@ -30,7 +30,7 @@ package Shared_Parameters.Read is
    --  Parametrized fuel flow rate.
    --  @return The set fuel flow rate.
 
-   function Initial_Altitude return Shared_Types.Altitude
+   function Initial_Altitude return Shared_Types.Meter
      with
        Inline            => False,
        Volatile_Function => True;
@@ -45,7 +45,7 @@ package Shared_Parameters.Read is
    --  Parametrized initial fuel mass.
    --  @return The set initial fuel mass.
 
-   function Initial_Velocity return Shared_Types.Velocity
+   function Initial_Velocity return Shared_Types.Meter_Per_Second
      with
        Inline            => False,
        Volatile_Function => True;
@@ -53,7 +53,7 @@ package Shared_Parameters.Read is
    --  This is the velocity at which the simulation starts.
    --  @return The set initial velocity.
 
-   function Safe_Landing_Velocity return Shared_Types.Velocity
+   function Safe_Landing_Velocity return Shared_Types.Meter_Per_Second
      with
        Inline            => False,
        Volatile_Function => True;
@@ -70,7 +70,7 @@ package Shared_Parameters.Read is
    --  been fired.
    --  @return The shortest on-time for thrusters.
 
-   function Target_Landing_Velocity return Shared_Types.Velocity
+   function Target_Landing_Velocity return Shared_Types.Meter_Per_Second
      with
        Inline            => False,
        Volatile_Function => True;
@@ -91,28 +91,28 @@ private
    function Dry_Mass return Shared_Types.Vehicle_Mass is
      (Shared_Dry_Mass.Get);
 
-   function Exhaust_Velocity return Shared_Types.Velocity is
+   function Exhaust_Velocity return Shared_Types.Meter_Per_Second is
      (Shared_Exhaust_Velocity.Get);
 
    function Fuel_Flow_Rate return Shared_Types.Flow_Rate is
      (Shared_Fuel_Flow_Rate.Get);
 
-   function Initial_Altitude return Shared_Types.Altitude is
+   function Initial_Altitude return Shared_Types.Meter is
      (Shared_Initial_Altitude.Get);
 
-   function Initial_Velocity return Shared_Types.Velocity is
+   function Initial_Velocity return Shared_Types.Meter_Per_Second is
      (Shared_Initial_Velocity.Get);
 
    function Initial_Fuel_Mass return Shared_Types.Fuel_Mass is
      (Shared_Initial_Fuel_Mass.Get);
 
-   function Safe_Landing_Velocity return Shared_Types.Velocity is
+   function Safe_Landing_Velocity return Shared_Types.Meter_Per_Second is
      (Shared_Safe_Landing_Velocity.Get);
 
    function Shortest_On_Time return Shared_Types.On_Time is
       (Shared_Shortest_On_Time.Get);
 
-   function Target_Landing_Velocity return Shared_Types.Velocity is
+   function Target_Landing_Velocity return Shared_Types.Meter_Per_Second is
      (Shared_Target_Landing_Velocity.Get);
 
    function TDM_Bug_Enabled return Boolean is

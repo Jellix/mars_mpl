@@ -99,11 +99,12 @@ private
    pragma Warnings (Off, "instance does not use primitive operation ""*""");
 
    function Image is new
-     Shared_Types.IO.Generic_Image (T    => Shared_Types.Acceleration,
-                                    Unit => "m/s²");
+     Shared_Types.IO.Generic_Image
+       (T    => Shared_Types.Meter_Per_Square_Second,
+        Unit => "m/s²");
 
    function Image is new
-     Shared_Types.IO.Generic_Image (T    => Shared_Types.Altitude,
+     Shared_Types.IO.Generic_Image (T    => Shared_Types.Meter,
                                     Unit => "m");
 
    function Image is new
@@ -127,7 +128,7 @@ private
                                     Unit => "kg");
 
    function Image is new
-     Shared_Types.IO.Generic_Image (T    => Shared_Types.Velocity,
+     Shared_Types.IO.Generic_Image (T    => Shared_Types.Meter_Per_Second,
                                     Unit => "m/s");
 
    pragma Warnings (On, "instance does not use primitive operation ""*""");

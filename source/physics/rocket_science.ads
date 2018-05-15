@@ -7,9 +7,10 @@ is
    --  Tsiolkovsky rocket equation.
    --  Returns the delta V for given fuel masses and exhaust velocity.
    function Delta_V
-     (Initial_Wet_Mass : in Shared_Types.Mass;
-      Current_Wet_Mass : in Shared_Types.Mass;
-      Exhaust_Velocity : in Shared_Types.Velocity) return Shared_Types.Velocity;
+     (Initial_Wet_Mass : in Shared_Types.Kilogram;
+      Current_Wet_Mass : in Shared_Types.Kilogram;
+      Exhaust_Velocity : in Shared_Types.Meter_Per_Second)
+      return Shared_Types.Meter_Per_Second;
 
    --  Drag equations...
    --  See https://www.grc.nasa.gov/www/k-12/airplane/termv.html
@@ -22,8 +23,9 @@ is
    --  D = C * V² / 2
    --  F = D - W
    --  a = F / m
-   function Drag (Current_Wet_Mass : in Shared_Types.Mass;
-                  Velocity         : in Shared_Types.Velocity;
-                  Drag_Constant    : in Float) return Shared_Types.Acceleration;
+   function Drag (Current_Wet_Mass : in Shared_Types.Kilogram;
+                  Velocity         : in Shared_Types.Meter_Per_Second;
+                  Drag_Constant    : in Float)
+                  return Shared_Types.Meter_Per_Square_Second;
 
 end Rocket_Science;
