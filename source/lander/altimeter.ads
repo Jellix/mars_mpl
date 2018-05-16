@@ -15,18 +15,23 @@ with Shared_Types;
 --  contact.
 package Altimeter is
 
+   function Current_Attitude return Shared_Types.Degree
+     with Volatile_Function => True;
+   --  Provides the current space craft's attitude.
+   --  @return The current attitude.
+
    function Current_Altitude return Shared_Types.Meter
-     with Volatile_Function;
+     with Volatile_Function => True;
    --  Provides the current altitude.
    --  @return The current altitude.
 
    function Current_Drag return Shared_Types.Meter_Per_Square_Second
-     with Volatile_Function;
+     with Volatile_Function => True;
    --  Provides the current drag acting on the space craft.
    --  @return The current drag.
 
    function Current_Dry_Mass return Shared_Types.Vehicle_Mass with
-     Volatile_Function;
+     Volatile_Function => True;
    --  Provides the current dry mass of the space craft.
    --  @return The current dry mass.
 
@@ -41,7 +46,7 @@ package Altimeter is
    --  @return The current surface temperature.
 
    function Current_Velocity return Shared_Types.Meter_Per_Second
-     with Volatile_Function;
+     with Volatile_Function => True;
    --  Provides the current velocity.
    --  @return The current velocity.
 

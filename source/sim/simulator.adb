@@ -100,6 +100,7 @@ procedure Simulator is
       Offset      : constant Duration :=
                       Ada.Real_Time.To_Duration
                         (TS => Ada.Real_Time.Clock - Global.Start_Time);
+      Attitude            : constant Shared_Types.Degree                  := Altimeter.Current_Attitude;
       Altitude            : constant Shared_Types.Meter                   := Altimeter.Current_Altitude;
       Core_Temperature    : constant Shared_Types.Kelvin                  := Altimeter.Current_Core_Temperature;
       Drag                : constant Shared_Types.Meter_Per_Square_Second := Altimeter.Current_Drag;
@@ -113,7 +114,7 @@ procedure Simulator is
       Landing_Legs.Read_State (State => All_Legs);
       Shared_Sensor_Data.Current_State.Set
         (New_Value =>
-           Shared_Sensor_Data.State'(Attitude            => 0.0,
+           Shared_Sensor_Data.State'(Attitude            => Attitude,
                                      Altitude            => Altitude,
                                      Core_Temperature    => Core_Temperature,
                                      Drag                => Drag,

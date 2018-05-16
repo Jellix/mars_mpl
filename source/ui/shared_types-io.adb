@@ -10,7 +10,7 @@ package body Shared_Types.IO is
       package Fixed_IO is new Ada.Text_IO.Fixed_IO (Num => T);
       pragma Warnings (On, "instance does not use primitive operation ""*""");
 
-      Kilo   : constant Boolean := With_Unit and then Value > 10_000.0;
+      Kilo   : constant Boolean := With_Unit and then (T'Last > 10_000.0 and then Value > 10_000.0);
       Temp   : constant T := (if Kilo then Value / 1_000.0 else Value);
       Aft    : constant Positive := Positive'Min (T'Aft, 3);
       Result : String (1 .. T'Fore + Aft + 1);

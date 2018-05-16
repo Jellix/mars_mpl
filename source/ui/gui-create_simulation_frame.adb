@@ -119,6 +119,20 @@ begin
                        Reset  => B);
       end Initial_Velocity_Fields;
 
+      Initial_Attitude_Fields :
+      declare
+         T : constant not null Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
+      begin
+         T.all.Set_Text
+           (Text => Image (Value     => Shared_Parameters.Read.Initial_Attitude,
+                           With_Unit => False));
+         T.all.Set_Editable (Is_Editable => False);
+
+         Grid_Add_Row (Left => "Entry Attitude",
+                       Widget => T,
+                       Right  => "°");
+      end Initial_Attitude_Fields;
+
       Safe_Landing_Velocity_Fields :
       declare
          T : constant not null Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;

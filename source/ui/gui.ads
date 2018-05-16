@@ -104,6 +104,10 @@ private
         Unit => "m/s²");
 
    function Image is new
+     Shared_Types.IO.Generic_Image (T    => Shared_Types.Degree,
+                                    Unit => "°");
+
+   function Image is new
      Shared_Types.IO.Generic_Image (T    => Shared_Types.Meter,
                                     Unit => "m");
 

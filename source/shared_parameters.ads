@@ -64,6 +64,14 @@ private
    Shared_Fuel_Flow_Rate : Fuel_Flow_Rate_Store.Shelf;
    --  Fuel flow rate when Thrusters are (fully) enabled in kg/s.
 
+   package Initial_Attitude_Store is
+     new Task_Safe_Store ("+"           => Shared_Types."+",
+                          "-"           => Shared_Types."-",
+                          Stored_Type   => Shared_Types.Degree,
+                          Initial_Value => 0.0);
+   Shared_Initial_Attitude : Initial_Attitude_Store.Shelf;
+   -- Attitude of space craft when simulation starts in degree.
+
    package Initial_Altitude_Store is
      new Task_Safe_Store ("+"           => Shared_Types."+",
                           "-"           => Shared_Types."-",

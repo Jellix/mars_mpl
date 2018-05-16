@@ -30,6 +30,14 @@ package Shared_Parameters.Read is
    --  Parametrized fuel flow rate.
    --  @return The set fuel flow rate.
 
+   function Initial_Attitude return Shared_Types.Degree
+     with
+       Inline            => False,
+       Volatile_Function => True;
+   --  Parametrized initial attitude.
+   --  This is the attitide at which the simulation starts.
+   --  @return The set initial attitude.
+
    function Initial_Altitude return Shared_Types.Meter
      with
        Inline            => False,
@@ -96,6 +104,9 @@ private
 
    function Fuel_Flow_Rate return Shared_Types.Kilogram_Per_Second is
      (Shared_Fuel_Flow_Rate.Get);
+
+   function Initial_Attitude return Shared_Types.Degree is
+     (Shared_Initial_Attitude.Get);
 
    function Initial_Altitude return Shared_Types.Meter is
      (Shared_Initial_Altitude.Get);

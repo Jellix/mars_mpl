@@ -12,6 +12,7 @@ with Thrusters;
 package body Altimeter is
 
    use type Ada.Real_Time.Time;
+   use type Shared_Types.Degree;
    use type Shared_Types.Kelvin;
    use type Shared_Types.Kilogram;
    use type Shared_Types.Meter;
@@ -43,10 +44,15 @@ package body Altimeter is
 
    pragma Warnings (Off, "instance does not use primitive operation ""*""");
 
-   package Altimeter_Store is new
+   package Attitude_Store is new
+     Task_Safe_Store (Stored_Type   => Shared_Types.Degree,
+                      Initial_Value => Shared_Parameters.Read.Initial_Attitude);
+   Attitude_State : Attitude_Store.Shelf;
+
+   package Altitude_Store is new
      Task_Safe_Store (Stored_Type   => Shared_Types.Meter,
                       Initial_Value => Shared_Parameters.Read.Initial_Altitude);
-   Altimeter_State : Altimeter_Store.Shelf;
+   Altitude_State : Altitude_Store.Shelf;
 
    package Drag_Coefficient_Store is
       new Task_Safe_Store (Stored_Type   => Shared_Types.Scalar,
@@ -76,8 +82,11 @@ package body Altimeter is
 
    pragma Warnings (On, "instance does not use primitive operation ""*""");
 
+   function Current_Attitude return Shared_Types.Degree is
+      (Attitude_State.Get);
+
    function Current_Altitude return Shared_Types.Meter is
-     (Altimeter_State.Get);
+     (Altitude_State.Get);
 
    function Current_Core_Temperature return Shared_Types.Kelvin is
       (Core_Temperature.Get);
@@ -142,7 +151,7 @@ package body Altimeter is
 
       Next_Cycle     : Ada.Real_Time.Time
         := Global.Start_Time + Configuration.Task_Offsets.Altitude_Task;
-      Altitude_Now   : Shared_Types.Meter            := Altimeter_State.Get;
+      Altitude_Now   : Shared_Types.Meter            := Altitude_State.Get;
       Velocity_Now   : Shared_Types.Meter_Per_Second := Velocity_State.Get;
       Drag_Delta_V   : Shared_Types.Meter_Per_Second := 0.0; --  accumulated delta v due to drag effects.
    begin
@@ -158,7 +167,7 @@ package body Altimeter is
          begin
             Altitude_Now :=
               Altitude_Now - Shared_Types.Meter'Min (Altitude_Now, Delta_A);
-            Altimeter_State.Set (New_Value => Altitude_Now);
+            Altitude_State.Set (New_Value => Altitude_Now);
          end Calculate_Delta_A;
 
          Calculate_Drag :
