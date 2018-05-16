@@ -9,7 +9,7 @@ project Mars_Mpl is
    for Exec_Dir use ".";
 
    package Compiler is
-      for Default_Switches ("ada") use ("-gnaty3aAbBCdefhiklnoOprsStux", "-gnatw.e.Y", "-O2", "-gnat12", "-gnato", "-g");
+      for Default_Switches ("ada") use ("-gnaty3aAbBCdefhiklnoOprsStux", "-gnatw.e.Y", "-O2", "-gnat12", "-gnato", "-g", "-msse2", "-mfpmath=sse");
    end Compiler;
 
    package Prove is
