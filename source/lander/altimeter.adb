@@ -1,4 +1,3 @@
-with Ada.Numerics.Elementary_Functions;
 with Ada.Real_Time;
 with Configuration.Cycle_Times;
 with Configuration.Task_Offsets;
@@ -6,6 +5,7 @@ with Landing_Legs;
 with Planets.Parameters;
 with Shared_Parameters.Read;
 with Rocket_Science;
+with Scalar_Elementary_Functions;
 with Task_Safe_Store;
 with Thrusters;
 
@@ -17,6 +17,7 @@ package body Altimeter is
    use type Shared_Types.Meter;
    use type Shared_Types.Meter_Per_Second;
    use type Shared_Types.Meter_Per_Square_Second;
+   use type Shared_Types.Scalar;
 
    Gravity             : constant Shared_Types.Meter_Per_Square_Second :=
                            Shared_Types.Meter_Per_Square_Second
@@ -33,7 +34,7 @@ package body Altimeter is
    Heatshield_Mass     : constant Shared_Types.Kilogram := 140.0;
    Cruise_Stage_Mass   : constant Shared_Types.Kilogram :=  82.0;
 
-   Heat_Capacity       : constant := Heatshield_Mass * 15.4; -- 13.6, 15.4, 17.1
+   Heat_Capacity       : constant := Shared_Types.Mass.T (Heatshield_Mass) * 15.4; -- 13.6, 15.4, 17.1
    Heat_Flow           : constant := 0.0000325; -- 0.0000100, 0.0000325, 0.0000550
 
    --  Relevant spacecraft masses during EDL.
@@ -48,7 +49,7 @@ package body Altimeter is
    Altimeter_State : Altimeter_Store.Shelf;
 
    package Drag_Coefficient_Store is
-      new Task_Safe_Store (Stored_Type   => Float,
+      new Task_Safe_Store (Stored_Type   => Shared_Types.Scalar,
                            Initial_Value => 0.0);
    Drag_Coefficient : Drag_Coefficient_Store.Shelf;
 
@@ -163,7 +164,7 @@ package body Altimeter is
          Calculate_Drag :
          declare
             --  Retrieve dynamic parameters.
-            Drag_Constant : constant Float                  :=
+            Drag_Constant : constant Shared_Types.Scalar :=
                               Drag_Coefficient.Get;
             Fuel_Mass     : constant Shared_Types.Fuel_Mass :=
                               Thrusters.Current_Fuel_Mass;
@@ -176,11 +177,11 @@ package body Altimeter is
             --  Air density is a normalized value denoting the inverse of the
             --  entry depth and is used to alter the drag coefficient depending
             --  on the current altitude.
-            Entry_Depth   : constant Float :=
-                              Float'Min
-                                (1.0, Float (Altitude_Now / Upper_Atmosphere));
-            Air_Density   : constant Float :=
-                              1.0 - Ada.Numerics.Elementary_Functions.Sqrt (Entry_Depth);
+            Entry_Depth   : constant Shared_Types.Scalar :=
+                              Shared_Types.Scalar'Min
+                                (1.0, Altitude_Now / Upper_Atmosphere);
+            Air_Density   : constant Shared_Types.Scalar :=
+                              1.0 - Scalar_Elementary_Functions.Sqrt (Entry_Depth);
             -- Assume an inverse quadratic relationship (gravity).
 
             Drag_Now      : constant Shared_Types.Meter_Per_Square_Second :=
@@ -190,10 +191,10 @@ package body Altimeter is
                                  Drag_Constant    => Drag_Constant * Air_Density);
             Cycle_Delta_V : constant Shared_Types.Meter_Per_Second :=
                               Drag_Now * T;
-            V_Squared     : constant Float :=
-                              Float (Cycle_Delta_V) * Float (Cycle_Delta_V);
-            E_Kin         : constant Float :=
-                              Float (Current_Mass) * V_Squared / 2.0;
+            V_Squared     : constant Shared_Types.Scalar :=
+                              Shared_Types.Scalar (Cycle_Delta_V) * Shared_Types.Scalar (Cycle_Delta_V);
+            E_Kin         : constant Shared_Types.Scalar :=
+                              Shared_Types.Scalar (Current_Mass) * V_Squared / 2.0;
          begin
             Drag_State.Set (New_Value => Drag_Now);
             Drag_Delta_V := Drag_Delta_V + Cycle_Delta_V;

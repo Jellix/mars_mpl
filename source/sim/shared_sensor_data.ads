@@ -28,20 +28,24 @@ is
          Surface_Temperature : Shared_Types.Kelvin;
          Thruster_Enabled    : Boolean;
          Time_Stamp          : Duration;
-         Velocity_X          : Shared_Types.Meter_Per_Second;
-         Velocity_Y          : Shared_Types.Meter_Per_Second;
+         Velocity            : Shared_Types.Meter_Per_Second;
       end record;
    --  The full space craft sensor state.
-   --  @field Altitude         Current altitude of space craft.
-   --  @field Drag             Currently experienced acceleration due to drag.
-   --  @field Dry_Mass         The current dry mass of the spacecraft.
-   --  @field Fuel             Fuel mass left in tank.
-   --  @field Legs             State of all landing legs.
-   --  #field Temperature      Surface temperature.
-   --  @field Thruster_Enabled State of thruster.
-   --  @field Time_Stamp       (Relative) time since simulation start. Denotes
-   --                          the (rough) sampling time of all of the above.
-   --  @field Velocity         Current velocity of space craft.
+   --  @field Attitude            Orientation of space craft relative to ground.
+   --  @field Altitude            Current altitude of space craft.
+   --  @field Core_Temperature    Core (inner hull) temperature.
+   --  @field Drag                Currently experienced acceleration due to
+   --                             drag.
+   --  @field Dry_Mass            The current dry mass of the spacecraft.
+   --  @field Fuel                Fuel mass left in tank.
+   --  @field Legs                State of all landing legs.
+   --  #field Surface_Temperature Surface (outer hull) temperature.
+   --  @field Thruster_Enabled    State of thruster.
+   --  @field Time_Stamp          (Relative) time since simulation start.
+   --                             Denotes the (rough) sampling time of all other
+   --                             fields.
+   --  @field Velocity            Current velocity of space craft. Direction is
+   --                             denoted by the Attitude field.
 
    pragma Annotate (GNATcheck, Exempt_Off, "Visible_Components");
 
@@ -66,8 +70,7 @@ is
                 Surface_Temperature => 0.0,
                 Thruster_Enabled    => False,
                 Time_Stamp          => 0.0,
-                Velocity_X          => 0.0,
-                Velocity_Y          => 0.0));
+                Velocity            => 0.0));
 
    pragma Annotate (GNATcheck,
                     Exempt_On,

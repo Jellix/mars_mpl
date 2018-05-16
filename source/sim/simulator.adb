@@ -123,8 +123,7 @@ procedure Simulator is
                                      Surface_Temperature => Surface_Temperature,
                                      Thruster_Enabled    => Thrust_On,
                                      Time_Stamp          => Offset,
-                                     Velocity_X          => 0.0,
-                                     Velocity_Y          => Velocity));
+                                     Velocity            => Velocity));
    end Update_Shared_Data;
 
    Safe_Landing_Velocity : constant Shared_Types.Meter_Per_Second :=

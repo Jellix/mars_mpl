@@ -72,7 +72,8 @@ package body Engines is
                --  Distance from ground when we drop straight down at constant
                --  velocity.
 
-               Velocity_Factor : constant := 80.0 / (1300.0 - Drop_Distance);
+               Velocity_Factor : constant Shared_Types.Scalar :=
+                                   Shared_Types.Scalar (80.0 / (1300.0 - Drop_Distance));
                --  At 1300 m, we expect to be at ~80 m/s, so use this as a
                --  factor to derive a target velocity from the current altitude
                --  until we match the target landing velocity at Drop_Distance.

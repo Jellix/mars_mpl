@@ -108,7 +108,7 @@ private
                                     Unit => "m");
 
    function Image is new
-     Shared_Types.IO.Generic_Image (T    => Shared_Types.Flow_Rate,
+     Shared_Types.IO.Generic_Image (T    => Shared_Types.Kilogram_Per_Second,
                                     Unit => "kg/s");
 
    function Image is new

@@ -26,7 +26,7 @@ package body Thrusters is
      := Shared_Parameters.Read.Exhaust_Velocity;
    --  Parametrized effective exhaust velocity, read once at startup.
 
-   Fuel_Flow_Rate : constant Shared_Types.Flow_Rate
+   Fuel_Flow_Rate : constant Shared_Types.Kilogram_Per_Second
      := Shared_Parameters.Read.Fuel_Flow_Rate;
    --  Parametrized Fuel_Flow_Rate, read once at startup.
 

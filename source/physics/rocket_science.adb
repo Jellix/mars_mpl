@@ -1,8 +1,10 @@
-with Ada.Numerics.Elementary_Functions;
+with Scalar_Elementary_Functions;
 
 package body Rocket_Science is
 
+   use type Shared_Types.Kilogram;
    use type Shared_Types.Meter_Per_Second;
+   use type Shared_Types.Scalar;
 
    function Delta_V
      (Initial_Wet_Mass : in Shared_Types.Kilogram;
@@ -10,12 +12,10 @@ package body Rocket_Science is
       Exhaust_Velocity : in Shared_Types.Meter_Per_Second)
       return Shared_Types.Meter_Per_Second
    is
-      function Ln (X : in Float) return Float renames
-        Ada.Numerics.Elementary_Functions.Log;
+      function Ln (X : in Shared_Types.Scalar) return Shared_Types.Scalar renames
+        Scalar_Elementary_Functions.Log;
    begin
-      return
-        Exhaust_Velocity *
-          Ln (X => Float (Initial_Wet_Mass / Current_Wet_Mass));
+      return Exhaust_Velocity * Ln (X => Initial_Wet_Mass / Current_Wet_Mass);
    end Delta_V;
 
    --  Drag equations...
@@ -31,16 +31,17 @@ package body Rocket_Science is
    --  a = F / m
    function Drag (Current_Wet_Mass : in Shared_Types.Kilogram;
                   Velocity         : in Shared_Types.Meter_Per_Second;
-                  Drag_Constant    : in Float)
+                  Drag_Constant    : in Shared_Types.Scalar)
                   return Shared_Types.Meter_Per_Square_Second
    is
-      Upwards_Drag : Float;
+      Upwards_Drag : Shared_Types.Scalar;
    begin
-      Upwards_Drag := Drag_Constant * Float (Velocity) * Float (Velocity) / 2.0;
+      Upwards_Drag :=
+        Drag_Constant * Shared_Types.Scalar (Velocity) * Shared_Types.Scalar (Velocity) / 2.0;
 
       return
         Shared_Types.Meter_Per_Square_Second
-          (Upwards_Drag / Float (Current_Wet_Mass));
+          (Upwards_Drag / Shared_Types.Scalar (Current_Wet_Mass));
    end Drag;
 
 end Rocket_Science;

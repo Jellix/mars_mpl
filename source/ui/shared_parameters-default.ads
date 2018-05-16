@@ -14,7 +14,7 @@ package Shared_Parameters.Default is
    --  thrusters are enabled.
    --  @return The default exhaust velocity.
 
-   function Fuel_Flow_Rate return Shared_Types.Flow_Rate
+   function Fuel_Flow_Rate return Shared_Types.Kilogram_Per_Second
      with Inline => True;
    --  Parametrized fuel flow rate.
    --  @return The default fuel flow rate.
@@ -69,7 +69,7 @@ private
    function Exhaust_Velocity return Shared_Types.Meter_Per_Second is
      (Exhaust_Velocity_Store.Default_Value);
 
-   function Fuel_Flow_Rate return Shared_Types.Flow_Rate is
+   function Fuel_Flow_Rate return Shared_Types.Kilogram_Per_Second is
      (Fuel_Flow_Rate_Store.Default_Value);
 
    function Initial_Altitude return Shared_Types.Meter is

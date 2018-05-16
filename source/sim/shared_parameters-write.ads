@@ -15,7 +15,7 @@ package Shared_Parameters.Write is
    --  Set a new value for the thruster exhaust velocity.
    --  @param Value The new thruster exhaust velocity to be set.
 
-   procedure Fuel_Flow_Rate (Value : in Shared_Types.Flow_Rate)
+   procedure Fuel_Flow_Rate (Value : in Shared_Types.Kilogram_Per_Second)
      with Inline => False;
    --  Set a new value for the fuel flow rate.
    --  @param Value The new fuel flow rate to be set.

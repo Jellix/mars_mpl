@@ -107,13 +107,13 @@ package body GUI is
       Text_Entry => Exhaust_Velocity);
 
    function Set_Fuel_Flow_Rate is new Callbacks.Set_Spin_Button_Value
-     (T     => Shared_Types.Flow_Rate,
+     (T     => Shared_Types.Kilogram_Per_Second,
       Read  => Shared_Parameters.Read.Fuel_Flow_Rate,
       Write => Shared_Parameters.Write.Fuel_Flow_Rate,
       Name  => "fuel flow rate");
 
    procedure Reset_Fuel_Flow_Rate is new Callbacks.Reset_Value
-     (T          => Shared_Types.Flow_Rate,
+     (T          => Shared_Types.Kilogram_Per_Second,
       Write      => Shared_Parameters.Write.Fuel_Flow_Rate,
       Default    => Shared_Parameters.Default.Fuel_Flow_Rate,
       Text_Entry => Fuel_Flow_Rate);
@@ -241,10 +241,10 @@ package body GUI is
       Win.Surface_Temp.all.Queue_Draw;
 
       -- Velocity
-      DE.Velocity.all.Set_Text (Text => Image (Value => Update_State.Velocity_Y));
+      DE.Velocity.all.Set_Text (Text => Image (Value => Update_State.Velocity));
       Win.Tachometer.all.Set_Value
         (Value =>
-           Glib.Gdouble (abs Update_State.Velocity_Y) / Velocity_Scale.Factor);
+           Glib.Gdouble (abs Update_State.Velocity) / Velocity_Scale.Factor);
       Win.Tachometer.all.Queue_Draw;
 
       Update_Delta_V :
@@ -300,7 +300,7 @@ package body GUI is
          Win.Plot.Velocity_Plot.all.Feed
            (Channel => Win.Plot.Velocity_Channel,
             T       => Time_Stamp,
-            V       => Glib.Gdouble (Update_State.Velocity_Y));
+            V       => Glib.Gdouble (Update_State.Velocity));
 
          for Leg in Shared_Types.Legs_Index loop
             Feed_Leg_Plot :

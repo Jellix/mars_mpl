@@ -23,7 +23,7 @@ package Shared_Parameters.Read is
    --  thrusters are enabled.
    --  @return The set exhaust velocity.
 
-   function Fuel_Flow_Rate return Shared_Types.Flow_Rate
+   function Fuel_Flow_Rate return Shared_Types.Kilogram_Per_Second
      with
        Inline            => False,
        Volatile_Function => True;
@@ -94,7 +94,7 @@ private
    function Exhaust_Velocity return Shared_Types.Meter_Per_Second is
      (Shared_Exhaust_Velocity.Get);
 
-   function Fuel_Flow_Rate return Shared_Types.Flow_Rate is
+   function Fuel_Flow_Rate return Shared_Types.Kilogram_Per_Second is
      (Shared_Fuel_Flow_Rate.Get);
 
    function Initial_Altitude return Shared_Types.Meter is

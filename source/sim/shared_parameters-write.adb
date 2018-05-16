@@ -10,7 +10,7 @@ package body Shared_Parameters.Write is
       Shared_Exhaust_Velocity.Set (New_Value => Value);
    end Exhaust_Velocity;
 
-   procedure Fuel_Flow_Rate (Value : in Shared_Types.Flow_Rate) is
+   procedure Fuel_Flow_Rate (Value : in Shared_Types.Kilogram_Per_Second) is
    begin
       Shared_Fuel_Flow_Rate.Set (New_Value => Value);
    end Fuel_Flow_Rate;

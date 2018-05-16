@@ -25,7 +25,7 @@ is
    --  a = F / m
    function Drag (Current_Wet_Mass : in Shared_Types.Kilogram;
                   Velocity         : in Shared_Types.Meter_Per_Second;
-                  Drag_Constant    : in Float)
+                  Drag_Constant    : in Shared_Types.Scalar)
                   return Shared_Types.Meter_Per_Square_Second;
 
 end Rocket_Science;

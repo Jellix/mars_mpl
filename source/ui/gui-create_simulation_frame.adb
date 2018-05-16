@@ -255,8 +255,8 @@ begin
                  (Adjustment =>
                     Gtk.Adjustment.Gtk_Adjustment_New
                       (Value          => Glib.Gdouble (Shared_Parameters.Read.Fuel_Flow_Rate),
-                       Lower          => Glib.Gdouble (Shared_Types.Flow_Rate'First),
-                       Upper          => Glib.Gdouble (Shared_Types.Flow_Rate'Last),
+                       Lower          => Glib.Gdouble (Shared_Types.Kilogram_Per_Second'First),
+                       Upper          => Glib.Gdouble (Shared_Types.Kilogram_Per_Second'Last),
                        Step_Increment => 0.001,
                        Page_Increment => 1.0,
                        Page_Size      => 0.0),

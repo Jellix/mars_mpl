@@ -28,12 +28,14 @@ is
    type All_Legs_State is array (Legs_Index) of Leg_State;
    --  Bundles the state of all legs into a single object.
 
+   type Scalar is new Long_Float; -- aka. digits 15
+
    --  @summary
    --  Provides an angle type.
    package Angle is
-      F : constant := -2.0 ** 10;
-      L : constant := 2.0 ** 10;
-      R : constant := 1.0 / 2.0 ** 21;
+      F : constant := -2.0 ** 9;
+      L : constant := 2.0 ** 9;
+      R : constant := 1.0 / 2.0 ** 22;
       S : constant := 32;
 
       type T is delta R range F .. L - R with
@@ -43,6 +45,12 @@ is
    end Angle;
 
    type Degree is new Angle.T;
+
+   function "*" (Left  : in Degree;
+                 Right : in Degree) return Degree is abstract;
+
+   function "/" (Left  : in Degree;
+                 Right : in Degree) return Degree is abstract;
 
    --  @summary
    --  Provides a length type.
@@ -60,6 +68,20 @@ is
 
    type Meter is new Distance.T;
 
+   function "*" (Left  : in Meter;
+                 Right : in Meter) return Meter is abstract;
+
+   function "*" (Left  : in Meter;
+                 Right : in Scalar) return Meter
+     with Inline => True;
+
+   function "/" (Left  : in Meter;
+                 Right : in Meter) return Meter is abstract;
+
+   function "/" (Left  : in Meter;
+                 Right : in Meter) return Scalar
+     with Inline => True;
+
    --  @summary
    --  Provides a speed/velocity type.
    package Speed is
@@ -76,6 +98,14 @@ is
 
    type Meter_Per_Second is new Speed.T;
 
+   function "*" (Left  : in Meter_Per_Second;
+                 Right : in Meter_Per_Second) return Meter_Per_Second
+                 is abstract;
+
+   function "/" (Left  : in Meter_Per_Second;
+                 Right : in Meter_Per_Second) return Meter_Per_Second
+                 is abstract;
+
    function "*" (V : in Meter_Per_Second;
                  T : in Duration) return Meter
      with Inline => True;
@@ -86,7 +116,7 @@ is
    --  @return The resulting distance (here, expressed as altitude).
 
    function "*" (V     : in Meter_Per_Second;
-                 Scale : in Float) return Meter_Per_Second
+                 Scale : in Scalar) return Meter_Per_Second
      with Inline => True;
    --  Multiplies a velocity with a scale factor.
    --  @param V     The velocity.
@@ -109,6 +139,14 @@ is
 
    type Meter_Per_Square_Second is new Acceleration.T;
    --  (Thruster) acceleration expressed in m/s².
+
+   function "*" (Left  : in Meter_Per_Square_Second;
+                 Right : in Meter_Per_Square_Second)
+                 return Meter_Per_Square_Second is abstract;
+
+   function "/" (Left  : in Meter_Per_Square_Second;
+                 Right : in Meter_Per_Square_Second)
+                 return Meter_Per_Square_Second is abstract;
 
    function "*" (A : in Meter_Per_Square_Second;
                  T : in Duration) return Meter_Per_Second
@@ -136,9 +174,22 @@ is
    type Kilogram is new Mass.T;
    --  Mass expressed in kg.
 
+   function "*" (Left  : in Kilogram;
+                 Right : in Kilogram) return Kilogram is abstract;
+
+   function "*" (Left  : in Kilogram;
+                 Right : in Scalar) return Kilogram
+     with Inline => True;
+
+   function "/" (Left  : in Kilogram;
+                 Right : in Kilogram) return Kilogram is abstract;
+
+   function "/" (Left  : in Kilogram;
+                 Right : in Kilogram) return Scalar
+     with Inline => True;
+
    type Vehicle_Mass is new Kilogram range           10.0 .. Kilogram'Last;
    type Fuel_Mass    is new Kilogram range Kilogram'First .. 100.0;
-   type Flow_Rate    is new Kilogram range Kilogram'First ..  10.0;
 
    function "+" (Left  : in Kilogram;
                  Right : in Fuel_Mass) return Kilogram
@@ -164,13 +215,34 @@ is
                  Right : in Vehicle_Mass) return Kilogram
      with Inline => True;
 
-   function "*" (Left  : in Flow_Rate;
+   package Mass_Flow is
+      F : constant := 0.0;
+      L : constant := 2.0 ** 4;
+      R : constant := 1.0 / 2.0 ** 28;
+      S : constant := 32;
+
+      type T is delta R range F .. L - R with
+        Size  => S,
+        Small => R;
+   end Mass_Flow;
+
+   type Kilogram_Per_Second is new Mass_Flow.T;
+
+   function "*" (Left  : in Kilogram_Per_Second;
+                 Right : in Kilogram_Per_Second) return Kilogram_Per_Second
+                 is abstract;
+
+   function "*" (Left  : in Kilogram_Per_Second;
                  Right : in Duration) return Fuel_Mass
      with Inline => True;
    --  Multiplies a flow rate with a duration to calculate the resulting mass.
    --  @param Left The flow rate.
    --  @param Right The duration.
    --  @return The total mass flown during given duration at given flow rate.
+
+   function "/" (Left  : in Kilogram_Per_Second;
+                 Right : in Kilogram_Per_Second) return Kilogram_Per_Second
+                 is abstract;
 
    --  @summary Provides a distinct time type.
    package Time is
@@ -187,10 +259,17 @@ is
 
    type Milliseconds is new Time.T;
 
+   function "*" (Left  : in Milliseconds;
+                 Right : in Milliseconds) return Milliseconds is abstract;
+
+   function "/" (Left  : in Milliseconds;
+                 Right : in Milliseconds) return Milliseconds is abstract;
+
    type On_Time is new Milliseconds range 0.0 .. 2000.0;
    --  Shortest on-time in milliseconds.
 
-   function To_Duration (T : in On_Time) return Duration;
+   function To_Duration (T : in On_Time) return Duration
+     with Inline => True;
 
    package Temperature is
       F : constant := -2.0 ** 31; --  We need temperature differences as well.
@@ -205,19 +284,49 @@ is
 
    type Kelvin is new Temperature.T;
 
+   function "*" (Left  : in Kelvin;
+                 Right : in Kelvin) return Kelvin is abstract;
+
+   function "*" (Left  : in Kelvin;
+                 Right : in Scalar) return Kelvin
+     with Inline => True;
+
+   function "/" (Left  : in Kelvin;
+                 Right : in Kelvin) return Kelvin is abstract;
+
 private
 
+   --  Meter
+   function "*" (Left  : in Meter;
+                 Right : in Scalar) return Meter is
+      (Meter (Scalar (Left) * Right));
+
+   function "/" (Left  : in Meter;
+                 Right : in Meter) return Scalar is
+     (Scalar (Distance.T (Left) / Distance.T (Right)));
+
+   --  Meter_Per_Second
    function "*" (V : in Meter_Per_Second;
                  T : in Duration) return Meter is
-     (Meter (Meter_Per_Second'Base (V) * Meter_Per_Second'Base (T)));
+     (Meter (Scalar (V) * Scalar (T)));
 
    function "*" (V     : in Meter_Per_Second;
-                 Scale : in Float) return Meter_Per_Second is
-     (Meter_Per_Second (Float (V) * Scale));
+                 Scale : in Scalar) return Meter_Per_Second is
+     (Meter_Per_Second (Scalar (V) * Scale));
 
+   --  Meter_Per_Square_Second
    function "*" (A : in Meter_Per_Square_Second;
                  T : in Duration) return Meter_Per_Second is
-     (Meter_Per_Second (Meter_Per_Square_Second'Base (A) * Meter_Per_Square_Second'Base (T)));
+     (Meter_Per_Second (Scalar (A) * Scalar (T)));
+
+   --  Kilogram
+   function "*" (Left  : in Kilogram;
+                 Right : in Scalar) return Kilogram is
+      (Kilogram (Scalar (Left) * Right));
+
+   function "/" (Left  : in Kilogram;
+                 Right : in Kilogram) return Scalar is
+      (Scalar (Mass.T (Left) / Mass.T (Right)));
 
    function "+" (Left  : in Kilogram;
                  Right : in Fuel_Mass) return Kilogram is
@@ -243,11 +352,18 @@ private
                  Right : in Vehicle_Mass) return Kilogram is
      (Kilogram'Base (Left) + Kilogram'Base (Right));
 
-   function "*" (Left  : in Flow_Rate;
+   --  Kilogram_Per_Second
+   function "*" (Left  : in Kilogram_Per_Second;
                  Right : in Duration) return Fuel_Mass is
-     (Fuel_Mass (Flow_Rate'Base (Left) * Flow_Rate'Base (Right)));
+     (Fuel_Mass (Scalar (Left) * Scalar (Right)));
 
+   --  On_Time
    function To_Duration (T : in On_Time) return Duration is
-      (Duration (T / 1000.0));
+      (Duration (Time.T (T) / 1000.0));
+
+   --  Kelvin
+   function "*" (Left  : in Kelvin;
+                 Right : in Scalar) return Kelvin is
+      (Kelvin (Scalar (Left) * Right));
 
 end Shared_Types;
