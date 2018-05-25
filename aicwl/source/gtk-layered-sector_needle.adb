@@ -871,7 +871,7 @@ package body Gtk.Layered.Sector_Needle is
       elsif Outer.Major_Curvature < 0.0 then
          raise Constraint_Error with
             "Negative outer ellipse curvature";
-      elsif Inner.Shape = Sector then
+      elsif Inner.Shape = Bagel then
          if Inner.Arc.Minor_Radius < 0.0 then
             raise Constraint_Error with
                "Negative inner ellipse radius";
