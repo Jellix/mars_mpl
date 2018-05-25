@@ -42,13 +42,16 @@ package Gtk.Valve.Round_90 is
    -- Class_Name - Of the widget
    --
    Class_Name : constant String := "GtkValveRound90";
+
    --
    -- Gtk_Gauge_Round_270 -- Round 270 degrees gauge
    --
    type Gtk_Valve_Round_90_Record is
      new Gtk.Layered.Gtk_Layered_Record with private;
+
    type Gtk_Valve_Round_90 is
      access all Gtk_Valve_Round_90_Record'Class;
+
    --
    -- Get_Type -- The type of the widget
    --
@@ -57,6 +60,7 @@ package Gtk.Valve.Round_90 is
    --    The GTK type of the widget
    --
    function Get_Type return GType;
+
    --
    -- Gtk_New -- Widget construction
    --

@@ -52,13 +52,13 @@ package body Gtk.Valve.Round_90 is
    R3 : constant Gdouble := 0.40;
    R4 : constant Gdouble := 0.43;
 
---     Reflection_X1       : constant := -0.2;
---     Reflection_X2       : constant := -0.2;
---     Reflection_Y1       : constant := -0.2;
---     Reflection_Y2       : constant := -0.2;
---     Reflection_Width    : constant := 0.25;
---     Reflection_Opacity  : constant := 0.5;
---     Reflection_Color    : constant Gdk_Color := RGB (1.0, 1.0, 1.0);
+   --     Reflection_X1       : constant := -0.2;
+   --     Reflection_X2       : constant := -0.2;
+   --     Reflection_Y1       : constant := -0.2;
+   --     Reflection_Y2       : constant := -0.2;
+   --     Reflection_Width    : constant := 0.25;
+   --     Reflection_Opacity  : constant := 0.5;
+   --     Reflection_Color    : constant Gdk_Color := RGB (1.0, 1.0, 1.0);
 
    Cover_Color       : constant Gdk.Color.Gdk_Color :=
                          Gtk.Missed.RGB (Red   => 0.1,
@@ -76,8 +76,8 @@ package body Gtk.Valve.Round_90 is
                          Gtk.Missed.RGB (Red   => 0.0,
                                          Green => 0.0,
                                          Blue  => 0.0);
---     Middle_Tick_Color : constant Gdk.Color.Gdk_Color :=
---       Gtk.Missed.RGB (0.0, 0.0, 0.0);
+   --     Middle_Tick_Color : constant Gdk.Color.Gdk_Color :=
+   --       Gtk.Missed.RGB (0.0, 0.0, 0.0);
    Minor_Tick_Color  : constant Gdk.Color.Gdk_Color :=
                          Gtk.Missed.RGB (Red   => 0.0,
                                          Green => 0.0,
@@ -90,7 +90,7 @@ package body Gtk.Valve.Round_90 is
    Class_Record : aliased Ada_GObject_Class := Uninitialized_Class;
 
    Length : constant Gdouble := Pi / 2.0;
-   First  : constant Gdouble := 5.0 * Pi / 4.0;
+   First  : constant Gdouble := 8.0 * Pi / 4.0;
 
    --
    procedure Create_Background
@@ -116,7 +116,7 @@ package body Gtk.Valve.Round_90 is
       Widget.all.Sectors := Sectors;
       Widget.all.Background :=
         Gtk.Layered.Elliptic_Background.Add_Elliptic_Background
-          (Under       => Widget,
+          (Under         => Widget,
            Color         => Background_Color,
            Outer         =>
              Cairo.Ellipses.Ellipse_Parameters'
@@ -336,7 +336,7 @@ package body Gtk.Valve.Round_90 is
                  Boxed_Type => Gdk.Color.Gdk_Color_Type,
                  Nick       => "Needle on color",
                  Blurb      => "The color of the needle's half " &
-                               "corresponding to the on state"));
+                   "corresponding to the on state"));
          Gtk.Widget.Install_Style_Property
            (Self  => Glib.Types.Class_Ref (Class_Record.all.The_Type),
             Pspec =>
@@ -345,7 +345,7 @@ package body Gtk.Valve.Round_90 is
                  Boxed_Type => Gdk.Color.Gdk_Color_Type,
                  Nick       => "Needle off color",
                  Blurb      => "The color of the needle's half " &
-                               "corresponding to the off state"));
+                   "corresponding to the off state"));
          Gtk.Widget.Styles.Line_Cap_Property.Install_Style
            (Class     => Glib.Types.Class_Ref (Class_Record.all.The_Type),
             Enum_Spec =>
@@ -366,7 +366,7 @@ package body Gtk.Valve.Round_90 is
            (Self  => Glib.Types.Class_Ref (Class_Record.all.The_Type),
             Pspec =>
               Glib.Properties.Creation.Gnew_Boxed
-                (Name       => "backgound-color",
+                (Name       => "background-color",
                  Boxed_Type => Gdk.Color.Gdk_Color_Type,
                  Nick       => "Background color",
                  Blurb      => "The background color"));
@@ -647,8 +647,8 @@ package body Gtk.Valve.Round_90 is
          Border_Depth  => Widget.all.Pin.all.Get_Border_Depth,
          Border_Color  => Widget.all.Pin.all.Get_Border_Color,
          Border_Shadow => Widget.all.Pin.all.Get_Border_Shadow,
---           Lens_Reflex   => Widget.Pin.Get_Lens_Reflex,
---           Lens_Shadow   => Widget.Pin.Get_Lens_Shadow,
+         --           Lens_Reflex   => Widget.Pin.Get_Lens_Reflex,
+         --           Lens_Shadow   => Widget.Pin.Get_Lens_Shadow,
          Color         =>
            Gtk.Widget.Styles.Style_Get (Widget        => Widget,
                                         Property_Name => "pin-color",
@@ -662,8 +662,8 @@ package body Gtk.Valve.Round_90 is
          Border_Depth  => Widget.all.Background.all.Get_Border_Depth,
          Border_Color  => Widget.all.Background.all.Get_Border_Color,
          Border_Shadow => Widget.all.Background.all.Get_Border_Shadow,
---           Lens_Reflex   => Widget.Background.Get_Lens_Reflex,
---           Lens_Shadow   => Widget.Background.Get_Lens_Shadow,
+         --           Lens_Reflex   => Widget.Background.Get_Lens_Reflex,
+         --           Lens_Shadow   => Widget.Background.Get_Lens_Shadow,
          Color         =>
            Gtk.Widget.Styles.Style_Get (Widget        => Widget,
                                         Property_Name => "background-color",
@@ -676,8 +676,8 @@ package body Gtk.Valve.Round_90 is
          Length => Widget.all.Upper.Minor_Ticks.all.Get_Length,
          Line   =>
            Gtk.Layered.Line_Parameters'
-             (Width => Widget.all.Upper.Minor_Ticks.all.Get_Line.Width,
-              Color =>
+             (Width    => Widget.all.Upper.Minor_Ticks.all.Get_Line.Width,
+              Color    =>
                 Gtk.Widget.Styles.Style_Get
                   (Widget        => Widget,
                    Property_Name => "minor-tick-color",
@@ -694,8 +694,8 @@ package body Gtk.Valve.Round_90 is
          Length => Widget.all.Upper.Major_Ticks.all.Get_Length,
          Line   =>
            Gtk.Layered.Line_Parameters'
-             (Width => Widget.all.Upper.Major_Ticks.all.Get_Line.Width,
-              Color =>
+             (Width    => Widget.all.Upper.Major_Ticks.all.Get_Line.Width,
+              Color    =>
                 Gtk.Widget.Styles.Style_Get
                   (Widget        => Widget,
                    Property_Name => "major-tick-color",
