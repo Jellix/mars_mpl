@@ -178,17 +178,18 @@ package body Altimeter is
 
          Attitude_Now := Attitude_State.Get;
 
+         Update_Position :
          declare
-            Attitude_Sin : constant Shared_Types.Scalar :=
-                             Sin (X => Shared_Types.Scalar (Attitude_Now));
-            Attitude_Cos : constant Shared_Types.Scalar :=
-                             Cos (X => Shared_Types.Scalar (Attitude_Now));
+            Vertical_Part   : constant Shared_Types.Scalar :=
+                                Sin (X => Shared_Types.Scalar (Attitude_Now));
+            Horizontal_Part : constant Shared_Types.Scalar :=
+                                Cos (X => Shared_Types.Scalar (Attitude_Now));
          begin
             --  Calculate change in velocity according to gravity effects.
             Calculate_Delta_V :
             declare
                Grav_DV_Cycle : constant Shared_Types.Meter_Per_Second :=
-                                 Gravity * T * Attitude_Sin;
+                                 Gravity * T * Vertical_Part;
             begin
                Grav_Delta_V := Grav_Delta_V + Grav_DV_Cycle;
             end Calculate_Delta_V;
@@ -197,7 +198,7 @@ package body Altimeter is
             Calculate_Delta_A :
             declare
                Delta_A : constant Shared_Types.Meter :=
-                           Velocity_Now * T * Attitude_Sin;
+                           Velocity_Now * T * Vertical_Part;
                --  Attitude 0 means parallel to ground, so no change in height.
             begin
                Altitude_Now :=
@@ -267,9 +268,9 @@ package body Altimeter is
 
             --  Update attitude according to current velocity vector.
             Delta_Vertical   :=
-              Gravity * T * T + Velocity_Now * T * Attitude_Sin;
-            Delta_Horizontal := Velocity_Now * T * Attitude_Cos;
-         end;
+              Gravity * T * T + Velocity_Now * T * Vertical_Part;
+            Delta_Horizontal := Velocity_Now * T * Horizontal_Part;
+         end Update_Position;
 
          Attitude_Now :=
            Shared_Types.Degree
