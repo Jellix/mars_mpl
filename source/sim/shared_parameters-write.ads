@@ -25,6 +25,11 @@ package Shared_Parameters.Write is
    --  Set a new value for the initial altitude.
    --  @param Value The new initial altitude to be set.
 
+   procedure Initial_Attitude (Value : in Shared_Types.Degree)
+     with Inline => False;
+   --  Set a new value for the initial attitude.
+   --  @param Value The new entry attitude to be set.
+
    procedure Initial_Fuel_Mass (Value : in Shared_Types.Fuel_Mass)
      with Inline => False;
    --  Set a new value for the initial fuel mass.

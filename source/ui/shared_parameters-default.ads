@@ -19,10 +19,16 @@ package Shared_Parameters.Default is
    --  Parametrized fuel flow rate.
    --  @return The default fuel flow rate.
 
+   function Initial_Attitude return Shared_Types.Degree
+     with Inline => True;
+   --  Parametrized initial attitude.
+   --  This is the attitude at which the simulation starts.
+   --  @return The default entry attitude.
+
    function Initial_Altitude return Shared_Types.Meter
      with Inline => True;
    --  Parametrized initial altitude.
-   --  This is the altitide at which the simulation starts.
+   --  This is the altitude at which the simulation starts.
    --  @return The default initial altitude.
 
    function Initial_Fuel_Mass return Shared_Types.Fuel_Mass
@@ -71,6 +77,9 @@ private
 
    function Fuel_Flow_Rate return Shared_Types.Kilogram_Per_Second is
      (Fuel_Flow_Rate_Store.Default_Value);
+
+   function Initial_Attitude return Shared_Types.Degree is
+     (Initial_Attitude_Store.Default_Value);
 
    function Initial_Altitude return Shared_Types.Meter is
      (Initial_Altitude_Store.Default_Value);

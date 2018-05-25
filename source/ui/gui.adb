@@ -63,6 +63,11 @@ package body GUI is
                      ("0" / "20" / "40" / "60" / "80"),
                  Factor => 80.0);
 
+   Horizon_Scale : constant Scaling
+     := Scaling'(Texts  =>
+                    new Gtk.Enums.String_Lists.Controlled_String_List'
+                      ("0" / "15" / "30" / "45" / "60" / "75" / "90"),
+                 Factor => 90.0);
    Temperature_Scale : constant Scaling
      := Scaling'(Texts  =>
                    new Gtk.Enums.String_Lists.Controlled_String_List'
@@ -129,6 +134,18 @@ package body GUI is
       Write      => Shared_Parameters.Write.Initial_Altitude,
       Default    => Shared_Parameters.Default.Initial_Altitude,
       Text_Entry => Initial_Altitude);
+
+   function Set_Initial_Attitude is new Callbacks.Set_Spin_Button_Value
+     (T     => Shared_Types.Degree,
+      Read  => Shared_Parameters.Read.Initial_Attitude,
+      Write => Shared_Parameters.Write.Initial_Attitude,
+      Name  => "entry attitude");
+
+   procedure Reset_Initial_Attitude is new Callbacks.Reset_Value
+     (T          => Shared_Types.Degree,
+      Write      => Shared_Parameters.Write.Initial_Attitude,
+      Default    => Shared_Parameters.Default.Initial_Attitude,
+      Text_Entry => Initial_Attitude);
 
    function Set_Initial_Fuel_Mass is new Callbacks.Set_Spin_Button_Value
      (T     => Shared_Types.Fuel_Mass,
@@ -218,7 +235,13 @@ package body GUI is
         (State => Update_State.Thruster_Enabled);
       DE.Thruster_Led.all.Queue_Draw;
 
-      -- Altitude
+      --  Attitude
+      DE.Horizon.all.Set_Text (Text => Image (Value => Update_State.Attitude));
+      Win.Horizon.all.Set_Value
+        (Value => Glib.Gdouble (Update_State.Attitude) / Horizon_Scale.Factor);
+      Win.Horizon.all.Queue_Draw;
+
+      --  Altitude
       DE.Altitude.all.Set_Text (Text => Image (Value => Update_State.Altitude));
       Win.Altimeter.all.Set_Value
         (Value =>

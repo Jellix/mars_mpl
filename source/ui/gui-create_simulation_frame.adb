@@ -121,48 +121,34 @@ begin
 
       Initial_Attitude_Fields :
       declare
-         T : constant not null Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
+         B : constant not null Gtk.Button.Gtk_Button :=
+               Gtk.Button.Gtk_Button_New_With_Label (Label => "Reset");
+         T : constant not null Gtk.Spin_Button.Gtk_Spin_Button :=
+               Gtk.Spin_Button.Gtk_Spin_Button_New
+                 (Adjustment => Gtk.Adjustment.Gtk_Adjustment_New
+                    (Value          => Glib.Gdouble (Shared_Parameters.Read.Initial_Attitude),
+                     Lower          => Glib.Gdouble (Shared_Types.Degree'First),
+                     Upper          => Glib.Gdouble (Shared_Types.Degree'Last),
+                     Step_Increment => 0.001,
+                     Page_Increment => 1.0,
+                     Page_Size      => 0.0),
+                  Climb_Rate => 1.0,
+                  The_Digits => 3);
       begin
-         T.all.Set_Text
-           (Text => Image (Value     => Shared_Parameters.Read.Initial_Attitude,
-                           With_Unit => False));
-         T.all.Set_Editable (Is_Editable => False);
+         Window.Text_Entries (Initial_Attitude) := T;
 
-         Grid_Add_Row (Left => "Entry Attitude",
+         B.all.On_Clicked (Call  => Reset_Initial_Attitude'Access,
+                           After => True);
+
+         T.all.Set_Numeric (Numeric => True);
+         T.all.On_Focus_Out_Event (Call  => Set_Initial_Attitude'Access,
+                                   After => True);
+
+         Grid_Add_Row (Left   => "Entry Attitude",
                        Widget => T,
-                       Right  => "°");
+                       Right  => "°",
+                       Reset  => B);
       end Initial_Attitude_Fields;
-
-      Safe_Landing_Velocity_Fields :
-      declare
-         T : constant not null Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
-      begin
-         T.all.Set_Text
-           (Text =>
-              Image (Value     => Shared_Parameters.Read.Safe_Landing_Velocity,
-                     With_Unit => False));
-         T.all.Set_Editable (Is_Editable => False);
-
-         Grid_Add_Row (Left   => "Safe Landing Velocity",
-                       Widget => T,
-                       Right  => "m/s");
-      end Safe_Landing_Velocity_Fields;
-
-      Target_Landing_Velocity_Fields :
-      declare
-         T : constant not null Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
-      begin
-         T.all.Set_Text
-           (Text =>
-              Image
-                (Value     => Shared_Parameters.Read.Target_Landing_Velocity,
-                 With_Unit => False));
-         T.all.Set_Editable (Is_Editable => False);
-
-         Grid_Add_Row (Left   => "Target Landing Velocity",
-                       Widget => T,
-                       Right  => "m/s");
-      end Target_Landing_Velocity_Fields;
 
       Initial_Altitude_Fields :
       declare
@@ -355,6 +341,37 @@ begin
                        Right  => "m/s",
                        Reset  => B);
       end Exhaust_Velocity_Fields;
+
+      Safe_Landing_Velocity_Fields :
+      declare
+         T : constant not null Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
+      begin
+         T.all.Set_Text
+           (Text =>
+              Image (Value     => Shared_Parameters.Read.Safe_Landing_Velocity,
+                     With_Unit => False));
+         T.all.Set_Editable (Is_Editable => False);
+
+         Grid_Add_Row (Left   => "Safe Landing Velocity",
+                       Widget => T,
+                       Right  => "m/s");
+      end Safe_Landing_Velocity_Fields;
+
+      Target_Landing_Velocity_Fields :
+      declare
+         T : constant not null Gtk.GEntry.Gtk_Entry := Gtk.GEntry.Gtk_Entry_New;
+      begin
+         T.all.Set_Text
+           (Text =>
+              Image
+                (Value     => Shared_Parameters.Read.Target_Landing_Velocity,
+                 With_Unit => False));
+         T.all.Set_Editable (Is_Editable => False);
+
+         Grid_Add_Row (Left   => "Target Landing Velocity",
+                       Widget => T,
+                       Right  => "m/s");
+      end Target_Landing_Velocity_Fields;
 
       Add_Parameter_Frame :
       declare

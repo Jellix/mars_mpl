@@ -11,6 +11,7 @@ with Gtk.GEntry;
 with Gtk.Meter.Thermo;
 with Gtk.Oscilloscope;
 with Gtk.Spin_Button;
+with Gtk.Valve.Round_90;
 with Gtk.Window;
 with Shared_Types.IO;
 
@@ -30,6 +31,7 @@ private
          Delta_V      : Gtk.GEntry.Gtk_Entry;
          Drag         : Gtk.GEntry.Gtk_Entry;
          Fuel         : Gtk.GEntry.Gtk_Entry;
+         Horizon      : Gtk.GEntry.Gtk_Entry;
          Leg_Led      : Leg_Switches;
          Surface_Temp : Gtk.GEntry.Gtk_Entry;
          Thruster_Led : Gtk.Gauge.LED_Round.Gtk_Gauge_LED_Round;
@@ -61,6 +63,7 @@ private
    type Text_Entries is (Dry_Mass,
                          Exhaust_Velocity,
                          Fuel_Flow_Rate,
+                         Initial_Attitude,
                          Initial_Altitude,
                          Initial_Fuel_Mass,
                          Initial_Velocity,
@@ -75,6 +78,7 @@ private
          Elements      : Dynamic_Elements;
          Plot          : Plot_Elements;
          Mission_Clock : Gtk.Frame.Digital_Clock.Gtk_Frame_Digital_Clock;
+         Horizon       : Gtk.Valve.Round_90.Gtk_Valve_Round_90;
          Tachometer    : Gtk.Gauge.Round_270.Gtk_Gauge_Round_270;
          Altimeter     : Gtk.Gauge.Altimeter.Gtk_Gauge_Altimeter;
          Fuel_Scale    : Gtk.Gauge.Flat_Vertical.Gtk_Gauge_Flat_Vertical;

@@ -275,6 +275,33 @@ begin
       Current_Column := Current_Column + Gauge_Width;
    end Add_Surface_Temperature_Gauge;
 
+   --  Attitude gauge
+   Add_Heading (Title  => "Attitude",
+                Column => Current_Column,
+                Width  => Gauge_Size);
+
+   Gtk.Valve.Round_90.Gtk_New
+     (Widget     => Window.Horizon,
+      Texts      => Horizon_Scale.Texts.all,
+      Sectors    =>
+        Positive (Gtk.Enums.String_List.Length (+Horizon_Scale.Texts.all)) - 1);
+
+   Grid.all.Attach (Child  => Window.Horizon,
+                    Left   => Current_Column,
+                    Top    => Gauge_Row,
+                    Width  => Gauge_Size,
+                    Height => Gauge_Size);
+
+   Gtk.GEntry.Gtk_New (The_Entry => Window.Elements.Horizon);
+   Window.Elements.Horizon.all.Set_Editable (Is_Editable => False);
+   Grid.all.Attach (Child  => Window.Elements.Horizon,
+                    Left   => Current_Column + 1,
+                    Top    => Text_Row,
+                    Width  => Gauge_Size - 2,
+                    Height => 1);
+
+   Current_Column := Current_Column + Gauge_Size;
+
    --  Velocity Gauge
    Add_Heading (Title  => "Velocity",
                 Column => Current_Column,

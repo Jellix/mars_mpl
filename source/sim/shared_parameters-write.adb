@@ -20,6 +20,11 @@ package body Shared_Parameters.Write is
       Shared_Initial_Altitude.Set (New_Value => Value);
    end Initial_Altitude;
 
+   procedure Initial_Attitude (Value : in Shared_Types.Degree) is
+   begin
+      Shared_Initial_Attitude.Set (New_Value => Value);
+   end Initial_Attitude;
+
    procedure Initial_Fuel_Mass (Value : in Shared_Types.Fuel_Mass) is
    begin
       Shared_Initial_Fuel_Mass.Set (New_Value => Value);
