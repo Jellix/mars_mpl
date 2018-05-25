@@ -94,27 +94,31 @@ package Gtk.Layered.Disk_Needle is
    --
    procedure Add_Disk_Needle
      (Under      : not null access Layer_Location'Class;
-      Center     : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
-      Radius     : Gdouble     := 0.5;
-      From       : Gdouble     := Pi;
-      Length     : Gdouble     := Pi;
-      Sectors    : Boolean     := False;
-      On_Color   : Gdk.Color.Gdk_Color   := Needle_On_Color;
-      Off_Color  : Gdk.Color.Gdk_Color   := Needle_Off_Color;
-      Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
-      Scaled     : Boolean     := False);
+      Center     : in              Cairo.Ellipses.Cairo_Tuple                 :=
+        Cairo.Ellipses.Cairo_Tuple'(X => 0.0,
+                                    Y => 0.0);
+      Radius     : in              Gdouble                                    := 0.5;
+      From       : in              Gdouble                                    := Pi;
+      Length     : in              Gdouble                                    := Pi;
+      Sectors    : in              Boolean                                    := False;
+      On_Color   : in              Gdk.Color.Gdk_Color                        := Needle_On_Color;
+      Off_Color  : in              Gdk.Color.Gdk_Color                        := Needle_Off_Color;
+      Adjustment : access          Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled     : in              Boolean                                    := False);
 
    function Add_Disk_Needle
      (Under      : not null access Layer_Location'Class;
-      Center     : Cairo.Ellipses.Cairo_Tuple := (0.0, 0.0);
-      Radius     : Gdouble     := 0.5;
-      From       : Gdouble     := Pi;
-      Length     : Gdouble     := Pi;
-      Sectors    : Boolean     := False;
-      On_Color   : Gdk.Color.Gdk_Color   := Needle_On_Color;
-      Off_Color  : Gdk.Color.Gdk_Color   := Needle_Off_Color;
-      Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
-      Scaled     : Boolean     := False) return not null access Disk_Needle_Layer;
+      Center     : in              Cairo.Ellipses.Cairo_Tuple                 :=
+        Cairo.Ellipses.Cairo_Tuple'(X => 0.0,
+                                    Y => 0.0);
+      Radius     : in              Gdouble                                    := 0.5;
+      From       : in              Gdouble                                    := Pi;
+      Length     : in              Gdouble                                    := Pi;
+      Sectors    : in              Boolean                                    := False;
+      On_Color   : in              Gdk.Color.Gdk_Color                        := Needle_On_Color;
+      Off_Color  : in              Gdk.Color.Gdk_Color                        := Needle_Off_Color;
+      Adjustment : access          Gtk.Adjustment.Gtk_Adjustment_Record'Class := null;
+      Scaled     : in              Boolean                                    := False) return not null access Disk_Needle_Layer;
 
    --
    -- Get_Center -- The needle's rotation center
@@ -125,7 +129,8 @@ package Gtk.Layered.Disk_Needle is
    --
    --    The position
    --
-   function Get_Center (Layer : Disk_Needle_Layer) return Cairo.Ellipses.Cairo_Tuple;
+   function Get_Center (Layer : in Disk_Needle_Layer) return Cairo.Ellipses.Cairo_Tuple;
+
    --
    -- Get_From -- The angle (position) of the lowest value
    --
@@ -135,7 +140,8 @@ package Gtk.Layered.Disk_Needle is
    --
    --    The angle
    --
-   function Get_From (Layer : Disk_Needle_Layer) return Gdouble;
+   function Get_From (Layer : in Disk_Needle_Layer) return Gdouble;
+
    --
    -- Get_Length -- The angular length of the needle positions
    --
@@ -145,7 +151,8 @@ package Gtk.Layered.Disk_Needle is
    --
    --    The angle
    --
-   function Get_Length (Layer : Disk_Needle_Layer) return Gdouble;
+   function Get_Length (Layer : in Disk_Needle_Layer) return Gdouble;
+
    --
    -- Get_Off_Color -- The color of the needle's off half
    --
@@ -155,7 +162,8 @@ package Gtk.Layered.Disk_Needle is
    --
    --    The needle's color
    --
-   function Get_Off_Color (Layer : Disk_Needle_Layer) return Gdk.Color.Gdk_Color;
+   function Get_Off_Color (Layer : in Disk_Needle_Layer) return Gdk.Color.Gdk_Color;
+
    --
    -- Get_On_Color -- The color of the needle's on half
    --
@@ -165,7 +173,8 @@ package Gtk.Layered.Disk_Needle is
    --
    --    The needle's color
    --
-   function Get_On_Color (Layer : Disk_Needle_Layer) return Gdk.Color.Gdk_Color;
+   function Get_On_Color (Layer : in Disk_Needle_Layer) return Gdk.Color.Gdk_Color;
+
    --
    -- Get_Radius -- The needle's disk radius
    --
@@ -175,7 +184,8 @@ package Gtk.Layered.Disk_Needle is
    --
    --    The radius
    --
-   function Get_Radius (Layer : Disk_Needle_Layer) return Gdouble;
+   function Get_Radius (Layer : in Disk_Needle_Layer) return Gdouble;
+
    --
    -- Get_Sectors -- The needle's mode
    --
@@ -185,7 +195,8 @@ package Gtk.Layered.Disk_Needle is
    --
    --    True if sectors, False if halves
    --
-   function Get_Sectors (Layer : Disk_Needle_Layer) return Boolean;
+   function Get_Sectors (Layer : in Disk_Needle_Layer) return Boolean;
+
    --
    -- Set -- Parameters of the needle
    --
@@ -204,13 +215,13 @@ package Gtk.Layered.Disk_Needle is
    --
    procedure Set
      (Layer     : in out Disk_Needle_Layer;
-      Center    : Cairo.Ellipses.Cairo_Tuple;
-      Radius    : Gdouble;
-      From      : Gdouble;
-      Length    : Gdouble;
-      Sectors   : Boolean;
-      On_Color  : Gdk.Color.Gdk_Color;
-      Off_Color : Gdk.Color.Gdk_Color);
+      Center    : in     Cairo.Ellipses.Cairo_Tuple;
+      Radius    : in     Gdouble;
+      From      : in     Gdouble;
+      Length    : in     Gdouble;
+      Sectors   : in     Boolean;
+      On_Color  : in     Gdk.Color.Gdk_Color;
+      Off_Color : in     Gdk.Color.Gdk_Color);
 
    overriding
    function Add
@@ -221,40 +232,40 @@ package Gtk.Layered.Disk_Needle is
    overriding
    procedure Draw
      (Layer   : in out Disk_Needle_Layer;
-      Context : Cairo.Cairo_Context;
-      Area    : Gdk.Rectangle.Gdk_Rectangle);
+      Context : in     Cairo.Cairo_Context;
+      Area    : in     Gdk.Rectangle.Gdk_Rectangle);
 
    overriding procedure Finalize (Layer : in out Disk_Needle_Layer);
 
    overriding
-   function Get_Adjustment (Layer : Disk_Needle_Layer) return Gtk.Adjustment.Gtk_Adjustment;
+   function Get_Adjustment (Layer : in Disk_Needle_Layer) return Gtk.Adjustment.Gtk_Adjustment;
 
    overriding
-   function Get_Properties_Number (Layer : Disk_Needle_Layer) return Natural;
+   function Get_Properties_Number (Layer : in Disk_Needle_Layer) return Natural;
 
    overriding
    function Get_Property_Specification
-     (Layer    : Disk_Needle_Layer;
-      Property : Positive) return Param_Spec;
+     (Layer    : in Disk_Needle_Layer;
+      Property : in Positive) return Param_Spec;
 
    overriding
    function Get_Property_Value
-     (Layer    : Disk_Needle_Layer;
-      Property : Positive) return Glib.Values.GValue;
+     (Layer    : in Disk_Needle_Layer;
+      Property : in Positive) return Glib.Values.GValue;
 
    overriding
-   function Get_Scaled (Layer : Disk_Needle_Layer) return Boolean;
+   function Get_Scaled (Layer : in Disk_Needle_Layer) return Boolean;
 
    overriding
-   function Get_Value (Layer : Disk_Needle_Layer) return Gdouble;
+   function Get_Value (Layer : in Disk_Needle_Layer) return Gdouble;
 
    overriding
-   function Is_Updated (Layer : Disk_Needle_Layer) return Boolean;
+   function Is_Updated (Layer : in Disk_Needle_Layer) return Boolean;
 
    overriding
    procedure Move
      (Layer  : in out Disk_Needle_Layer;
-      Offset : Cairo.Ellipses.Cairo_Tuple);
+      Offset : in     Cairo.Ellipses.Cairo_Tuple);
 
    overriding
    procedure Restore
@@ -264,28 +275,28 @@ package Gtk.Layered.Disk_Needle is
    overriding
    procedure Scale
      (Layer  : in out Disk_Needle_Layer;
-      Factor : Gdouble);
+      Factor : in     Gdouble);
 
    overriding
    procedure Set_Property_Value
      (Layer    : in out Disk_Needle_Layer;
-      Property : Positive;
-      Value    : Glib.Values.GValue);
+      Property : in     Positive;
+      Value    : in     Glib.Values.GValue);
 
    overriding
    procedure Set_Scaled
      (Layer  : in out Disk_Needle_Layer;
-      Scaled : Boolean);
+      Scaled : in     Boolean);
 
    overriding
    procedure Set_Value
      (Layer : in out Disk_Needle_Layer;
-      Value : Gdouble);
+      Value : in     Gdouble);
 
    overriding
    procedure Store
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
-      Layer  : Disk_Needle_Layer);
+      Layer  : in     Disk_Needle_Layer);
 
 private
 

@@ -170,7 +170,7 @@ package Gtk.Valve.Round_90 is
    --
    procedure Set_Value
      (Widget : not null access Gtk_Valve_Round_90_Record;
-      Value  : Gdouble);
+      Value  : in              Gdouble);
 
    overriding
    procedure Style_Changed
