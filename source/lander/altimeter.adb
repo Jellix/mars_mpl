@@ -24,6 +24,12 @@ package body Altimeter is
                            Shared_Types.Meter_Per_Square_Second
                              (Planets.Parameters.Gravity (Planets.Mars));
 
+   Initial_Attitude    : constant Shared_Types.Degree
+     := Shared_Parameters.Read.Initial_Attitude;
+
+   Initial_Altitude    : constant Shared_Types.Meter
+     := Shared_Parameters.Read.Initial_Altitude;
+
    Initial_Velocity    : constant Shared_Types.Meter_Per_Second
      := Shared_Parameters.Read.Initial_Velocity;
 
@@ -46,12 +52,12 @@ package body Altimeter is
 
    package Attitude_Store is new
      Task_Safe_Store (Stored_Type   => Shared_Types.Degree,
-                      Initial_Value => Shared_Parameters.Read.Initial_Attitude);
+                      Initial_Value => 90.0);
    Attitude_State : Attitude_Store.Shelf;
 
    package Altitude_Store is new
      Task_Safe_Store (Stored_Type   => Shared_Types.Meter,
-                      Initial_Value => Shared_Parameters.Read.Initial_Altitude);
+                      Initial_Value => Initial_Altitude);
    Altitude_State : Altitude_Store.Shelf;
 
    package Drag_Coefficient_Store is
@@ -77,7 +83,7 @@ package body Altimeter is
 
    package Velocity_Store  is new
      Task_Safe_Store (Stored_Type   => Shared_Types.Meter_Per_Second,
-                      Initial_Value => Shared_Parameters.Read.Initial_Velocity);
+                      Initial_Value => Initial_Velocity);
    Velocity_State : Velocity_Store.Shelf;
 
    pragma Warnings (On, "instance does not use primitive operation ""*""");
@@ -141,6 +147,11 @@ package body Altimeter is
    begin
       Aborted := True;
    end Shutdown;
+
+   procedure Turn_To_Entry_Attitude is
+   begin
+      Attitude_State.Set (New_Value => Initial_Attitude);
+   end Turn_To_Entry_Attitude;
 
    task Radar_Simulator;
 
@@ -266,18 +277,18 @@ package body Altimeter is
                end Calculate_Heat_Flow;
             end Calculate_Drag;
 
-            --  Update attitude according to current velocity vector.
             Delta_Vertical   :=
               Gravity * T * T + Velocity_Now * T * Vertical_Part;
             Delta_Horizontal := Velocity_Now * T * Horizontal_Part;
          end Update_Position;
 
-         Attitude_Now :=
-           Shared_Types.Degree
-             (Arctan (Y => Shared_Types.Scalar (Delta_Vertical),
-                      X => Shared_Types.Scalar (Delta_Horizontal)));
-
-         Attitude_State.Set (New_Value => Attitude_Now);
+         --  Update attitude according to current velocity vector.
+         Attitude_State.Add
+           (X =>
+              Shared_Types.Degree
+                (Arctan (Y => Shared_Types.Scalar (Delta_Vertical),
+                         X => Shared_Types.Scalar (Delta_Horizontal)))
+            - Attitude_Now);
 
          --  Sum all delta Vs according to their sign.
          Velocity_Now :=

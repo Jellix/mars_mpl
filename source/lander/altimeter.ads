@@ -55,6 +55,9 @@ package Altimeter is
    --  separated.
    --  Changes the dry mass of the vehicle.
 
+   procedure Turn_To_Entry_Attitude;
+   --  Changes attitude of the spacecraft.
+
    procedure Enter_Atmosphere;
    --  Tells the altimeter simulation that the upper atmosphere has been
    --  entered.

@@ -182,6 +182,7 @@ begin
          then
             Log.Trace (Message => "Turning to entry attitude...");
             Current_Phase := Turned_To_Entry_Attitude;
+            Altimeter.Turn_To_Entry_Attitude;
             Log_Position (Altitude => Current_Altitude,
                           Velocity => Current_Velocity,
                           Attitude => Current_Attitude);
