@@ -86,26 +86,7 @@ procedure Simulator is
                                     Unit => "m/s");
    pragma Warnings (On, "instance does not use primitive operation");
 
-   procedure Log_Position (Altitude : in Shared_Types.Meter;
-                           Velocity : in Shared_Types.Meter_Per_Second;
-                           Attitude : in Shared_Types.Degree);
-
    procedure Update_Shared_Data;
-
-   procedure Log_Position (Altitude : in Shared_Types.Meter;
-                           Velocity : in Shared_Types.Meter_Per_Second;
-                           Attitude : in Shared_Types.Degree) is
-   begin
-      Log.Trace
-        (Message =>
-           "Spacecraft at altitude " & Image (Value     => Altitude,
-                                              With_Unit => True)
-         & ", current velocity " & Image (Value     => Velocity,
-                                          With_Unit => True)
-         & ", attitude " & Image (Value     => Attitude,
-                                  With_Unit => True)
-         & ".");
-   end Log_Position;
 
    procedure Update_Shared_Data is
       Offset      : constant Duration :=
@@ -155,6 +136,45 @@ begin
       Powered_Descent_At : Ada.Real_Time.Time := Ada.Real_Time.Time_Last;
       Current_Attitude   : Shared_Types.Degree;
       Current_Velocity   : Shared_Types.Meter_Per_Second;
+
+      procedure Change_Phase (Threshold_Altitude : in Shared_Types.Meter;
+                              New_Phase          : in EDL_Phase;
+                              Description        : in String);
+
+      procedure Change_Phase (Threshold_Altitude : in Shared_Types.Meter;
+                              New_Phase          : in EDL_Phase;
+                              Description        : in String)
+      is
+         procedure Log_Position (Altitude : in Shared_Types.Meter;
+                                 Velocity : in Shared_Types.Meter_Per_Second;
+                                 Attitude : in Shared_Types.Degree);
+
+         procedure Log_Position (Altitude : in Shared_Types.Meter;
+                                 Velocity : in Shared_Types.Meter_Per_Second;
+                                 Attitude : in Shared_Types.Degree) is
+         begin
+            Log.Trace
+              (Message =>
+                 "Spacecraft at altitude " & Image (Value     => Altitude,
+                                                    With_Unit => True)
+               & ", current velocity " & Image (Value     => Velocity,
+                                                With_Unit => True)
+               & ", attitude " & Image (Value     => Attitude,
+                                        With_Unit => True)
+               & ".");
+         end Log_Position;
+      begin --  Change_Phase
+         Log.Trace (Message =>
+                      "Below threshold altitude of "
+                    & Image (Value     => Threshold_Altitude,
+                             With_Unit => True)
+                    & ": " & Description);
+         Log_Position (Altitude => Current_Altitude,
+                       Velocity => Current_Velocity,
+                       Attitude => Current_Attitude);
+         Current_Phase := New_Phase;
+      end Change_Phase;
+
    begin
       while Current_Altitude > 0.0 loop
          delay until Next_Cycle;
@@ -168,11 +188,10 @@ begin
            Current_Phase = EDL_Started and then
            Current_Altitude <= Altitude_For_Guidance_System_Initialization
          then
-            Log.Trace (Message => "Initializing guidance system...");
-            Current_Phase := Guidance_System_Initialized;
-            Log_Position (Altitude => Current_Altitude,
-                          Velocity => Current_Velocity,
-                          Attitude => Current_Attitude);
+            Change_Phase
+              (Threshold_Altitude => Altitude_For_Guidance_System_Initialization,
+               New_Phase          => Guidance_System_Initialized,
+               Description        => "Initializing guidance system...");
          end if;
 
          --  | -12 min | 3000 km | 5900   m/s | Turn to entry attitude
@@ -180,12 +199,11 @@ begin
            Current_Phase = Guidance_System_Initialized and then
            Current_Altitude <= Altitude_For_Turn_To_Entry_Attitude
          then
-            Log.Trace (Message => "Turning to entry attitude...");
-            Current_Phase := Turned_To_Entry_Attitude;
+            Change_Phase
+              (Threshold_Altitude => Altitude_For_Turn_To_Entry_Attitude,
+               New_Phase          => Turned_To_Entry_Attitude,
+               Description        => "Turning to entry attitude...");
             Altimeter.Turn_To_Entry_Attitude;
-            Log_Position (Altitude => Current_Altitude,
-                          Velocity => Current_Velocity,
-                          Attitude => Current_Attitude);
          end if;
 
          --  | -10 min | 2300 km | 6200   m/s | Cruise ring separation
@@ -193,12 +211,11 @@ begin
            Current_Phase = Turned_To_Entry_Attitude and then
            Current_Altitude <= Altitude_For_Cruise_Ring_Separation
          then
-            Log.Trace (Message => "Separating cruise ring and probes...");
-            Current_Phase := Cruise_Ring_Separated;
+            Change_Phase
+              (Threshold_Altitude => Altitude_For_Cruise_Ring_Separation,
+               New_Phase          => Cruise_Ring_Separated,
+               Description        => "Separating cruise ring and probes...");
             Altimeter.Separate_Cruise_Stage;
-            Log_Position (Altitude => Current_Altitude,
-                          Velocity => Current_Velocity,
-                          Attitude => Current_Attitude);
          end if;
 
          --  |  -5 min |  125 km | 6900   m/s | Atmospheric entry
@@ -206,12 +223,11 @@ begin
            Current_Phase = Cruise_Ring_Separated and then
            Current_Altitude <= Altitude_For_Atmospheric_Entry
          then
-            Log.Trace (Message => "Entering atmosphere...");
-            Current_Phase := Atmosphere_Entered;
+            Change_Phase
+              (Threshold_Altitude => Altitude_For_Atmospheric_Entry,
+               New_Phase          => Atmosphere_Entered,
+               Description        => "Entering atmosphere...");
             Altimeter.Enter_Atmosphere;
-            Log_Position (Altitude => Current_Altitude,
-                          Velocity => Current_Velocity,
-                          Attitude => Current_Attitude);
          end if;
 
          --  |  -2 min | 8800  m |  490   m/s | Parachute deployment
@@ -219,12 +235,11 @@ begin
            Current_Phase = Atmosphere_Entered and then
            Current_Altitude <= Altitude_For_Parachute_Deployment
          then
-            Log.Trace (Message => "Deploying parachute...");
-            Current_Phase := Parachute_Deployed;
+            Change_Phase
+              (Threshold_Altitude => Altitude_For_Parachute_Deployment,
+               New_Phase          => Parachute_Deployed,
+               Description        => "Deploying parachute...");
             Altimeter.Deploy_Parachute;
-            Log_Position (Altitude => Current_Altitude,
-                          Velocity => Current_Velocity,
-                          Attitude => Current_Attitude);
          end if;
 
          --  | -110  s | 7500  m |  250   m/s | Heatshield jettison
@@ -232,12 +247,11 @@ begin
            Current_Phase = Parachute_Deployed and then
            Current_Altitude <= Altitude_For_Heatshield_Jettison
          then
-            Log.Trace (Message => "Jettisoning heatshield...");
-            Current_Phase := Heatshield_Jettisoned;
+            Change_Phase
+              (Threshold_Altitude => Altitude_For_Heatshield_Jettison,
+               New_Phase          => Heatshield_Jettisoned,
+               Description        => "Jettisoning heatshield...");
             Altimeter.Jettison_Heatshield;
-            Log_Position (Altitude => Current_Altitude,
-                          Velocity => Current_Velocity,
-                          Attitude => Current_Attitude);
          end if;
 
          --  EDL sequence:
@@ -250,12 +264,11 @@ begin
            Current_Phase = Heatshield_Jettisoned and then
            Current_Altitude <= Altitude_For_Leg_Deployment
          then
-            Log.Trace (Message => "Deploying landing legs...");
-            Current_Phase := Legs_Deployed;
+            Change_Phase
+              (Threshold_Altitude => Altitude_For_Leg_Deployment,
+               New_Phase          => Legs_Deployed,
+               Description        => "Deploying landing legs...");
             Landing_Legs.Deploy;
-            Log_Position (Altitude => Current_Altitude,
-                          Velocity => Current_Velocity,
-                          Attitude => Current_Attitude);
          end if;
 
          --  Entering powered descent.
@@ -268,37 +281,35 @@ begin
            Current_Phase = Legs_Deployed and then
            Current_Altitude <= Altitude_For_Lander_Separation
          then
-            Log.Trace (Message => "Separating lander...");
-            Current_Phase := Lander_Separated;
+            Change_Phase
+              (Threshold_Altitude => Altitude_For_Lander_Separation,
+               New_Phase          => Lander_Separated,
+               Description        => "Separating lander...");
             Altimeter.Separate_Lander;
             Powered_Descent_At := Next_Cycle + Ada.Real_Time.Milliseconds (500);
-            Log_Position (Altitude => Current_Altitude,
-                          Velocity => Current_Velocity,
-                          Attitude => Current_Attitude);
          end if;
 
          if
            Current_Phase = Lander_Separated and then
            Next_Cycle >= Powered_Descent_At
          then
-            Log.Trace (Message => "Entering powered descent flight mode...");
-            Current_Phase := Powered_Descent;
+            Change_Phase
+              (Threshold_Altitude => Altitude_For_Lander_Separation,
+               New_Phase          => Powered_Descent,
+               Description        => "Entering powered descent flight mode...");
             Engines.Start_Descent;
-            Log_Position (Altitude => Current_Altitude,
-                          Velocity => Current_Velocity,
-                          Attitude => Current_Attitude);
          end if;
 
          if
            not Monitor_Enabled and then
            Current_Altitude <= Altitude_For_Arming_Touchdown_Monitor
          then
-            Log.Trace (Message => "Enabling touchdown monitors...");
+            Change_Phase
+              (Threshold_Altitude => Altitude_For_Arming_Touchdown_Monitor,
+               New_Phase          => Current_Phase,
+               Description        => "Enabling touchdown monitors...");
             Touchdown_Monitor.Enable;
             Monitor_Enabled := True;
-            Log_Position (Altitude => Current_Altitude,
-                          Velocity => Current_Velocity,
-                          Attitude => Current_Attitude);
          end if;
 
          Update_Shared_Data;
