@@ -9,7 +9,19 @@ package Planets.Parameters
   with Pure => True
 is
 
-   type Property is
+   type Property is tagged limited private;
+
+   function Average_Gravity (This : in Property) return Shared_Types.Scalar;
+   function Estimated_Mass  (This : in Property) return Shared_Types.Scalar;
+   function Mean_Radius     (This : in Property) return Shared_Types.Scalar;
+
+   type Parameter is array (Planet_Name'Range) of Property;
+
+   Properties : constant Parameter;
+
+private
+
+   type Property is tagged limited
       record
          Average_Gravity : Shared_Types.Scalar;
          --  The (average) gravity of the given planet in m/s².
@@ -19,14 +31,8 @@ is
          --  The (mean) radius of the given planet in m.
       end record;
 
-   type Parameter is array (Planet_Name'Range) of Property;
-
-   Properties : constant Parameter;
-
-private
-
-   Properties : constant Parameter :=
-                  (Mercury => Property'(Average_Gravity => 3.700,
+   Properties : constant Parameter
+     := Parameter'(Mercury => Property'(Average_Gravity => 3.700,
                                         Estimated_Mass  => 3.285E23,
                                         Mean_Radius     => 2_439_700.0),
                    Venus   => Property'(Average_Gravity => 8.870,
@@ -50,5 +56,14 @@ private
                    Neptune => Property'(Average_Gravity => 11.150,
                                         Estimated_Mass  => 1.024E26,
                                         Mean_Radius     => 24_622_000.0));
+
+   function Average_Gravity (This : in Property) return Shared_Types.Scalar is
+     (This.Average_Gravity);
+
+   function Estimated_Mass (This : in Property) return Shared_Types.Scalar is
+     (This.Estimated_Mass);
+
+   function Mean_Radius (This : in Property) return Shared_Types.Scalar is
+     (This.Mean_Radius);
 
 end Planets.Parameters;
