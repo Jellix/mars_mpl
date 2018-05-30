@@ -2,7 +2,7 @@ with Ada.Real_Time;
 with Configuration.Cycle_Times;
 with Configuration.Task_Offsets;
 with Landing_Legs;
-with Planets.Parameters;
+with Planets.Equations;
 with Shared_Parameters.Read;
 with Rocket_Science;
 with Scalar_Elementary_Functions;
@@ -19,10 +19,6 @@ package body Altimeter is
    use type Shared_Types.Meter_Per_Second;
    use type Shared_Types.Meter_Per_Square_Second;
    use type Shared_Types.Scalar;
-
-   Gravity             : constant Shared_Types.Meter_Per_Square_Second :=
-                           Shared_Types.Meter_Per_Square_Second
-                             (Planets.Parameters.Gravity (Planets.Mars));
 
    Initial_Attitude    : constant Shared_Types.Degree
      := Shared_Parameters.Read.Initial_Attitude;
@@ -195,6 +191,9 @@ package body Altimeter is
                                 Sin (X => Shared_Types.Scalar (Attitude_Now));
             Horizontal_Part : constant Shared_Types.Scalar :=
                                 Cos (X => Shared_Types.Scalar (Attitude_Now));
+            Gravity         : constant Shared_Types.Meter_Per_Square_Second :=
+                                Planets.Equations.Gravity (Planet   => Planets.Mars,
+                                                           Altitude => Altitude_Now);
          begin
             --  Calculate change in velocity according to gravity effects.
             Calculate_Delta_V :

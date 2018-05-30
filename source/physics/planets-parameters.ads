@@ -3,11 +3,13 @@
 --
 -- @description
 -- Child package of Planets, providing various physical parameters of them.
+with Shared_Types;
+
 package Planets.Parameters
   with Pure => True
 is
 
-   type Parameter is array (Planet_Name'Range) of Float;
+   type Parameter is array (Planet_Name'Range) of Shared_Types.Scalar;
 
    Gravity : constant Parameter;
    --  The (average) gravity of the given planet in m/s².
