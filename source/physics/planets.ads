@@ -21,4 +21,7 @@ is
    --  @value Uranus  Uranus (another gas planet)
    --  @value Neptune Neptune (rather large gaseous body)
 
+   Big_G : constant := 6.67408E-11;
+   -- gravitational constant
+
 end Planets;
