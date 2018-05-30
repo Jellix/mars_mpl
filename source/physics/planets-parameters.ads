@@ -9,44 +9,46 @@ package Planets.Parameters
   with Pure => True
 is
 
-   type Parameter is array (Planet_Name'Range) of Shared_Types.Scalar;
+   type Property is
+      record
+         Average_Gravity : Shared_Types.Scalar;
+         --  The (average) gravity of the given planet in m/s².
+         Estimated_Mass  : Shared_Types.Scalar;
+         --  The (estimated) mass of the given planet in kg.
+         Mean_Radius     : Shared_Types.Scalar;
+         --  The (mean) radius of the given planet in m.
+      end record;
 
-   Gravity : constant Parameter;
-   --  The (average) gravity of the given planet in m/s².
+   type Parameter is array (Planet_Name'Range) of Property;
 
-   Mass : constant Parameter;
-   --  The (estimated) mass of the given planet in kg.
-
-   Radius : constant Parameter;
-   --  The (mean) radius of the given planet in m.
+   Properties : constant Parameter;
 
 private
 
-   Gravity : constant Parameter := Parameter'(Mercury =>  3.700,
-                                              Venus   =>  8.870,
-                                              Earth   =>  9.807,
-                                              Mars    =>  3.711,
-                                              Jupiter => 24.790,
-                                              Saturn  => 10.440,
-                                              Uranus  =>  8.690,
-                                              Neptune => 11.150);
-
-   Mass : constant Parameter := Parameter'(Mercury => 3.285E23,
-                                           Venus   => 4.867E24,
-                                           Earth   => 5.972E24,
-                                           Mars    => 6.390E23,
-                                           Jupiter => 1.898E27,
-                                           Saturn  => 5.683E26,
-                                           Uranus  => 8.681E25,
-                                           Neptune => 1.024E26);
-
-   Radius : constant Parameter := Parameter'(Mercury =>  2_439_700.0,
-                                             Venus   =>  6_051_800.0,
-                                             Earth   =>  6_371_000.0,
-                                             Mars    =>  3_389_500.0,
-                                             Jupiter => 69_911_000.0,
-                                             Saturn  => 58_232_000.0,
-                                             Uranus  => 25_362_000.0,
-                                             Neptune => 24_622_000.0);
+   Properties : constant Parameter :=
+                  (Mercury => Property'(Average_Gravity => 3.700,
+                                        Estimated_Mass  => 3.285E23,
+                                        Mean_Radius     => 2_439_700.0),
+                   Venus   => Property'(Average_Gravity => 8.870,
+                                        Estimated_Mass  => 4.867E24,
+                                        Mean_Radius     => 6_051_800.0),
+                   Earth   => Property'(Average_Gravity => 9.807,
+                                        Estimated_Mass  => 5.972E24,
+                                        Mean_Radius     => 6_371_000.0),
+                   Mars    => Property'(Average_Gravity => 3.711,
+                                        Estimated_Mass  => 6.390E23,
+                                        Mean_Radius     => 3_389_500.0),
+                   Jupiter => Property'(Average_Gravity => 24.790,
+                                        Estimated_Mass  => 1.898E27,
+                                        Mean_Radius     => 69_911_000.0),
+                   Saturn  => Property'(Average_Gravity => 10.440,
+                                        Estimated_Mass  => 5.683E26,
+                                        Mean_Radius     => 58_232_000.0),
+                   Uranus  => Property'(Average_Gravity => 8.690,
+                                        Estimated_Mass  => 8.681E25,
+                                        Mean_Radius     => 25_362_000.0),
+                   Neptune => Property'(Average_Gravity => 11.150,
+                                        Estimated_Mass  => 1.024E26,
+                                        Mean_Radius     => 24_622_000.0));
 
 end Planets.Parameters;
