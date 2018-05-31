@@ -34,7 +34,7 @@ package body Altimeter is
      := Shared_Parameters.Read.Dry_Mass;
 
    Mars                : constant Planets.Parameters.Property :=
-                           Planets.Parameters.Properties (Planets.Mars);
+                           Planets.Parameters.Properties_Of (Planets.Mars);
 
    Upper_Atmosphere    : constant Shared_Types.Meter := 125_000.0;
 
