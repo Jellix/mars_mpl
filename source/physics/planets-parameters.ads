@@ -9,7 +9,7 @@ package Planets.Parameters
   with Pure => True
 is
 
-   type Property is tagged limited private;
+   type Property is tagged private;
 
    function Average_Gravity (This : in Property) return Shared_Types.Scalar;
    function Estimated_Mass  (This : in Property) return Shared_Types.Scalar;
@@ -21,7 +21,7 @@ is
 
 private
 
-   type Property is tagged limited
+   type Property is tagged
       record
          Average_Gravity : Shared_Types.Scalar;
          --  The (average) gravity of the given planet in m/s².

@@ -3,6 +3,7 @@ with Configuration.Cycle_Times;
 with Configuration.Task_Offsets;
 with Landing_Legs;
 with Planets.Equations;
+with Planets.Parameters;
 with Shared_Parameters.Read;
 with Rocket_Science;
 with Scalar_Elementary_Functions;
@@ -31,6 +32,9 @@ package body Altimeter is
 
    Initial_Lander_Mass : constant Shared_Types.Vehicle_Mass
      := Shared_Parameters.Read.Dry_Mass;
+
+   Mars                : constant Planets.Parameters.Property :=
+                           Planets.Parameters.Properties (Planets.Mars);
 
    Upper_Atmosphere    : constant Shared_Types.Meter := 125_000.0;
 
@@ -192,8 +196,9 @@ package body Altimeter is
             Horizontal_Part : constant Shared_Types.Scalar :=
                                 Cos (X => Shared_Types.Scalar (Attitude_Now));
             Gravity         : constant Shared_Types.Meter_Per_Square_Second :=
-                                Planets.Equations.Gravity (Planet   => Planets.Mars,
-                                                           Altitude => Altitude_Now);
+                                Planets.Equations.Gravity
+                                  (Planet   => Mars,
+                                   Altitude => Altitude_Now);
          begin
             --  Calculate change in velocity according to gravity effects.
             Calculate_Delta_V :
