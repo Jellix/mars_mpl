@@ -28,8 +28,6 @@ private
    --  Indicates if the original Mars MPL implementation fault in the touchdown
    --  monitor shall be simulated (=True) or not (=False).
 
-   pragma Warnings (Off, "instance does not use primitive operation ""*""");
-
    package Dry_Mass_Store is
      new Task_Safe_Store ("+"           => Shared_Types."+",
                           "-"           => Shared_Types."-",
@@ -119,8 +117,6 @@ private
                           Initial_Value => 2.375);
    Shared_Target_Landing_Velocity : Target_Landing_Velocity_Store.Shelf;
    --  Target landing velocity for thruster control in m/s.
-
-   pragma Warnings (On, "instance does not use primitive operation ""*""");
 
    pragma Annotate (GnatCheck,
                     Exempt_Off,

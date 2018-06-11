@@ -100,7 +100,7 @@ private
 
    package Log is new Global.Log (Unit_Name => "GUI");
 
-   pragma Warnings (Off, "instance does not use primitive operation ""*""");
+   pragma Warnings (Off, "instance uses predefined operation, not primitive operation");
 
    function Image is new
      Shared_Types.IO.Generic_Image
@@ -139,6 +139,6 @@ private
      Shared_Types.IO.Generic_Image (T    => Shared_Types.Meter_Per_Second,
                                     Unit => "m/s");
 
-   pragma Warnings (On, "instance does not use primitive operation ""*""");
+   pragma Warnings (On, "instance uses predefined operation, not primitive operation");
 
 end GUI;

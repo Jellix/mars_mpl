@@ -11,7 +11,6 @@ package body Thrusters is
    use type Ada.Real_Time.Time_Span;
    use type Shared_Types.Fuel_Mass;
    use type Shared_Types.Kilogram;
-   use type Shared_Types.Meter_Per_Second;
 
    type State is (Disabled, Enabled);
    --  State of thruster.
@@ -44,13 +43,9 @@ package body Thrusters is
                               (Shared_Parameters.Read.Shortest_On_Time));
    --  Shortest on-time for thruster.
 
-   pragma Warnings (Off, "instance does not use primitive operation ""*""");
-
    package Fuel_Store is new Task_Safe_Store
      (Stored_Type   => Shared_Types.Fuel_Mass,
       Initial_Value => Shared_Parameters.Read.Initial_Fuel_Mass);
-
-   pragma Warnings (On, "instance does not use primitive operation ""*""");
 
    Fuel_State : Fuel_Store.Shelf;
    Aborted    : Boolean := False
@@ -70,6 +65,14 @@ package body Thrusters is
        Dynamic_Predicate =>
          (Fuel_Flow = Disabled or else Flow_Since > Global.Start_Time);
 
+   package Valve_Timing is
+
+      procedure Do_Schedule (At_Time : in Ada.Real_Time.Time);
+      procedure Do_Cancel;
+      procedure Do_Wake_Up;
+
+   end Valve_Timing;
+
    protected Engine_State is
       function Get_Total return Duration;
       function Get_Burns return Max_Burn_Cycles;
@@ -84,16 +87,6 @@ package body Thrusters is
                        Flow_Total => Ada.Real_Time.Time_Span_Zero,
                        Burns      => 0);
    end Engine_State;
-
-   package Valve_Timing is
-
-      procedure Do_Schedule (At_Time : in Ada.Real_Time.Time);
-      procedure Do_Cancel;
-      procedure Do_Wake_Up;
-
-   end Valve_Timing;
-
-   package body Valve_Timing is separate;
 
    protected body Engine_State is
 
@@ -174,6 +167,8 @@ package body Thrusters is
       end Set;
 
    end Engine_State;
+
+   package body Valve_Timing is separate;
 
    function Burn_Cycles return Max_Burn_Cycles is
      (Engine_State.Get_Burns);

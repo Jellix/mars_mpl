@@ -146,10 +146,9 @@ package body Gtk.Missed is
       Test      : GFileTest) return Gboolean;
    pragma Import (C, G_File_Test, "g_file_test_utf8");
 
-   function G_Find_Program_In_Path_UTF8 (Program : Interfaces.C.char_array)
-                                         return Interfaces.C.Strings.chars_ptr;
-   pragma Import
-     (C, G_Find_Program_In_Path_UTF8, "g_find_program_in_path_utf8");
+   function G_Find_Program_In_Path (Program : Interfaces.C.char_array)
+                                    return Interfaces.C.Strings.chars_ptr;
+   pragma Import (C, G_Find_Program_In_Path, "g_find_program_in_path");
 
    procedure G_Free (Border : Interfaces.C.Strings.chars_ptr);
    pragma Import (C, G_Free, "g_free");
@@ -874,7 +873,7 @@ package body Gtk.Missed is
       Ptr : Interfaces.C.Strings.chars_ptr;
       use type Interfaces.C.Strings.chars_ptr;
    begin
-      Ptr := G_Find_Program_In_Path_UTF8 (Interfaces.C.To_C (Program));
+      Ptr := G_Find_Program_In_Path (Interfaces.C.To_C (Program));
       if Ptr = Interfaces.C.Strings.Null_Ptr then
          return "";
       else

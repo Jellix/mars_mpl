@@ -25,7 +25,6 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Gtkada.Types;
 with Interfaces.C.Strings;
 
 package body Gtk.Layered.Waveform.Sweeper is
@@ -39,7 +38,7 @@ package body Gtk.Layered.Waveform.Sweeper is
    Def_Page : constant Duration := 20.0;
 
    Class_Record        : Ada_GObject_Class := Uninitialized_Class;
-   Signal_Names        : constant Gtkada.Types.Chars_Ptr_Array :=
+   Signal_Names        : constant Interfaces.C.Strings.chars_ptr_array :=
                            (0 => Interfaces.C.Strings.New_String ("freezing-changed"),
                             1 => Interfaces.C.Strings.New_String ("offset-changed"));
    Freezing_Changed_ID : Signal_Id := Invalid_Signal_Id;

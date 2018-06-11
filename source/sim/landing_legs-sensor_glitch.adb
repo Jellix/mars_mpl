@@ -1,4 +1,5 @@
 with Ada.Numerics.Discrete_Random;
+with Landing_Legs_Iterator;
 
 separate (Landing_Legs)
 package body Sensor_Glitch is
@@ -48,7 +49,7 @@ package body Sensor_Glitch is
 
    task type Spurious_Trigger;
 
-   Assign_Leg : Leg_Iterator;
+   Assign_Leg : Landing_Legs_Iterator.Leg_Iterator;
 
    task body Spurious_Trigger is
       The_Leg      : Shared_Types.Legs_Index;

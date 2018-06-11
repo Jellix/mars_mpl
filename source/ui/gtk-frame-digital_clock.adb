@@ -264,7 +264,6 @@ package body Gtk.Frame.Digital_Clock is
                           Num   : in     Valid_Digits)
    is
       Digit_Layout : Char_7_X_5 renames Digit_Lookup (Num);
-      use type Glib.Gint;
    begin
       --  Speed optimization 1: Only change LED state if the digit to be shown
       --  is different from the previously displayed one.

@@ -4,11 +4,12 @@ with Task_Safe_Store;
 package body Landing_Legs is
 
    use type Ada.Real_Time.Time;
-   use type Shared_Types.Legs_Index;
 
    type Task_State is (Running, Deployed, Touched_Down, Terminated);
    subtype Events is Task_State range Deployed .. Terminated;
 
+   pragma Warnings (Off, "formal parameter ""L"" is not referenced");
+   pragma Warnings (Off, "formal parameter ""R"" is not referenced");
    function "+" (L, R : in Shared_Types.Leg_State)
                  return Shared_Types.Leg_State is
      (raise Program_Error);
@@ -16,6 +17,8 @@ package body Landing_Legs is
    function "-" (L, R : in Shared_Types.Leg_State)
                  return Shared_Types.Leg_State is
      (raise Program_Error);
+   pragma Warnings (On, "formal parameter ""L"" is not referenced");
+   pragma Warnings (On, "formal parameter ""R"" is not referenced");
 
    package Leg_Store is new Task_Safe_Store
      (Stored_Type   => Shared_Types.Leg_State,
@@ -137,20 +140,5 @@ package body Landing_Legs is
       when E : others =>
          Log.Trace (E => E);
    end Simulate_Landing_Legs;
-
-   protected body Leg_Iterator is
-
-      entry Next (The_Leg : out Shared_Types.Legs_Index) when Legs_Available is
-      begin
-         The_Leg := Current_Leg;
-
-         if Current_Leg = Shared_Types.Legs_Index'Last then
-            Legs_Available := False;
-         else
-            Current_Leg := Shared_Types.Legs_Index'Succ (Current_Leg);
-         end if;
-      end Next;
-
-   end Leg_Iterator;
 
 end Landing_Legs;

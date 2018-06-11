@@ -41,7 +41,6 @@ with Gdk.Types;
 with Glib.Messages;
 with Glib.Object.Checked_Destroy;
 with Glib.Properties.Creation;
-with Gtkada.Types;
 with Gtk.Adjustment;
 with Gtk.Enums;
 with Gtk.Image;
@@ -105,7 +104,7 @@ package body Gtk.Oscilloscope is
    procedure Free is
      new Ada.Unchecked_Deallocation (Selection_State, Selection_State_Ptr);
 
-   Signal_Names : constant Gtkada.Types.Chars_Ptr_Array :=
+   Signal_Names : constant Interfaces.C.Strings.chars_ptr_array :=
                     (0  => Interfaces.C.Strings.New_String ("autoscaling-changed"),
                      1  => Interfaces.C.Strings.New_String ("raster-mode-changed"),
                      2  => Interfaces.C.Strings.New_String ("freezing-changed"),

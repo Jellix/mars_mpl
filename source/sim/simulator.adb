@@ -72,7 +72,7 @@ procedure Simulator is
    function Image is new Shared_Types.IO.Generic_Image (T    => Duration,
                                                         Unit => "s");
 
-   pragma Warnings (Off, "instance does not use primitive operation");
+   pragma Warnings (Off, "instance uses predefined operation, not primitive operation");
    function Image is new
      Shared_Types.IO.Generic_Image (T    => Shared_Types.Degree,
                                     Unit => "°");
@@ -84,7 +84,7 @@ procedure Simulator is
    function Image is new
      Shared_Types.IO.Generic_Image (T    => Shared_Types.Meter_Per_Second,
                                     Unit => "m/s");
-   pragma Warnings (On, "instance does not use primitive operation");
+   pragma Warnings (On, "instance uses predefined operation, not primitive operation");
 
    procedure Update_Shared_Data;
 

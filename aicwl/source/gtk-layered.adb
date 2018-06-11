@@ -31,7 +31,6 @@ with Ada.Text_IO;
 with Glib.Messages;
 with Glib.Properties.Creation;
 with Glib.Object;
-with Gtkada.Types;
 with Gtk.Missed;
 with Interfaces.C.Strings;
 with System.Storage_Elements;
@@ -50,7 +49,7 @@ package body Gtk.Layered is
 
    Class : Ada_GObject_Class := Uninitialized_Class;
 
-   Signal_Names : constant Gtkada.Types.Chars_Ptr_Array :=
+   Signal_Names : constant Interfaces.C.Strings.chars_ptr_array :=
                     (0 => Interfaces.C.Strings.New_String ("layer-added"),
                      1 => Interfaces.C.Strings.New_String ("layer-removed"));
    Layer_Added_ID   : Signal_Id := Invalid_Signal_Id;

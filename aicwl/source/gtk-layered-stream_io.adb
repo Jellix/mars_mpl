@@ -48,8 +48,9 @@ with Gtk.Layered.Needle;
 with Gtk.Layered.Rectangular_Background;
 with Gtk.Layered.Rectangular_Clip_Region;
 with Gtk.Layered.Sector_Needle;
+with Gtkada.Types;
 
-with Interfaces.C.Strings;
+with Interfaces;
 
 package body Gtk.Layered.Stream_IO is
 
@@ -388,18 +389,17 @@ package body Gtk.Layered.Stream_IO is
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
       Value  : out Cairo.Cairo_Font_Face)
    is
-      Family : aliased Interfaces.C.char_array :=
-                  Interfaces.C.To_C (UTF8_String'(Restore (Stream'Access)));
+      Family : aliased constant Gtkada.Types.Chars_Ptr :=
+                 Gtkada.Types.New_String (UTF8_String'(Restore (Stream'Access)));
       Slant  : Cairo.Cairo_Font_Slant;
       Weight : Cairo.Cairo_Font_Weight;
    begin
       Restore (Stream, Slant);
       Restore (Stream, Weight);
-      Value :=
-        Cairo.Font_Face.Toy_Font_Face_Create
-          (Interfaces.C.Strings.To_Chars_Ptr (Family'Unchecked_Access),
-           Slant,
-           Weight);
+      Value := Cairo.Font_Face.Toy_Font_Face_Create (Family => Family,
+                                                     Slant  => Slant,
+                                                     Weight => Weight);
+      Gtkada.Types.g_free (Family);
    end Restore;
 
    procedure Restore
@@ -938,14 +938,16 @@ package body Gtk.Layered.Stream_IO is
 
    procedure Store
      (Stream : in out Ada.Streams.Root_Stream_Type'Class;
-      Value  : Cairo.Cairo_Font_Face) is
+      Value  : in     Cairo.Cairo_Font_Face) is
    begin
-      Store
-        (Stream,
-         Interfaces.C.Strings.Value
-           (Cairo.Font_Face.Toy_Font_Face_Get_Family (Value)));
-      Store (Stream, Cairo.Font_Face.Toy_Font_Face_Get_Slant  (Value));
-      Store (Stream, Cairo.Font_Face.Toy_Font_Face_Get_Weight (Value));
+      Store (Stream => Stream,
+             Value  =>
+               Gtkada.Types.Value
+                 (Cairo.Font_Face.Toy_Font_Face_Get_Family (Value)));
+      Store (Stream => Stream,
+             Value  => Cairo.Font_Face.Toy_Font_Face_Get_Slant  (Value));
+      Store (Stream => Stream,
+             Value  => Cairo.Font_Face.Toy_Font_Face_Get_Weight (Value));
    end Store;
 
    procedure Store

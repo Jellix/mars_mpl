@@ -39,9 +39,13 @@ is
    function To_X (T : X_Axis) return Horizontal_Offset;
 
    procedure Add
-     (X           : Horizontal_Offset;
-      Left, Right : Y_Axis;
-      Min,  Max   : Y_Axis)
+     (X           : in Horizontal_Offset;
+      Left, Right : in Y_Axis;
+      Min,  Max   : in Y_Axis);
+   procedure Add
+     (X           : in Horizontal_Offset;
+      Left, Right : in Y_Axis;
+      Min,  Max   : in Y_Axis)
    is
       pragma Inline (Add);
    begin
@@ -99,8 +103,9 @@ is
       end if;
    end Add_Point;
 
+   procedure Done with
+     Inline => True;
    procedure Done is
-      pragma Inline (Done);
    begin
       Layer.Sampled := True;
       Layer.Valid   := Data.Last_Count > 0;
@@ -140,9 +145,14 @@ is
    end Done;
 
    procedure Set_Interval_Bounds
-     (T     : X_Axis;
-      X     : out Horizontal_Offset;
-      Right : out X_Axis)
+     (T     : in     X_Axis;
+      X     :    out Horizontal_Offset;
+      Right :    out X_Axis);
+
+   procedure Set_Interval_Bounds
+     (T     : in     X_Axis;
+      X     :    out Horizontal_Offset;
+      Right :    out X_Axis)
    is
       pragma Inline (Set_Interval_Bounds);
       Offset : constant X_Axis :=

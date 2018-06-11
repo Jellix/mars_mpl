@@ -34,7 +34,7 @@ with Pango.Enums;
 with Pango.Font;
 
 with Ada.Finalization;
-with Interfaces.C.Strings;
+with Gtkada.Types;
 
 package Pango.Cairo.Fonts is
 
@@ -71,7 +71,7 @@ package Pango.Cairo.Fonts is
       Variant : Pango.Enums.Variant := Pango.Enums.Pango_Variant_Normal;
       Weight  : Pango.Enums.Weight  := Pango.Enums.Pango_Weight_Normal;
       Stretch : Pango.Enums.Stretch := Pango.Enums.Pango_Stretch_Normal;
-      Size    : Gint                := 12) return Pango_Cairo_Font;
+      Size    : Glib.Gint           := 12) return Pango_Cairo_Font;
 
    --
    -- Create_Pango_From_Description -- Create pango font face
@@ -82,7 +82,7 @@ package Pango.Cairo.Fonts is
    --
    --    The font face object corresponding to the description
    --
-   function Create_Pango_From_Description (Description : UTF8_String)
+   function Create_Pango_From_Description (Description : Glib.UTF8_String)
                                            return Pango_Cairo_Font;
 
    --
@@ -97,7 +97,7 @@ package Pango.Cairo.Fonts is
    --    The font face object corresponding to the parameters
    --
    function Create_Toy
-     (Family : UTF8_String;
+     (Family : Glib.UTF8_String;
       Slant  : Cairo_Font_Slant  := Cairo_Font_Slant_Normal;
       Weight : Cairo_Font_Weight := Cairo_Font_Weight_Normal)
       return Pango_Cairo_Font;
@@ -111,7 +111,7 @@ package Pango.Cairo.Fonts is
    --
    --    The family
    --
-   function Get_Family (Font : Pango_Cairo_Font) return UTF8_String;
+   function Get_Family (Font : Pango_Cairo_Font) return Glib.UTF8_String;
 
    --
    -- Get_Markup_Extents -- Get extents of a text
@@ -128,7 +128,7 @@ package Pango.Cairo.Fonts is
    --
    procedure Get_Markup_Extents (Font    : Pango_Cairo_Font;
                                  Context : Cairo_Context;
-                                 Text    : UTF8_String;
+                                 Text    : Glib.UTF8_String;
                                  Extents : out Cairo_Text_Extents);
 
    --
@@ -140,7 +140,7 @@ package Pango.Cairo.Fonts is
    --
    --    The font size in points
    --
-   function Get_Size (Font : Pango_Cairo_Font) return Gint;
+   function Get_Size (Font : Pango_Cairo_Font) return Glib.Gint;
 
    --
    -- Get_Slant -- Get font face slant
@@ -165,7 +165,7 @@ package Pango.Cairo.Fonts is
    --
    procedure Get_Text_Extents (Font    : Pango_Cairo_Font;
                                Context : Cairo_Context;
-                               Text    : UTF8_String;
+                               Text    : Glib.UTF8_String;
                                Extents : out Cairo_Text_Extents);
 
    --
@@ -210,7 +210,7 @@ package Pango.Cairo.Fonts is
    --    Family - To set
    --
    procedure Set_Family (Font   : in out Pango_Cairo_Font;
-                         Family : UTF8_String);
+                         Family : Glib.UTF8_String);
 
    --
    -- Get_Size -- Get font size (relevant for pango only)
@@ -218,7 +218,7 @@ package Pango.Cairo.Fonts is
    --    Font - The font face
    --    Size - The font size in points
    --
-   procedure Set_Size (Font : in out Pango_Cairo_Font; Size : Gint);
+   procedure Set_Size (Font : in out Pango_Cairo_Font; Size : Glib.Gint);
 
    --
    -- Set_Slant -- Set font slant
@@ -264,7 +264,7 @@ package Pango.Cairo.Fonts is
    --
    procedure Show_Markup (Font    : Pango_Cairo_Font;
                           Context : Cairo_Context;
-                          Text    : UTF8_String);
+                          Text    : Glib.UTF8_String);
 
    --
    -- Show_Text -- Get extents of a text
@@ -275,7 +275,7 @@ package Pango.Cairo.Fonts is
    --
    procedure Show_Text (Font    : Pango_Cairo_Font;
                         Context : Cairo_Context;
-                        Text    : UTF8_String);
+                        Text    : Glib.UTF8_String);
 
    --
    -- Store -- Store font face into the stream
@@ -309,11 +309,11 @@ private
 
    function Create_Text_Layout (Handle  : Pango_Font_Description_Handle;
                                 Context : Cairo_Context;
-                                Text    : UTF8_String) return Pango_Layout;
+                                Text    : Glib.UTF8_String) return Pango_Layout;
 
    function Create_Markup_Layout (Handle  : Pango_Font_Description_Handle;
                                   Context : Cairo_Context;
-                                  Text    : UTF8_String) return Pango_Layout;
+                                  Text    : Glib.UTF8_String) return Pango_Layout;
 
    overriding procedure Adjust (Handle : in out Pango_Font_Description_Handle);
 
@@ -331,10 +331,10 @@ private
 
    procedure Check (Font : Cairo_Font_Face_Handle);
 
-   function Get_Family (Handle : Cairo_Font_Face_Handle) return UTF8_String;
+   function Get_Family (Handle : Cairo_Font_Face_Handle) return Glib.UTF8_String;
 
    function Get_Family (Handle : Cairo_Font_Face_Handle)
-                        return Interfaces.C.Strings.chars_ptr;
+                        return Gtkada.Types.Chars_Ptr;
 
    function Get_Slant (Handle : Cairo_Font_Face_Handle) return Cairo_Font_Slant;
 
@@ -360,7 +360,7 @@ private
    procedure Set_Font (Context : Cairo_Context;
                        Font    : Cairo_Font_Face_Handle);
 
-   function Strip_Tags (Text : UTF8_String) return UTF8_String;
+   function Strip_Tags (Text : Glib.UTF8_String) return Glib.UTF8_String;
 
    pragma Warnings (On, "declaration hides ""Font""");
 

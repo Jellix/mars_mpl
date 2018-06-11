@@ -2,6 +2,7 @@ with Ada.Real_Time;
 with Configuration.Cycle_Times;
 with Configuration.Task_Offsets;
 with Landing_Legs;
+with Landing_Legs_Iterator;
 with Shared_Parameters.Read;
 with Thrusters;
 
@@ -61,7 +62,7 @@ package body Touchdown_Monitor is
 
    Legs_Control : Task_Control_List;
 
-   Assign_Leg : Landing_Legs.Leg_Iterator;
+   Assign_Leg : Landing_Legs_Iterator.Leg_Iterator;
 
    task body Touchdown_Monitor_Execute is
       Indicator         : Leg_Indicator          := Default_Indicator;

@@ -36,9 +36,12 @@ package body GUI is
                      Slant  => Cairo.Cairo_Font_Slant_Normal,
                      Weight => Cairo.Cairo_Font_Weight_Bold);
 
+   type String_List_Access is not null access
+     Gtk.Enums.String_Lists.Controlled_String_List;
+
    type Scaling is
       record
-         Texts  : not null access Gtk.Enums.String_Lists.Controlled_String_List;
+         Texts  : String_List_Access;
          Factor : Glib.Gdouble;
       end record;
 
@@ -85,7 +88,7 @@ package body GUI is
    -- GUI update frequency, 100/s ought to be enough.
 
    --  Callbacks for entry fields
-   pragma Warnings (Off, "instance does not use primitive operation ""*""");
+   pragma Warnings (Off, "instance uses predefined operation, not primitive operation");
 
    function Set_Dry_Mass is new Callbacks.Set_Spin_Button_Value
      (T     => Shared_Types.Vehicle_Mass,
@@ -183,7 +186,7 @@ package body GUI is
       Default    => Shared_Parameters.Default.Shortest_On_Time,
       Text_Entry => Shortest_On_Time);
 
-   pragma Warnings (On, "instance does not use primitive operation ""*""");
+   pragma Warnings (On, "instance uses predefined operation, not primitive operation");
 
    --  Prototypes
    function Create_Sensor_Signals_Frame

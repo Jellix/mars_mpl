@@ -25,7 +25,6 @@
 --  executable file might be covered by the GNU Public License.       --
 -- __________________________________________________________________ --
 
-with Gtkada.Types;
 with Interfaces.C.Strings;
 
 package body Gtk.Layered.Waveform.Amplifier is
@@ -34,7 +33,7 @@ package body Gtk.Layered.Waveform.Amplifier is
    pragma Warnings (Off, "declaration hides ""Params""");
 
    Class_Record           : Ada_GObject_Class := Uninitialized_Class;
-   Signal_Names           : constant Gtkada.Types.Chars_Ptr_Array
+   Signal_Names           : constant Interfaces.C.Strings.chars_ptr_array
      := (0 => Interfaces.C.Strings.New_String ("autoscaling-changed"),
          1 => Interfaces.C.Strings.New_String ("raster-mode-changed"));
    Autoscaling_Changed_ID : Signal_Id := Invalid_Signal_Id;

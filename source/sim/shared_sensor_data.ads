@@ -49,11 +49,13 @@ is
 
    pragma Annotate (GNATcheck, Exempt_Off, "Visible_Components");
 
+   pragma Warnings (Off, "formal parameter """);
    function "+" (L, R : in State) return State is
      (raise Program_Error);
 
    function "-" (L, R : in State) return State is
      (raise Program_Error);
+   pragma Warnings (On, "formal parameter """);
 
    package State_Store is new Task_Safe_Store
      (Stored_Type   => State,

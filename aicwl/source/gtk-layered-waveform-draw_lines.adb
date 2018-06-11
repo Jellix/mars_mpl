@@ -31,18 +31,21 @@ procedure Draw_Lines
    Context : Cairo.Cairo_Context;
    Data    : in out Line_Method_Data)
 is
-   pragma Warnings (Off, "declaration hides ""Point""");
+   pragma Warnings (Off, "declaration hides ""Point"" at");
+   pragma Warnings (Off, "declaration of ""Point"" hides one at");
 
-   procedure Line_To (Point : Cairo.Ellipses.Cairo_Tuple)
-     with Inline => True
-   is
+   procedure Line_To (Point : in Cairo.Ellipses.Cairo_Tuple)
+     with Inline => True;
+
+   procedure Line_To (Point : in Cairo.Ellipses.Cairo_Tuple) is
    begin
       Cairo.Line_To (Context, Point.X, Point.Y);
    end Line_To;
 
-   procedure Move_To (Point : Cairo.Ellipses.Cairo_Tuple)
-     with Inline => True
-   is
+   procedure Move_To (Point : in Cairo.Ellipses.Cairo_Tuple)
+     with Inline => True;
+
+   procedure Move_To (Point : in Cairo.Ellipses.Cairo_Tuple) is
    begin
       Cairo.Move_To (Context, Point.X, Point.Y);
    end Move_To;
@@ -90,8 +93,11 @@ begin
             Points : Points_Array renames Data.Points.all;
 
             function Line_Point
-              (Offset : Natural) return Cairo.Ellipses.Cairo_Tuple
-              with Inline => True
+              (Offset : in Natural) return Cairo.Ellipses.Cairo_Tuple
+              with Inline => True;
+
+            function Line_Point
+              (Offset : in Natural) return Cairo.Ellipses.Cairo_Tuple
             is
                Result : constant Point_Data :=
                   Points ((Data.First + Offset) mod Points'Length);
@@ -194,7 +200,8 @@ begin
          Cairo.Set_Antialias (Context, Antialias);
       end;
    end if;
-   pragma Warnings (On, "declaration hides ""Point""");
+   pragma Warnings (On, "declaration hides ""Point"" at");
+   pragma Warnings (On, "declaration of ""Point"" hides one at");
 exception
    when Error : others =>
       Glib.Messages.Log

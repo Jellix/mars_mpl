@@ -48,8 +48,6 @@ package body Altimeter is
    Dry_Mass_Before_EDL : constant Shared_Types.Kilogram
      := Cruise_Stage_Mass + Heatshield_Mass + Initial_Lander_Mass;
 
-   pragma Warnings (Off, "instance does not use primitive operation ""*""");
-
    package Attitude_Store is new
      Task_Safe_Store (Stored_Type   => Shared_Types.Degree,
                       Initial_Value => 90.0);
@@ -85,8 +83,6 @@ package body Altimeter is
      Task_Safe_Store (Stored_Type   => Shared_Types.Meter_Per_Second,
                       Initial_Value => Initial_Velocity);
    Velocity_State : Velocity_Store.Shelf;
-
-   pragma Warnings (On, "instance does not use primitive operation ""*""");
 
    function Current_Attitude return Shared_Types.Degree is
       (Attitude_State.Get);
