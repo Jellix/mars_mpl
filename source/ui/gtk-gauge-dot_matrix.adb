@@ -1,15 +1,11 @@
 with Ada.Unchecked_Deallocation;
 with Cairo.Ellipses;
-with Gdk.Color.IHLS;
 with Glib.Object.Checked_Destroy;
 with Glib.Values;
 with Gtk.Enums;
 with Gtk.Layered.Arc;
 
 package body Gtk.Gauge.Dot_Matrix is
-
-   use type Gdk.Color.IHLS.Gdk_Luminance;
-   use type Cairo.Ellipses.Ellipse_Parameters;
 
    procedure Free is
      new Ada.Unchecked_Deallocation (Object => Dotted_Matrix_Array,
