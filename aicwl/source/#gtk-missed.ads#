@@ -317,7 +317,7 @@ package Gtk.Missed is
    --
    --    End_Error - No more items in the directory
    --
---   function Dir_Read_Name (Dir : GDir) return UTF8_String;
+--  function Dir_Read_Name (Dir : GDir) return UTF8_String;
 
    --
    -- Dir_Rewind -- Reset the directory

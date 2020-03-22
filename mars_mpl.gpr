@@ -1,5 +1,5 @@
-with "GtkAda";
-with "aicwl/AICWL";
+with "gtkada";
+with "aicwl/aicwl.gpr";
 
 project Mars_Mpl is
 

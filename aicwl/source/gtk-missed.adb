@@ -132,19 +132,19 @@ package body Gtk.Missed is
    Stock_Icons : GHashTable := No_Table;
    -----------------------------------------------------------------------------
 
-   function G_Dir_Open
-     (Path  : Interfaces.C.char_array;
-      Flags : Guint;
-      Error : access Glib.Error.GError) return GDir;
-   pragma Import (C, G_Dir_Open, "g_dir_open_utf8");
+--   function G_Dir_Open
+--     (Path  : Interfaces.C.char_array;
+--      Flags : Guint;
+--      Error : access Glib.Error.GError) return GDir;
+--   pragma Import (C, G_Dir_Open, "g_dir_open_utf8");
 
-   function G_Dir_Read_Name (Dir : GDir) return Interfaces.C.Strings.chars_ptr;
-   pragma Import (C, G_Dir_Read_Name, "g_dir_read_name_utf8");
+--   function G_Dir_Read_Name (Dir : GDir) return Interfaces.C.Strings.chars_ptr;
+--   pragma Import (C, G_Dir_Read_Name, "g_dir_read_name_utf8");
 
-   function G_File_Test
-     (File_Name : Interfaces.C.char_array;
-      Test      : GFileTest) return Gboolean;
-   pragma Import (C, G_File_Test, "g_file_test_utf8");
+--   function G_File_Test
+--     (File_Name : Interfaces.C.char_array;
+--      Test      : GFileTest) return Gboolean;
+--   pragma Import (C, G_File_Test, "g_file_test_utf8");
 
    function G_Find_Program_In_Path (Program : Interfaces.C.char_array)
                                     return Interfaces.C.Strings.chars_ptr;
@@ -153,9 +153,9 @@ package body Gtk.Missed is
    procedure G_Free (Border : Interfaces.C.Strings.chars_ptr);
    pragma Import (C, G_Free, "g_free");
 
-   function G_Get_Current_Dir_UTF8
-     return Interfaces.C.Strings.chars_ptr;
-   pragma Import (C, G_Get_Current_Dir_UTF8, "g_get_current_dir_utf8");
+--   function G_Get_Current_Dir_UTF8
+--     return Interfaces.C.Strings.chars_ptr;
+--   pragma Import (C, G_Get_Current_Dir_UTF8, "g_get_current_dir_utf8");
    -----------------------------------------------------------------------------
    procedure Cell_Pixbuf
      (Column : not null access Gtk.Tree_View_Column.Gtk_Tree_View_Column_Record'Class;
@@ -763,32 +763,32 @@ package body Gtk.Missed is
       end if;
    end Dir_Close;
 
-   procedure Dir_Open
-     (Path  : UTF8_String;
-      Dir   : out GDir;
-      Error : out Glib.Error.GError)
-   is
-      Code : aliased Glib.Error.GError;
-   begin
-      Dir := G_Dir_Open (Interfaces.C.To_C (Path), 0, Code'Access);
-      if Dir = null then
-         Error := Code;
-      else
-         Error := null;
-      end if;
-   end Dir_Open;
+--   procedure Dir_Open
+--     (Path  : UTF8_String;
+--      Dir   : out GDir;
+--      Error : out Glib.Error.GError)
+--   is
+--      Code : aliased Glib.Error.GError;
+--   begin
+--      Dir := G_Dir_Open (Interfaces.C.To_C (Path), 0, Code'Access);
+--      if Dir = null then
+--         Error := Code;
+--      else
+--         Error := null;
+--      end if;
+--   end Dir_Open;
 
-   function Dir_Read_Name (Dir : GDir) return UTF8_String
-   is
-      Ptr : constant Interfaces.C.Strings.chars_ptr := G_Dir_Read_Name (Dir);
-      use type Interfaces.C.Strings.chars_ptr;
-   begin
-      if Ptr = Interfaces.C.Strings.Null_Ptr then
-         raise Ada.IO_Exceptions.End_Error;
-      else
-         return Interfaces.C.Strings.Value (Ptr);
-      end if;
-   end Dir_Read_Name;
+--   function Dir_Read_Name (Dir : GDir) return UTF8_String
+--   is
+--      Ptr : constant Interfaces.C.Strings.chars_ptr := G_Dir_Read_Name (Dir);
+--      use type Interfaces.C.Strings.chars_ptr;
+--   begin
+--      if Ptr = Interfaces.C.Strings.Null_Ptr then
+--         raise Ada.IO_Exceptions.End_Error;
+--      else
+--         return Interfaces.C.Strings.Value (Ptr);
+--      end if;
+--   end Dir_Read_Name;
 
    procedure Erase
      (Container : not null access Gtk.Container.Gtk_Container_Record'Class)
@@ -808,28 +808,28 @@ package body Gtk.Missed is
       pragma Unreferenced (List);
    end Erase;
 
-   function File_Test
-     (File_Name : UTF8_String;
-      Flags     : GFileTest) return Boolean is
-   begin
-      return 0 /= G_File_Test (Interfaces.C.To_C (File_Name), Flags);
-   end File_Test;
+--   function File_Test
+--     (File_Name : UTF8_String;
+--      Flags     : GFileTest) return Boolean is
+--   begin
+--      return 0 /= G_File_Test (Interfaces.C.To_C (File_Name), Flags);
+--   end File_Test;
 
-   function File_Test (File_Name : UTF8_String) return GFileTest is
-      Name : constant Interfaces.C.char_array := Interfaces.C.To_C (File_Name);
-   begin
-      if 0 = G_File_Test (Name, File_Test_Exists) then
-         return 0;
-      elsif 0 /= G_File_Test (Name, File_Test_Is_Dir) then
-         return File_Test_Exists or File_Test_Is_Dir;
-      elsif 0 /= G_File_Test (Name, File_Test_Is_Executable) then
-         return File_Test_Exists or File_Test_Is_Executable;
-      elsif 0 /= G_File_Test (Name, File_Test_Is_Symlink) then
-         return File_Test_Exists or File_Test_Is_Symlink;
-      else
-         return File_Test_Exists or File_Test_Is_Regular;
-      end if;
-   end File_Test;
+--   function File_Test (File_Name : UTF8_String) return GFileTest is
+--      Name : constant Interfaces.C.char_array := Interfaces.C.To_C (File_Name);
+--   begin
+--      if 0 = G_File_Test (Name, File_Test_Exists) then
+--         return 0;
+--      elsif 0 /= G_File_Test (Name, File_Test_Is_Dir) then
+--         return File_Test_Exists or File_Test_Is_Dir;
+--      elsif 0 /= G_File_Test (Name, File_Test_Is_Executable) then
+--         return File_Test_Exists or File_Test_Is_Executable;
+--      elsif 0 /= G_File_Test (Name, File_Test_Is_Symlink) then
+--         return File_Test_Exists or File_Test_Is_Symlink;
+--      else
+--         return File_Test_Exists or File_Test_Is_Regular;
+--      end if;
+--   end File_Test;
 
    protected Wait_Cursors_Count is
       procedure Increment;
@@ -1127,17 +1127,17 @@ package body Gtk.Missed is
       return -1;
    end Get_Column_No;
 
-   function Get_Current_Dir return UTF8_String is
-      Ptr : Interfaces.C.Strings.chars_ptr;
-   begin
-      Ptr := G_Get_Current_Dir_UTF8;
-      declare
-         Result : constant UTF8_String := Interfaces.C.Strings.Value (Ptr);
-      begin
-         G_Free (Ptr);
-         return Result;
-      end;
-   end Get_Current_Dir;
+--   function Get_Current_Dir return UTF8_String is
+--      Ptr : Interfaces.C.Strings.chars_ptr;
+--   begin
+--      Ptr := G_Get_Current_Dir_UTF8;
+--      declare
+--         Result : constant UTF8_String := Interfaces.C.Strings.Value (Ptr);
+--      begin
+--         G_Free (Ptr);
+--         return Result;
+--      end;
+--   end Get_Current_Dir;
 
    function Get_Dirname (File_Name : UTF8_String) return UTF8_String is
       function Internal (File_Name : Interfaces.C.char_array)
@@ -1718,34 +1718,34 @@ package body Gtk.Missed is
       Glib.Object.Checked_Destroy (Dialog);
    end Message_Dialog;
 
-   procedure Remove (File_Name : UTF8_String) is
-      function Internal (File_Name : Interfaces.C.char_array) return Interfaces.C.int;
-      pragma Import (C, Internal, "g_remove");
-      use type Interfaces.C.int;
-   begin
-      if 0 /= Internal (Interfaces.C.To_C (File_Name)) then
-         if File_Test (File_Name, File_Test_Exists) then
-            raise Ada.IO_Exceptions.Use_Error with "File cannot be deleted";
-         end if;
-      end if;
-   end Remove;
+--   procedure Remove (File_Name : UTF8_String) is
+--      function Internal (File_Name : Interfaces.C.char_array) return Interfaces.C.int;
+--      pragma Import (C, Internal, "g_remove");
+--      use type Interfaces.C.int;
+--   begin
+--      if 0 /= Internal (Interfaces.C.To_C (File_Name)) then
+--         if File_Test (File_Name, File_Test_Exists) then
+--            raise Ada.IO_Exceptions.Use_Error with "File cannot be deleted";
+--         end if;
+--      end if;
+--   end Remove;
 
-   procedure Rename (Old_File_Name, New_File_Name : UTF8_String) is
-      function Internal (Old_File_Name, New_File_Name : Interfaces.C.char_array)
-                         return Interfaces.C.int;
-      pragma Import (C, Internal, "g_rename");
-      use type Interfaces.C.int;
-   begin
-      if 0 /= Internal (Interfaces.C.To_C (Old_File_Name),
-                        Interfaces.C.To_C (New_File_Name))
-      then
-         if File_Test (Old_File_Name, File_Test_Exists) then
-            raise Ada.IO_Exceptions.Use_Error with "File cannot be renamed";
-         else
-            raise Ada.IO_Exceptions.Name_Error with "File does not exist";
-         end if;
-      end if;
-   end Rename;
+--   procedure Rename (Old_File_Name, New_File_Name : UTF8_String) is
+--      function Internal (Old_File_Name, New_File_Name : Interfaces.C.char_array)
+--                         return Interfaces.C.int;
+--      pragma Import (C, Internal, "g_rename");
+--      use type Interfaces.C.int;
+--   begin
+--      if 0 /= Internal (Interfaces.C.To_C (Old_File_Name),
+--                        Interfaces.C.To_C (New_File_Name))
+--      then
+--         if File_Test (Old_File_Name, File_Test_Exists) then
+--            raise Ada.IO_Exceptions.Use_Error with "File cannot be renamed";
+--         else
+--            raise Ada.IO_Exceptions.Name_Error with "File does not exist";
+--         end if;
+--      end if;
+--   end Rename;
 
    function RGB (Red, Green, Blue : Gdouble) return Gdk.Color.Gdk_Color is
       Result  : Gdk.Color.Gdk_Color;
@@ -1961,47 +1961,47 @@ begin
    -- implementation   using a   weak  reference   implementation   from
    -- Glib.Wrappers.
    --
-   declare
-      function SetErrorMode (Mode : Interfaces.Unsigned_32)
-                             return Interfaces.Unsigned_32;
-      pragma Import (Stdcall, SetErrorMode, "SetErrorMode");
-
-      --
-      -- The  system does not display the critical-error-handler message
-      -- box. Instead,  the  system  sends  the  error  to  the  calling
-      -- process.
-      SEM_FAILCRITICALERRORS : constant := 16#0001#;
-
-      --
-      -- The  system  automatically  fixes  memory  alignment faults and
-      -- makes  them  invisible to the application. It does this for the
-      -- calling  process  and any descendant processes. This feature is
-      -- only supported by certain  processor  architectures.  For  more
-      -- information, see the Remarks section. After this value  is  set
-      -- for a process, subsequent  attempts  to  clear  the  value  are
-      -- ignored.
-      --
-      SEM_NOALIGNMENTFAULTEXCEPT : constant := 16#0004#;
-      pragma Unreferenced (SEM_NOALIGNMENTFAULTEXCEPT);
-
-      --
-      -- The system does not display the Windows Error Reporting dialog.
-      --
-      SEM_NOGPFAULTERRORBOX : constant := 16#0002#;
-      --
-      -- The system does not display a message box when it fails to find
-      -- a file. Instead, the error is returned to the calling process.
-      --
-      SEM_NOOPENFILEERRORBOX : constant := 16#8000#;
-
-      Result : Interfaces.Unsigned_32;
-      use type Interfaces.Unsigned_32;
-   begin
-      Result := SetErrorMode (SEM_NOOPENFILEERRORBOX or
-                              SEM_NOGPFAULTERRORBOX  or
-                              SEM_FAILCRITICALERRORS);
-      pragma Unreferenced (Result);
-   end;
+--   declare
+--      function SetErrorMode (Mode : Interfaces.Unsigned_32)
+--                            return Interfaces.Unsigned_32;
+--      pragma Import (Stdcall, SetErrorMode, "SetErrorMode");
+--
+--      --
+--      -- The  system does not display the critical-error-handler message
+--      -- box. Instead,  the  system  sends  the  error  to  the  calling
+--      -- process.
+--      SEM_FAILCRITICALERRORS : constant := 16#0001#;
+--
+--      --
+--      -- The  system  automatically  fixes  memory  alignment faults and
+--      -- makes  them  invisible to the application. It does this for the
+--      -- calling  process  and any descendant processes. This feature is
+--      -- only supported by certain  processor  architectures.  For  more
+--      -- information, see the Remarks section. After this value  is  set
+--      -- for a process, subsequent  attempts  to  clear  the  value  are
+--      -- ignored.
+--      --
+--      SEM_NOALIGNMENTFAULTEXCEPT : constant := 16#0004#;
+--      pragma Unreferenced (SEM_NOALIGNMENTFAULTEXCEPT);
+--
+--      --
+--      -- The system does not display the Windows Error Reporting dialog.
+--      --
+--      SEM_NOGPFAULTERRORBOX : constant := 16#0002#;
+--      --
+--      -- The system does not display a message box when it fails to find
+--      -- a file. Instead, the error is returned to the calling process.
+--      --
+--      SEM_NOOPENFILEERRORBOX : constant := 16#8000#;
+--
+--      Result : Interfaces.Unsigned_32;
+--      use type Interfaces.Unsigned_32;
+--   begin
+--      Result := SetErrorMode (SEM_NOOPENFILEERRORBOX or
+--                              SEM_NOGPFAULTERRORBOX  or
+--                              SEM_FAILCRITICALERRORS);
+--      pragma Unreferenced (Result);
+--   end;
 
    pragma Warnings (On, "declaration hides ""Ancestor""");
    pragma Warnings (On, "declaration hides ""Box""");
