@@ -538,15 +538,20 @@ package body GUI is
    is
       Match_Result : GNAT.Expect.Expect_Match;
       Result       : Boolean;
+      use type GNAT.Expect.Process_Id;
    begin
       Handle_Exceptions :
       begin
-         GNAT.Expect.Expect (Descriptor  => Win.SIM_Process.all,
-                             Result      => Match_Result,
-                             Regexp      => GNAT.Regpat.Never_Match,
-                             Timeout     => 0,
-                             Full_Buffer => False);
-         Result := True;
+         if GNAT.Expect.Get_Pid (Descriptor => Win.SIM_Process.all) = GNAT.Expect.Invalid_Pid then
+            Result := False;
+         else
+            GNAT.Expect.Expect (Descriptor  => Win.SIM_Process.all,
+                                Result      => Match_Result,
+                                Regexp      => GNAT.Regpat.Never_Match,
+                                Timeout     => 1,
+                                Full_Buffer => False);
+            Result := True;
+         end if;
       exception
          when GNAT.Expect.Invalid_Process
             | GNAT.Expect.Process_Died =>

@@ -94,7 +94,7 @@ package body GUI.Callbacks is
       begin
          GNAT.Expect.Non_Blocking_Spawn
            (Descriptor   => Process.all,
-            Command      => "simulator",
+            Command      => "./simulator",
             Args         => GNAT.OS_Lib.Argument_List'(1 .. 0 => null));
 
          Log.Trace
