@@ -10,6 +10,7 @@ with Gtk.Layered.Waveform;
 with Gtk.Main;
 with Gtk.Message_Dialog;
 with Gtk.Missed;
+with Gtk.Notebook;
 with Gtk.Widget;
 with GUI.Callbacks;
 with Pango.Cairo.Fonts;
@@ -365,21 +366,37 @@ package body GUI is
       Window.Aborted := False;
       Window.SIM_Process := new GNAT.Expect.Process_Descriptor;
 
-      Add_Widgets_To_Box :
       declare
-         Box : constant not null Gtk.Box.Gtk_Box :=
+         Notebook : constant Gtk.Notebook.Gtk_Notebook :=
+           Gtk.Notebook.Gtk_Notebook_New;
+      begin
+         Window.Add (Widget => Notebook);
+
+         Add_Pages_To_Notebook :
+         begin
+            Notebook.all.Append_Page
+              (Child     => Window.Create_Simulation_Frame,
+               Tab_Label => Gtk.Label.Gtk_Label_New (Str => "Simulation"));
+
+            declare
+               Box : constant Gtk.Box.Gtk_Vbox :=
                  Gtk.Box.Gtk_Vbox_New (Homogeneous => False,
                                        Spacing     => 0);
-      begin
-         Window.Add (Widget => Box);
-         Box.all.Pack_Start
-           (Child  => Window.Create_Sensor_Signals_Frame (Gauge_Size => 6),
-            Expand => True);
-         Box.all.Pack_Start (Child  => Window.Create_Timeline_Frame,
-                             Expand => False);
-         Box.all.Pack_Start (Child  => Window.Create_Simulation_Frame,
-                             Expand => False);
-      end Add_Widgets_To_Box;
+            begin
+               Notebook.all.Append_Page
+                 (Child     => Box,
+                  Tab_Label =>
+                    Gtk.Label.Gtk_Label_New (Str => "Sensor Signals"));
+
+               Box.all.Pack_Start
+                 (Child  =>
+                    Window.Create_Sensor_Signals_Frame (Gauge_Size => 6),
+                  Expand => True);
+               Box.all.Pack_End (Child  => Window.Create_Timeline_Frame,
+                                 Expand => True);
+            end;
+         end Add_Pages_To_Notebook;
+      end;
    end Initialize;
 
    procedure Quit_GUI (Win : not null access Main_Window_Record) is
