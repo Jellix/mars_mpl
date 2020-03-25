@@ -13,9 +13,10 @@ function Create_Sensor_Signals_Frame
 is
    use type Glib.Gint;
 
-   Header_Row : constant Glib.Gint := 0;
-   Gauge_Row  : constant Glib.Gint := 1;
-   Text_Row   : constant Glib.Gint := Header_Row + Gauge_Size + 1;
+   Header_Row  : constant Glib.Gint := 0;
+   Gauge_Row   : constant Glib.Gint := 1;
+   Text_Row    : constant Glib.Gint := Header_Row + Gauge_Size + 1;
+   Gauge_Width : constant Glib.Gint := Glib.Gint'Max (2, Gauge_Size / 3);
 
    Grid : constant not null Gtk.Grid.Gtk_Grid := Gtk.Grid.Gtk_Grid_New;
 
@@ -80,7 +81,7 @@ is
 
    Current_Column : Glib.Gint := 0;
 begin
-   Grid.all.Set_Column_Homogeneous (Homogeneous => True);
+   Grid.all.Set_Column_Homogeneous (Homogeneous => False);
    Grid.all.Set_Row_Homogeneous (Homogeneous => True);
 
    --  Discrete Signals signified by LEDs.
@@ -123,8 +124,6 @@ begin
    Current_Column := Current_Column + 2;
 
    Add_Fuel_Gauge :
-   declare
-      Gauge_Width : constant Glib.Gint := Glib.Gint'Max (2, Gauge_Size / 3);
    begin
       Add_Heading (Title  => "Fuel Mass",
                    Column => Current_Column,
@@ -154,8 +153,6 @@ begin
    end Add_Fuel_Gauge;
 
    Add_Delta_V_Gauge :
-   declare
-      Gauge_Width : constant Glib.Gint := Glib.Gint'Max (2, Gauge_Size / 3);
    begin
       Add_Heading (Title  => "Delta V",
                    Column => Current_Column,
@@ -184,8 +181,6 @@ begin
    end Add_Delta_V_Gauge;
 
    Add_Drag_Gauge :
-   declare
-      Gauge_Width : constant Glib.Gint := Glib.Gint'Max (2, Gauge_Size / 3);
    begin
       Add_Heading (Title  => "Drag",
                    Column => Current_Column,
@@ -205,6 +200,7 @@ begin
 
       Gtk.GEntry.Gtk_New (The_Entry => Window.Elements.Drag);
       Window.Elements.Drag.all.Set_Editable (Is_Editable => False);
+
       Grid.all.Attach (Child  => Window.Elements.Drag,
                        Left   => Current_Column,
                        Top    => Text_Row,
@@ -214,8 +210,6 @@ begin
    end Add_Drag_Gauge;
 
    Add_Core_Temperature_Gauge :
-   declare
-      Gauge_Width : constant Glib.Gint := Glib.Gint'Max (2, Gauge_Size / 3);
    begin
       Add_Heading (Title  => "Core Temperature",
                    Column => Current_Column,
@@ -236,6 +230,7 @@ begin
 
       Gtk.GEntry.Gtk_New (The_Entry => Window.Elements.Core_Temp);
       Window.Elements.Core_Temp.all.Set_Editable (Is_Editable => False);
+
       Grid.all.Attach (Child  => Window.Elements.Core_Temp,
                        Left   => Current_Column,
                        Top    => Text_Row,
@@ -245,8 +240,6 @@ begin
    end Add_Core_Temperature_Gauge;
 
    Add_Surface_Temperature_Gauge :
-   declare
-      Gauge_Width : constant Glib.Gint := Glib.Gint'Max (2, Gauge_Size / 3);
    begin
       Add_Heading (Title  => "Surface Temperature",
                    Column => Current_Column,
@@ -267,6 +260,7 @@ begin
 
       Gtk.GEntry.Gtk_New (The_Entry => Window.Elements.Surface_Temp);
       Window.Elements.Surface_Temp.all.Set_Editable (Is_Editable => False);
+
       Grid.all.Attach (Child  => Window.Elements.Surface_Temp,
                        Left   => Current_Column,
                        Top    => Text_Row,
@@ -275,112 +269,122 @@ begin
       Current_Column := Current_Column + Gauge_Width;
    end Add_Surface_Temperature_Gauge;
 
-   --  Attitude gauge
-   Add_Heading (Title  => "Attitude",
-                Column => Current_Column,
-                Width  => Gauge_Size);
+   Add_Attitude_Gauge :
+   begin
+      Add_Heading (Title  => "Attitude",
+                   Column => Current_Column,
+                   Width  => Gauge_Size);
 
-   Gtk.Valve.Round_90.Gtk_New
-     (Widget     => Window.Horizon,
-      Texts      => Horizon_Scale.Texts.all,
-      Sectors    =>
-        Positive (Gtk.Enums.String_List.Length (+Horizon_Scale.Texts.all)) - 1);
+      Gtk.Valve.Round_90.Gtk_New
+        (Widget     => Window.Horizon,
+         Texts      => Horizon_Scale.Texts.all,
+         Sectors    =>
+           Positive
+             (Gtk.Enums.String_List.Length (+Horizon_Scale.Texts.all)) - 1);
 
-   Grid.all.Attach (Child  => Window.Horizon,
-                    Left   => Current_Column,
-                    Top    => Gauge_Row,
-                    Width  => Gauge_Size,
-                    Height => Gauge_Size);
+      Grid.all.Attach (Child  => Window.Horizon,
+                       Left   => Current_Column,
+                       Top    => Gauge_Row,
+                       Width  => Gauge_Size,
+                       Height => Gauge_Size);
 
-   Gtk.GEntry.Gtk_New (The_Entry => Window.Elements.Horizon);
-   Window.Elements.Horizon.all.Set_Editable (Is_Editable => False);
-   Grid.all.Attach (Child  => Window.Elements.Horizon,
-                    Left   => Current_Column + 1,
-                    Top    => Text_Row,
-                    Width  => Gauge_Size - 2,
-                    Height => 1);
+      Gtk.GEntry.Gtk_New (The_Entry => Window.Elements.Horizon);
+      Window.Elements.Horizon.all.Set_Editable (Is_Editable => False);
 
-   Current_Column := Current_Column + Gauge_Size;
+      Grid.all.Attach (Child  => Window.Elements.Horizon,
+                       Left   => Current_Column + 1,
+                       Top    => Text_Row,
+                       Width  => Gauge_Size - 2,
+                       Height => 1);
 
-   --  Velocity Gauge
-   Add_Heading (Title  => "Velocity",
-                Column => Current_Column,
-                Width  => Gauge_Size);
+      Current_Column := Current_Column + Gauge_Size;
+   end Add_Attitude_Gauge;
 
-   Gtk.Gauge.Round_270.Gtk_New
-     (Widget  => Window.Tachometer,
-      Texts   => Velocity_Scale.Texts.all,
-      Sectors =>
-        Positive
-          (Gtk.Enums.String_List.Length (+Velocity_Scale.Texts.all)) - 1);
-   Gtk.Layered.Label.Add_Label
-     (Under    => Window.Tachometer.all.Get_Cache,
-      Text     => "m/s",
-      Location => Cairo.Ellipses.Cairo_Tuple'(X => 0.01,
-                                              Y => 0.15),
-      Face     => Label_Font,
-      Height   => 0.03,
-      Stretch  => 0.9,
-      Mode     => Gtk.Layered.Moved_Centered,
-      Color    => Gtk.Colors.White,
-      Angle    => 0.0,
-      Skew     => 0.0,
-      Markup   => False,
-      Scaled   => True);
-   Grid.all.Attach (Child  => Window.Tachometer,
-                    Left   => Current_Column,
-                    Top    => Gauge_Row,
-                    Width  => Gauge_Size,
-                    Height => Gauge_Size);
+   Add_Velocity_Gauge :
+   begin
+      Add_Heading (Title  => "Velocity",
+                   Column => Current_Column,
+                   Width  => Gauge_Size);
 
-   Gtk.GEntry.Gtk_New (The_Entry => Window.Elements.Velocity);
-   Window.Elements.Velocity.all.Set_Editable (Is_Editable => False);
-   Grid.all.Attach (Child  => Window.Elements.Velocity,
-                    Left   => Current_Column + 1,
-                    Top    => Text_Row,
-                    Width  => Gauge_Size - 2,
-                    Height => 1);
+      Gtk.Gauge.Round_270.Gtk_New
+        (Widget  => Window.Tachometer,
+         Texts   => Velocity_Scale.Texts.all,
+         Sectors =>
+           Positive
+             (Gtk.Enums.String_List.Length (+Velocity_Scale.Texts.all)) - 1);
+      Gtk.Layered.Label.Add_Label
+        (Under    => Window.Tachometer.all.Get_Cache,
+         Text     => "m/s",
+         Location => Cairo.Ellipses.Cairo_Tuple'(X => 0.01,
+                                                 Y => 0.15),
+         Face     => Label_Font,
+         Height   => 0.03,
+         Stretch  => 0.9,
+         Mode     => Gtk.Layered.Moved_Centered,
+         Color    => Gtk.Colors.White,
+         Angle    => 0.0,
+         Skew     => 0.0,
+         Markup   => False,
+         Scaled   => True);
+      Grid.all.Attach (Child  => Window.Tachometer,
+                       Left   => Current_Column,
+                       Top    => Gauge_Row,
+                       Width  => Gauge_Size,
+                       Height => Gauge_Size);
 
-   Current_Column := Current_Column + Gauge_Size;
+      Gtk.GEntry.Gtk_New (The_Entry => Window.Elements.Velocity);
+      Window.Elements.Velocity.all.Set_Editable (Is_Editable => False);
 
-   --  Altitude gauge.
-   Add_Heading (Title  => "Altitude",
-                Column => Current_Column,
-                Width  => Gauge_Size);
+      Grid.all.Attach (Child  => Window.Elements.Velocity,
+                       Left   => Current_Column + 1,
+                       Top    => Text_Row,
+                       Width  => Gauge_Size - 2,
+                       Height => 1);
 
-   Gtk.Gauge.Altimeter.Gtk_New
-     (Widget  => Window.Altimeter,
-      Texts   => Altitude_Scale.Texts.all,
-      Sectors =>
-        Positive (Gtk.Enums.String_List.Length (+Altitude_Scale.Texts.all)));
-   Gtk.Layered.Label.Add_Label
-     (Under    => Window.Altimeter.all.Get_Cache,
-      Text     => "x 1000 m",
-      Location => Cairo.Ellipses.Cairo_Tuple'(X => 0.0175,
-                                              Y => 0.175),
-      Face     => Label_Font,
-      Height   => 0.04,
-      Stretch  => 1.0,
-      Mode     => Gtk.Layered.Moved_Centered,
-      Color    => Gtk.Colors.White,
-      Angle    => 0.0,
-      Skew     => 0.0,
-      Markup   => False,
-      Scaled   => True);
+      Current_Column := Current_Column + Gauge_Size;
+   end Add_Velocity_Gauge;
 
-   Grid.all.Attach (Child  => Window.Altimeter,
-                    Left   => Current_Column,
-                    Top    => Gauge_Row,
-                    Width  => Gauge_Size,
-                    Height => Gauge_Size);
+   Add_Altitude_Gauge :
+   begin
+      Add_Heading (Title  => "Altitude",
+                   Column => Current_Column,
+                   Width  => Gauge_Size);
 
-   Gtk.GEntry.Gtk_New (The_Entry => Window.Elements.Altitude);
-   Window.Elements.Altitude.all.Set_Editable (Is_Editable => False);
-   Grid.all.Attach (Child  => Window.Elements.Altitude,
-                    Left   => Current_Column + 1,
-                    Top    => Text_Row,
-                    Width  => Gauge_Size - 2,
-                    Height => 1);
+      Gtk.Gauge.Altimeter.Gtk_New
+        (Widget  => Window.Altimeter,
+         Texts   => Altitude_Scale.Texts.all,
+         Sectors =>
+           Positive (Gtk.Enums.String_List.Length (+Altitude_Scale.Texts.all)));
+      Gtk.Layered.Label.Add_Label
+        (Under    => Window.Altimeter.all.Get_Cache,
+         Text     => "x 1000 m",
+         Location => Cairo.Ellipses.Cairo_Tuple'(X => 0.0175,
+                                                 Y => 0.175),
+         Face     => Label_Font,
+         Height   => 0.04,
+         Stretch  => 1.0,
+         Mode     => Gtk.Layered.Moved_Centered,
+         Color    => Gtk.Colors.White,
+         Angle    => 0.0,
+         Skew     => 0.0,
+         Markup   => False,
+         Scaled   => True);
+
+      Grid.all.Attach (Child  => Window.Altimeter,
+                       Left   => Current_Column,
+                       Top    => Gauge_Row,
+                       Width  => Gauge_Size,
+                       Height => Gauge_Size);
+
+      Gtk.GEntry.Gtk_New (The_Entry => Window.Elements.Altitude);
+      Window.Elements.Altitude.all.Set_Editable (Is_Editable => False);
+
+      Grid.all.Attach (Child  => Window.Elements.Altitude,
+                       Left   => Current_Column + 1,
+                       Top    => Text_Row,
+                       Width  => Gauge_Size - 2,
+                       Height => 1);
+   end Add_Altitude_Gauge;
 
    return Grid;
 end Create_Sensor_Signals_Frame;
