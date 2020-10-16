@@ -10,7 +10,7 @@ package Gtk.Frame.Log_Viewer is
    type Gtk_Frame_Log_Viewer_Record is new Gtk.Frame.Gtk_Frame_Record with
      private;
 
-   type Gtk_Frame_Log_Viewer is access all Gtk_Frame_Log_Viewer_Record;
+   type Gtk_Frame_Log_Viewer is access all Gtk_Frame_Log_Viewer_Record'Class;
 
    function Gtk_Frame_Log_Viewer_New
      (Label   : in String;
