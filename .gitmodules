@@ -1,0 +1,3 @@
+[submodule "aicwl"]
+	path = aicwl
+	url = https://github.com/HeisenbugLtd/aicwl
