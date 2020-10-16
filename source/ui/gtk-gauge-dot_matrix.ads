@@ -52,7 +52,7 @@ package Gtk.Gauge.Dot_Matrix is
    --
    --    The GTK type of the widget
    --
-   function Get_Type return GType;
+   function Get_Type_1 return Glib.GType; --  GNAT fix "not subtype conformant"
 
    --
    -- Gtk_New -- Widget construction

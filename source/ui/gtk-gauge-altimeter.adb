@@ -29,6 +29,7 @@ with Ada.Numerics;
 with Cairo.Ellipses;
 with Cairo.Line_Cap_Property;
 with Gdk.Color;
+with Gdk.RGBA;
 with Glib.Object.Checked_Destroy;
 with Glib.Properties.Creation;
 with Glib.Types;
@@ -73,7 +74,7 @@ package body Gtk.Gauge.Altimeter is
      (Widget  : not null access Gtk_Gauge_Altimeter_Record'Class;
       Sectors : in              Positive) is
    begin
-      G_New (Object => Widget, Typ => Get_Type);
+      G_New (Object => Widget, Typ => Get_Type_1);
       Gtk.Layered.Initialize (Widget);
       Widget.all.Sectors := Sectors;
       Widget.all.Background :=
@@ -270,7 +271,7 @@ package body Gtk.Gauge.Altimeter is
       return Widget.all.Needle_Main;
    end Get_Needle;
 
-   function Get_Type return GType is
+   function Get_Type_1 return Glib.GType is
    begin
       if Initialize_Class_Record (Ancestor     => Gtk.Layered.Get_Type,
                                   Class_Record => Class_Record'Access,
@@ -390,7 +391,7 @@ package body Gtk.Gauge.Altimeter is
                  Blurb      => "Text color"));
       end if;
       return Class_Record.all.The_Type;
-   end Get_Type;
+   end Get_Type_1;
 
    procedure Gtk_New (Widget     : out Gtk_Gauge_Altimeter;
                       Texts      : in  Gtk.Enums.String_List.Glist;
@@ -655,7 +656,9 @@ package body Gtk.Gauge.Altimeter is
          Color         =>
            Gtk.Widget.Styles.Style_Get (Widget        => Widget,
                                         Property_Name => "pin-color",
-                                        Default       => Pin_Color));
+                                        Default       => Pin_Color),
+         Lens_Reflex   => Gdk.RGBA.Black_RGBA,
+         Lens_Shadow   => Gdk.RGBA.Black_RGBA);
       Widget.all.Background.all.Set
         (Outer         => Widget.all.Background.all.Get_Outer,
          Inner         => Widget.all.Background.all.Get_Inner,
@@ -669,7 +672,9 @@ package body Gtk.Gauge.Altimeter is
            Gtk.Widget.Styles.Style_Get
              (Widget        => Widget,
               Property_Name => "background-color",
-              Default       => Background_Color));
+              Default       => Background_Color),
+         Lens_Reflex   => Gdk.RGBA.Black_RGBA,
+         Lens_Shadow   => Gdk.RGBA.Black_RGBA);
       Widget.all.Minor_Ticks.all.Set
         (Inner  => Widget.all.Minor_Ticks.all.Get_Inner,
          Outer  => Widget.all.Minor_Ticks.all.Get_Outer,

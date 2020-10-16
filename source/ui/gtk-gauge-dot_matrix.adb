@@ -101,7 +101,7 @@ package body Gtk.Gauge.Dot_Matrix is
       return This.all.State.all (Column, Row);
    end Get_State;
 
-   function Get_Type return GType is
+   function Get_Type_1 return GType is
    begin
       if
         Initialize_Class_Record
@@ -112,7 +112,7 @@ package body Gtk.Gauge.Dot_Matrix is
          null;
       end if;
       return Class_Record.all.The_Type;
-   end Get_Type;
+   end Get_Type_1;
 
    procedure Gtk_New
      (This      :    out Gtk_Gauge_Dot_Matrix;
@@ -148,7 +148,7 @@ package body Gtk.Gauge.Dot_Matrix is
       Row_Double : constant Glib.Gdouble := Glib.Gdouble (Rows);
    begin
       G_New (Object => This,
-             Typ    => Get_Type);
+             Typ    => Get_Type_1);
       Gtk.Layered.Initialize (This);
       Lock.Set (DM  => This.all,
                 On  => On_Color,
