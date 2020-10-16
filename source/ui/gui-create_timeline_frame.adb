@@ -1,6 +1,7 @@
 with Gtk.Colors;
 with Gtk.Frame;
 with Gtk.Layered.Refresh_Engine;
+with Gtk.Layered.Waveform.Sweeper;
 with Gtk.Missed;
 
 separate (GUI)
@@ -19,33 +20,36 @@ begin
    Add_Scopes :
    declare
       function New_Scope
-        (Master         : in              Gtk.Oscilloscope.Gtk_Oscilloscope;
+        (Lower_Sweeper  : in              Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper;
+         Upper_Sweeper  : in              Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper;
          Refresh_Engine : not null access Gtk.Layered.Refresh_Engine.Layered_Refresh_Engine)
          return not null Gtk.Oscilloscope.Gtk_Oscilloscope;
+      --  Compiler issue: I tried passing the Master scope as parameter, so that
+      --  the appropriate sweepers can be gotten directly from there instead of
+      --  passing them as parameters, but as soon as New_Scope has a call to
+      --  Master.Get_Sweeper, compilation with GNAT CE 2020 hangs.
 
       function New_Scope
-        (Master         : in              Gtk.Oscilloscope.Gtk_Oscilloscope;
+        (Lower_Sweeper  : in              Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper;
+         Upper_Sweeper  : in              Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper;
          Refresh_Engine : not null access Gtk.Layered.Refresh_Engine.Layered_Refresh_Engine)
          return not null Gtk.Oscilloscope.Gtk_Oscilloscope
       is
          use type Gtk.Oscilloscope.Gtk_Oscilloscope;
+         use type Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper;
          Scope : Gtk.Oscilloscope.Gtk_Oscilloscope;
       begin
          Gtk.Oscilloscope.Gtk_New
            (Widget         => Scope,
             Background     => Gtk.Colors.Light_Grey,
-            Lower_Sweeper  => (if Master /= null
-                               then Master.all.Get_Sweeper (Sweeper => Gtk.Oscilloscope.Lower)
-                               else null),
-            Upper_Sweeper  => (if Master /= null
-                               then Master.all.Get_Sweeper (Sweeper => Gtk.Oscilloscope.Upper)
-                               else null),
+            Lower_Sweeper  => Lower_Sweeper,
+            Upper_Sweeper  => Upper_Sweeper,
             Refresh_Engine => Refresh_Engine);
          --  A standard simulation runs about 5 minutes. With 100 datapoints/s
          --  this amounts to roughly 30000 distinct data points, thus the
          --  default buffer size of ~60_000 should still be enough.
 
-         if Master = null then
+         if Lower_Sweeper = null or else Upper_Sweeper = null then
             Scope.all.Set_Manual_Sweep (Enable => False);
 
             --  Lower axis.
@@ -65,26 +69,35 @@ begin
         Gtk.Layered.Refresh_Engine.Layered_Refresh_Engine :=
           new Gtk.Layered.Refresh_Engine.Layered_Refresh_Engine;
       Master         : constant not null Gtk.Oscilloscope.Gtk_Oscilloscope :=
-                         New_Scope (Master         => null,
-                                    Refresh_Engine => Refresh_Engine);
+        New_Scope (Lower_Sweeper  => null,
+                   Upper_Sweeper  => null,
+                   Refresh_Engine => Refresh_Engine);
+      Lower_Sweeper : constant Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper :=
+        Master.all.Get_Sweeper (Sweeper => Gtk.Oscilloscope.Lower);
+      Upper_Sweeper : constant Gtk.Layered.Waveform.Sweeper.Gtk_Waveform_Sweeper :=
+        Master.all.Get_Sweeper (Sweeper => Gtk.Oscilloscope.Upper);
    begin
       Plot_Box.all.Pack_End (Child => Master);
 
       Window.Plot.Altitude_Plot := Master;
 
-      Window.Plot.Discretes_Plot := New_Scope (Master         => Master,
+      Window.Plot.Discretes_Plot := New_Scope (Lower_Sweeper  => Lower_Sweeper,
+                                               Upper_Sweeper  => Upper_Sweeper,
                                                Refresh_Engine => Refresh_Engine);
       Plot_Box.all.Pack_Start (Child => Window.Plot.Discretes_Plot);
 
-      Window.Plot.Drag_Plot := New_Scope (Master         => Master,
+      Window.Plot.Drag_Plot := New_Scope (Lower_Sweeper  => Lower_Sweeper,
+                                          Upper_Sweeper  => Upper_Sweeper,
                                           Refresh_Engine => Refresh_Engine);
       Plot_Box.all.Pack_Start (Child => Window.Plot.Drag_Plot);
 
-      Window.Plot.Fuel_Plot := New_Scope (Master         => Master,
+      Window.Plot.Fuel_Plot := New_Scope (Lower_Sweeper  => Lower_Sweeper,
+                                          Upper_Sweeper  => Upper_Sweeper,
                                           Refresh_Engine => Refresh_Engine);
       Plot_Box.all.Pack_Start (Child => Window.Plot.Fuel_Plot);
 
-      Window.Plot.Velocity_Plot := New_Scope (Master         => Master,
+      Window.Plot.Velocity_Plot := New_Scope (Lower_Sweeper  => Lower_Sweeper,
+                                              Upper_Sweeper  => Upper_Sweeper,
                                               Refresh_Engine => Refresh_Engine);
       Plot_Box.all.Pack_Start (Child => Window.Plot.Velocity_Plot);
 
