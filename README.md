@@ -27,11 +27,24 @@ and start/stop the simulator.
 
 GUI part and simulator part communicate via `Shared_Passive` packages.
 
+AICWL is defined as git submodule, so when cloning this directory you may want
+to use the `--recurse-submodules` option with `git`.
+
+### Source Layout
+
+* `source/lander` contains the actual lander simulation
+* `source/physics` gravity stuff, rocket equations, heat transfer equations, etc.
+* `source/sim` Part of the lander, but everything that concerns only the simulation (external triggers, etc.)
+* `source/ui` The GUI part, obviously
+* `source/` Globally shared stuff (shared types, parameters, and logging)
+* `aicwl` AICWL3.24 submodule
+
+
 ## Sources of Information
 
 This work is solely based on freely available sources from the internet and as
 such may not be factually correct. I have no affiliation with any of the
 involved parties. For easy access, I put all the documentation I used when
-writing this into the doc directory. This includes basic information about MPL's
+writing this into the `doc` directory. This includes basic information about MPL's
 planned EDL (Entry, Descent, and Landing) phases as well as NASA's investigation
 report.
