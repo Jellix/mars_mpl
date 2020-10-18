@@ -10,7 +10,7 @@ I started adding a GUI written in GtkAda, with the help of
 [AICWL](http://dmitry-kazakov.de/ada/aicwl.htm), and then added more and more
 stuff, now it looks colourful (and still ugly, I am no UI designer.)
 
-## Source code
+## Source Code
 
 I decided to release the source code, there is nothing special about it, but
 for the uninitiated it might be fun to dig through it.
@@ -40,7 +40,7 @@ to use the `--recurse-submodules` option with `git`.
 * `aicwl` AICWL3.24 submodule
 
 
-## Sources of Information
+## Information Sources
 
 This work is solely based on freely available sources from the internet and as
 such may not be factually correct. I have no affiliation with any of the
