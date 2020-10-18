@@ -190,9 +190,12 @@ package body GUI is
    pragma Warnings (On, "instance uses predefined operation, not primitive operation");
 
    --  Prototypes
-   function Create_Sensor_Signals_Frame
-     (Window     : in out Main_Window_Record;
-      Gauge_Size : in     Glib.Gint) return not null access
+   function Create_Gauges_Frame
+     (Window : in out Main_Window_Record) return not null access
+     Gtk.Widget.Gtk_Widget_Record'Class;
+
+   function Create_Telemetry_Frame
+     (Window : in out Main_Window_Record) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class;
 
    function Create_Simulation_Frame
@@ -204,9 +207,12 @@ package body GUI is
      Gtk.Widget.Gtk_Widget_Record'Class;
 
    --  Stubs
-   function Create_Sensor_Signals_Frame
-     (Window     : in out Main_Window_Record;
-      Gauge_Size : in     Glib.Gint) return not null access
+   function Create_Gauges_Frame
+     (Window : in out Main_Window_Record) return not null access
+     Gtk.Widget.Gtk_Widget_Record'Class is separate;
+
+   function Create_Telemetry_Frame
+     (Window : in out Main_Window_Record) return not null access
      Gtk.Widget.Gtk_Widget_Record'Class is separate;
 
    function Create_Simulation_Frame
@@ -386,14 +392,29 @@ package body GUI is
                Notebook.all.Append_Page
                  (Child     => Box,
                   Tab_Label =>
-                    Gtk.Label.Gtk_Label_New (Str => "Sensor Signals"));
+                    Gtk.Label.Gtk_Label_New (Str => "Telemetry"));
 
                Box.all.Pack_Start
-                 (Child  =>
-                    Window.Create_Sensor_Signals_Frame (Gauge_Size => 6),
+                 (Child  => Window.Create_Telemetry_Frame,
+                  Expand => False);
+               Box.all.Pack_Start
+                 (Child  => Window.Create_Gauges_Frame,
                   Expand => True);
-               Box.all.Pack_End (Child  => Window.Create_Timeline_Frame,
-                                 Expand => True);
+            end;
+
+            declare
+               Box : constant Gtk.Box.Gtk_Vbox :=
+                 Gtk.Box.Gtk_Vbox_New (Homogeneous => False,
+                                       Spacing     => 0);
+            begin
+               Notebook.all.Append_Page
+                 (Child     => Box,
+                  Tab_Label =>
+                    Gtk.Label.Gtk_Label_New (Str => "Graph View"));
+
+               Box.all.Pack_Start
+                 (Child  => Window.Create_Timeline_Frame,
+                  Expand => False);
             end;
          end Add_Pages_To_Notebook;
       end;
