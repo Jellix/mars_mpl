@@ -48,3 +48,11 @@ involved parties. For easy access, I put all the documentation I used when
 writing this into the `doc` directory. This includes basic information about MPL's
 planned EDL (Entry, Descent, and Landing) phases as well as NASA's investigation
 report.
+
+## Screenshots
+
+### Simulation Parameters
+![Simulator Parameters](doc/mars_mpl-simulation.png)
+
+### Telemetry Display
+![Telemetry Page](doc/mars_mpl-telemetry.png)
