@@ -1,8 +1,8 @@
-# MARS MPL (Crash) Simulator
+# Mars Polar Lander (Crash) Simulator
 
-This was initially a toy project to see how the MARS Polar Lander crash
-happened, and how it could have been prevented, had the software been taken the
-hall sensor effect into account.
+This was initially a toy project to see how the
+[Mars Polar Lander crash](https://en.wikipedia.org/wiki/Mars_Polar_Lander#Loss_of_communications)
+happened, and how it could have been prevented.
 
 It escalated from there.
 
@@ -33,12 +33,11 @@ to use the `--recurse-submodules` option with `git`.
 ### Source Layout
 
 * `source/lander` contains the actual lander simulation
-* `source/physics` gravity stuff, rocket equations, heat transfer equations, etc.
+* `source/physics` gravity stuff, rocket equations
 * `source/sim` Part of the lander, but everything that concerns only the simulation (external triggers, etc.)
 * `source/ui` The GUI part, obviously
 * `source/` Globally shared stuff (shared types, parameters, and logging)
 * `aicwl` AICWL3.24 submodule
-
 
 ## Information Sources
 
